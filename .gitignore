@@ -1,0 +1,11 @@
+.DS_Store
+tokens.json
+**/tokens.json
+brainsaw/logs/*.log
+brainsaw/system_data/*/
+!brainsaw/system_data/demo_site/
+BakingTray/**/webpreview_credentials.*
+.brainsaw_webpreview.json
+BakingTray/**/webpreview_config*.json
+!BakingTray/**/webpreview_config.example.json
+.claude/

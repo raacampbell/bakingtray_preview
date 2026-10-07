@@ -1,0 +1,24 @@
+Options -Indexes
+Options -ExecCGI
+
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+# Deny everything by default. Only images (and meta.json) are meant to be
+# fetched directly by a browser — recipe/acqlog/csv/log files are read
+# server-side by lib.php's parsers but must never be servable raw, since a
+# recipe file can contain operator-pasted secrets (e.g. a Slack webhook URL
+# in the SLACK: block) that have nothing to do with what the viewer needs.
+Require all denied
+
+<FilesMatch "\.(jpe?g|png)$">
+    Require all granted
+</FilesMatch>
+
+<Files "meta.json">
+    Require all granted
+</Files>

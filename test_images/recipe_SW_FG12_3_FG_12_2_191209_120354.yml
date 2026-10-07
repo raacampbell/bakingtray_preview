@@ -1,0 +1,62 @@
+Acquisition: {acqStartTime: '2019/12/09 12:03:50'}
+sample: {ID: SW_FG12_3_FG_12_2, objectiveName: nikon 16x}
+mosaic:
+  sectionStartNum: 1.0
+  numSections: 289.0
+  cuttingSpeed: 0.5
+  cutSize: 20.0
+  sliceThickness: 0.04
+  numOpticalPlanes: 7.0
+  overlapProportion: 0.1
+  sampleSize: {X: 10.47, Y: 25.0}
+  scanmode: tile
+CuttingStartPoint: {X: 34.200004, Y: 0.0}
+FrontLeft: {X: 19.737752564987055, Y: 16.930970285267637}
+StitchingParameters:
+  VoxelSize: {X: 2.19, Y: 2.175}
+  lensDistort: {rows: 0.0, cols: 0.03}
+  affineMat:
+  - [1.0, -0.011, 0.0]
+  - [0.0, 1.0, 0.0]
+  - [0.0, 0.0, 1.0]
+NumTiles: {X: 11.0, Y: 25.0}
+Tile: {nRows: 512.0, nColumns: 512.0}
+TileStepSize: {X: 1.0281, Y: 1.0281}
+VoxelSize: {X: 2.231, Y: 2.231, Z: 5.714285714285714}
+ScannerSettings:
+  pixelsPerLine: 512.0
+  linesPerFrame: 512.0
+  micronsBetweenOpticalPlanes: 5.714285714285714
+  numOpticalSlices: 7.0
+  zoomFactor: 1.1
+  FOV_alongColsinMicrons: 1142.345
+  FOV_alongRowsinMicrons: 1142.345
+  micronsPerPixel_cols: 2.231
+  micronsPerPixel_rows: 2.231
+  framePeriodInSeconds: 0.067
+  bidirectionalScan: true
+  activeChannels:
+  - [2.0]
+  - [3.0]
+  - [4.0]
+  beamPower: 45.0
+  powerZAdjust: true
+  beamPowerLengthConstant: 350.0
+  powerZAdjustType:
+  - []
+  scanMode: resonant
+  scannerID: ScanImage via SIBT
+  version: ScanImage v5.6.0 on MATLAB 9.3.0.713579 (R2017b)
+  pixEqLinCheckBox: true
+  slowMult: 1.0
+  fastMult: 1.0
+  averageEveryNframes: 1.0
+SYSTEM:
+  ID: brainsaw
+  xySpeed: 100.0
+  cutterSide: 1.0
+  defaultFrontLeft: [17.0, 4.0]
+  type: bakingtray
+  version: 0.55
+SLICER: {approachSpeed: 25.0, vibrateRate: 9.0, postCutDelay: 6.0, postCutVibrate: 3.0}
+SLACK: {user: '@BrainSaw', hook: ''}

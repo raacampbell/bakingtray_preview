@@ -1,0 +1,16 @@
+# tokens.json and logs must never be servable directly, even though PHP
+# reads them server-side. Prefer moving tokens.json outside public_html
+# entirely (see instructions.md); this is a defense-in-depth backstop.
+
+<Files "tokens.json">
+    Require all denied
+</Files>
+
+<FilesMatch "\.log$">
+    Require all denied
+</FilesMatch>
+
+# Force HTTPS (GoDaddy AutoSSL). Harmless if already behind HTTPS-only.
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
