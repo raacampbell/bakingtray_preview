@@ -247,6 +247,10 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
                 tc.verifyTrue(all(calls(k).bytes > 0));
             end
             tc.verifyEqual([calls.finished], [false false false false true]);
+            for k = 1:5     % every call carries the timeouts a rig would use
+                tc.verifyEqual(calls(k).timeouts, ...
+                    {'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10});
+            end
             for k = 1:5     % the log grows by one FINISHED line per section, none at the start
                 nFinished = nnz(~cellfun(@isempty, ...
                     regexp(splitlines(calls(k).logText), finishRe, 'once')));

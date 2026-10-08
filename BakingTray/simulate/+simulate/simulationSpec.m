@@ -5,12 +5,11 @@ function s = simulationSpec()
     %
     % Purpose
     % The log text mirrors test_images/acqLog_*.txt (the format the server's
-    % bs_parse_acqlogs() parses). MinInterval is the server's upload rate limit.
+    % bs_parse_acqlogs() parses).
     %
     % Outputs
     % s - Structure of simulation constants.
 
-    s.MinInterval = 5;                          % seconds between uploads the server accepts
     s.TimeFormat = 'yyyy/MM/dd HH:mm:ss';       % log timestamp format
     s.TilesAcquired = 274;
     s.FirstZ = 24.38;                           % z of section 1 (mm)

@@ -7,8 +7,9 @@ classdef FakePoster < handle
     % Same contract as webupload.zipAndPost: post(folder,cfg,micID,source,...) returns
     % struct(ok, httpStatus, message). Calls is a struct array with fields
     % folder, names (sorted file names), bytes (matching sizes), finished (the flag in
-    % status.json) and logText (contents of the staged acqLog.txt, '' if absent),
-    % captured at call time because the next section overwrites the stage folder.
+    % status.json), timeouts (the extra arguments of the call) and logText (contents of
+    % the staged acqLog.txt, '' if absent), captured at call time because the next
+    % section overwrites the stage folder.
     %
     % Example
     % p = simulate.FakePoster();
@@ -18,7 +19,7 @@ classdef FakePoster < handle
     % See also webupload.zipAndPost, webupload.updateSectionImage
 
     properties (SetAccess = private)
-        Calls = struct('folder', {}, 'names', {}, 'bytes', {}, 'finished', {}, 'logText', {})
+        Calls = struct('folder', {}, 'names', {}, 'bytes', {}, 'finished', {}, 'timeouts', {}, 'logText', {})
     end %properties
 
     methods
@@ -40,7 +41,7 @@ classdef FakePoster < handle
             obj.Calls(end+1) = struct('folder', folder, 'names', {names}, ...
                 'bytes', [d(order).bytes], ...
                 'finished', jsondecode(fileread(fullfile(folder, 'status.json'))).finished, ...
-                'logText', logText);
+                'timeouts', {varargin}, 'logText', logText);
             reply = struct('ok', true, 'httpStatus', 200, 'message', 'dry run: nothing sent');
         end %post
     end %methods

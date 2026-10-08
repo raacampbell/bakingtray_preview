@@ -42,7 +42,7 @@ function result = simulateAcquisition(varargin)
     % 'ConfigFile' - Config JSON for the real upload (required unless DryRun).
     % 'NumSections' - Total number of sections, a positive integer (default 10).
     % 'Interval' - Seconds between calls (default 5). The server rejects uploads
-    %              closer together than simulate.simulationSpec().MinInterval
+    %              closer together than webupload.serverLimits().minUploadIntervalSec
     %              (5 s); a real run with a smaller Interval warns
     %              'simulate:simulateAcquisition:fastInterval'.
     % 'DryRun' - If true use simulate.FakePoster: nothing touches the network,
@@ -85,11 +85,12 @@ function result = simulateAcquisition(varargin)
     if ~opts.DryRun
         cfg = webupload.webConfig(char(opts.ConfigFile));
         checkTarget(cfg, opts.AllowProduction, spec);
-        if opts.Interval<spec.MinInterval
+        minInterval = webupload.serverLimits().minUploadIntervalSec;
+        if opts.Interval<minInterval
             warning('simulate:simulateAcquisition:fastInterval', ...
                 ['Interval %g s is below the server rate limit of %g s; ', ...
                  'uploads may be rejected (HTTP 429).'], ...
-                opts.Interval, spec.MinInterval);
+                opts.Interval, minInterval);
         end
     end
 
@@ -101,7 +102,7 @@ function result = simulateAcquisition(varargin)
     files = struct('recipe', '', 'log', fullfile(workDir, spec.LogName), ...
         'stageRoot', fullfile(workDir, 'stage'));
     N = opts.NumSections;
-    sections = {};
+    sections = cell(1,N);
     finish = [];
 
 
@@ -110,9 +111,7 @@ function result = simulateAcquisition(varargin)
     % previous one; the run stops at the first failure that would repeat.
     files.recipe = beginAcquisition(opts.RecipeFile, files.log, workDir, N, datetime('now'));
     start = runUpdate([], files, backend, 'ClearStage', true);
-    printCall('start', start, opts);
-    aborted = shouldAbort(start, opts.DryRun);
-    abortReason = abortText('start', start, aborted);
+    [aborted,abortReason] = checkCall('start', start, opts);
     tPrev = tic;
 
     kk = 0;
@@ -125,25 +124,20 @@ function result = simulateAcquisition(varargin)
         startTime = datetime('now') - seconds(loggedSec);    % FINISHED lands at the time of writing
 
         sections{kk} = runSection(kk, N, startTime, loggedSec, files, backend);
-        label = sprintf('section %d/%d', kk, N);
-        printCall(label, sections{kk}, opts);
-        aborted = shouldAbort(sections{kk}, opts.DryRun);
-        abortReason = abortText(label, sections{kk}, aborted);
+        [aborted,abortReason] = checkCall(sprintf('section %d/%d', kk, N), sections{kk}, opts);
     end %while
 
     if ~aborted
         pause(max(0, opts.Interval - toc(tPrev)));
         finish = runUpdate(simulate.simulatedImages(N,N), files, backend, 'Finished', true);
-        printCall('finish', finish, opts);
-        aborted = shouldAbort(finish, opts.DryRun);
-        abortReason = abortText('finish', finish, aborted);
+        [aborted,abortReason] = checkCall('finish', finish, opts);
     end
 
 
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     result = struct('workDir', workDir, 'recipePath', files.recipe, 'logPath', files.log, ...
         'dryRun', opts.DryRun, 'aborted', aborted, 'abortReason', abortReason, ...
-        'start', start, 'finish', finish, 'sections', [sections{:}], 'dryRunCalls', []);
+        'start', start, 'finish', finish, 'sections', [sections{1:kk}], 'dryRunCalls', []);
     if opts.DryRun
         result.dryRunCalls = backend.recorder.Calls;
     end
@@ -340,9 +334,11 @@ function out = runUpdate(img,files,backend,varargin)
     % function out = runUpdate(img,files,backend,varargin)
     %
     % varargin are further options for updateSectionImage ('ClearStage', 'Finished').
+    % Every call carries the timeouts a rig would use, so a run exercises them.
 
     update = webupload.updateSectionImage(img, files.recipe, files.log, backend.cfg, ...
-        'Poster', backend.poster, 'StageRoot', files.stageRoot, varargin{:});
+        'Poster', backend.poster, 'StageRoot', files.stageRoot, ...
+        'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10, varargin{:});
     out = struct('ok', update.ok, 'httpStatus', update.post.httpStatus, ...
         'message', update.post.message, 'update', update);
 end %runUpdate
@@ -361,48 +357,34 @@ function sec = runSection(k,N,startTime,loggedSec,files,backend)
 end %runSection
 
 
-function stop = shouldAbort(out,dryRun)
-    % True if a real upload failed in a way that will repeat
+function [stop,reason] = checkCall(label,out,opts)
+    % Print one line for a call and decide whether the run must stop
     %
-    % function stop = shouldAbort(out,dryRun)
+    % function [stop,reason] = checkCall(label,out,opts)
     %
-    % 429 means "too fast"; the next call is slower. Anything else (auth, size,
-    % network, staging) will repeat, so stop instead of failing N times.
+    % The message is already token-scrubbed by zipAndPost. A real upload that failed with
+    % 429 means "too fast" and the next call is slower; anything else (auth, size,
+    % network, staging) will repeat, so stop instead of failing N times. reason is ''
+    % unless stop.
 
-    stop = ~dryRun && ~out.ok && ~isequal(out.httpStatus, 429);
-end %shouldAbort
-
-
-function text = abortText(label,out,aborted)
-    % Describe a failed call for result.abortReason; '' if the run goes on
-    %
-    % function text = abortText(label,out,aborted)
-
-    text = '';
-    if aborted
-        text = sprintf('%s failed (HTTP %g): %s', label, out.httpStatus, out.message);
+    if opts.Verbose
+        status = 'FAILED';
+        if out.ok
+            status = 'ok';
+        end
+        mode = '';
+        if opts.DryRun
+            mode = ' (dry run)';
+        end
+        fprintf('%s: %s%s, HTTP %g: %s\n', label, status, mode, out.httpStatus, out.message);
     end
-end %abortText
 
-
-function printCall(label,out,opts)
-    % Print one line per call. The message is already token-scrubbed by zipAndPost.
-    %
-    % function printCall(label,out,opts)
-
-    if ~opts.Verbose
-        return
+    stop = ~opts.DryRun && ~out.ok && ~isequal(out.httpStatus, 429);
+    reason = '';
+    if stop
+        reason = sprintf('%s failed (HTTP %g): %s', label, out.httpStatus, out.message);
     end
-    status = 'FAILED';
-    if out.ok
-        status = 'ok';
-    end
-    mode = '';
-    if opts.DryRun
-        mode = ' (dry run)';
-    end
-    fprintf('%s: %s%s, HTTP %g: %s\n', label, status, mode, out.httpStatus, out.message);
-end %printCall
+end %checkCall
 
 
 function writeLines(file,lines,permission)
@@ -414,6 +396,6 @@ function writeLines(file,lines,permission)
     if fid<0
         error('simulate:simulateAcquisition:writeFailed', 'cannot open %s for writing', file);
     end
-    closer = onCleanup(@() fclose(fid)); %#ok<NASGU>
+    closer = onCleanup(@() fclose(fid));
     fprintf(fid, '%s\n', lines{:});
 end %writeLines
