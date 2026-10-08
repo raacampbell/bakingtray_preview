@@ -131,7 +131,7 @@ classdef (Sealed) webConfig < handle
             % jsonFile - path to the JSON config file.
 
             if ~isfile(jsonFile)
-                error('webpreview:configMissing', ...
+                error('webupload:configMissing', ...
                     ['Config file not found: %s ', ...
                     '(copy webpreview_config.example.json there and fill it in)'], jsonFile);
             end
@@ -142,19 +142,19 @@ classdef (Sealed) webConfig < handle
             try
                 raw = jsondecode(fileread(jsonFile));
             catch err
-                error('webpreview:configInvalid', ...
+                error('webupload:configInvalid', ...
                     'Config file %s is not valid JSON: %s', jsonFile, err.message);
             end
 
             if ~(isstruct(raw) && isscalar(raw))
-                error('webpreview:configInvalid', ...
+                error('webupload:configInvalid', ...
                     'Config file %s must contain a single JSON object.', jsonFile);
             end
 
             required = {'url', 'siteID', 'micID', 'token'};
             absent = required(~isfield(raw, required));
             if ~isempty(absent)
-                error('webpreview:configIncomplete', ...
+                error('webupload:configIncomplete', ...
                     'Config file %s is missing field(s): %s', jsonFile, strjoin(absent, ', '));
             end
 
@@ -166,16 +166,16 @@ classdef (Sealed) webConfig < handle
                 name = required{ii};
                 value = raw.(name);
                 if ~(ischar(value) && (isrow(value) || isempty(value)))
-                    error('webpreview:configWrongType', ...
+                    error('webupload:configWrongType', ...
                         'Config field "%s" in %s must be a JSON string.', name, jsonFile);
                 end
                 value = strtrim(value);
                 if isempty(value)
-                    error('webpreview:configIncomplete', ...
+                    error('webupload:configIncomplete', ...
                         'Config field "%s" in %s is empty.', name, jsonFile);
                 end
                 if ismember(name, {'siteID', 'micID'}) && isempty(regexp(value, '^[a-zA-Z][a-zA-Z0-9_-]*$', 'once'))
-                    error('webpreview:configInvalid', ...
+                    error('webupload:configInvalid', ...
                         'Config field "%s" in %s must start with a letter and contain only letters, digits, "_" and "-".', ...
                         name, jsonFile);
                 end
@@ -193,7 +193,7 @@ classdef (Sealed) webConfig < handle
                 if isfield(raw, name)
                     value = raw.(name);
                     if ~(isnumeric(value) && isscalar(value) && isfinite(value) && value > 0)
-                        error('webpreview:configWrongType', ...
+                        error('webupload:configWrongType', ...
                             'Config field "%s" in %s must be a positive finite number of seconds.', ...
                             name, jsonFile);
                     end
@@ -219,7 +219,7 @@ function p = defaultConfigPath()
     %
     % Outputs
     % p - full path to .brainsaw_webpreview.json in the user's home directory. Errors with
-    %     webpreview:noHome if the home directory cannot be determined.
+    %     webupload:noHome if the home directory cannot be determined.
 
     % TODO -- will eventually change this so it looks in the BakingTray SETTINGS path
     if ispc
@@ -229,7 +229,7 @@ function p = defaultConfigPath()
     end
 
     if isempty(home)
-        error('webpreview:noHome', 'Cannot determine the home directory.');
+        error('webupload:noHome', 'Cannot determine the home directory.');
     end
 
     p = fullfile(home, '.brainsaw_webpreview.json');
@@ -243,7 +243,7 @@ function checkUrl(url)
     %
     % Purpose
     % The one exception is plain http to localhost or 127.0.0.1 (optionally with a port), for
-    % testing against a local dev server only. Errors with webpreview:insecureUrl otherwise.
+    % testing against a local dev server only. Errors with webupload:insecureUrl otherwise.
     %
     % Inputs
     % url - non-empty character row vector holding the server URL.
@@ -251,7 +251,7 @@ function checkUrl(url)
     isHttps = ~isempty(regexp(url, '^https://[^/\s]+', 'once'));
     isLocalDev = ~isempty(regexp(url, '^http://(localhost|127\.0\.0\.1)(:\d+)?(/|$)', 'once'));
     if ~(isHttps || isLocalDev)
-        error('webpreview:insecureUrl', ...
+        error('webupload:insecureUrl', ...
             ['url must start with https:// ', ...
             '(http:// is allowed only for localhost/127.0.0.1): %s'], url);
     end

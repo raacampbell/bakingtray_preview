@@ -47,7 +47,7 @@ and takes the same characters. The server keeps one token per microscope, so
 is an HTTP 403. Optional fields `connectTimeout`,
 `responseTimeout`, `dataTimeout` (seconds; defaults 15, 60, 60) can be raised
 for slow uplinks. It is unverified whether ResponseTimeout/DataTimeout cover
-the transfer of the upload itself; a warning `webpreview:postZip:noTimeout`
+the transfer of the upload itself; a warning `webupload:postZip:noTimeout`
 is issued if this release lacks either property. Redirects are never followed
 (the token must not be re-sent elsewhere); a 3xx reply is a failure.
 

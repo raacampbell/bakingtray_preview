@@ -21,7 +21,7 @@ function result = postZip(zipPath, cfg)
     % The call is synchronous: it blocks until the server answers or a timeout fires, so a
     % dead or stalled server delays the caller by about the timeouts. Whether ResponseTimeout
     % and DataTimeout cover the transfer of the upload itself is unverified; a warning
-    % (webpreview:postZip:noTimeout) is issued if this MATLAB release lacks either property.
+    % (webupload:postZip:noTimeout) is issued if this MATLAB release lacks either property.
     %
     % Deliberate catch-all: this runs during an acquisition, and a flaky network or bad config
     % must never interrupt imaging. Every failure is reported as result.ok = false instead.
@@ -40,12 +40,12 @@ function result = postZip(zipPath, cfg)
 
     try
         if ~cfgIsValid
-            error('webpreview:badConfig', 'cfg must be a webupload.webConfig object.');
+            error('webupload:badConfig', 'cfg must be a webupload.webConfig object.');
         end
 
         opts = makeOptions(cfg);
         if ~isfile(zipPath)
-            error('webpreview:noZip', 'Zip file not found: %s', zipPath);
+            error('webupload:noZip', 'Zip file not found: %s', zipPath);
         end
 
 
@@ -78,7 +78,7 @@ function opts = makeOptions(cfg)
     % Purpose
     % MaxRedirects = 0 is set unconditionally because it protects the bearer token. The
     % ResponseTimeout and DataTimeout properties are not present in every MATLAB release;
-    % if one is missing a warning 'webpreview:postZip:noTimeout' is issued and that timeout
+    % if one is missing a warning 'webupload:postZip:noTimeout' is issued and that timeout
     % is not applied.
     %
     % Inputs
@@ -98,7 +98,7 @@ function opts = makeOptions(cfg)
         if isprop(opts, optional{ii, 1})
             opts.(optional{ii, 1}) = optional{ii, 2};
         else
-            warning('webpreview:postZip:noTimeout', ...
+            warning('webupload:postZip:noTimeout', ...
                 ['HTTPOptions has no %s in this MATLAB release; ', ...
                 'that timeout is not applied.'], optional{ii, 1});
         end
@@ -132,7 +132,7 @@ function [payload, contentType] = buildMultipart(cfg, zipPath)
 
     fid = fopen(zipPath, 'r');
     if fid < 0
-        error('webpreview:noZip', 'Could not open zip file: %s', zipPath);
+        error('webupload:noZip', 'Could not open zip file: %s', zipPath);
     end
     closer = onCleanup(@() fclose(fid));
     zipBytes = fread(fid, Inf, '*uint8')';
