@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Serves a throwaway copy of brainsaw/ with `php -S ... router.php` and a temp settings file
-# (two sites, two microscopes in one, a panopticon word; every name and token random) and
+# (two sites with one token each, five microscopes in all, a panopticon word; every name and
+# token random) and
 # checks the views, the 404 page, the asset route, uploads, settings validation and the
 # auto-refresh wiring. The copy sits in a sub-folder of the server's document root, so the
 # pages are also checked at a nested base path. Never touches tracked data or real settings.
@@ -62,25 +63,26 @@ for f in "$SRC"/*.php; do check "php -l $(basename "$f")" lint_ok "$f"; done
 # --- random settings: nothing here may look like anything in the repo ---
 r() { openssl rand -hex "$1"; }
 PAN="p$(r 6)"; SA="a$(r 5)"; SB="b$(r 5)"
-MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"
-TA1="$(r 32)"; TA2="$(r 32)"; TB="$(r 32)"; TL="$(r 32)"
+MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"; MSPACE="Scope_$(r 3)"   # MSPACE: its recipe says "Scope <hex>"
+TKA="$(r 32)"; TKB="$(r 32)"; TOLD="$(r 32)"   # one token per site; TOLD stands for a per-microscope token of the old format
 SETTINGS="$TMP/www/brainsaw_settings.json"   # config.php default: next to brainsaw/
 write_settings() { # panopticon word, site A id
   cat > "$SETTINGS" <<EOF
 {"panopticon": "$1",
  "sites": {
-  "$2": {"display_name": "Lab A $SA", "microscopes": {
-     "$MA1": {"display_name": "Scope A1 $MA1", "token": "$TA1"},
-     "$MA2": {"display_name": "Scope A2 $MA2", "token": "$TA2"}}},
-  "$SB": {"display_name": "Lab B $SB", "microscopes": {
-     "$MB": {"display_name": "Scope B $MB", "token": "$TB"},
-     "logs": {"token": "$TL"}}}}}
+  "$2": {"display_name": "Lab A $SA", "token": "$TKA", "microscopes": {
+     "$MA1": {"display_name": "Scope A1 $MA1"},
+     "$MA2": {"display_name": "Scope A2 $MA2"},
+     "$MSPACE": {"display_name": "Scope with a space"}}},
+  "$SB": {"display_name": "Lab B $SB", "token": "$TKB", "microscopes": {
+     "$MB": {"display_name": "Scope B $MB"},
+     "logs": {}}}}}
 EOF
 }
 write_settings "$PAN" "$SA"
 
-# Microscope A1 has the four test files and a meta.json; A2 and B have never uploaded.
-D="$APP/system_data/$SA/$MA1"
+# Microscope A1 has the four test files and a meta.json in its acq folder; A2 and B have never uploaded.
+D="$APP/system_data/$SA/$MA1/acq"
 mkdir -p "$D"
 cp "$IMAGES"/LastCompleteSection_01.jpg "$IMAGES"/montage.jpg "$IMAGES"/recipe_*.yml "$IMAGES"/acqLog_*.txt "$D/"
 UPLOADED_AT="$(php -r 'echo gmdate("c", time() - 3600);')"   # old enough not to rate-limit A1
@@ -219,9 +221,9 @@ mv "$APP/js/autorefresh.js.off" "$APP/js/autorefresh.js"
 
 # --- nothing private is served directly ---
 not_200() { fetch "$1" --path-as-is; [ "$STATUS" != 200 ]; }   # keep ../ as sent
-for p in "system_data/" "system_data/$SA/$MA1/meta.json" "system_data/$SA/$MA1/LastCompleteSection_01.jpg" \
-         "system_data/$SA/$MA1/montage.jpg" "system_data/$SA/$MA1/$RECIPE" "system_data/$SA/$MA1/$ACQLOG" \
-         "System_Data/$SA/$MA1/meta.json" "js/../system_data/$SA/$MA1/meta.json" "/system_data/$SA/$MA1/meta.json" \
+for p in "system_data/" "system_data/$SA/$MA1/acq/meta.json" "system_data/$SA/$MA1/acq/LastCompleteSection_01.jpg" \
+         "system_data/$SA/$MA1/acq/montage.jpg" "system_data/$SA/$MA1/acq/$RECIPE" "system_data/$SA/$MA1/acq/$ACQLOG" \
+         "System_Data/$SA/$MA1/acq/meta.json" "js/../system_data/$SA/$MA1/acq/meta.json" "/system_data/$SA/$MA1/acq/meta.json" \
          "logs/" ".htaccess" "lib.php" "config.php" "router.php" "x.json" "js/x.php"; do
   check "direct /$p refused" not_200 "$B/$p"
 done
@@ -236,59 +238,221 @@ check "app outside the document root: null"   test "$(base_of "$IMAGES")" = "NUL
 check "no document root: null"                test "$(base_of "")" = "NULL"
 
 # --- uploads ---
-ZIP="$IMAGES/all_data.zip"
 U="$B/upload.php"
 hdr() { printf 'Authorization: Bearer %s' "$1"; }   # tokens are random test values
+# upload TOKEN SITE MIC SOURCE ZIP: one contract-conforming POST; sets STATUS and BODY.
+upload() { fetch "$U" -X POST -H "$(hdr "$1")" -F site_id="$2" -F microscope_id="$3" -F source="$4" -F "data=@$5;type=application/zip"; }
+
+# Zips are built from real-format recipes: the test recipe with SYSTEM.ID and sample.ID replaced.
+# new_dir NAME SYSTEM_ID SAMPLE_ID: $TMP/z/NAME holds the five uploadable files ("-" as the
+# sample ID removes it from the recipe). zip_dir NAME: $TMP/z/NAME.zip from that folder.
+new_dir() {
+  local d="$TMP/z/$1"; rm -rf "$d" "$d.zip"; mkdir -p "$d"
+  cp "$IMAGES/LastCompleteSection_01.jpg" "$d/LastCompleteSection.jpg"
+  cp "$IMAGES/montage.jpg" "$d/"; cp "$IMAGES"/acqLog_*.txt "$d/acqLog.txt"
+  local sample; if [ "$3" = "-" ]; then sample='sample: {objectiveName: nikon 16x}'; else sample="sample: {ID: $3, objectiveName: nikon 16x}"; fi
+  LC_ALL=C sed -e "s/^sample: .*/$sample/" -e "s/^  ID: brainsaw/  ID: $2/" "$IMAGES"/recipe_*.yml > "$d/recipe.yml"
+  echo '{"finished": false, "extra_key": 1}' > "$d/status.json"
+}
+zip_dir() { rm -f "$TMP/z/$1.zip"; (cd "$TMP/z/$1" && zip -q -r -X "../$1.zip" .); }
+good_zip() { new_dir "$1" "$2" "$3"; zip_dir "$1"; }   # NAME SYSTEM_ID SAMPLE_ID
+# Content fingerprint of a folder (names and bytes), to show a refused upload changed nothing.
+snapshot() { (cd "$1" && find . -type f -exec cksum {} + | sort); }
+# Make the last upload to FOLDER look old, so the 5 s rate limit lets the next one in.
+backdate() { php -r '$f = $argv[1] . "/meta.json"; $m = json_decode(file_get_contents($f), true); $m["uploaded_at"] = gmdate("c", time() - 3600); file_put_contents($f, json_encode($m));' "$1"; }
+meta_of() { php -r '$m = json_decode(file_get_contents($argv[1] . "/meta.json"), true); echo $m[$argv[2]] ?? "";' "$1" "$2"; }
+
+good_zip main "$MB" S1
+ZIP="$TMP/z/main.zip"
 fetch "$U"
 check "GET upload.php: 405" test "$STATUS" = 405
-fetch "$U" -X POST -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
+fetch "$U" -X POST -F site_id="$SB" -F microscope_id="$MB" -F source=acq -F "data=@$ZIP;type=application/zip"
 check "upload without token: 401" test "$STATUS" = 401
-fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F "data=@$ZIP;type=application/zip"
+fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F source=acq -F "data=@$ZIP;type=application/zip"
 check "upload without microscope_id: 403" test "$STATUS" = 403
 NOMIC="$BODY"
-fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="nosite" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
+upload "$TKB" nosite "$MB" acq "$ZIP"
 check "unknown site: 403" test "$STATUS" = 403
 UNKSITE="$BODY"
-fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="nomic" -F "data=@$ZIP;type=application/zip"
-check "unknown microscope: 403" test "$STATUS" = 403
-check "unknown site and unknown microscope: same message" test "$BODY" = "$UNKSITE"
+upload "$TKB" "$SB" nomic acq "$ZIP"
+check "unlisted microscope: 403" test "$STATUS" = 403
+check "unknown site and unlisted microscope: same message" test "$BODY" = "$UNKSITE"
 check "missing microscope_id: same message" test "$NOMIC" = "$UNKSITE"
-fetch "$U" -X POST -H "$(hdr "$TA1")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
-check "another microscope's token: 403" test "$STATUS" = 403
-check "wrong token: same message" test "$BODY" = "$UNKSITE"
-fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="$MB" -F "image=@$IMAGES/montage.jpg;type=image/jpeg"
+upload "$TOLD" "$SB" "$MB" acq "$ZIP"
+check "an old per-microscope token: 403" test "$STATUS" = 403
+check "old per-microscope token: same message" test "$BODY" = "$UNKSITE"
+upload "$TKA" "$SB" "$MB" acq "$ZIP"
+check "another site's token: 403" test "$STATUS" = 403
+check "another site's token: same message" test "$BODY" = "$UNKSITE"
+upload "$TKB" "$SB" "$MB" nonsense "$ZIP"
+check "bad source with a good token: 400" test "$STATUS" = 400
+upload "$TOLD" "$SB" "$MB" nonsense "$ZIP"
+check "bad source with a bad token: 403, the source is not looked at" test "$STATUS" = 403
+for src in ACQ "" analysis2 "../acq"; do
+  upload "$TKB" "$SB" "$MB" "$src" "$ZIP"
+  check "source '$src': 400" test "$STATUS" = 400
+done
+for src in "acq%20" "acq%0A"; do   # form-urlencoded, because curl -F trims trailing spaces
+  fetch "$U" -X POST -H "$(hdr "$TKB")" -d "site_id=$SB&microscope_id=$MB&source=$src"
+  check "source '$src': 400" test "$STATUS" = 400
+done
+fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
+check "missing source: 400" test "$STATUS" = 400
+check "refused uploads created no folder" test ! -e "$APP/system_data/$SB/$MB/acq"
+fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F microscope_id="$MB" -F source=acq -F "image=@$IMAGES/montage.jpg;type=image/jpeg"
 check "no data field: 400" test "$STATUS" = 400
 # Raw IDs never reach the log: a newline/tab payload must not forge a log line.
 LOG="$APP/logs/upload.log"
 lines="$(wc -l < "$LOG")"
-fetch "$U" -X POST -H "$(hdr "$TB")" -F "site_id=$(printf 'x\nFAKE\tLINE')" -F microscope_id="$MB"
+fetch "$U" -X POST -H "$(hdr "$TKB")" -F "site_id=$(printf 'x\nFAKE\tLINE')" -F microscope_id="$MB" -F source=acq
 check "bad site_id: 403" test "$STATUS" = 403
 check "bad site_id: exactly one log line" test "$(wc -l < "$LOG")" -eq $((lines + 1))
 check "bad site_id: payload not logged" bash -c '! grep -q FAKE "$1"' _ "$LOG"
 check "bad site_id: logged as ?" bash -c 'tail -n1 "$1" | cut -f2 | grep -qx "?"' _ "$LOG"
 # Form-urlencoded, because PHP's multipart parser drops a trailing newline before we see it.
 for id in "12345" "$SB%0A"; do
-  fetch "$U" -X POST -H "$(hdr "$TB")" -d "site_id=$id&microscope_id=$MB"
+  fetch "$U" -X POST -H "$(hdr "$TKB")" -d "site_id=$id&microscope_id=$MB&source=acq"
   check "site_id $id (all digits / trailing newline): 403" test "$STATUS" = 403
 done
-fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
-check "valid upload: 200 ok" body_has "$STATUS $BODY" '200 {"status":"ok"'
-check "upload lands in system_data/<site>/<mic>/" test -f "$APP/system_data/$SB/$MB/LastCompleteSection_01.jpg" -a -f "$APP/system_data/$SB/$MB/meta.json"
+
+# Accepted uploads: acq, then analysis straight after (the rate limit is per source).
+MBD="$APP/system_data/$SB/$MB"
+upload "$TKB" "$SB" "$MB" acq "$ZIP"
+check "valid acq upload: 200 ok" body_has "$STATUS $BODY" '200 {"status":"ok"'
+check "acq upload lands in system_data/<site>/<mic>/acq/" test -f "$MBD/acq/recipe.yml" -a -f "$MBD/acq/status.json" -a -f "$MBD/acq/meta.json"
+check "meta.json holds the sample ID" test "$(meta_of "$MBD/acq" sample_id)" = S1
+check "meta.json holds uploaded_at" test -n "$(meta_of "$MBD/acq" uploaded_at)"
+check "nothing written to system_data/<site>/<mic>/ itself but lock files" test -z "$(find "$MBD" -maxdepth 1 -type f ! -name '.lock-*')"
 check "nothing written to system_data/<site>/ itself" test -z "$(find "$APP/system_data/$SB" -maxdepth 1 -type f)"
-fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
-check "second upload within 5 s: 429" test "$STATUS" = 429
-fetch "$U" -X POST -H "$(hdr "$TA2")" -F site_id="$SA" -F microscope_id="$MA2" -F "data=@$ZIP;type=application/zip"
-check "microscope A2: upload 200" test "$STATUS" = 200
-fetch "$U" -X POST -H "$(hdr "$TA1")" -F site_id="$SA" -F microscope_id="$MA1" -F "data=@$ZIP;type=application/zip"
-check "rate limit is per microscope (A1 right after A2): 200" test "$STATUS" = 200
+check "no temporary folder left behind" test -z "$(find "$MBD" -name '.tmp-*')"
+check "the upload log records the source" bash -c 'tail -n1 "$1" | cut -f2 | grep -qx "$2"' _ "$LOG" "$SB/$MB/acq"
+upload "$TKB" "$SB" "$MB" acq "$ZIP"
+check "second acq upload within 5 s: 429" test "$STATUS" = 429
+upload "$TKB" "$SB" "$MB" analysis "$ZIP"
+check "analysis upload right after acq: 200, not 429" test "$STATUS" = 200
+check "analysis upload lands in .../analysis/" test -f "$MBD/analysis/recipe.yml" -a -f "$MBD/analysis/meta.json"
+upload "$TKB" "$SB" "$MB" analysis "$ZIP"
+check "second analysis upload within 5 s: 429" test "$STATUS" = 429
+check "the upload log records the analysis source" bash -c 'grep -q "$2" "$1"' _ "$LOG" "$SB/$MB/analysis"
 fetch "$B/$SB/$MB"
-check "uploaded microscope page shows its image" body_has "$BODY" 'id="main-image"'
-mkdir -p "$APP/system_data/$SB/logs/montage.jpg"   # a folder where a file must go: the rename fails
-fetch "$U" -X POST -H "$(hdr "$TL")" -F site_id="$SB" -F microscope_id=logs -F "data=@$ZIP;type=application/zip"
-check "extraction that cannot complete: 500, not ok" test "$STATUS" = 500
-check "  ... and no meta.json claims an upload" test ! -e "$APP/system_data/$SB/logs/meta.json"
+check "uploaded microscope page shows its acq image" body_has "$BODY" 'id="main-image"'
+
+# Refused uploads: 400, and the stored folders stay exactly as they were. Each zip has a NEW
+# sample ID, so a check run after the folder was emptied would show.
+backdate "$MBD/acq"; backdate "$MBD/analysis"
+BEFORE_ACQ="$(snapshot "$MBD/acq")"; BEFORE_AN="$(snapshot "$MBD/analysis")"
+refused() { # description, zip name, expected status (default 400)
+  upload "$TKB" "$SB" "$MB" acq "$TMP/z/$2.zip"
+  check "$1: ${3:-400}" test "$STATUS" = "${3:-400}"
+  check "$1: acq folder untouched" test "$(snapshot "$MBD/acq")" = "$BEFORE_ACQ"
+  check "$1: analysis folder untouched" test "$(snapshot "$MBD/analysis")" = "$BEFORE_AN"
+}
+new_dir norecipe "$MB" S2;     rm "$TMP/z/norecipe/recipe.yml";     zip_dir norecipe;     refused "missing recipe.yml" norecipe
+new_dir nostatus "$MB" S2;     rm "$TMP/z/nostatus/status.json";    zip_dir nostatus;     refused "missing status.json" nostatus
+for bad in 'not json' '[]' '{}' '[true]' '"finished"' '{"finished": "true"}' '{"finished": 1}' '{"finished": null}' '{"Finished": true}'; do
+  new_dir badstatus "$MB" S2; printf '%s' "$bad" > "$TMP/z/badstatus/status.json"; zip_dir badstatus
+  refused "status.json $bad" badstatus
+done
+mkdir "$MBD/.tmp-stale"; touch -t 200001010000 "$MBD/.tmp-stale"   # left by a killed upload
+good_zip wrongid "other_scope" S2;                                refused "SYSTEM.ID differs from microscope_id" wrongid
+check "a temporary folder over an hour old is swept" test ! -e "$MBD/.tmp-stale"
+good_zip nosample "$MB" -;                                        refused "recipe without sample.ID" nosample
+good_zip badutf "$MB" "$(printf 'S\377x')";                       refused "sample ID that is not UTF-8" badutf
+new_dir dup "$MB" S2; mkdir "$TMP/z/dup/sub"; cp "$TMP/z/dup/recipe.yml" "$TMP/z/dup/sub/"; zip_dir dup
+refused "two entries with the same base name" dup
+new_dir big "$MB" S2; head -c 3000000 /dev/zero | tr '\0' 'a' >> "$TMP/z/big/recipe.yml"; zip_dir big
+refused "recipe.yml over the size cap" big 413
+check "refused uploads leave no temporary folder" test -z "$(find "$MBD" -name '.tmp-*')"
+fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F microscope_id="$MB" -F source=acq -F "data=@$IMAGES/montage.jpg;type=application/zip;filename=x.zip"
+check "not a zip: 415, acq folder untouched" test "$STATUS $(snapshot "$MBD/acq")" = "415 $BEFORE_ACQ"
+
+# A new sample empties only that source's folder.
+new_dir s2 "$MB" S2; rm "$TMP/z/s2/acqLog.txt" "$TMP/z/s2/LastCompleteSection.jpg"; zip_dir s2
+upload "$TKB" "$SB" "$MB" acq "$TMP/z/s2.zip"
+check "new sample, acq: 200" test "$STATUS" = 200
+check "new sample: old acq files gone" test ! -e "$MBD/acq/acqLog.txt" -a ! -e "$MBD/acq/LastCompleteSection.jpg"
+check "new sample: new acq files present" test -f "$MBD/acq/recipe.yml" -a -f "$MBD/acq/montage.jpg"
+check "new sample: meta.json has the new sample ID" test "$(meta_of "$MBD/acq" sample_id)" = S2
+check "new sample in acq: analysis folder untouched" test "$(snapshot "$MBD/analysis")" = "$BEFORE_AN"
+# The same sample merges: files not in this upload stay.
+backdate "$MBD/acq"
+new_dir s2b "$MB" S2; rm "$TMP/z/s2b/montage.jpg" "$TMP/z/s2b/LastCompleteSection.jpg"; zip_dir s2b
+upload "$TKB" "$SB" "$MB" acq "$TMP/z/s2b.zip"
+check "same sample, acq: 200" test "$STATUS" = 200
+check "same sample: the earlier montage.jpg stays" test -f "$MBD/acq/montage.jpg"
+check "same sample: the new acqLog.txt is added" test -f "$MBD/acq/acqLog.txt"
+# An analysis upload of a new sample leaves acq alone.
+backdate "$MBD/analysis"; ACQ_NOW="$(snapshot "$MBD/acq")"
+upload "$TKB" "$SB" "$MB" analysis "$TMP/z/s2.zip"
+check "new sample, analysis: 200" test "$STATUS" = 200
+check "new sample in analysis: its old files are gone" test ! -e "$MBD/analysis/acqLog.txt"
+check "new sample in analysis: acq folder untouched" test "$(snapshot "$MBD/acq")" = "$ACQ_NOW"
+# A folder with no stored sample ID (e.g. made by hand) counts as a new sample.
+mkdir -p "$APP/system_data/$SA/$MA2/acq"; echo old > "$APP/system_data/$SA/$MA2/acq/acqLog.txt"
+good_zip a2 "$MA2" S1; rm "$TMP/z/a2/acqLog.txt"; zip_dir a2
+upload "$TKA" "$SA" "$MA2" acq "$TMP/z/a2.zip"
+check "folder without a stored sample ID: 200" test "$STATUS" = 200
+check "folder without a stored sample ID is emptied" test ! -e "$APP/system_data/$SA/$MA2/acq/acqLog.txt"
+
+# Extra files are skipped, whatever their name or folder; the five names are kept (flattened).
+EX="$APP/system_data/$SA/$MA2"
+good_zip extras "$MA2" S1; mkdir -p "$TMP/z/extras/sub/dir"
+for f in evil.php .htaccess notes.txt recipe_old.yml montage.JPG montage.jpg.bak data.csv; do echo x > "$TMP/z/extras/$f"; done
+mv "$TMP/z/extras/montage.jpg" "$TMP/z/extras/sub/dir/montage.jpg"; echo x > "$TMP/z/extras/sub/dir/other.json"
+mkdir -p "$TMP/z/extras/d/status.json"   # a directory entry is not a file, whatever its name
+zip_dir extras
+backdate "$EX/acq"
+upload "$TKA" "$SA" "$MA2" acq "$TMP/z/extras.zip"
+check "upload with extra files: 200" test "$STATUS" = 200
+check "only the five names (and meta.json) on disk" test "$(ls -A "$EX/acq" | LC_ALL=C sort | tr '\n' ' ')" = "LastCompleteSection.jpg acqLog.txt meta.json montage.jpg recipe.yml status.json "
+check "a directory entry named status.json is skipped" test -f "$EX/acq/status.json"
+check "extra files: the response lists only kept names" bash -c '! grep -qE "evil|htaccess|notes|csv|bak|JPG|other" <<<"$1"' _ "$BODY"
+
+# The microscope ID in the recipe is trimmed and its spaces become "_".
+new_dir spaced "Scope ${MSPACE#Scope_}" "Sample 1"
+sed -i.bak "s/^  ID: \(.*\)\$/  ID:   \1   /" "$TMP/z/spaced/recipe.yml"; rm "$TMP/z/spaced/recipe.yml.bak"; zip_dir spaced
+upload "$TKA" "$SA" "$MSPACE" acq "$TMP/z/spaced.zip"
+check "SYSTEM.ID 'Scope xyz' (padded) matches microscope_id Scope_xyz: 200" test "$STATUS" = 200
+check "a sample ID with a space is accepted and stored" test "$(meta_of "$APP/system_data/$SA/$MSPACE/acq" sample_id)" = "Sample 1"
+good_zip spaced2 "Scope $(r 3)" S1
+backdate "$APP/system_data/$SA/$MSPACE/acq"
+upload "$TKA" "$SA" "$MSPACE" acq "$TMP/z/spaced2.zip"
+check "SYSTEM.ID with a different word: 400" test "$STATUS" = 400
+good_zip spaced3 "${MSPACE}" S1
+upload "$TKA" "$SA" "$MSPACE" acq "$TMP/z/spaced3.zip"
+check "SYSTEM.ID already written with '_': 200" test "$STATUS" = 200
+
+# Rate limits are independent per source and per microscope.
+good_zip a1 "$MA1" S1
+backdate "$D"
+upload "$TKA" "$SA" "$MA1" analysis "$TMP/z/a1.zip"
+check "microscope A1 analysis upload while acq is recent: 200" test "$STATUS" = 200
+upload "$TKA" "$SA" "$MA1" acq "$TMP/z/a1.zip"
+check "microscope A1 acq upload (old meta): 200" test "$STATUS" = 200
+upload "$TKA" "$SA" "$MA1" acq "$TMP/z/a1.zip"
+check "A1 acq again within 5 s: 429" test "$STATUS" = 429
+mkdir -p "$APP/system_data/$SB/logs/acq/montage.jpg"   # a folder where a file must go: the rename fails
+good_zip logs logs S1
+upload "$TKB" "$SB" logs acq "$TMP/z/logs.zip"
+check "install that cannot complete: 500, not ok" test "$STATUS" = 500
+check "  ... and no meta.json claims an upload" test ! -e "$APP/system_data/$SB/logs/acq/meta.json"
+check "  ... and no file of the upload is left in the folder" test -z "$(find "$APP/system_data/$SB/logs/acq" -type f)"
+
+# Two uploads of one source arriving together: exactly one is installed, the other gets 429.
+conc() { curl -s "$U" -o /dev/null -w '%{http_code}' -X POST -H "$(hdr "$TKA")" -F site_id="$SA" -F microscope_id="$MA2" -F source=analysis -F "data=@$TMP/z/a2.zip;type=application/zip" > "$TMP/conc.$1"; }
+conc 1 & P1=$!; conc 2 & P2=$!; wait "$P1" "$P2"
+check "concurrent uploads of one source: one 200, one 429" test "$(sort "$TMP/conc.1" "$TMP/conc.2" | tr '\n' ' ')" = "200 429 "
 fetch "$B/$PAN/$SA/$MA2?f=main"
 check "microscope A2 through the panopticon: image served" test "$STATUS" = 200
+
+# --- recipe IDs: the shared vectors pin the parsing rule (the MATLAB side runs them from upload_core/tests) ---
+VECTORS="$ROOT/upload_core/tests/recipe_id_vectors.json"
+vector_results() { php -r 'require $argv[1]; foreach (json_decode(file_get_contents($argv[2]), true)["cases"] as $c) {
+  $r = bs_recipe_ids($c["recipe"]);
+  echo ($r["micID"] === $c["micID"] && $r["sampleID"] === $c["sampleID"] ? "ok" : "bad"), "\t", $c["name"], "\n"; }' "$APP/lib.php" "$VECTORS"; }
+vec="$(vector_results)"
+check "recipe ID vectors: every case in the file was run" test "$(wc -l <<<"$vec")" -eq "$(grep -c '"name"' "$VECTORS")"
+while IFS=$'\t' read -r verdict name; do check "recipe ID vector: $name" test "$verdict" = ok; done <<<"$vec"
 
 # --- the Authorization header is found under every name a host may use ---
 auth_of() { php -r 'require $argv[1]; echo bs_authorization_header(json_decode($argv[2], true));' "$APP/lib.php" "$1"; }
@@ -299,46 +463,64 @@ check "auth absent"                           test -z "$(auth_of '{}')"
 # --- settings validation: collisions and bad values are rejected ---
 # Prints "ok" for a valid file, else the reason. Reserved names are the app folder's entries.
 validate() { php -r 'require $argv[1]; echo bs_validate_settings(json_decode($argv[2], true), bs_reserved_names()) ?? "ok";' "$APP/lib.php" "$1"; }
-mic='{"m": {"token": "t"}}'
 # JSON goes through variables: escaped quotes inside "$(...)" are mangled by bash 3.2.
-good="{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":$mic},\"t\":{\"microscopes\":$mic}}}"
+T="$(r 16)"   # a 32-character token
+site="{\"token\":\"$T\",\"microscopes\":{\"m\":{}}}"    # a valid site: its token is at site level
+good="{\"panopticon\":\"w\",\"sites\":{\"s\":$site,\"t\":$site}}"
 check "valid settings accepted"        test "$(validate "$good")" = ok
-good="{\"sites\":{\"s\":{\"microscopes\":$mic}}}"
+good="{\"sites\":{\"s\":$site}}"
 check "no panopticon is allowed"       test "$(validate "$good")" = ok
+good="{\"sites\":{\"s\":{\"display_name\":\"S\",\"token\":\"$T\",\"microscopes\":{\"m\":{\"display_name\":\"M\"}}}}}"
+check "display names are allowed"      test "$(validate "$good")" = ok
 for bad in \
-  "{\"panopticon\":\"s\",\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"S\",\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":$mic},\"S\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"js\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"System_Data\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"logs\",\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"Upload.php\",\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w w\",\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s.x\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"m/1\":{\"token\":\"t\"}}}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"m\":{\"token\":\"\"}}}}}" \
+  "{\"panopticon\":\"s\",\"sites\":{\"s\":$site}}" \
+  "{\"panopticon\":\"S\",\"sites\":{\"s\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":$site,\"S\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"js\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"System_Data\":$site}}" \
+  "{\"panopticon\":\"logs\",\"sites\":{\"s\":$site}}" \
+  "{\"panopticon\":\"Upload.php\",\"sites\":{\"s\":$site}}" \
+  "{\"panopticon\":\"w w\",\"sites\":{\"s\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s.x\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\",\"microscopes\":{\"m/1\":{}}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\",\"microscopes\":{}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\"}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\",\"microscopes\":[{}]}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\",\"microscopes\":{\"m\":\"x\"}}}}" \
+  "{\"panopticon\":5,\"sites\":{\"s\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"0\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"1s\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\",\"microscopes\":{\"123\":{}}}}}" \
+  "{\"panopticon\":\"w\\n\",\"sites\":{\"s\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\\n\":$site}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\",\"microscopes\":{\"m\":{},\"M\":{}}}}}" \
   "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"m\":{}}}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\":{}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":[{\"token\":\"t\"}]}}}" \
-  "{\"panopticon\":5,\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"0\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"1s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"123\":{\"token\":\"t\"}}}}}" \
-  "{\"panopticon\":\"w\\n\",\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\\n\":{\"microscopes\":$mic}}}" \
-  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"m\":{\"token\":\"t\"},\"M\":{\"token\":\"u\"}}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"\",\"microscopes\":{\"m\":{}}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"short\",\"microscopes\":{\"m\":{}}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T $T\",\"microscopes\":{\"m\":{}}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":5,\"microscopes\":{\"m\":{}}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"token\":\"$T\",\"microscopes\":{\"m\":{\"token\":\"$T\"}}}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"m\":{\"token\":\"$T\"}}}}}" \
   "[1,2]"; do
   why="$(validate "$bad")"
   check "rejected ($why): $bad" test "$why" != ok
 done
 
-# A colliding settings file is treated as empty: every view 404s, uploads 403, no details leak.
+# A bad settings file is treated as empty: every view 404s, uploads 403, no details leak.
 write_settings "$SA" "$SA"
 check "collision: site view 404s like any missing page" same_404 "$B/$SA"
-fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
+upload "$TKB" "$SB" "$MB" acq "$TMP/z/main.zip"
 check "collision: upload 403" test "$STATUS" = 403
 check "collision: same message as an unknown site" test "$BODY" = "$UNKSITE"
 check "collision: logged on the server" grep -q 'brainsaw: invalid settings file' "$TMP/server.log"
+# The old format, with the token inside each microscope, is refused whole, not half-accepted.
+cat > "$SETTINGS" <<EOT
+{"panopticon": "$PAN", "sites": {"$SA": {"microscopes": {"$MA1": {"token": "$TOLD"}}},
+ "$SB": {"token": "$TKB", "microscopes": {"$MB": {"token": "$TOLD"}}}}}
+EOT
+check "old-format settings: site view 404s" same_404 "$B/$SB"
+upload "$TKB" "$SB" "$MB" acq "$TMP/z/main.zip"
+check "old-format settings: upload 403 even with the site token" test "$STATUS" = 403
 echo '{not json' > "$SETTINGS"
 check "unparsable settings: 404" same_404 "$B/$SB"
 rm "$SETTINGS"

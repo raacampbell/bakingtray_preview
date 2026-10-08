@@ -14,6 +14,6 @@ return [
     'max_zip_size'                => 200 * 1024 * 1024,  // 200 MB — system_data.zip upload
     'max_zip_uncompressed_size'   => 500 * 1024 * 1024,  // reject zip bombs past this
     'max_zip_entries'             => 500,
-    'min_upload_interval_seconds' => 5,                  // per microscope
+    'min_upload_interval_seconds' => 5,                  // per site, microscope and source
     'stale_after_seconds'         => 15 * 60,            // 15 minutes
 ];

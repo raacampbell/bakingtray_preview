@@ -61,6 +61,12 @@ function bs_validate_settings(mixed $data, array $reserved): ?string
         }
     }
     foreach ($data['sites'] as $site) {
+        if (!is_array($site)) {
+            return 'each site must be an object';
+        }
+        if (!is_string($site['token'] ?? null) || preg_match('/^\S{32,}\z/', $site['token']) !== 1) {
+            return 'each site needs a "token" of at least 32 characters without white space';
+        }
         $mics = $site['microscopes'] ?? null;
         if (!is_array($mics) || !$mics) {
             return 'each site needs a non-empty "microscopes" object';
@@ -69,8 +75,11 @@ function bs_validate_settings(mixed $data, array $reserved): ?string
             if (!bs_valid_id($micId)) {
                 return "microscope IDs must $idRule";
             }
-            if (!is_string($mic['token'] ?? null) || $mic['token'] === '') {
-                return 'each microscope needs a non-empty "token"';
+            if (!is_array($mic)) {
+                return 'each microscope must be an object';
+            }
+            if (array_key_exists('token', $mic)) {
+                return 'a microscope must not have a "token": the token belongs to the site';
             }
         }
         if (bs_has_case_duplicates(array_keys($mics))) {
@@ -104,10 +113,16 @@ function bs_load_settings(string $file): array
     return $data + ['panopticon' => null];
 }
 
-/** One microscope's data folder. */
+/** One microscope's data folder; each upload source has a sub-folder of its own. */
 function bs_mic_dir(array $config, string $siteId, string $micId): string
 {
     return $config['system_data_dir'] . '/' . $siteId . '/' . $micId;
+}
+
+/** Where a source's files for one microscope live. */
+function bs_source_dir(array $config, string $siteId, string $micId, string $source): string
+{
+    return bs_mic_dir($config, $siteId, $micId) . '/' . $source;
 }
 
 /** The raw Authorization header: from $_SERVER, under the name a rewrite copy may give it, or from Apache. */
@@ -177,12 +192,17 @@ function bs_find_all(string $dir, string $pattern): array
     return $matches;
 }
 
+/** Where an upload comes from: BakingTray's acquisition data, or the analysis run on it. Each has its own folder. */
+const BS_SOURCES = ['acq', 'analysis'];
+
 /**
- * Handle one upload: a "data" zip for one microscope, named by the site_id and microscope_id
- * fields and authorised by that microscope's bearer token. The zip is extracted (flattened,
- * whitelisted extensions) into system_data/<site_id>/<microscope_id>/. An unknown site, an
- * unknown microscope and a wrong token all get the same 403 reply, so probing the endpoint
- * cannot reveal which IDs (and therefore which view words) exist; the log tells them apart.
+ * Handle one upload: a "data" zip from one source (acq or analysis) of one microscope, named by
+ * the site_id, microscope_id and source fields and authorised by the site's bearer token. The
+ * zip is checked on a temporary extraction, then installed (flattened, whitelisted names) into
+ * system_data/<site_id>/<microscope_id>/<source>/. An unknown site, an unlisted microscope and
+ * a wrong token all get the same 403 reply, so probing the endpoint cannot reveal which IDs (and
+ * therefore which view words) exist; the log tells them apart. The source is only looked at
+ * once the client is authenticated.
  */
 function bs_handle_upload(array $config): void
 {
@@ -209,26 +229,28 @@ function bs_handle_upload(array $config): void
         $refuse('?', 'missing/invalid site_id or microscope_id'); // raw values never reach the log
     }
     $label = $siteId . '/' . $micId;
-    $mic = bs_load_settings($config['settings_file'])['sites'][$siteId]['microscopes'][$micId] ?? null;
-    if ($mic === null) {
+    $site = bs_load_settings($config['settings_file'])['sites'][$siteId] ?? null;
+    if ($site === null || !isset($site['microscopes'][$micId])) {
         $refuse($label, 'unknown site_id or microscope_id');
     }
-    if (!hash_equals($mic['token'], $suppliedToken)) {
+    if (!hash_equals($site['token'], $suppliedToken)) {
         $refuse($label, 'token mismatch');
     }
 
-    $micDir = bs_mic_dir($config, $siteId, $micId);
+    $source = $_POST['source'] ?? null;
+    if (!in_array($source, BS_SOURCES, true)) {
+        bs_log($logFile, $label, 400, 'bad source');
+        bs_send_json(400, ['status' => 'error', 'message' => 'source must be one of: ' . implode(', ', BS_SOURCES)]);
+    }
+    $label .= '/' . $source;
+    $sourceDir = bs_source_dir($config, $siteId, $micId, $source);
 
-    // Cheap rate limit: reject if this microscope uploaded < N seconds ago. Two uploads
-    // arriving together can both pass; acceptable, since this only guards against floods.
+    // Cheap early rate limit, before any zip work. bs_handle_zip_upload() checks again under
+    // the folder lock, which is what stops two uploads arriving together from both passing.
     $minInterval = $config['min_upload_interval_seconds'] ?? 0;
-    $uploadedAt = bs_read_uploaded_at($micDir);
-    if ($minInterval > 0 && $uploadedAt !== null) {
-        $prevTs = strtotime($uploadedAt);
-        if ($prevTs !== false && (time() - $prevTs) < $minInterval) {
-            bs_log($logFile, $label, 429, 'rate limited');
-            bs_send_json(429, ['status' => 'error', 'message' => 'uploading too fast']);
-        }
+    if (bs_rate_limited($sourceDir, $minInterval)) {
+        bs_log($logFile, $label, 429, 'rate limited');
+        bs_send_json(429, ['status' => 'error', 'message' => 'uploading too fast']);
     }
 
     if (!isset($_FILES['data'])) {
@@ -236,22 +258,44 @@ function bs_handle_upload(array $config): void
         bs_send_json(400, ['status' => 'error', 'message' => 'no valid zip uploaded']);
     }
 
-    if (!is_dir($micDir) && !mkdir($micDir, 0755, true) && !is_dir($micDir)) {
-        bs_log($logFile, $label, 500, 'could not create microscope dir');
-        bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
-    }
+    bs_handle_zip_upload($config, $label, bs_mic_dir($config, $siteId, $micId), $sourceDir, $micId);
+}
 
-    bs_handle_zip_upload($config, $label, $micDir);
+/** True if the source folder's meta.json says it was uploaded to less than $minInterval seconds ago. */
+function bs_rate_limited(string $sourceDir, int $minInterval): bool
+{
+    $uploadedAt = bs_read_meta_field($sourceDir, 'uploaded_at');
+    $prevTs = $uploadedAt === null ? false : strtotime($uploadedAt);
+    return $minInterval > 0 && $prevTs !== false && (time() - $prevTs) < $minInterval;
 }
 
 /**
- * Extensions the zip extractor will write to disk. Everything else in the
- * archive is silently skipped. No .php/.htaccess/etc: system_data/ is never
- * served directly, but this whitelist is what keeps executable files off disk.
+ * The exact base names the zip extractor will write to disk. Everything else in the archive
+ * is silently skipped. No .php/.htaccess/etc: system_data/ is never served directly, but this
+ * whitelist is what keeps executable files off disk. The MATLAB client mirrors it
+ * (webupload.allowedNames); a test keeps the two in step.
  */
-const BS_ZIP_ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'txt', 'yml', 'yaml', 'json', 'csv', 'log'];
+const BS_ZIP_ALLOWED_NAMES = ['LastCompleteSection.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'];
 
-function bs_handle_zip_upload(array $config, string $label, string $micDir): void
+/** Names every upload must contain. They are parsed in memory, so they are size-capped (BS_ZIP_MAX_TEXT_BYTES). */
+const BS_ZIP_REQUIRED_NAMES = ['recipe.yml', 'status.json'];
+
+/** Largest recipe.yml or status.json accepted: far above a real one, far below the memory limit. */
+const BS_ZIP_MAX_TEXT_BYTES = 1024 * 1024;
+
+/** Delete a temporary extraction folder (flat: only files). Also the shutdown hook, so no exit path leaves one behind. */
+function bs_remove_tmp(string $dir): void
+{
+    array_map('unlink', glob($dir . '/*') ?: []);
+    @rmdir($dir);
+}
+
+/**
+ * Validate a zip and install it into $sourceDir. $micDir (the parent of the source folders)
+ * holds the temporary extraction, on the same file system so the final renames are atomic.
+ * Every check runs on the temporary copy; $sourceDir is not touched until all have passed.
+ */
+function bs_handle_zip_upload(array $config, string $label, string $micDir, string $sourceDir, string $micId): void
 {
     $logFile = $config['log_file'];
 
@@ -293,20 +337,22 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir): voi
     $entries = [];
     for ($i = 0; $i < $zip->numFiles; $i++) {
         $stat = $zip->statIndex($i);
-        if ($stat === false) {
-            continue;
+        if ($stat === false || str_ends_with($stat['name'], '/')) {
+            continue; // unreadable entry or directory
         }
-        $name = $stat['name'];
-        if (substr($name, -1) === '/') {
-            continue; // directory entry
+        $base = basename($stat['name']);
+        if (!in_array($base, BS_ZIP_ALLOWED_NAMES, true)) {
+            continue; // dotfiles and everything else not on the whitelist
         }
-        $base = basename($name);
-        if ($base === '' || $base[0] === '.') {
-            continue; // skip hidden/dotfiles (never allow a sneaky .htaccess)
+        if (isset($entries[$base])) {
+            $zip->close();
+            bs_log($logFile, $label, 400, "two entries named $base");
+            bs_send_json(400, ['status' => 'error', 'message' => "the zip has more than one entry named $base"]);
         }
-        $ext = strtolower(pathinfo($base, PATHINFO_EXTENSION));
-        if (!in_array($ext, BS_ZIP_ALLOWED_EXTENSIONS, true)) {
-            continue; // extension not on the whitelist
+        if (in_array($base, BS_ZIP_REQUIRED_NAMES, true) && $stat['size'] > BS_ZIP_MAX_TEXT_BYTES) {
+            $zip->close();
+            bs_log($logFile, $label, 413, "$base too large");
+            bs_send_json(413, ['status' => 'error', 'message' => "$base is too large"]);
         }
         $totalUncompressed += $stat['size'];
         $entries[$base] = $i;
@@ -318,48 +364,256 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir): voi
         bs_send_json(413, ['status' => 'error', 'message' => 'zip contents too large when decompressed']);
     }
 
-    if (!$entries) {
-        $zip->close();
-        bs_log($logFile, $label, 415, 'zip had no recognized files');
-        bs_send_json(415, ['status' => 'error', 'message' => 'zip contained no recognized files']);
+    // Extract into a per-upload tmp dir first. Nothing reaches the source folder until the
+    // upload has passed every check, and then each file is renamed into place, so a failure
+    // never leaves a half-written file visible under its final name. Folders left by a process
+    // that was killed outright are swept when they are an hour old.
+    foreach (glob($micDir . '/.tmp-*', GLOB_ONLYDIR) ?: [] as $stale) {
+        if (filemtime($stale) < time() - 3600) {
+            bs_remove_tmp($stale);
+        }
     }
-
-    // Extract into a per-upload tmp dir first, then atomically rename each
-    // file into place — a mid-extraction failure never leaves a half-written
-    // file visible under its final name.
     $tmpDir = $micDir . '/.tmp-' . bin2hex(random_bytes(8));
     if (!mkdir($tmpDir, 0755, true)) {
         $zip->close();
         bs_log($logFile, $label, 500, 'could not create tmp extract dir');
         bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
     }
+    register_shutdown_function('bs_remove_tmp', $tmpDir);
 
     $ok = true;
     foreach ($entries as $base => $index) {
-        $contents = $zip->getFromIndex($index);
+        // The cap is re-applied to the bytes actually read: the size in the zip header can lie.
+        $capped = in_array($base, BS_ZIP_REQUIRED_NAMES, true);
+        $contents = $zip->getFromIndex($index, $capped ? BS_ZIP_MAX_TEXT_BYTES + 1 : 0);
+        if ($capped && $contents !== false && strlen($contents) > BS_ZIP_MAX_TEXT_BYTES) {
+            $zip->close();
+            bs_log($logFile, $label, 413, "$base too large");
+            bs_send_json(413, ['status' => 'error', 'message' => "$base is too large"]);
+        }
         $ok = $ok && $contents !== false && file_put_contents($tmpDir . '/' . $base, $contents, LOCK_EX) !== false;
     }
     $zip->close();
-    foreach ($entries as $base => $index) {
-        $ok = $ok && rename($tmpDir . '/' . $base, $micDir . '/' . $base);
-    }
-    $ok = $ok && bs_atomic_write($micDir . '/meta.json', $micDir . '/meta.json.tmp', json_encode(['uploaded_at' => gmdate('c')]));
-    array_map('unlink', glob($tmpDir . '/*') ?: []);
-    @rmdir($tmpDir);
     if (!$ok) {
-        error_log('brainsaw: could not extract an upload into ' . $micDir);
+        error_log('brainsaw: could not extract an upload into ' . $tmpDir);
         bs_log($logFile, $label, 500, 'extracting the zip failed');
+        bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
+    }
+
+    $checked = bs_check_upload($tmpDir, $micId);
+    if (is_string($checked)) {
+        bs_log($logFile, $label, 400, $checked);
+        bs_send_json(400, ['status' => 'error', 'message' => $checked]);
+    }
+
+    // Installing empties, moves and then writes meta.json; two uploads of the same source
+    // running those steps together could leave one upload's meta.json describing the other's
+    // files. The lock serialises them (a dotfile in the microscope folder, never served), and
+    // the rate limit is re-checked under it so the loser of a race gets a 429.
+    $lock = fopen($micDir . '/.lock-' . basename($sourceDir), 'c');
+    if ($lock === false || !flock($lock, LOCK_EX)) {
+        bs_log($logFile, $label, 500, 'could not lock the source folder');
+        bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
+    }
+    if (bs_rate_limited($sourceDir, $config['min_upload_interval_seconds'] ?? 0)) {
+        bs_log($logFile, $label, 429, 'rate limited');
+        bs_send_json(429, ['status' => 'error', 'message' => 'uploading too fast']);
+    }
+    $installed = bs_install_upload($tmpDir, $sourceDir, array_keys($entries), $checked['sampleID']);
+    flock($lock, LOCK_UN);
+    fclose($lock);
+    if (!$installed) {
+        error_log('brainsaw: could not install an upload into ' . $sourceDir);
+        bs_log($logFile, $label, 500, 'installing the upload failed');
         bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
     }
     bs_log($logFile, $label, 200, 'ok (zip: ' . implode(',', array_keys($entries)) . ')');
     bs_send_json(200, ['status' => 'ok', 'files' => array_keys($entries)]);
 }
 
-/** uploaded_at from a microscope folder's meta.json, or null if there is none. */
-function bs_read_uploaded_at(string $micDir): ?string
+/**
+ * Check the extracted upload in $dir. Returns the reason to refuse it (a string), or the
+ * recipe's IDs from bs_recipe_ids() when it is acceptable. It needs recipe.yml and
+ * status.json; status.json must be an object whose "finished" is a boolean; the recipe's
+ * SYSTEM.ID must equal $micId; and the recipe needs a sample.ID, which is only stored,
+ * compared and escaped, so it must just be non-empty valid UTF-8. The messages reach only
+ * an authenticated client.
+ */
+function bs_check_upload(string $dir, string $micId): string|array
 {
-    $meta = json_decode((string) @file_get_contents($micDir . '/meta.json'), true);
-    return is_array($meta) && is_string($meta['uploaded_at'] ?? null) && $meta['uploaded_at'] !== '' ? $meta['uploaded_at'] : null;
+    foreach (BS_ZIP_REQUIRED_NAMES as $name) {
+        if (!is_file($dir . '/' . $name)) {
+            return "the zip must contain $name";
+        }
+    }
+    $status = json_decode((string) file_get_contents($dir . '/status.json'), true);
+    if (!is_array($status) || !is_bool($status['finished'] ?? null)) {
+        return 'status.json must be a JSON object with a boolean "finished"';
+    }
+    $ids = bs_recipe_ids((string) file_get_contents($dir . '/recipe.yml'));
+    if ($ids['micID'] !== $micId) {
+        return 'SYSTEM.ID in recipe.yml does not match microscope_id';
+    }
+    if ($ids['sampleID'] === '') {
+        return 'recipe.yml has no sample ID';
+    }
+    if (preg_match('//u', $ids['sampleID']) !== 1) {
+        return 'the sample ID in recipe.yml is not valid UTF-8';
+    }
+    return $ids;
+}
+
+/**
+ * The IDs a recipe declares, as ['micID' => ..., 'sampleID' => ...] ('' when not found). The
+ * rule, shared with the MATLAB client, is the "rule" in upload_core/tests/recipe_id_vectors.json,
+ * which check_pages.sh runs against this function.
+ */
+function bs_recipe_ids(string $text): array
+{
+    return [
+        'micID' => str_replace(' ', '_', bs_recipe_value($text, 'SYSTEM', 'ID')),
+        'sampleID' => bs_recipe_value($text, 'sample', 'ID'),
+    ];
+}
+
+/**
+ * The value of $key directly under the top-level key $section, in block or flow style, or ''.
+ * A leading UTF-8 BOM is ignored. Recipes are dumped YAML, so this reads them with string
+ * scans rather than a YAML library (which shared hosting may not have).
+ */
+function bs_recipe_value(string $text, string $section, string $key): string
+{
+    $lines = preg_split('/\r?\n/', preg_replace('/^\xEF\xBB\xBF/', '', $text));
+    foreach ($lines as $i => $line) {
+        if (preg_match('/^' . preg_quote($section, '/') . ':[ \t]*(.*)$/', $line, $m)) {
+            $rest = trim($m[1], " \t");
+            if ($rest !== '' && $rest[0] === '{') {
+                return bs_flow_value(substr($rest, 1), $key);
+            }
+            if ($rest === '' || $rest[0] === '#') {
+                return bs_block_value(array_slice($lines, $i + 1), $key);
+            }
+            return '';
+        }
+    }
+    return '';
+}
+
+/** $key from the indented lines after a block-style key: the key at the block's first indent level; the block ends at the first unindented line. */
+function bs_block_value(array $lines, string $key): string
+{
+    $indent = null;
+    foreach ($lines as $line) {
+        if (trim($line, " \t") === '') {
+            continue;
+        }
+        if ($line[0] !== ' ' && $line[0] !== "\t") {
+            break;
+        }
+        $indent ??= substr($line, 0, strspn($line, " \t"));
+        if (preg_match('/^' . preg_quote($indent . $key, '/') . ':[ \t]*(.*)$/', $line, $m)) {
+            return bs_clean_yaml_value($m[1]);
+        }
+    }
+    return '';
+}
+
+/** $key from the text after the opening '{' of a one-line flow mapping: entries end at a comma or the closing brace outside quotes. One pass, however long the line. */
+function bs_flow_value(string $body, string $key): string
+{
+    $n = strlen($body);
+    $pos = 0;
+    $entryStart = 0;
+    while (true) {
+        $pos += strcspn($body, ",}'\"", $pos);
+        $c = $pos < $n ? $body[$pos] : '}';
+        if ($c === '"' || $c === "'") {
+            $close = strpos($body, $c, $pos + 1);
+            if ($close === false) {
+                return '';
+            }
+            $pos = $close + 1;
+            continue;
+        }
+        $entry = substr($body, $entryStart, $pos - $entryStart);
+        if (preg_match('/^[ \t]*' . preg_quote($key, '/') . '[ \t]*:(.*)$/s', $entry, $m)) {
+            return bs_clean_yaml_value($m[1]);
+        }
+        if ($c === '}') {
+            return '';
+        }
+        $entryStart = ++$pos;
+    }
+}
+
+/** A scalar as written after "key:": a trailing ' #' comment dropped, one pair of matching quotes stripped, surrounding white space trimmed. */
+function bs_clean_yaml_value(string $raw): string
+{
+    $v = trim($raw, " \t\r\n");
+    if ($v !== '' && ($v[0] === '"' || $v[0] === "'")) {
+        $close = strpos($v, $v[0], 1);
+        if ($close !== false) {
+            $after = ltrim(substr($v, $close + 1), " \t");
+            if ($after === '' || $after[0] === '#') {
+                return trim(substr($v, 1, $close - 1), " \t\r\n");
+            }
+        }
+    }
+    for ($p = strpos($v, '#'); $p !== false; $p = strpos($v, '#', $p + 1)) {
+        if ($p > 0 && ($v[$p - 1] === ' ' || $v[$p - 1] === "\t")) {
+            $v = substr($v, 0, $p);
+            break;
+        }
+    }
+    return trim($v, " \t\r\n");
+}
+
+/**
+ * Move the files $names from $tmpDir into $dir and write its meta.json. If $sampleId differs
+ * from the folder's stored sample ID (or none is stored) the folder is emptied first; the same
+ * sample merges, keeping files this upload does not contain. On failure the files moved so far
+ * and meta.json are removed, so the folder reads as never uploaded rather than half new.
+ */
+function bs_install_upload(string $tmpDir, string $dir, array $names, string $sampleId): bool
+{
+    $meta = json_encode(['uploaded_at' => gmdate('c'), 'sample_id' => $sampleId]);
+    if ($meta === false || (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir))) {
+        return false;
+    }
+    $existing = scandir($dir);
+    if ($existing === false) {
+        return false;
+    }
+    if (bs_read_meta_field($dir, 'sample_id') !== $sampleId) {
+        @unlink($dir . '/meta.json'); // a half-emptied folder must not claim an upload
+        foreach (array_diff($existing, ['.', '..']) as $old) {
+            if (is_file($dir . '/' . $old) && !unlink($dir . '/' . $old)) {
+                return false;
+            }
+        }
+    }
+    $moved = [];
+    foreach ($names as $name) {
+        if (!rename($tmpDir . '/' . $name, $dir . '/' . $name)) {
+            array_map('unlink', $moved);
+            @unlink($dir . '/meta.json');
+            return false;
+        }
+        $moved[] = $dir . '/' . $name;
+    }
+    if (!bs_atomic_write($dir . '/meta.json', $dir . '/meta.json.tmp', $meta)) {
+        array_map('unlink', $moved);
+        @unlink($dir . '/meta.json');
+        return false;
+    }
+    return true;
+}
+
+/** A string field of a folder's meta.json, or null if there is none. */
+function bs_read_meta_field(string $dir, string $field): ?string
+{
+    $meta = json_decode((string) @file_get_contents($dir . '/meta.json'), true);
+    return is_array($meta) && is_string($meta[$field] ?? null) && $meta[$field] !== '' ? $meta[$field] : null;
 }
 
 // Mirrored by humanAgo() in js/autorefresh.js; tests/web/parity.test.js keeps them identical.
@@ -380,8 +634,9 @@ function bs_human_ago(int $seconds): string
 /**
  * Best-effort extraction of known fields from a BakingTray/ScanImage recipe
  * YAML file. Not a general YAML parser — these recipe files are dumped in a
- * consistent flow-mapping style, so targeted regexes are more robust on
- * shared hosting (no guaranteed yaml extension) than a hand-rolled parser.
+ * consistent style, so targeted regexes are more robust on shared hosting
+ * (no guaranteed yaml extension) than a hand-rolled parser. The sample ID and
+ * objective come from bs_recipe_value(), which reads block and flow style alike.
  * Add more patterns here as new fields become useful; unmatched fields are
  * simply omitted rather than causing an error.
  */
@@ -394,11 +649,11 @@ function bs_parse_recipe(string $path): array
 
     $out = [];
 
-    if (preg_match('/^sample:\s*\{[^}]*\bID:\s*([^,}\s]+)/m', $text, $m)) {
-        $out['sample_id'] = $m[1];
-    }
-    if (preg_match('/^sample:\s*\{[^}]*objectiveName:\s*([^,}]+)/m', $text, $m)) {
-        $out['objective'] = trim($m[1]);
+    foreach (['sample_id' => 'ID', 'objective' => 'objectiveName'] as $field => $key) {
+        $value = bs_recipe_value($text, 'sample', $key);
+        if ($value !== '') {
+            $out[$field] = $value;
+        }
     }
     if (preg_match('/^\s*numSections:\s*([\d.]+)/m', $text, $m)) {
         $out['num_sections'] = (int) round((float) $m[1]);
@@ -516,7 +771,7 @@ function bs_load_mic_data(string $micDir, string $micUrl): array
         'meta_url' => $micUrl . '?f=meta',
         'recipe' => $recipePath !== null ? bs_parse_recipe($recipePath) : [],
         'acquisition' => bs_parse_acqlogs(bs_find_all($micDir, '*cqLog*.txt')),
-        'uploaded_at' => bs_read_uploaded_at($micDir),
+        'uploaded_at' => bs_read_meta_field($micDir, 'uploaded_at'),
     ];
 }
 
@@ -823,7 +1078,7 @@ function bs_handle_view(array $config): never
         bs_render_grid($config, $view, $base);
         exit;
     }
-    $micDir = bs_mic_dir($config, $view['site'], $view['mic']);
+    $micDir = bs_source_dir($config, $view['site'], $view['mic'], 'acq');
     if ($kind === null) {
         bs_render_mic_page($config, $view, $base, $micDir);
         exit;
@@ -891,10 +1146,10 @@ function bs_render_grid(array $config, array $view, string $base): void
 <div class="grid">
 <?php foreach ($site['microscopes'] as $micId => $mic):
     $micUrl = bs_mic_url($base, $view, $siteId, $micId);
-    $data = bs_load_mic_data(bs_mic_dir($config, $siteId, $micId), $micUrl);
+    $data = bs_load_mic_data(bs_source_dir($config, $siteId, $micId, 'acq'), $micUrl);
     [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter);
     $name = bs_name($mic, $micId);
-    $sampleId = $data['recipe']['sample_id'] ?? null;
+    $sampleId = $data['recipe']['sample_id'] ?? '';
     ?>
   <a class="card<?= $isStale ? ' stale' : '' ?>" href="<?= htmlspecialchars($micUrl) ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
     <?php if ($data['main_image_url'] !== null): ?>
@@ -904,7 +1159,7 @@ function bs_render_grid(array $config, array $view, string $base): void
     <?php endif; ?>
     <div class="meta">
       <div class="name"><?= htmlspecialchars($name) ?></div>
-      <?php if ($sampleId): ?><div class="sample">Sample: <?= htmlspecialchars($sampleId) ?></div><?php endif; ?>
+      <?php if ($sampleId !== ''): ?><div class="sample">Sample: <?= htmlspecialchars($sampleId) ?></div><?php endif; ?>
       <div class="updated"><?php if ($ago !== null): ?><span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>never uploaded<?php endif; ?></div>
     </div>
   </a>
@@ -1013,7 +1268,7 @@ function bs_render_mic_page(array $config, array $view, string $base, string $mi
 
   <div class="side-col">
     <table class="meta-table">
-      <?php if (!empty($recipe['sample_id'])): ?><tr><td>Sample</td><td><?= htmlspecialchars($recipe['sample_id']) ?></td></tr><?php endif; ?>
+      <?php if (($recipe['sample_id'] ?? '') !== ''): ?><tr><td>Sample</td><td><?= htmlspecialchars($recipe['sample_id']) ?></td></tr><?php endif; ?>
       <?php if (!empty($recipe['objective'])): ?><tr><td>Objective</td><td><?= htmlspecialchars($recipe['objective']) ?></td></tr><?php endif; ?>
       <?php if (isset($recipe['laser_power_percent'])): ?><tr><td>Laser power</td><td><?= htmlspecialchars((string) $recipe['laser_power_percent']) ?>%</td></tr><?php endif; ?>
       <?php if (!empty($recipe['voxel_size_um'])): ?>

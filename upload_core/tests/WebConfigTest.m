@@ -1,6 +1,6 @@
 classdef WebConfigTest < matlab.unittest.TestCase
     % Tests for webupload.webConfig (loading, validation and token protection) and the
-    % extension whitelist.
+    % file-name whitelist.
 
     properties
         Dir
@@ -224,15 +224,15 @@ classdef WebConfigTest < matlab.unittest.TestCase
         end
 
         % ---- not config ----
-        function extensionWhitelistMatchesServer(tc)
+        function nameWhitelistMatchesServer(tc)
             libFile = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'brainsaw', 'lib.php');
             tc.assumeTrue(isfile(libFile), 'brainsaw/lib.php not present');
             txt = fileread(libFile);
-            list = regexp(txt, 'BS_ZIP_ALLOWED_EXTENSIONS\s*=\s*\[([^\]]*)\]', 'tokens', 'once');
-            tc.assertNotEmpty(list, 'BS_ZIP_ALLOWED_EXTENSIONS not found in lib.php');
-            serverExts = regexp(list{1}, '''([^'']+)''', 'tokens');
-            serverExts = cellfun(@(c) c{1}, serverExts, 'UniformOutput', false);
-            tc.verifyEqual(sort(webupload.allowedExtensions()), sort(serverExts));
+            list = regexp(txt, 'BS_ZIP_ALLOWED_NAMES\s*=\s*\[([^\]]*)\]', 'tokens', 'once');
+            tc.assertNotEmpty(list, 'BS_ZIP_ALLOWED_NAMES not found in lib.php');
+            serverNames = regexp(list{1}, '''([^'']+)''', 'tokens');
+            serverNames = cellfun(@(c) c{1}, serverNames, 'UniformOutput', false);
+            tc.verifyEqual(sort(webupload.allowedNames()), sort(serverNames));
         end
     end
 

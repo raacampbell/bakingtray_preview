@@ -97,7 +97,7 @@ classdef PostZipTest < matlab.unittest.TestCase
 
         function zipAndPostPassesIDsAndSourceThrough(tc)
             [srv, cfg] = tc.listeningServer('responseTimeout', 2, 'dataTimeout', 2);
-            fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
+            fid = fopen(fullfile(tc.Dir, 'acqLog.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
             webupload.zipAndPost(tc.Dir, cfg, 'mic_1', 'acq');
             request = PostZipTest.readRequest(srv);
             tc.verifyNotEmpty(regexp(request, 'name="?microscope_id"?\s+mic_1', 'once'));
