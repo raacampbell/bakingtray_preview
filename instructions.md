@@ -20,6 +20,7 @@ brainsaw/
   tokens.json                # site_id -> token + display_name (SECRET)
   js/
     jquery.imageLens.js       # magnifier lens plugin (duplicated from brainsaw.mouse.vision)
+    autorefresh.js             # polls meta.json, reloads on change, live "ago"/stale (inlined by lib.php)
   system_data/                 # one subdir per site_id, created automatically
     .htaccess                   # blocks execution + directory listing
     demo_site/                   # pre-populated demo data (see §5.1) — safe to delete
@@ -45,6 +46,9 @@ brainsaw/
     upload_data_client.py             # zip-based system_data client (Python) — recommended
     upload_data_client.sh              # zip-based system_data client (curl/MATLAB) — recommended
 ```
+
+Automated tests live in `tests/web/` at the repo root, not in `brainsaw/`
+(which is deployed whole); see §3 for how to run them.
 
 `upload.php` / `index.php` / `site.php` are thin: all real logic is in
 `lib.php`, driven by the `$config` array each deployment's `config.php`
@@ -226,8 +230,24 @@ the implementation returns, not aspirational.
 
 `config.php`'s `stale_after_seconds` (default 900 = 15 min) controls when a
 site's card turns red. To see it without waiting 15 minutes, temporarily
-lower it (e.g. to `10`), upload once, then wait 10s and reload — don't ship
-that change.
+lower it (e.g. to `10`), upload once, and watch the page: it turns red
+within one poll (at most 5 s) after the threshold is exceeded, with no
+reload. Don't ship that config change. How this works: see §11.
+
+### Testing auto-refresh
+
+With the dev server running, open the landing page and a site page, upload
+with the simulator or curl (see the test matrix), and both should update
+within ~5 s with no manual reload. Switch to another tab and back: a change
+made while away shows immediately on return. Mechanism: §11.
+
+Automated checks, run from the repo root (they live in `tests/web/`, outside
+`brainsaw/`, so they are not deployed; they need `node` 18+ and `php`):
+
+```bash
+node --test tests/web/          # JS logic, control flow, PHP/JS ago-format parity
+tests/web/check_pages.sh        # renders the pages from a temp copy; optional port argument
+```
 
 ---
 
@@ -447,6 +467,43 @@ of these — edit both if you want the same limits in both places.
   (minutes) against section number, parsed from every `acqLog*.txt` file
   present by `bs_parse_acqlogs()`. Multiple log files for one site are
   merged and de-duplicated by section number. The dashed line is the mean.
+
+### Auto-refresh and "last updated"
+
+`bs_watch_attrs()` puts `data-meta-url`, `data-uploaded-at` and
+`data-stale-after` on each landing-page card and on the site page's status
+line; `<body data-server-now>` carries the server clock. `js/autorefresh.js`
+(the single source, inlined into both pages by `bs_autorefresh_script()` so
+`test-upload/` needs no copy):
+
+- polls those meta URLs every 5 s (each fetch aborted after 4 s) and reloads
+  when any `uploaded_at` changed (including none to some). Errors and 404s
+  count as "no change". A 404 is silent (it is the normal state of a site
+  that has never uploaded); any other failure logs one console warning per
+  URL and failure kind. A per-URL `sessionStorage` guard stops a reload loop
+  if the page still differs after reloading for the same value. If
+  `sessionStorage` is unreadable or not writable the guard is off, which is
+  reported by one console warning the first time a change would trigger a
+  reload.
+- recomputes the "X ago" text and the red stale styling every 5 s, using the
+  same wording and threshold as `bs_human_ago()` and the server's stale
+  rule, measured against the server clock so a wrong client clock does not
+  matter.
+- pauses while the tab is hidden and polls at once when it is shown again
+  (if a poll is already running, one more runs right after it).
+
+The clock offset is measured once, when the script runs, so "ago" can read a
+second or two low until the next reload.
+
+The script never builds URLs itself, so changing the data folder layout only
+affects the PHP that emits the attributes. Pages are sent with
+`Cache-Control: no-store`. If `js/autorefresh.js` is missing or unreadable,
+the page logs an error and falls back to an unconditional 60 s meta refresh;
+with JavaScript off a `<noscript>` 60 s meta refresh is used.
+
+Known limitation: a site added to `tokens.json` appears on the landing page
+only after a manual reload, because the page only watches the sites it was
+rendered with.
 
 ---
 
