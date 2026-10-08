@@ -28,8 +28,8 @@ function zipPath = zipFolder(dirPath)
     names = webupload.selectUploadable(dirPath);
     if isempty(names)
         error('webpreview:noFiles', ...
-            'No files with a recognised extension (%s) in %s', ...
-            strjoin(webupload.allowedExtensions(), ' '), dirPath);
+            'No files with an uploadable name (%s) in %s', ...
+            strjoin(webupload.allowedNames(), ' '), dirPath);
     end
 
     lim = webupload.serverLimits();

@@ -21,9 +21,9 @@ classdef ZipFolderTest < matlab.unittest.TestCase
     end
 
     methods (Test)
-        function keepsOnlyRecognisedExtensions(tc)
-            keep = {'a.jpg', 'b.JPEG', 'c.png', 'd.txt', 'e.yml', 'f.yaml', 'g.json', 'h.csv', 'i.log'};
-            drop = {'evil.php', '.htaccess', 'raw.tif', 'noext'};
+        function keepsOnlyTheAllowedNames(tc)
+            keep = webupload.allowedNames();
+            drop = {'evil.php', '.htaccess', 'raw.tif', 'noext', 'recipe_old.yml'};
             ZipFolderTest.touch(tc.Dir, [keep, drop]);
 
             zipPath = webupload.zipFolder(tc.Dir);
@@ -33,38 +33,31 @@ classdef ZipFolderTest < matlab.unittest.TestCase
         end
 
         function dotfilesAreSkippedEvenWithGoodExtension(tc)
-            ZipFolderTest.touch(tc.Dir, {'.hidden.txt', '.env.json', 'ok.txt'});
-            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'ok.txt'});
-        end
-
-        function bracketNamesAreKept(tc)
-            ZipFolderTest.touch(tc.Dir, {'a[1].txt', 'a1.txt'});
-            zipPath = webupload.zipFolder(tc.Dir);
-            tc.addTeardown(@() delete(zipPath));
-            tc.verifyEqual(sort(ZipFolderTest.listZip(zipPath)), {'a1.txt'; 'a[1].txt'});
+            ZipFolderTest.touch(tc.Dir, {'.recipe.yml', '.status.json', 'status.json'});
+            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'status.json'});
         end
 
         function wildcardNamesAreSkipped(tc)
             % '*' and '?' are illegal in Windows file names; only test where possible.
             tc.assumeFalse(ispc);
-            ZipFolderTest.touch(tc.Dir, {'we*ird.txt', 'we?ird.txt', 'ok.txt'});
-            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'ok.txt'});
+            ZipFolderTest.touch(tc.Dir, {'we*ird.txt', 'we?ird.txt', 'status.json'});
+            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'status.json'});
         end
 
         function zipIsFlatAndIgnoresSubfolders(tc)
-            ZipFolderTest.touch(tc.Dir, {'top.txt'});
+            ZipFolderTest.touch(tc.Dir, {'montage.jpg'});
             sub = fullfile(tc.Dir, 'sub');
             mkdir(sub);
-            ZipFolderTest.touch(sub, {'nested.txt'});
+            ZipFolderTest.touch(sub, {'recipe.yml'});
 
             zipPath = webupload.zipFolder(tc.Dir);
             tc.addTeardown(@() delete(zipPath));
 
-            tc.verifyEqual(ZipFolderTest.listZip(zipPath), {'top.txt'});
+            tc.verifyEqual(ZipFolderTest.listZip(zipPath), {'montage.jpg'});
         end
 
         function zipEndsInDotZipAndExists(tc)
-            ZipFolderTest.touch(tc.Dir, {'a.txt'});
+            ZipFolderTest.touch(tc.Dir, {'status.json'});
             zipPath = webupload.zipFolder(tc.Dir);
             tc.addTeardown(@() delete(zipPath));
             tc.verifyTrue(endsWith(zipPath, '.zip'));
@@ -83,13 +76,6 @@ classdef ZipFolderTest < matlab.unittest.TestCase
         function missingDirErrors(tc)
             tc.verifyError(@() webupload.zipFolder(fullfile(tc.Dir, 'nope')), ...
                 'webpreview:noSuchFolder');
-        end
-
-        function tooManyFilesErrorsBeforeZipping(tc)
-            lim = webupload.serverLimits();
-            names = arrayfun(@(k) sprintf('f%d.txt', k), 1:lim.maxEntries + 1, 'UniformOutput', false);
-            ZipFolderTest.touch(tc.Dir, names);
-            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webpreview:tooManyFiles');
         end
     end
 
