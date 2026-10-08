@@ -37,9 +37,9 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             writeText(tc.Recipe, sprintf(['Acquisition: {acqStartTime: ''2019/12/09 12:03:50''}\n' ...
                 'sample: {ID: REALSAMPLE, objectiveName: real objective 16x}\nmosaic:\n  numSections: 289.0\n']));
             tc.Config = fullfile(tc.Dir, 'config.json');
-            writeText(tc.Config, '{"url":"https://x.example/brainsaw/test-upload/upload.php","siteID":"sim-1","token":"TOK"}');
+            writeText(tc.Config, '{"url":"https://x.example/brainsaw/test-upload/upload.php","siteID":"sim-1","micID":"sim-mic","token":"TOK"}');
             tc.ProdConfig = fullfile(tc.Dir, 'prod.json');
-            writeText(tc.ProdConfig, '{"url":"https://x.example/brainsaw/upload.php","siteID":"sim-1","token":"TOK"}');
+            writeText(tc.ProdConfig, '{"url":"https://x.example/brainsaw/upload.php","siteID":"sim-1","micID":"sim-mic","token":"TOK"}');
             tc.PosterStatus = NaN;
             tc.PosterCalls = 0;
             tc.StageSeen = zeros(0, 2);
@@ -219,7 +219,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             out = simulate.simulatedRecipeText(fileread(tc.Recipe), 3, tc.T0);
             tc.verifyEmpty(strfind(out, 'REALSAMPLE'));
             tc.verifyEmpty(strfind(out, 'real objective'));
-            id = regexp(out, '^sample:\s*\{[^}]*\bID:\s*([^,}\s]+)', 'tokens', 'once', 'lineanchors');   % as bs_parse_recipe
+            id = regexp(out, '^sample:\s*\{[^}]*\<ID:\s*([^,}\s]+)', 'tokens', 'once', 'lineanchors');   % as bs_parse_recipe
             obj = regexp(out, '^sample:\s*\{[^}]*objectiveName:\s*([^,}]+)', 'tokens', 'once', 'lineanchors');
             tc.verifyEqual(id{1}, 'SIMULATED');
             tc.verifyEqual(strtrim(obj{1}), 'simulated objective');
@@ -280,7 +280,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             tc.verifyTrue(isfile(r.recipePath));
         end
 
-        function loggedTimesAreNeverInTheFutureAndFinishedEqualsStartPlusDuration(tc)
+        function loggedTimesNeverInFutureAndFinishedIsStartPlusDuration(tc)
             [startRe, finishRe] = serverRegexes();
             r = tc.dry('NumSections', 3);
             now0 = datetime('now');
@@ -462,7 +462,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         function cfg = configWithUrl(tc, url)
             % Write a config file whose url is the one given; return its path.
             cfg = tempname(tc.Dir);
-            writeText(cfg, sprintf('{"url":"%s","siteID":"sim-1","token":"TOK"}', url));
+            writeText(cfg, sprintf('{"url":"%s","siteID":"sim-1","micID":"sim-mic","token":"TOK"}', url));
         end
 
         function r = dry(tc, varargin)

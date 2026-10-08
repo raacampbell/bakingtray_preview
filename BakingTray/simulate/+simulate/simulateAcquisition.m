@@ -79,8 +79,10 @@ function result = simulateAcquisition(varargin)
     spec = simulate.simulationSpec();
     checkOptions(opts);
 
+    cfg = [];   % a dry run builds its own throwaway config in chooseBackend
     if ~opts.DryRun
-        checkTarget(char(opts.ConfigFile), opts.AllowProduction, spec);
+        cfg = webpreview.webConfig(char(opts.ConfigFile));
+        checkTarget(cfg, opts.AllowProduction, spec);
         if opts.Interval<spec.MinInterval
             warning('simulate:simulateAcquisition:fastInterval', ...
                 ['Interval %g s is below the server rate limit of %g s; ', ...
@@ -93,7 +95,7 @@ function result = simulateAcquisition(varargin)
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     % Set up the work folder, the poster and the files the acquisition will write
     workDir = prepareWorkDir(opts.WorkDir);
-    backend = chooseBackend(opts, spec, workDir);
+    backend = chooseBackend(opts, spec, workDir, cfg);
     files = struct('recipe', '', 'log', fullfile(workDir, spec.LogName), ...
         'stageRoot', fullfile(workDir, 'stage'));
     N = opts.NumSections;
@@ -213,13 +215,12 @@ function checkOptions(opts)
 end %checkOptions
 
 
-function checkTarget(configFile,allowProduction,spec)
+function checkTarget(cfg,allowProduction,spec)
     % Refuse to upload fake data to a url that is not known to be a test site. Only the url
     % is inspected, never the token.
     %
-    % function checkTarget(configFile,allowProduction,spec)
+    % function checkTarget(cfg,allowProduction,spec)
 
-    cfg = webpreview.loadConfig(configFile);
     if ~allowProduction && ~isTestUrl(cfg.url, spec.CanaryMarker)
         error('simulate:simulateAcquisition:productionUrl', ...
             ['config url "%s" is neither a localhost url nor contains "%s"; refusing to ', ...
@@ -264,21 +265,22 @@ function workDir = prepareWorkDir(requested)
 end %prepareWorkDir
 
 
-function backend = chooseBackend(opts,spec,workDir)
-    % Choose the poster and config file
+function backend = chooseBackend(opts,spec,workDir,cfg)
+    % Choose the poster and config object
     %
-    % function backend = chooseBackend(opts,spec,workDir)
+    % function backend = chooseBackend(opts,spec,workDir,cfg)
     %
-    % Dry run: fake poster and a throwaway config file (updateSectionImage always
-    % reads one). Real run: the given Poster (default zipAndPost) and ConfigFile.
+    % Dry run: fake poster and a throwaway config (updateSectionImage always needs one).
+    % Real run: the given Poster (default zipAndPost) and the webConfig built from ConfigFile.
 
-    backend = struct('poster', [], 'configFile', char(opts.ConfigFile), 'recorder', []);
+    backend = struct('poster', [], 'cfg', cfg, 'recorder', []);
     if opts.DryRun
         recorder = simulate.FakePoster();
         backend.recorder = recorder;
         backend.poster = @recorder.post;
-        backend.configFile = fullfile(workDir, 'dryrun_config.json');
-        writeLines(backend.configFile, {jsonencode(spec.DryRunConfig)}, 'w');
+        configFile = fullfile(workDir, 'dryrun_config.json');
+        writeLines(configFile, {jsonencode(spec.DryRunConfig)}, 'w');
+        backend.cfg = webpreview.webConfig(configFile);
     elseif isempty(opts.Poster)
         backend.poster = @webpreview.zipAndPost;
     else
@@ -333,7 +335,7 @@ function sec = runSection(k,N,startTime,loggedSec,files,backend)
     writeLines(files.log, simulate.simulatedLogLines(k,N,startTime,loggedSec), 'a');
     [img,montage] = simulate.simulatedImages(k,N);
     update = webpreview.updateSectionImage(img, files.recipe, files.log, ...
-        'ConfigFile', backend.configFile, 'Montage', montage, ...
+        backend.cfg, 'Montage', montage, ...
         'Poster', backend.poster, 'StageRoot', files.stageRoot, 'ClearStage', k==1);
     sec = struct('section', k, 'startTime', startTime, 'durationSec', loggedSec, ...
         'ok', update.ok, 'httpStatus', update.post.httpStatus, ...

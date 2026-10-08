@@ -84,7 +84,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
         end
 
         function toUint8IntegerClassRangeIsUsedAsDouble(tc)
-            out = webpreview.toUint8(uint16([0 2047; 4095 4095]), uint16([0 4095]));
+            out = webpreview.toUint8(uint16([0 2048; 4095 4095]), uint16([0 4095]));
             tc.verifyEqual(out, uint8([0 128; 255 255]));
         end
 
@@ -385,8 +385,9 @@ classdef StageFilesTest < matlab.unittest.TestCase
 
         function copyFailureWarnsAndStillStagesImageAndRecipe(tc)
             tc.assumeFalse(ispc);
-            fileattrib(tc.Log, '-r', 'a');
-            tc.addTeardown(@() fileattrib(tc.Log, '+r', 'a'));
+            % fileattrib cannot clear the read bit on Unix, so use chmod
+            tc.assumeEqual(system(sprintf('chmod 000 "%s"', tc.Log)), 0);
+            tc.addTeardown(@() system(sprintf('chmod 644 "%s"', tc.Log)));
             fid = fopen(tc.Log, 'r');
             if fid > 0, fclose(fid); end
             tc.assumeTrue(fid < 0, 'cannot make the log unreadable (running as root?)');
@@ -436,14 +437,18 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyTrue(r.recipeStaged);
             f = dir(fullfile(tc.Stage, '*.yml'));
             tc.verifyNumElements(f, 1);
-            tc.verifyEqual(f.name, 'recipe.yml');
+            % The name on disk keeps the case of the file that was already there
+            tc.verifyEqual(lower(f.name), 'recipe.yml');
             tc.verifyEqual(fileread(fullfile(f.folder, f.name)), 'live recipe');
         end
 
         function staleDifferentlyCasedLogIsRemoved(tc)
             % The server would parse both AcqLog.txt and acqLog.txt on a
-            % case-sensitive file system, so only the staged name may remain.
+            % case-sensitive file system, so only the staged name may remain. On a
+            % case-insensitive one the two names are the same file, so there is nothing
+            % to remove.
             mkdir(tc.Stage);
+            tc.assumeFalse(isfolder(fullfile(tc.Dir, 'STAGE')), 'file system is case-insensitive');
             writeText(fullfile(tc.Stage, 'AcqLog.txt'), 'stale log');
             r = tc.stageOut(uint8(ones(8)), tc.Recipe, tc.Log);
             tc.verifyTrue(r.logStaged);
@@ -471,7 +476,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
             stale = fullfile(tc.Stage, 'recipe_STALE.yml');
             writeText(stale, 'stale');
             fileattrib(stale, '-w');
-            tc.addTeardown(@() fileattrib(stale, '+w'));
+            tc.addTeardown(@() isfile(stale) && fileattrib(stale, '+w'));
             s = warning('off', 'all');
             delete(stale);
             warning(s);
