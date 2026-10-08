@@ -1,7 +1,7 @@
 ---
 type: infrastructure
 complexity: complex
-status: in review
+status: done
 ---
 
 # Sites with microscopes, private site views and a hidden all-sites view
