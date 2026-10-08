@@ -88,9 +88,12 @@ and the same body, so probing cannot tell a real word from a made-up one. No vie
 the code, `.htaccess` or any served file.
 
 Images and meta come through the view, never from `system_data/` directly:
-`<microscope page URL>?f=main` (latest section image), `?f=montage`, `?f=meta` (meta.json,
-`Cache-Control: no-store`). The view re-checks that its word may see that microscope; recipe
-and log files are never servable (a recipe can hold a pasted secret such as a Slack webhook).
+`<microscope page URL>?f=main` (the main image), `?f=bakingtray` (the BakingTray image),
+`?f=montage` (the StitchIt montage), `?f=meta` (a small JSON with the
+`version` that auto-refresh polls, `Cache-Control: no-store`). The view re-checks that its word
+may see that microscope; only files the display rule (§5) shows are served, and anything else,
+such as a hidden `analysis/` image, gets the same 404 as any missing page. Recipe and log files
+are never servable (a recipe can hold a pasted secret such as a Slack webhook).
 
 Every view response carries `Referrer-Policy: no-referrer` and `X-Robots-Tag: noindex,
 nofollow`, and the HTML has a robots `noindex` meta tag, so view URLs do not leak through
@@ -123,8 +126,8 @@ Requires PHP 8.1+ with the `zip` extension (`php -m | grep zip`). On macOS: `bre
    the command (never `0.0.0.0` or a LAN address).
 3. Open `http://localhost:8000/<SITE_ID>`: one card per microscope, reading "no image yet".
    To see a full page without a microscope, either run the simulator
-   (`BakingTray/simulate/README.md`) or copy the four files from `test_images/` into
-   `brainsaw/system_data/<SITE_ID>/<MIC_ID>/acq/` (git-ignored). The views read `acq/`.
+   (`BakingTray/simulate/README.md`), or upload one of the zips described in §5. The data
+   lands in `brainsaw/system_data/<SITE_ID>/<MIC_ID>/<source>/` (git-ignored).
 
 For large real zips add `-d upload_max_filesize=250M -d post_max_size=250M` before `-S`:
 Homebrew's defaults (2M/8M) are below the app's limits, and PHP silently drops all form fields
@@ -170,11 +173,14 @@ settings file with random words, IDs and tokens (two sites with one token each, 
 including one named `logs`, a panopticon word), serves it with `php -S ... router.php` under a sub-folder, and
 checks the views, the identical 404s (status, headers and body, GET and HEAD), the asset
 route, direct-access refusals, the URL base, uploads, logging, rate limits, settings
-validation, headers and the auto-refresh wiring.
+validation, headers and the auto-refresh wiring. It also covers the display rule (§5): acq
+alone, acq with matching and with non-matching analysis, analysis alone, the finished flag
+(including that analysis never sets or clears it), staleness, an `acq/` whose `meta.json` is
+missing or corrupt, and which assets are served.
 
 ## 5. What gets uploaded
 
-A zip from the MATLAB client (or, later, StitchIt), fields `site_id`, `microscope_id`,
+A zip from BakingTray (source `acq`) or StitchIt (source `analysis`), fields `site_id`, `microscope_id`,
 `source` (`acq` or `analysis`) and `data`, with the **site's** token. Each source has its own
 folder, `system_data/<site_id>/<microscope_id>/<source>/`.
 
@@ -195,14 +201,33 @@ sample ID differs from the stored one (or none is stored) the source folder is e
 the same sample merges, so files not in the upload stay. `acq/` and `analysis/` are independent:
 neither empties or rate-limits the other. `logs/upload.log` records `site/microscope/source`.
 
-The views read `acq/`, finding files by glob:
+### Which sources a view shows
 
-| What | Pattern (newest wins unless noted) | Used for |
+- The `acq/` folder exists: it is the ground truth for the image, recipe table, log chart,
+  status and freshness. It stays the ground truth even while its `meta.json` is being
+  rewritten, missing or unreadable (then the problem is logged and `analysis/` is hidden).
+  `analysis/` is shown in addition only if both folders store the same non-empty `sample_id`;
+  otherwise it is hidden, and so are its files.
+- No `acq/` folder: `analysis/`, once it holds an upload (`meta.json` with `uploaded_at`), is
+  shown alone as the ground truth (a BakingTray that does not upload yet).
+
+Files are found by their fixed names:
+
+| File | Source | Used for |
 |---|---|---|
-| Main section image | `LastCompleteSection*.jp*g` | main image + magnifier, card thumbnail |
-| Montage | `*[Mm]ontage*.jp*g` | montage link |
-| Recipe | `*ecipe*.y*ml` | sample, objective, laser power, resolution, ... |
-| Acquisition log(s) | `*cqLog*.txt` (all, merged) | timing chart, progress, ETA estimate |
+| `LastCompleteSection.jpg` | `acq/` | the BakingTray image: main image when there is no StitchIt image, otherwise a thumbnail; the card thumbnail |
+| `LastCompleteSection.jpg` | `analysis/` | the StitchIt image: the large main image (the card thumbnail when there is no `acq/`) |
+| `montage.jpg` | `analysis/` | the montage thumbnail. A `montage.jpg` in `acq/` is stored but not shown |
+| `recipe.yml` | ground truth | sample, objective, laser power, resolution, ... |
+| `acqLog.txt` | ground truth | timing chart, progress, ETA estimate |
+| `status.json` | ground truth | finished flag |
+
+**Finished.** Finished is the `finished` of the ground truth's `status.json` alone: `acq/`, or
+`analysis/` when it is shown alone. A hidden or additional `analysis/` upload never sets or
+clears it, so a StitchIt upload after BakingTray's end upload changes the images but leaves the
+state finished; only a new `acq` upload with `finished` false (a resume) clears it. When it is
+finished the card and the page say "finished", the card is not drawn stale (staleness is the
+ground truth's age) and the page shows no estimated completion.
 
 ## 6. Adding and removing sites and microscopes
 
@@ -233,25 +258,37 @@ site ID (and move its data folder) or remove the site. A new site ID also means 
 
 ## 8. The microscope page
 
-- **Main image + magnifier**: the newest `LastCompleteSection*.jpg`, with a hover lens.
-- **Montage link**: opens the montage in a new tab.
+- **Main image + magnifier**: the StitchIt image when a matching `analysis/` is shown, else the
+  BakingTray image, with a hover lens.
+- **Thumbnails** (only when a matching `analysis/` is shown): below the main image, the
+  BakingTray image and the StitchIt montage. Clicking one opens it full size in a new tab.
+- **Status line**: "Finished" when the acquisition is finished, then "Last updated X ago"
+  (of the ground-truth source), and the section being acquired.
 - **Metadata table**: parsed from the recipe by `bs_parse_recipe()` (targeted regexes, no YAML
   extension needed; extend the list there for new fields).
 - **Estimated completion**: mean section duration so far × sections remaining, labelled
   "(estimated)".
-- **Acquisition-time chart**: inline SVG (no JS library) of minutes per section from every
-  `acqLog*.txt`, merged by section number; the dashed line is the mean.
+- **Acquisition-time chart**: inline SVG (no JS library) of minutes per section from
+  `acqLog.txt`; the dashed line is the mean.
+
+A card shows the BakingTray image (the `analysis/` image when there is no `acq/`), the sample,
+"finished" when it is, and how long ago the ground truth was uploaded. It turns red past
+`stale_after_seconds` unless the acquisition is finished.
 
 ### Auto-refresh and "last updated"
 
-`bs_watch_attrs()` puts `data-meta-url` (the microscope's `?f=meta` URL), `data-uploaded-at`
-and `data-stale-after` on each card and on the microscope page's status line; `<body
-data-server-now>` carries the server clock. `js/autorefresh.js`, inlined into every view page:
+`bs_watch_attrs()` puts `data-meta-url` (the microscope's `?f=meta` URL), `data-version` (every
+shown source and its `uploaded_at`, so an upload to either source or a change in which sources
+are shown changes it), `data-uploaded-at` (the ground truth's, for "ago" and stale),
+`data-finished` and `data-stale-after` on each card and on the microscope page's status line;
+`<body data-server-now>` carries the server clock. `js/autorefresh.js`, inlined into every view
+page:
 
 - polls those meta URLs every 5 s (each fetch aborted after 4 s) and reloads when any
-  `uploaded_at` changed. A 404 (a microscope that has never uploaded) is silent; other failures
+  `version` changed. A 404 (a microscope that has never uploaded) is silent; other failures
   log one console warning per URL and kind. A per-URL `sessionStorage` guard stops reload loops.
-- recomputes the "X ago" text and the stale styling every 5 s against the server clock.
+- recomputes the "X ago" text and the stale styling every 5 s against the server clock; a
+  finished acquisition is never styled stale.
 - pauses while the tab is hidden and polls at once when it is shown again.
 
 If `js/autorefresh.js` is missing the page falls back to a 60 s meta refresh; with JavaScript

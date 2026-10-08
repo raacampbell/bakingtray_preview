@@ -1,7 +1,7 @@
 ---
 type: infrastructure
 complexity: complex
-status: in progress
+status: in review
 ---
 
 <!-- status: todo | in progress | in review | done | blocked |
@@ -16,7 +16,8 @@ The server accepts uploads from two sources, `acq` (BakingTray, ground truth) an
 - No `acq/`: `analysis/` alone (a BakingTray that is not upgraded).
 - Microscope page with matching `analysis/` data: the StitchIt image (`LastCompleteSection.jpg` from analysis) is the large main image; below it, largish thumbnails of the BakingTray image and the StitchIt montage (`montage.jpg`), each enlarging on click. Without matching analysis data the page is as before (BakingTray image, magnifier, no montage).
 - Card thumbnail: the BakingTray image (the `analysis/` image when there is no `acq/`).
-- Finished: the status shown is the newest (by `uploaded_at`) among the displayed sources' `status.json`. When finished, the card and the page say "finished" and the card is not drawn as stale. A later non-finished upload (resume) removes it.
+- Finished comes from the ground-truth source only (PI decision): `acq/status.json`, or `analysis/status.json` when analysis is shown alone. `analysis/` never sets or clears it, so a later StitchIt upload leaves the state finished; only a new `acq` upload with `finished: false` (a resume) clears it. When finished, the card and the page say "finished", the card is not drawn as stale and the page shows no estimated completion.
+- `acq/` is the ground truth as soon as its folder exists, so an install in progress or a damaged `meta.json` never lets a hidden `analysis/` take its place; unreadable `meta.json` or `status.json` files are logged and the view still renders.
 - Freshness and auto-refresh: staleness comes from the ground-truth source (`acq/`, or `analysis/` when shown alone). The page auto-refreshes when either displayed source changes (update `js/autorefresh.js` and the endpoint it polls, and its node test).
 - Assets (`?f=`): only files that the display rule shows are served. A hidden `analysis/` image or montage gives the same 404 as any missing page. The recipe and log are never served. Path-traversal protection stays.
 - Remove what the fixed names made obsolete: the newest-file globs for the main image, recipe and log, and any now-unused helpers or constants (check `serverLimits.maxEntries` and its PHP counterpart; remove if unused, in both places, keeping the parity test coherent).
