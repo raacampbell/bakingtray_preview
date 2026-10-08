@@ -326,6 +326,7 @@ function bs_write_meta(string $metaPath, string $siteDir): void
     bs_atomic_write($metaPath, $metaTmpPath, $metaContents);
 }
 
+// Mirrored by humanAgo() in js/autorefresh.js; tests/web/parity.test.js keeps them identical.
 function bs_human_ago(int $seconds): string
 {
     if ($seconds < 60) {
@@ -644,10 +645,32 @@ function bs_watch_attrs(array $data, int $staleAfter): string
     );
 }
 
-/** The auto-refresh script, inlined so every deployment shares one copy. */
-function bs_autorefresh_script(): string
+/**
+ * Source of the auto-refresh script, or null (and a log line) if it cannot be
+ * read, so a missing file degrades to a plain timed page refresh instead of an
+ * empty <script>.
+ */
+function bs_autorefresh_js(): ?string
 {
-    return '<script>' . file_get_contents(__DIR__ . '/js/autorefresh.js') . '</script>';
+    $js = @file_get_contents(__DIR__ . '/js/autorefresh.js');
+    if ($js === false || $js === '') {
+        error_log('brainsaw: js/autorefresh.js is missing or unreadable; pages fall back to a meta refresh');
+        return null;
+    }
+    return $js;
+}
+
+/** <head> refresh tag: only a no-JS fallback when the script is inlined, unconditional when it is not. */
+function bs_autorefresh_head(?string $js): string
+{
+    $meta = '<meta http-equiv="refresh" content="60">';
+    return $js === null ? $meta : '<noscript>' . $meta . '</noscript>';
+}
+
+/** The auto-refresh script, inlined so every deployment shares one copy. */
+function bs_autorefresh_script(?string $js): string
+{
+    return $js === null ? '' : '<script>' . $js . '</script>';
 }
 
 /**
@@ -657,7 +680,7 @@ function bs_autorefresh_script(): string
 function bs_render_viewer(array $config): void
 {
     $tokens = bs_load_tokens($config['tokens_file']);
-    $staleAfter = $config['stale_after_seconds'] ?? 900;
+    $staleAfter = (int) ($config['stale_after_seconds'] ?? 900);
 
     $sites = [];
     foreach ($tokens as $siteId => $info) {
@@ -666,6 +689,8 @@ function bs_render_viewer(array $config): void
     ksort($sites);
 
     header('Content-Type: text/html; charset=utf-8');
+    header('Cache-Control: no-store');
+    $autorefreshJs = bs_autorefresh_js();
     ?>
 <!doctype html>
 <html lang="en">
@@ -673,10 +698,10 @@ function bs_render_viewer(array $config): void
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brainsaw — Live Section Preview</title>
-<noscript><meta http-equiv="refresh" content="60"></noscript>
+<?= bs_autorefresh_head($autorefreshJs) ?>
 <style><?= BS_PAGE_STYLE ?></style>
 </head>
-<body>
+<body data-server-now="<?= time() ?>">
 <h1>Brainsaw — Live Section Preview</h1>
 <div class="grid">
 <?php foreach ($sites as $siteId => $displayName):
@@ -707,7 +732,7 @@ function bs_render_viewer(array $config): void
   </a>
 <?php endforeach; ?>
 </div>
-<?= bs_autorefresh_script() ?>
+<?= bs_autorefresh_script($autorefreshJs) ?>
 </body>
 </html>
 <?php
@@ -730,7 +755,7 @@ function bs_render_site_page(array $config, string $siteId): void
     }
 
     $displayName = $tokens[$siteId]['display_name'] ?? $siteId;
-    $staleAfter = $config['stale_after_seconds'] ?? 900;
+    $staleAfter = (int) ($config['stale_after_seconds'] ?? 900);
     $data = bs_load_site_data($config, $siteId);
     $recipe = $data['recipe'];
     $acq = $data['acquisition'];
@@ -756,6 +781,8 @@ function bs_render_site_page(array $config, string $siteId): void
     }
 
     header('Content-Type: text/html; charset=utf-8');
+    header('Cache-Control: no-store');
+    $autorefreshJs = bs_autorefresh_js();
     ?>
 <!doctype html>
 <html lang="en">
@@ -763,7 +790,7 @@ function bs_render_site_page(array $config, string $siteId): void
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= htmlspecialchars($displayName) ?> — Brainsaw</title>
-<noscript><meta http-equiv="refresh" content="60"></noscript>
+<?= bs_autorefresh_head($autorefreshJs) ?>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="js/jquery.imageLens.js"></script>
 <style>
@@ -786,7 +813,7 @@ function bs_render_site_page(array $config, string $siteId): void
   .placeholder { height: 320px; }
 </style>
 </head>
-<body>
+<body data-server-now="<?= time() ?>">
 <a class="back" href="index.php">&larr; all sites</a>
 <h1><?= htmlspecialchars($displayName) ?></h1>
 
@@ -841,7 +868,7 @@ function bs_render_site_page(array $config, string $siteId): void
     </table>
   </div>
 </div>
-<?= bs_autorefresh_script() ?>
+<?= bs_autorefresh_script($autorefreshJs) ?>
 </body>
 </html>
 <?php
