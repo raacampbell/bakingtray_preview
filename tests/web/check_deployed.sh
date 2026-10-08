@@ -22,18 +22,18 @@ RECIPE="$(member 'ecipe.*\.ya\{0,1\}ml$')"
 ACQLOG="$(member 'cqLog.*\.txt$')"
 IMAGE="$(member 'LastCompleteSection.*\.jpe\{0,1\}g$')"
 [ -n "$RECIPE" ] && [ -n "$ACQLOG" ] || die "the zip must contain a recipe (*recipe*.yml) and an acquisition log (*acqLog*.txt)"
+[ "$(tr -d '[:space:]' < "$TOKFILE" | wc -c)" -gt 0 ] || die "token file '$TOKFILE' holds only whitespace"
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 AUTH="$TMP/auth"
 ( umask 077; { printf 'Authorization: Bearer '; tr -d '[:space:]' < "$TOKFILE"; echo; } > "$AUTH" )
-[ "$(wc -c < "$AUTH")" -gt 23 ] || die "token file '$TOKFILE' holds only whitespace"
 ORIGIN="$(sed -E 's#^(https://[^/]+).*#\1#' <<<"$BASE")"
 
 pass=0; fail=0
 result() { # ok?, name, detail
   if [ "$1" = 0 ]; then printf 'PASS  %-40s %s\n' "$2" "$3"; pass=$((pass+1))
   else printf 'FAIL  %-40s %s\n' "$2" "$3"; fail=$((fail+1)); fi; }
-check() { [ "$2" = "$3" ]; result $? "$1" "expected $2, got $3"; }            # name expected actual
+expect() { [ "$2" = "$3" ]; result $? "$1" "expected $2, got $3"; }           # name expected actual
 blocked() { case "$2" in 403|404) result 0 "$1" "$2";; *) result 1 "$1" "expected 403 or 404, got $2";; esac; }
 code() { curl -s -o /dev/null -w '%{http_code}' "$@"; }
 get() { curl -s -D "$TMP/h" -o "$TMP/b" -w '%{http_code}' "$@"; }           # status; headers and body to files
@@ -44,13 +44,13 @@ upload_zip() { post -H @"$AUTH" -F "site_id=$SITE" -F "microscope_id=$MIC" -F "d
 echo "--- redirect and upload endpoint"
 loc="$(curl -sI "${BASE/https:/http:}/" | tr -d '\r' | awk 'tolower($1)=="location:"{print $2}')"
 case "$loc" in https://*) result 0 "http redirects to https" "$loc";; *) result 1 "http redirects to https" "no redirect ($loc)";; esac
-check "GET upload.php"                 405 "$(code "$BASE/upload.php")"
-check "no token"                       401 "$(post -F "site_id=$SITE" -F "microscope_id=$MIC")"
-check "wrong token"                    403 "$(post -H 'Authorization: Bearer wrong' -F "site_id=$SITE" -F "microscope_id=$MIC")"
-check "no microscope_id"               403 "$(post -H @"$AUTH" -F "site_id=$SITE")"
-check "unknown site"                   403 "$(post -H @"$AUTH" -F "site_id=nosite$RANDOM" -F "microscope_id=$MIC")"
+expect "GET upload.php"                 405 "$(code "$BASE/upload.php")"
+expect "no token"                       401 "$(post -F "site_id=$SITE" -F "microscope_id=$MIC")"
+expect "wrong token"                    403 "$(post -H 'Authorization: Bearer wrong' -F "site_id=$SITE" -F "microscope_id=$MIC")"
+expect "no microscope_id"               403 "$(post -H @"$AUTH" -F "site_id=$SITE")"
+expect "unknown site"                   403 "$(post -H @"$AUTH" -F "site_id=nosite$RANDOM" -F "microscope_id=$MIC")"
 cp "$TMP/p" "$TMP/unknown_site"
-check "unknown microscope"             403 "$(post -H @"$AUTH" -F "site_id=$SITE" -F "microscope_id=nomic$RANDOM")"
+expect "unknown microscope"             403 "$(post -H @"$AUTH" -F "site_id=$SITE" -F "microscope_id=nomic$RANDOM")"
 cmp -s "$TMP/p" "$TMP/unknown_site"; result $? "unknown site/microscope: same reply" ""
 
 sleep 6   # one upload per microscope every 5 s
@@ -60,38 +60,44 @@ grep -q '"status":"ok"' "$TMP/p"; ok=$?
 if [ "$BIG" = "--big" ]; then
   head -c 30000000 /dev/urandom > "$TMP/big.txt"; (cd "$TMP" && zip -q big.zip big.txt)
   sleep 6; s="$(upload_zip "$TMP/big.zip")"
-  check "30 MB zip upload" 200 "$s"
+  expect "30 MB zip upload" 200 "$s"
   sleep 6; upload_zip "$ZIP" >/dev/null   # put the real test images back
 fi
 
 echo "--- nothing private is served directly (403 or 404)"
 D="system_data/$SITE/$MIC"
 blocked "settings file"        "$(code "$BASE/brainsaw_settings.json")"
-blocked "tokens.json"          "$(code "$BASE/tokens.json")"
 blocked "upload.log"           "$(code "$BASE/logs/upload.log")"
 blocked "system_data/ listing" "$(code "$BASE/system_data/")"
 blocked "raw meta.json"        "$(code "$BASE/$D/meta.json")"
 blocked "raw recipe"           "$(code "$BASE/$D/$RECIPE")"
 blocked "raw acquisition log"  "$(code "$BASE/$D/$ACQLOG")"
 [ -n "$IMAGE" ] && blocked "raw section image" "$(code "$BASE/$D/$IMAGE")"
+blocked "router.php (local only)" "$(code "$BASE/router.php")"
+blocked "lib.php"              "$(code "$BASE/lib.php")"
+s1="$(code "$BASE/system_data/$SITE/")"; s2="$(code "$BASE/system_data/nosite$RANDOM/")"
+expect "system_data/<site>/: real and made-up alike" "$s1" "$s2"
 
 echo "--- views"
-s="$(get "$BASE/")"; check "landing page" 200 "$s"
+s="$(get "$BASE/")"; expect "landing page" 200 "$s"
 ! grep -qF -- "$SITE" "$TMP/b"; result $? "landing page does not name the site" ""
-s="$(get "$BASE/$SITE")"; check "site view" 200 "$s"
-has "$TMP/b" "/$SITE/$MIC\"" "site view links the microscope"
+s="$(get "$BASE/$SITE")"; expect "site view" 200 "$s"
+grep -qF -- "/$SITE/$MIC\"" "$TMP/b"; result $? "site view links the microscope" ""
 grep -qi '^referrer-policy: no-referrer' "$TMP/h"; result $? "site view: Referrer-Policy no-referrer" ""
 grep -qi '^x-robots-tag: noindex' "$TMP/h"; result $? "site view: X-Robots-Tag noindex" ""
-s="$(get "$BASE/$SITE/$MIC")"; check "microscope page" 200 "$s"
+s="$(get "$BASE/$SITE/$MIC")"; expect "microscope page" 200 "$s"
 has "$TMP/b" 'id="main-image"' "microscope page has the image"
 src="$(grep 'id="main-image"' "$TMP/b" | sed -n 's/.*src="\([^"]*\)".*/\1/p' | sed 's/&amp;/\&/g')"
-s="$(get "$ORIGIN$src")"; check "image served through PHP" "200 image/jpeg" "$s $(tr -d '\r' < "$TMP/h" | awk 'tolower($1)=="content-type:"{print $2}')"
-check "meta through PHP" 200 "$(code "$BASE/$SITE/$MIC?f=meta")"
-check "recipe through PHP refused" 404 "$(code "$BASE/$SITE/$MIC?f=recipe")"
+s="$(get "$ORIGIN$src")"; expect "image served through PHP" "200 image/jpeg" "$s $(tr -d '\r' < "$TMP/h" | awk 'tolower($1)=="content-type:"{print $2}')"
+expect "meta through PHP" 200 "$(code "$BASE/$SITE/$MIC?f=meta")"
+expect "recipe through PHP refused" 404 "$(code "$BASE/$SITE/$MIC?f=recipe")"
 s1="$(get "$BASE/w$(openssl rand -hex 6)")"; cp "$TMP/b" "$TMP/word404"
 s2="$(get "$BASE/no/such/$(openssl rand -hex 4)/page.html")"
 [ "$s1" = 404 ] && [ "$s2" = 404 ] && cmp -s "$TMP/b" "$TMP/word404"
 result $? "unknown word = random path (404, same body)" "$s1 / $s2"
+s3="$(get "$BASE/$SITE/")"
+[ "$s3" = 404 ] && cmp -s "$TMP/b" "$TMP/word404"
+result $? "site view with a trailing slash = 404 page" "$s3"
 
 echo "--- $pass passed, $fail failed"
 [ "$fail" -eq 0 ]
