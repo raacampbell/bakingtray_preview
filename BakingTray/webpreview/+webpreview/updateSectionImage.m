@@ -76,7 +76,15 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
     try
         % Parse the optional param/val pairs with the local function parseOptions
         opts = parseOptions(varargin{:});
-        cfg = loadCfg(opts.ConfigFile);
+
+
+        % Load the config file from the default location unless the user has supplied another
+        if isempty(file)
+            cfg = webpreview.loadConfig();
+        else
+            cfg = webpreview.loadConfig(char(opts.ConfigFile));
+        end
+
         token = webpreview.tokenOf(cfg);
 
 
@@ -170,17 +178,29 @@ function opts = parseOptions(varargin)
     % opts - Structure with fields ConfigFile (char), Montage, Range, Poster,
     %        StageRoot (char) and ClearStage (logical).
 
+    % Define anon functions
+
+    % True for a char row vector, an empty char or a string scalar
+    isTextScalar = @(x) (ischar(x) && (isrow(x) || isequal(size(x),[0 0]))) || (isstring(x) && isscalar(x));
+
+    % True if x is a char row vector or string scalar with at least one character.
+    isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
+
+    % true if x is a logical scalar or a real, non-NaN numeric scalar.
+    isLogicalScalar = @(x) isscalar(x) && (islogical(x) || (isnumeric(x) && isreal(x) && ~isnan(x)));
+
+
     params = inputParser;
     params.FunctionName = 'webpreview.updateSectionImage';
     params.CaseSensitive = false;
 
-    params.addParameter('ConfigFile', '', @isTextScalar) % empty means the default location
+    params.addParameter('ConfigFile', '', isTextScalar) % empty means the default location
     params.addParameter('Montage', [], @isnumeric)
     params.addParameter('Range', [], @isnumeric)
     params.addParameter('Poster', @webpreview.zipAndPost, ...
                         @(x) isa(x,'function_handle') && isscalar(x))
-    params.addParameter('StageRoot', tempdir, @isNonEmptyText)
-    params.addParameter('ClearStage', false, @isLogicalScalar)
+    params.addParameter('StageRoot', tempdir, isNonEmptyText)
+    params.addParameter('ClearStage', false, isLogicalScalar)
     params.parse(varargin{:});
 
     opts = params.Results;
@@ -192,74 +212,6 @@ function opts = parseOptions(varargin)
 end % parseOptions
 
 
-function tf = isTextScalar(x)
-    % True for a char row vector, an empty char or a string scalar
-    %
-    % function tf = BakingTray.webpreview.updateSectionImage>isTextScalar(x)
-    %
-    % Inputs
-    % x - Any value.
-    %
-    % Outputs
-    % tf - true if x is a char row vector, a 0x0 char (so '' is accepted) or a string
-    %      scalar.
-
-    tf = (ischar(x) && (isrow(x) || isequal(size(x),[0 0]))) || (isstring(x) && isscalar(x));
-end % isTextScalar
-
-
-function tf = isNonEmptyText(x)
-    % True for a non-empty char row vector or a non-empty string scalar
-    %
-    % function tf = BakingTray.webpreview.updateSectionImage>isNonEmptyText(x)
-    %
-    % Inputs
-    % x - Any value.
-    %
-    % Outputs
-    % tf - true if x is a char row vector or string scalar with at least one character.
-
-    tf = ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x)));
-    tf = tf && strlength(x)>0;
-end % isNonEmptyText
-
-
-function tf = isLogicalScalar(x)
-    % True for a logical scalar or a real, non-NaN numeric scalar
-    %
-    % function tf = BakingTray.webpreview.updateSectionImage>isLogicalScalar(x)
-    %
-    % Purpose
-    % Numeric scalars are accepted because parseOptions converts the value with logical.
-    %
-    % Inputs
-    % x - Any value.
-    %
-    % Outputs
-    % tf - true if x is a logical scalar or a real, non-NaN numeric scalar.
-
-    tf = isscalar(x) && (islogical(x) || (isnumeric(x) && isreal(x) && ~isnan(x)));
-end % isLogicalScalar
-
-
-function cfg = loadCfg(file)
-    % Load the config from the default location or from the file given
-    %
-    % function cfg = BakingTray.webpreview.updateSectionImage>loadCfg(file)
-    %
-    % Inputs
-    % file - Config file path as char or string. Empty means webpreview.loadConfig uses
-    %        its default location.
-    %
-    % Outputs
-    % cfg - Configuration structure from webpreview.loadConfig.
-
-    if isempty(file)
-        cfg = webpreview.loadConfig();
-    else
-        cfg = webpreview.loadConfig(char(file));
-    end
-end % loadCfg
 
 
 function post = callPoster(poster,stageDir,cfg)
