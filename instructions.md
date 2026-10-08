@@ -187,8 +187,8 @@ Then it checks, before the live folder is touched:
 - `recipe.yml` and `status.json` are present;
 - `status.json` is a JSON object whose `finished` is a boolean (other keys are ignored);
 - `SYSTEM.ID` in the recipe, trimmed and with spaces replaced by `_` (`Scope A` becomes
-  `Scope_A`), equals `microscope_id` (the MATLAB client normalises the same way);
-- the recipe has a `sample.ID`.
+  `Scope_A`; the exact rule is pinned by `upload_core/tests/recipe_id_vectors.json`), equals `microscope_id`;
+- the recipe has a `sample.ID` (same rule, no space replacement) that is a valid ID.
 
 A refused upload (400) leaves the stored data exactly as it was. An accepted one is moved into
 the source folder and `meta.json` is written there with `uploaded_at` and `sample_id`. If the

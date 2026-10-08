@@ -354,6 +354,7 @@ for bad in 'not json' '[]' '{}' '[true]' '"finished"' '{"finished": "true"}' '{"
 done
 good_zip wrongid "other_scope" S2;                                refused "SYSTEM.ID differs from microscope_id" wrongid
 good_zip nosample "$MB" -;                                        refused "recipe without sample.ID" nosample
+good_zip badsample "$MB" "S 2";                                    refused "sample ID with a space (not a valid ID)" badsample
 good_zip partial "$MB" S2; rm "$TMP/z/partial/recipe.yml"
 zip_dir partial;                                                  refused "zip with only some required files" partial
 check "a refused upload leaves no temporary folder" test -z "$(find "$MBD" -name '.tmp-*')"
@@ -431,6 +432,15 @@ check "extraction that cannot complete: 500, not ok" test "$STATUS" = 500
 check "  ... and no meta.json claims an upload" test ! -e "$APP/system_data/$SB/logs/acq/meta.json"
 fetch "$B/$PAN/$SA/$MA2?f=main"
 check "microscope A2 through the panopticon: image served" test "$STATUS" = 200
+
+# --- recipe IDs: the shared vectors (also run by the MATLAB client) pin the parsing rule ---
+VECTORS="$ROOT/upload_core/tests/recipe_id_vectors.json"
+vector_results() { php -r 'require $argv[1]; foreach (json_decode(file_get_contents($argv[2]), true)["cases"] as $c) {
+  $r = bs_recipe_ids($c["recipe"]);
+  echo ($r["micID"] === $c["micID"] && $r["sampleID"] === $c["sampleID"] ? "ok" : "bad"), "\t", $c["name"], "\n"; }' "$APP/lib.php" "$VECTORS"; }
+vec="$(vector_results)"
+check "recipe ID vectors: found and parsed" test "$(wc -l <<<"$vec")" -ge 15
+while IFS=$'\t' read -r verdict name; do check "recipe ID vector: $name" test "$verdict" = ok; done <<<"$vec"
 
 # --- the Authorization header is found under every name a host may use ---
 auth_of() { php -r 'require $argv[1]; echo bs_authorization_header(json_decode($argv[2], true));' "$APP/lib.php" "$1"; }

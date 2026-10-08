@@ -374,7 +374,7 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
         bs_send_json(400, ['status' => 'error', 'message' => $problem]);
     }
 
-    $installed = bs_install_upload($tmpDir, $sourceDir, array_keys($entries), bs_parse_recipe($tmpDir . '/recipe.yml')['sample_id']);
+    $installed = bs_install_upload($tmpDir, $sourceDir, array_keys($entries), bs_recipe_ids(file_get_contents($tmpDir . '/recipe.yml'))['sampleID']);
     $dropTmp();
     if (!$installed) {
         error_log('brainsaw: could not install an upload into ' . $sourceDir);
@@ -388,7 +388,8 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
 /**
  * Why the extracted upload in $dir must be refused, or null if it is acceptable: it needs
  * recipe.yml and status.json; status.json must be an object whose "finished" is a boolean;
- * the recipe's SYSTEM.ID must be $micId once normalised; and the recipe needs a sample.ID.
+ * the recipe's SYSTEM.ID must be $micId once normalised; and the recipe needs a sample.ID that
+ * is a valid ID (bs_recipe_ids).
  * The messages reach only an authenticated client.
  */
 function bs_upload_problem(string $dir, string $micId): ?string
@@ -402,33 +403,106 @@ function bs_upload_problem(string $dir, string $micId): ?string
     if (!is_array($status) || !is_bool($status['finished'] ?? null)) {
         return 'status.json must be a JSON object with a boolean "finished"';
     }
-    if (bs_recipe_microscope_id($dir . '/recipe.yml') !== $micId) {
+    $ids = bs_recipe_ids((string) file_get_contents($dir . '/recipe.yml'));
+    if ($ids['micID'] !== $micId) {
         return 'SYSTEM.ID in recipe.yml does not match microscope_id';
     }
-    if (!isset(bs_parse_recipe($dir . '/recipe.yml')['sample_id'])) {
-        return 'recipe.yml has no sample ID';
+    if (!bs_valid_id($ids['sampleID'])) {
+        return 'recipe.yml needs a sample ID that starts with a letter, then letters, digits, _ or -';
     }
     return null;
 }
 
 /**
- * The microscope ID a recipe declares: SYSTEM.ID trimmed, with spaces replaced by '_'. The
- * MATLAB client normalises it the same way. Null if the recipe has none. Like bs_parse_recipe(),
- * this reads the dumped YAML with regexes: ID is the key at the first indent level of the
- * SYSTEM block, which ends at the first line that is not indented.
+ * The IDs a recipe declares, as ['micID' => ..., 'sampleID' => ...] ('' when not found). The
+ * rule is shared with the MATLAB client and pinned by upload_core/tests/recipe_id_vectors.json:
+ * the value of ID that is a direct child of the top-level SYSTEM (micID) or sample (sampleID)
+ * key, in block or flow style; a trailing ' #' comment is dropped, one pair of matching quotes
+ * stripped, spaces/tabs/CR/LF trimmed, and for micID each space becomes '_'. A leading UTF-8
+ * BOM is ignored.
  */
-function bs_recipe_microscope_id(string $path): ?string
+function bs_recipe_ids(string $text): array
 {
-    $text = @file_get_contents($path);
-    if ($text === false || !preg_match('/^SYSTEM:[ \t]*\r?\n((?:[ \t]+\S[^\n]*\n?)+)/m', $text, $block)) {
-        return null;
+    $text = preg_replace('/^\xEF\xBB\xBF/', '', $text);
+    return [
+        'micID' => str_replace(' ', '_', bs_recipe_section_id($text, 'SYSTEM')),
+        'sampleID' => bs_recipe_section_id($text, 'sample'),
+    ];
+}
+
+/** The ID directly under the top-level key $section, or ''. */
+function bs_recipe_section_id(string $text, string $section): string
+{
+    $lines = preg_split('/\r?\n/', $text);
+    foreach ($lines as $i => $line) {
+        if (preg_match('/^' . $section . ':[ \t]*(.*)$/', $line, $m)) {
+            $rest = trim($m[1], " \t");
+            if ($rest !== '' && $rest[0] === '{') {
+                return bs_flow_id(substr($rest, 1));
+            }
+            if ($rest === '' || $rest[0] === '#') {
+                return bs_block_id(array_slice($lines, $i + 1));
+            }
+            return '';
+        }
     }
-    $indent = substr($block[1], 0, strspn($block[1], " \t"));
-    if (!preg_match('/^' . preg_quote($indent, '/') . 'ID:[ \t]*([^\n]*)/m', $block[1], $m)) {
-        return null;
+    return '';
+}
+
+/** ID from the indented lines after a block-style key: the key at the block's first indent level; the block ends at the first unindented line. */
+function bs_block_id(array $lines): string
+{
+    $indent = null;
+    foreach ($lines as $line) {
+        if (trim($line, " \t") === '') {
+            continue;
+        }
+        if ($line[0] !== ' ' && $line[0] !== "\t") {
+            break;
+        }
+        $indent ??= substr($line, 0, strspn($line, " \t"));
+        if (preg_match('/^' . preg_quote($indent, '/') . 'ID:[ \t]*(.*)$/', $line, $m)) {
+            return bs_clean_yaml_value($m[1]);
+        }
     }
-    $id = str_replace(' ', '_', trim(trim($m[1]), '\'"'));
-    return $id !== '' ? $id : null;
+    return '';
+}
+
+/** ID from the text after the opening '{' of a one-line flow mapping: entries split on commas outside quotes, up to the closing brace. */
+function bs_flow_id(string $body): string
+{
+    $entry = '';
+    $quote = null;
+    foreach (str_split($body . '}') as $ch) {
+        if ($quote !== null) {
+            $quote = $ch === $quote ? null : $quote;
+        } elseif ($ch === '"' || $ch === "'") {
+            $quote = $ch;
+        } elseif ($ch === ',' || $ch === '}') {
+            if (preg_match('/^[ \t]*ID[ \t]*:(.*)$/', $entry, $m)) {
+                return bs_clean_yaml_value($m[1]);
+            }
+            if ($ch === '}') {
+                break;
+            }
+            $entry = '';
+            continue;
+        }
+        $entry .= $ch;
+    }
+    return '';
+}
+
+/** A scalar as written after "key:": trailing ' #' comment dropped, one pair of matching quotes stripped, surrounding white space trimmed. */
+function bs_clean_yaml_value(string $raw): string
+{
+    $v = trim($raw, " \t\r\n");
+    if (preg_match('/^([\'"])(.*)\1(?:[ \t]+#.*)?$/', $v, $m)) {
+        $v = $m[2];
+    } else {
+        $v = preg_replace('/[ \t]+#.*$/', '', $v);
+    }
+    return trim($v, " \t\r\n");
 }
 
 /**
@@ -499,8 +573,9 @@ function bs_parse_recipe(string $path): array
 
     $out = [];
 
-    if (preg_match('/^sample:\s*\{[^}]*\bID:\s*([^,}\s]+)/m', $text, $m)) {
-        $out['sample_id'] = $m[1];
+    $sampleId = bs_recipe_ids($text)['sampleID'];
+    if ($sampleId !== '') {
+        $out['sample_id'] = $sampleId;
     }
     if (preg_match('/^sample:\s*\{[^}]*objectiveName:\s*([^,}]+)/m', $text, $m)) {
         $out['objective'] = trim($m[1]);
