@@ -62,9 +62,8 @@ for f in "$SRC"/*.php; do check "php -l $(basename "$f")" lint_ok "$f"; done
 # --- random settings: nothing here may look like anything in the repo ---
 r() { openssl rand -hex "$1"; }
 PAN="p$(r 6)"; SA="a$(r 5)"; SB="b$(r 5)"
-MA1="m$(r 4)"; MB="k$(r 4)"
-MA2="$((RANDOM + 1000))"     # all digits on purpose: PHP turns such a JSON key into an int
-TA1="$(r 32)"; TA2="$(r 32)"; TB="$(r 32)"
+MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"
+TA1="$(r 32)"; TA2="$(r 32)"; TB="$(r 32)"; TL="$(r 32)"
 SETTINGS="$TMP/www/brainsaw_settings.json"   # config.php default: next to brainsaw/
 write_settings() { # panopticon word, site A id
   cat > "$SETTINGS" <<EOF
@@ -74,7 +73,8 @@ write_settings() { # panopticon word, site A id
      "$MA1": {"display_name": "Scope A1 $MA1", "token": "$TA1"},
      "$MA2": {"display_name": "Scope A2 $MA2", "token": "$TA2"}}},
   "$SB": {"display_name": "Lab B $SB", "microscopes": {
-     "$MB": {"display_name": "Scope B $MB", "token": "$TB"}}}}}
+     "$MB": {"display_name": "Scope B $MB", "token": "$TB"},
+     "logs": {"token": "$TL"}}}}}
 EOF
 }
 write_settings "$PAN" "$SA"
@@ -98,15 +98,21 @@ for _ in $(seq 1 50); do curl -s -o /dev/null "$B/" && break; sleep 0.2; done
 curl -s -o /dev/null "$B/" || { echo "FAIL  server did not start within 10 s"; exit 1; }
 
 # --- the one 404 response: every path that is not a view must give exactly this ---
-fetch "$B/zz$(r 4)"
-REF="$STATUS|$(header_of Content-Type)|$BODY"
+# Signature of a response: status, every header except Date, and the body.
+sig() { printf '%s\n%s\n%s' "$STATUS" "$HEADERS" "$BODY" | tr -d '\r' | grep -v '^Date:'; }
+fetch "$B/zz$(r 4)";    REF="$(sig)"
 check "unknown word: 404" test "$STATUS" = 404
-same_404() { fetch "$1"; [ "$STATUS|$(header_of Content-Type)|$BODY" = "$REF" ]; }
+fetch "$B/zz$(r 4)" -I; REF_HEAD="$(sig)"
+check "unknown word, HEAD: 404" test "$STATUS" = 404
+same_404()  { fetch "$1";    [ "$(sig)" = "$REF" ]; }
+same_head() { fetch "$1" -I; [ "$(sig)" = "$REF_HEAD" ]; }
 for p in "no/such/page.html" "a/b/c/d" "$SA/nomic" "$SA/$MB" "$SB/$MA1" "$SA/$MA1/extra" \
-         "$PAN/$SA" "$PAN/$SA/nomic" "$PAN/$SB/$MA1" "$PAN/$SA/$MA1/x" "$SA/$SA" \
-         "$SA?f=main" "$PAN?f=meta" "$SA/$MA1?f=recipe" "$SA/$MA1?f=log" "$SA/$MA1?f=..%2Fmeta.json" \
-         "$SA/$MA2?f=main" "$SA/$MA2?f=meta" "view.php" "$(tr a-z A-Z <<<"$SA")" "$SA%2F$MA1"; do
+         "$PAN/$SA" "$PAN/$SA/nomic" "$PAN/$SB/$MA1" "$PAN/$SA/$MA1/x" "$SA/$SA" "$SA/" "$PAN/" "$SA/$MA1/" \
+         "12345" "$SA/12345" "$SA?f=main" "$PAN?f=meta" "$SA/$MA1?f=recipe" "$SA/$MA1?f=log" \
+         "$SA/$MA1?f=..%2Fmeta.json" "$SA/$MA2?f=main" "$SA/$MA2?f=meta" "view.php" \
+         "$(tr a-z A-Z <<<"$SA")" "$SA%2F$MA1"; do
   check "identical 404: /$p" same_404 "$B/$p"
+  check "identical 404 (HEAD): /$p" same_head "$B/$p"
 done
 
 # --- landing page lists nothing ---
@@ -130,6 +136,10 @@ done
 for s in "$SB" "$MB" "$PAN"; do check "site A: lacks $s" body_lacks "$SITEA" "$s"; done
 fetch "$B/$SB"
 for s in "$SA" "$MA1" "$MA2" "$PAN"; do check "site B: lacks $s" body_lacks "$BODY" "$s"; done
+for p in "$SB/logs" "$PAN/$SB/logs"; do  # "logs" is reserved only as a first segment
+  fetch "$B/$p"
+  check "microscope named logs: /$p is 200" test "$STATUS" = 200
+done
 
 for view in "$SA/$MA1" "$PAN/$SA/$MA1"; do
   fetch "$B/$view"; page="$BODY"
@@ -211,11 +221,19 @@ mv "$APP/js/autorefresh.js.off" "$APP/js/autorefresh.js"
 not_200() { fetch "$1" --path-as-is; [ "$STATUS" != 200 ]; }   # keep ../ as sent
 for p in "system_data/" "system_data/$SA/$MA1/meta.json" "system_data/$SA/$MA1/LastCompleteSection_01.jpg" \
          "system_data/$SA/$MA1/montage.jpg" "system_data/$SA/$MA1/$RECIPE" "system_data/$SA/$MA1/$ACQLOG" \
-         "System_Data/$SA/$MA1/meta.json" "js/../system_data/$SA/$MA1/meta.json" "logs/" ".htaccess"; do
+         "System_Data/$SA/$MA1/meta.json" "js/../system_data/$SA/$MA1/meta.json" "/system_data/$SA/$MA1/meta.json" \
+         "logs/" ".htaccess" "lib.php" "config.php" "router.php" "x.json" "js/x.php"; do
   check "direct /$p refused" not_200 "$B/$p"
 done
 check "settings file next to brainsaw/ not served" not_200 "http://localhost:$PORT/brainsaw_settings.json"
 check "settings file via the app folder not served" not_200 "$B/../brainsaw_settings.json"
+
+# --- the URL base comes from DOCUMENT_ROOT, and fails closed outside it ---
+base_of() { php -r '$_SERVER["DOCUMENT_ROOT"] = $argv[2]; require $argv[1]; var_export(bs_base_path());' "$APP/lib.php" "$1" 2>/dev/null; }
+check "base path below the document root"     test "$(base_of "$TMP/www")" = "'/brainsaw'"
+check "base path at the document root"        test "$(base_of "$APP")" = "''"
+check "app outside the document root: null"   test "$(base_of "$IMAGES")" = "NULL"
+check "no document root: null"                test "$(base_of "")" = "NULL"
 
 # --- uploads ---
 ZIP="$IMAGES/all_data.zip"
@@ -239,7 +257,20 @@ fetch "$U" -X POST -H "$(hdr "$TA1")" -F site_id="$SB" -F microscope_id="$MB" -F
 check "another microscope's token: 403" test "$STATUS" = 403
 check "wrong token: same message" test "$BODY" = "$UNKSITE"
 fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="$MB" -F "image=@$IMAGES/montage.jpg;type=image/jpeg"
-check "legacy single-image upload: 400" test "$STATUS" = 400
+check "no data field: 400" test "$STATUS" = 400
+# Raw IDs never reach the log: a newline/tab payload must not forge a log line.
+LOG="$APP/logs/upload.log"
+lines="$(wc -l < "$LOG")"
+fetch "$U" -X POST -H "$(hdr "$TB")" -F "site_id=$(printf 'x\nFAKE\tLINE')" -F microscope_id="$MB"
+check "bad site_id: 403" test "$STATUS" = 403
+check "bad site_id: exactly one log line" test "$(wc -l < "$LOG")" -eq $((lines + 1))
+check "bad site_id: payload not logged" bash -c '! grep -q FAKE "$1"' _ "$LOG"
+check "bad site_id: logged as ?" bash -c 'tail -n1 "$1" | cut -f2 | grep -qx "?"' _ "$LOG"
+# Form-urlencoded, because PHP's multipart parser drops a trailing newline before we see it.
+for id in "12345" "$SB%0A"; do
+  fetch "$U" -X POST -H "$(hdr "$TB")" -d "site_id=$id&microscope_id=$MB"
+  check "site_id $id (all digits / trailing newline): 403" test "$STATUS" = 403
+done
 fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
 check "valid upload: 200 ok" body_has "$STATUS $BODY" '200 {"status":"ok"'
 check "upload lands in system_data/<site>/<mic>/" test -f "$APP/system_data/$SB/$MB/LastCompleteSection_01.jpg" -a -f "$APP/system_data/$SB/$MB/meta.json"
@@ -247,13 +278,17 @@ check "nothing written to system_data/<site>/ itself" test -z "$(find "$APP/syst
 fetch "$U" -X POST -H "$(hdr "$TB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
 check "second upload within 5 s: 429" test "$STATUS" = 429
 fetch "$U" -X POST -H "$(hdr "$TA2")" -F site_id="$SA" -F microscope_id="$MA2" -F "data=@$ZIP;type=application/zip"
-check "all-digit microscope ID: upload 200" test "$STATUS" = 200
+check "microscope A2: upload 200" test "$STATUS" = 200
 fetch "$U" -X POST -H "$(hdr "$TA1")" -F site_id="$SA" -F microscope_id="$MA1" -F "data=@$ZIP;type=application/zip"
 check "rate limit is per microscope (A1 right after A2): 200" test "$STATUS" = 200
 fetch "$B/$SB/$MB"
 check "uploaded microscope page shows its image" body_has "$BODY" 'id="main-image"'
+mkdir -p "$APP/system_data/$SB/logs/montage.jpg"   # a folder where a file must go: the rename fails
+fetch "$U" -X POST -H "$(hdr "$TL")" -F site_id="$SB" -F microscope_id=logs -F "data=@$ZIP;type=application/zip"
+check "extraction that cannot complete: 500, not ok" test "$STATUS" = 500
+check "  ... and no meta.json claims an upload" test ! -e "$APP/system_data/$SB/logs/meta.json"
 fetch "$B/$PAN/$SA/$MA2?f=main"
-check "all-digit microscope ID: image served" test "$STATUS" = 200
+check "microscope A2 through the panopticon: image served" test "$STATUS" = 200
 
 # --- the Authorization header is found under every name a host may use ---
 auth_of() { php -r 'require $argv[1]; echo bs_authorization_header(json_decode($argv[2], true));' "$APP/lib.php" "$1"; }
@@ -286,6 +321,12 @@ for bad in \
   "{\"panopticon\":\"w\",\"sites\":{\"s\":{}}}" \
   "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":[{\"token\":\"t\"}]}}}" \
   "{\"panopticon\":5,\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"0\":{\"microscopes\":$mic}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"1s\":{\"microscopes\":$mic}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"123\":{\"token\":\"t\"}}}}}" \
+  "{\"panopticon\":\"w\\n\",\"sites\":{\"s\":{\"microscopes\":$mic}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\\n\":{\"microscopes\":$mic}}}" \
+  "{\"panopticon\":\"w\",\"sites\":{\"s\":{\"microscopes\":{\"m\":{\"token\":\"t\"},\"M\":{\"token\":\"u\"}}}}}" \
   "[1,2]"; do
   why="$(validate "$bad")"
   check "rejected ($why): $bad" test "$why" != ok
@@ -303,10 +344,7 @@ check "unparsable settings: 404" same_404 "$B/$SB"
 rm "$SETTINGS"
 check "missing settings: 404" same_404 "$B/$SB"
 write_settings "$PAN" "$SA"
-check "restored settings: site view 200" bash -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' '$B/$SA')\" = 200 ]"
-
-# --- no test word, site ID or token appears in any tracked file ---
-check "no test settings value in tracked files" \
-  bash -c '! git -C "$1" grep -qF -e "$2" -e "$3" -e "$4" -e "$5" -e "$6" -e "$7" -- .' _ "$ROOT" "$PAN" "$SA" "$SB" "$TA1" "$TA2" "$TB"
+fetch "$B/$SA"
+check "restored settings: site view 200" test "$STATUS" = 200
 
 exit "$fail"

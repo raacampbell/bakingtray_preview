@@ -1,9 +1,1 @@
-# Nothing in here is served directly. Images and meta.json reach the browser only through
-# view.php, which checks that the view word may see that microscope; recipe and log files
-# (a recipe can hold pasted secrets, e.g. a Slack webhook URL) are only parsed server-side.
 Require all denied
-Options -Indexes -ExecCGI
-
-<IfModule mod_php.c>
-    php_flag engine off
-</IfModule>

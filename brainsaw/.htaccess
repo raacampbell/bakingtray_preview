@@ -1,12 +1,20 @@
-# Logs must never be servable directly, even though PHP writes them. The settings file
-# (tokens, view words) lives outside the web root and is never in this folder.
-<FilesMatch "\.log$">
+# Files that are never served directly, even if the PHP handler breaks: settings-like JSON
+# (meta.json reaches browsers only through view.php) and every PHP file except the three
+# entry points (lib.php and config.php would otherwise be one request away). logs/ and
+# system_data/ have their own "Require all denied". router.php mirrors all of this.
+<FilesMatch "\.(json|php)$">
     Require all denied
+</FilesMatch>
+<FilesMatch "^(index|upload|view)\.php$">
+    Require all granted
 </FilesMatch>
 
 # No directory listings, no CGI, and no MultiViews: MultiViews would map a request for
 # /upload to upload.php, so a view word could be shadowed by a file name.
 Options -Indexes -ExecCGI -MultiViews
+
+# No <IfModule> guard: without mod_rewrite the app cannot work, and a 500 says so at once.
+RewriteEngine On
 
 # 1. Pass the Authorization header through to PHP. On hosts where PHP runs as
 # CGI/FastCGI (e.g. IONOS: SAPI cgi-fcgi) Apache otherwise drops it and every
@@ -14,22 +22,15 @@ Options -Indexes -ExecCGI -MultiViews
 # $_SERVER['HTTP_AUTHORIZATION'] first, then REDIRECT_HTTP_AUTHORIZATION (the name
 # it gets after an internal rewrite), then apache_request_headers(). Keep this rule
 # first and without an [L] flag, so the rules below still run.
-<IfModule mod_rewrite.c>
-RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-</IfModule>
 
 # 2. Force HTTPS (relies on the host's SSL certificate).
-<IfModule mod_rewrite.c>
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
 
 # 3. Every path that is not an existing file or folder goes to view.php, which shows a
 # private view or the one 404 page; so an unknown word looks exactly like any other
-# missing page. router.php does the same for `php -S`.
-<IfModule mod_rewrite.c>
+# missing page.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ view.php [L]
-</IfModule>

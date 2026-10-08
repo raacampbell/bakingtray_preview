@@ -15,7 +15,9 @@ function bs_send_json(int $status, array $body): never
     exit;
 }
 
-const BS_ID_PATTERN = '/^[A-Za-z0-9_-]+$/';
+// Site IDs, microscope IDs and the panopticon word. A leading letter keeps every ID a string
+// key after json_decode (an all-digit key would become an int); \z rejects a trailing newline.
+const BS_ID_PATTERN = '/^[A-Za-z][A-Za-z0-9_-]*\z/';
 
 const BS_EMPTY_SETTINGS = ['panopticon' => null, 'sites' => []];
 
@@ -25,40 +27,58 @@ function bs_reserved_names(): array
     return array_map('strtolower', array_values(array_diff(scandir(__DIR__) ?: [], ['.', '..'])));
 }
 
+function bs_valid_id(mixed $id): bool
+{
+    return is_string($id) && preg_match(BS_ID_PATTERN, $id) === 1;
+}
+
+/** True if two of $ids differ only in case (a case-insensitive file system would merge their folders). */
+function bs_has_case_duplicates(array $ids): bool
+{
+    $lower = array_map('strtolower', $ids);
+    return count(array_unique($lower)) !== count($lower);
+}
+
 /**
  * Why $data is not a valid settings structure, or null if it is. IDs and the panopticon word
  * must match BS_ID_PATTERN; the panopticon word and the site IDs must differ from each other
- * and from $reserved, ignoring case (a case-insensitive file system would mix them up).
+ * and from $reserved, and microscope IDs within a site from each other, all ignoring case.
  * Messages name no word or token, so they are safe for the server log.
  */
 function bs_validate_settings(mixed $data, array $reserved): ?string
 {
-    if (!is_array($data) || !is_array($data['sites'] ?? null) || ($data['sites'] && array_is_list($data['sites']))) {
+    $idRule = 'start with a letter, then letters, digits, _ or -';
+    if (!is_array($data) || !is_array($data['sites'] ?? null)) {
         return 'expected an object with a "sites" object';
     }
-    $words = [];
+    $words = array_keys($data['sites']);
     if (array_key_exists('panopticon', $data)) {
-        if (!is_string($data['panopticon']) || !preg_match(BS_ID_PATTERN, $data['panopticon'])) {
-            return 'the panopticon word must be a string of letters, digits, _ or -';
-        }
         $words[] = $data['panopticon'];
     }
-    foreach ($data['sites'] as $siteId => $site) {
-        $siteId = (string) $siteId; // JSON keys of digits only arrive as ints
+    foreach ($words as $word) {
+        if (!bs_valid_id($word)) {
+            return "site IDs and the panopticon word must $idRule";
+        }
+    }
+    foreach ($data['sites'] as $site) {
         $mics = $site['microscopes'] ?? null;
-        if (!preg_match(BS_ID_PATTERN, $siteId) || !is_array($mics) || !$mics || array_is_list($mics)) {
-            return 'each site needs a valid ID and a non-empty "microscopes" object';
+        if (!is_array($mics) || !$mics) {
+            return 'each site needs a non-empty "microscopes" object';
         }
         foreach ($mics as $micId => $mic) {
-            if (!preg_match(BS_ID_PATTERN, (string) $micId) || !is_string($mic['token'] ?? null) || $mic['token'] === '') {
-                return 'each microscope needs a valid ID and a non-empty "token"';
+            if (!bs_valid_id($micId)) {
+                return "microscope IDs must $idRule";
+            }
+            if (!is_string($mic['token'] ?? null) || $mic['token'] === '') {
+                return 'each microscope needs a non-empty "token"';
             }
         }
-        $words[] = $siteId;
+        if (bs_has_case_duplicates(array_keys($mics))) {
+            return 'microscope IDs within a site must differ by more than case';
+        }
     }
-    $lower = array_map('strtolower', $words);
-    if (count(array_unique($lower)) !== count($lower) || array_intersect($lower, $reserved)) {
-        return 'the panopticon word and site IDs must be unique and must not be a file or folder name in the app';
+    if (bs_has_case_duplicates($words) || array_intersect(array_map('strtolower', $words), $reserved)) {
+        return 'the panopticon word and site IDs must differ (ignoring case) from each other and from file or folder names in the app';
     }
     return null;
 }
@@ -81,7 +101,13 @@ function bs_load_settings(string $file): array
         error_log('brainsaw: invalid settings file: ' . $problem);
         return BS_EMPTY_SETTINGS;
     }
-    return ['panopticon' => $data['panopticon'] ?? null, 'sites' => $data['sites']];
+    return $data + ['panopticon' => null];
+}
+
+/** One microscope's data folder. */
+function bs_mic_dir(array $config, string $siteId, string $micId): string
+{
+    return $config['system_data_dir'] . '/' . $siteId . '/' . $micId;
 }
 
 /** The raw Authorization header: from $_SERVER, under the name a rewrite copy may give it, or from Apache. */
@@ -102,15 +128,17 @@ function bs_authorization_header(array $server): string
     return '';
 }
 
+/** One tab-separated line per request. Control characters become '?' and fields are cut to 300 bytes, so no client-supplied text (e.g. zip entry names) can forge or flood lines. */
 function bs_log(string $logFile, string $label, int $status, string $message = ''): void
 {
+    $clean = fn(string $s) => substr(preg_replace('/[\x00-\x1f\x7f]/', '?', $s), 0, 300);
     $line = sprintf(
         "%s\t%s\t%d\t%s\t%s\n",
         gmdate('c'),
-        $label !== '' ? $label : '-',
+        $label !== '' ? $clean($label) : '-',
         $status,
         $_SERVER['REMOTE_ADDR'] ?? '-',
-        $message
+        $clean($message)
     );
     @file_put_contents($logFile, $line, FILE_APPEND | LOCK_EX);
 }
@@ -171,27 +199,28 @@ function bs_handle_upload(array $config): void
     }
     $suppliedToken = $m[1];
 
-    $siteId = $_POST['site_id'] ?? '';
-    $micId = $_POST['microscope_id'] ?? '';
-    $label = (is_string($siteId) ? $siteId : '?') . '/' . (is_string($micId) ? $micId : '?');
-    $refuse = function (string $why) use ($logFile, $label): never {
+    $siteId = $_POST['site_id'] ?? null;
+    $micId = $_POST['microscope_id'] ?? null;
+    $refuse = function (string $label, string $why) use ($logFile): never {
         bs_log($logFile, $label, 403, $why);
         bs_send_json(403, ['status' => 'error', 'message' => 'unknown site_id, microscope_id or token']);
     };
-    if (!is_string($siteId) || !is_string($micId) || !preg_match(BS_ID_PATTERN, $siteId) || !preg_match(BS_ID_PATTERN, $micId)) {
-        $refuse('missing/invalid site_id or microscope_id');
+    if (!bs_valid_id($siteId) || !bs_valid_id($micId)) {
+        $refuse('?', 'missing/invalid site_id or microscope_id'); // raw values never reach the log
     }
+    $label = $siteId . '/' . $micId;
     $mic = bs_load_settings($config['settings_file'])['sites'][$siteId]['microscopes'][$micId] ?? null;
     if ($mic === null) {
-        $refuse('unknown site_id or microscope_id');
+        $refuse($label, 'unknown site_id or microscope_id');
     }
-    if (!hash_equals((string) $mic['token'], $suppliedToken)) {
-        $refuse('token mismatch');
+    if (!hash_equals($mic['token'], $suppliedToken)) {
+        $refuse($label, 'token mismatch');
     }
 
-    $micDir = rtrim($config['system_data_dir'], '/') . '/' . $siteId . '/' . $micId;
+    $micDir = bs_mic_dir($config, $siteId, $micId);
 
-    // Cheap rate limit: reject if this microscope uploaded < N seconds ago.
+    // Cheap rate limit: reject if this microscope uploaded < N seconds ago. Two uploads
+    // arriving together can both pass; acceptable, since this only guards against floods.
     $minInterval = $config['min_upload_interval_seconds'] ?? 0;
     $uploadedAt = bs_read_uploaded_at($micDir);
     if ($minInterval > 0 && $uploadedAt !== null) {
@@ -305,24 +334,23 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir): voi
         bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
     }
 
+    $ok = true;
     foreach ($entries as $base => $index) {
         $contents = $zip->getFromIndex($index);
-        if ($contents === false) {
-            continue;
-        }
-        file_put_contents($tmpDir . '/' . $base, $contents, LOCK_EX);
+        $ok = $ok && $contents !== false && file_put_contents($tmpDir . '/' . $base, $contents, LOCK_EX) !== false;
     }
     $zip->close();
-
     foreach ($entries as $base => $index) {
-        $src = $tmpDir . '/' . $base;
-        if (is_file($src)) {
-            rename($src, $micDir . '/' . $base);
-        }
+        $ok = $ok && rename($tmpDir . '/' . $base, $micDir . '/' . $base);
     }
+    $ok = $ok && bs_atomic_write($micDir . '/meta.json', $micDir . '/meta.json.tmp', json_encode(['uploaded_at' => gmdate('c')]));
+    array_map('unlink', glob($tmpDir . '/*') ?: []);
     @rmdir($tmpDir);
-
-    bs_atomic_write($micDir . '/meta.json', $micDir . '/meta.json.tmp', json_encode(['uploaded_at' => gmdate('c')]));
+    if (!$ok) {
+        error_log('brainsaw: could not extract an upload into ' . $micDir);
+        bs_log($logFile, $label, 500, 'extracting the zip failed');
+        bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
+    }
     bs_log($logFile, $label, 200, 'ok (zip: ' . implode(',', array_keys($entries)) . ')');
     bs_send_json(200, ['status' => 'ok', 'files' => array_keys($entries)]);
 }
@@ -476,16 +504,10 @@ const BS_ASSETS = [
     'meta' => ['meta.json', 'application/json'],
 ];
 
-/** Path of one BS_ASSETS file in $micDir (the newest match), or null. */
-function bs_asset_path(string $micDir, string $kind): ?string
-{
-    return bs_find_latest($micDir, BS_ASSETS[$kind][0]);
-}
-
 /** Collect everything renderable about one microscope folder; asset URLs hang off $micUrl. */
 function bs_load_mic_data(string $micDir, string $micUrl): array
 {
-    $url = fn(string $kind) => bs_asset_path($micDir, $kind) !== null ? $micUrl . '?f=' . $kind : null;
+    $url = fn(string $kind) => bs_find_latest($micDir, BS_ASSETS[$kind][0]) !== null ? $micUrl . '?f=' . $kind : null;
     $recipePath = bs_find_latest($micDir, '*ecipe*.y*ml');
 
     return [
@@ -695,11 +717,22 @@ function bs_autorefresh_script(?string $js): string
     return $js === null ? '' : '<script>' . $js . '</script>';
 }
 
-
-/** The deployment's base URL path: '' at the web root, '/testserver' in a sub-folder. */
-function bs_base_path(): string
+/**
+ * The deployment's base URL path ('' at the web root, '/testserver' in a sub-folder): where
+ * this folder sits below DOCUMENT_ROOT. Not taken from SCRIPT_NAME, whose value after a
+ * rewrite varies between servers; a wrong base would shift every path segment by one. Null
+ * (and a log line) if this folder is not under DOCUMENT_ROOT, so the caller fails closed.
+ */
+function bs_base_path(): ?string
 {
-    return rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+    $doc = $_SERVER['DOCUMENT_ROOT'] ?? '';
+    $root = $doc === '' ? false : realpath($doc); // realpath('') would be the working directory
+    $dir = realpath(__DIR__);
+    if ($root === false || !str_starts_with($dir . '/', rtrim($root, '/') . '/')) {
+        error_log('brainsaw: the app folder is not under DOCUMENT_ROOT; every view returns 404');
+        return null;
+    }
+    return substr($dir, strlen(rtrim($root, '/')));
 }
 
 /**
@@ -775,36 +808,44 @@ function bs_handle_view(array $config): never
     header('X-Robots-Tag: noindex, nofollow');
     $base = bs_base_path();
     $path = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
-    if (!str_starts_with($path, $base . '/')) {
+    if ($base === null || !str_starts_with($path, $base . '/')) {
         bs_not_found();
     }
     $view = bs_resolve_view(bs_load_settings($config['settings_file']), explode('/', substr($path, strlen($base) + 1)));
-    $kind = $_GET['f'] ?? null;
-    if ($view === null || ($kind !== null && ($view['mic'] === null || !is_string($kind) || !isset(BS_ASSETS[$kind])))) {
+    if ($view === null) {
         bs_not_found();
     }
+    $kind = $_GET['f'] ?? null;
     if ($view['mic'] === null) {
+        if ($kind !== null) {
+            bs_not_found();
+        }
         bs_render_grid($config, $view, $base);
         exit;
     }
-    $micDir = rtrim($config['system_data_dir'], '/') . '/' . $view['site'] . '/' . $view['mic'];
-    if ($kind !== null) {
-        bs_serve_asset(bs_asset_path($micDir, $kind), BS_ASSETS[$kind][1]);
+    $micDir = bs_mic_dir($config, $view['site'], $view['mic']);
+    if ($kind === null) {
+        bs_render_mic_page($config, $view, $base, $micDir);
+        exit;
     }
-    bs_render_mic_page($config, $view, $base, $micDir);
-    exit;
+    if (!is_string($kind) || !isset(BS_ASSETS[$kind])) {
+        bs_not_found();
+    }
+    bs_serve_asset(bs_find_latest($micDir, BS_ASSETS[$kind][0]), BS_ASSETS[$kind][1]);
 }
 
+/** Send one file, or the 404 page if it is missing. One open handle, so size and bytes always match. */
 function bs_serve_asset(?string $path, string $contentType): never
 {
-    if ($path === null) {
+    $fh = $path !== null ? @fopen($path, 'rb') : false;
+    if ($fh === false) {
         bs_not_found();
     }
     header('Content-Type: ' . $contentType);
     header('Cache-Control: no-store');
     header('X-Content-Type-Options: nosniff');
-    header('Content-Length: ' . filesize($path));
-    readfile($path);
+    header('Content-Length: ' . fstat($fh)['size']);
+    fpassthru($fh);
     exit;
 }
 
@@ -845,15 +886,12 @@ function bs_render_grid(array $config, array $view, string $base): void
 </head>
 <body data-server-now="<?= time() ?>">
 <h1><?= htmlspecialchars($title) ?></h1>
-<?php foreach ($view['sites'] as $siteId => $site):
-    $siteId = (string) $siteId; // JSON keys of digits only arrive as ints
-    ?>
+<?php foreach ($view['sites'] as $siteId => $site): ?>
 <?php if ($view['panopticon']): ?><h2><?= htmlspecialchars(bs_name($site, $siteId)) ?></h2><?php endif; ?>
 <div class="grid">
 <?php foreach ($site['microscopes'] as $micId => $mic):
-    $micId = (string) $micId;
     $micUrl = bs_mic_url($base, $view, $siteId, $micId);
-    $data = bs_load_mic_data(rtrim($config['system_data_dir'], '/') . '/' . $siteId . '/' . $micId, $micUrl);
+    $data = bs_load_mic_data(bs_mic_dir($config, $siteId, $micId), $micUrl);
     [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter);
     $name = bs_name($mic, $micId);
     $sampleId = $data['recipe']['sample_id'] ?? null;
@@ -887,10 +925,10 @@ function bs_render_grid(array $config, array $view, string $base): void
 function bs_render_mic_page(array $config, array $view, string $base, string $micDir): void
 {
     $site = $view['sites'][$view['site']];
-    $micName = bs_name($site['microscopes'][$view['mic']], (string) $view['mic']);
-    $title = $micName . ' — ' . bs_name($site, (string) $view['site']);
+    $micName = bs_name($site['microscopes'][$view['mic']], $view['mic']);
+    $title = $micName . ' — ' . bs_name($site, $view['site']);
     $staleAfter = bs_stale_after_seconds($config);
-    $data = bs_load_mic_data($micDir, bs_mic_url($base, $view, (string) $view['site'], (string) $view['mic']));
+    $data = bs_load_mic_data($micDir, bs_mic_url($base, $view, $view['site'], $view['mic']));
     $recipe = $data['recipe'];
     $acq = $data['acquisition'];
     [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter);
