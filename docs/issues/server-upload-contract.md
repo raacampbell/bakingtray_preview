@@ -61,3 +61,14 @@ The agreed plan (PI, 2026-10-08) has two upload sources: `acq` (BakingTray, the 
 - The node tests in `tests/web` pass. `check_stage.sh` passes, if it is affected.
 - The full MATLAB suite passes: `/Applications/MATLAB_R2023b.app/bin/matlab -batch "add_to_path; r=[runtests('upload_core/tests'), runtests('BakingTray/tests'), runtests('BakingTray/simulate/tests')]; disp(table(r))"`, run from the worktree root. The baseline is 175 passed, 0 failed, 2 incomplete. Report the new counts.
 - `instructions.md` sections on the settings file and uploads, and the settings shape in `server-setup.md`, are updated. `check_deployed.sh` and the /testserver migration are a later item: leave them.
+
+## Open after review (merged for testing, 2026-10-08)
+Merged at the PI's request. Correctness/security fixes 1-10 are done and tested; these clean-ups are not.
+Status stays `in review` until they are, and the fixes have not had a re-review.
+- `instructions.md` still states the ID rule inline (point to `upload_core/tests/recipe_id_vectors.json`), and still has
+  history/future wording (old format, "for now", "later", "currently").
+- Check no remaining test is named for extensions.
+- `serverLimits.maxEntries` may now be unused.
+- History not rewritten: the status commit is not last and some commits were not green on their own.
+- Display rule (analysis, finished, assets) is the next item, `server-display-rule`. Until then views read `acq/` only.
+- `check_deployed.sh` and the /testserver migration still assume the old contract (item `docs-and-deployed-check`).
