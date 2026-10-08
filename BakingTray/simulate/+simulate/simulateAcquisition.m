@@ -4,13 +4,13 @@ function result = simulateAcquisition(varargin)
     % function result = simulate.simulateAcquisition('Param1',val1,...)
     %
     % Purpose
-    % For each section 1..NumSections: build a synthetic RGB section image and a
-    % gray montage, append that section's lines to a fresh acquisition log (exact
-    % real format, see simulate.simulatedLogLines), call
-    % BakingTray.webpreview.updateSectionImage, print one line with the outcome (the token is
-    % never printed), then wait so the section took Interval seconds of wall
-    % clock. The first call passes 'ClearStage', true, as BakingTray does at the
-    % start of an acquisition.
+    % Makes the calls BakingTray makes to webupload.updateSectionImage. First the start
+    % call: a fresh recipe and log header and no image ('ClearStage', true empties the
+    % stage folder first). Then for each section 1..NumSections: build a synthetic RGB
+    % section image, append that section's lines to the acquisition log (exact real
+    % format, see simulate.simulatedLogLines) and call updateSectionImage. Finally the
+    % end call, with the last image and 'Finished', true. Each call prints one line with
+    % the outcome (the token is never printed), and the calls are Interval seconds apart.
     %
     % SAFETY: a real run must be given an explicit 'ConfigFile' (there is no
     % default, so a forgotten argument can never reach a production site) and the
@@ -30,8 +30,8 @@ function result = simulateAcquisition(varargin)
     % the run began, overlapping the previous section).
     %
     % Stopping: if a real upload fails with anything other than HTTP 429 (rate
-    % limited, which later sections may recover from), the run stops after that
-    % section instead of repeating the failure.
+    % limited, which later calls may recover from), the run stops after that
+    % call instead of repeating the failure.
     %
     % Examples
     % r = simulate.simulateAcquisition('ConfigFile',f,'NumSections',10)
@@ -41,14 +41,14 @@ function result = simulateAcquisition(varargin)
     % Inputs (optional param/val pairs)
     % 'ConfigFile' - Config JSON for the real upload (required unless DryRun).
     % 'NumSections' - Total number of sections, a positive integer (default 10).
-    % 'Interval' - Seconds per section (default 5). The server rejects uploads
+    % 'Interval' - Seconds between calls (default 5). The server rejects uploads
     %              closer together than simulate.simulationSpec().MinInterval
     %              (5 s); a real run with a smaller Interval warns
     %              'simulate:simulateAcquisition:fastInterval'.
     % 'DryRun' - If true use simulate.FakePoster: nothing touches the network,
     %            no config or site is needed, and the files that would be
     %            sent are recorded in result.dryRunCalls. Never aborts. Default false.
-    % 'Poster' - Function handle poster(folder,cfg), as for updateSectionImage;
+    % 'Poster' - Function handle poster(folder,cfg,micID,source), as for updateSectionImage;
     %            default @webupload.zipAndPost. Not allowed with DryRun.
     % 'AllowProduction' - If true skip the testserver/localhost url check (default false).
     % 'LogTimeScale' - Multiplies the durations written to the log only (default 1,
@@ -67,12 +67,14 @@ function result = simulateAcquisition(varargin)
     %
     % Outputs
     % result - Structure with fields: workDir, recipePath, logPath, dryRun, aborted,
-    %          abortReason ('' unless aborted), sections (struct array, only the
-    %          sections run: section, startTime, durationSec as logged, ok,
-    %          httpStatus, message, update = the updateSectionImage result),
-    %          dryRunCalls (FakePoster calls, [] if not a dry run).
+    %          abortReason ('' unless aborted), start and finish (the outcome of the
+    %          start and end calls: ok, httpStatus, message, update = the
+    %          updateSectionImage result; finish is [] if the run stopped earlier),
+    %          sections (struct array, only the sections run: section, startTime,
+    %          durationSec as logged, then the same fields as start), dryRunCalls
+    %          (FakePoster calls, [] if not a dry run).
     %
-    % See also BakingTray.webpreview.updateSectionImage, simulate.simulationSpec, simulate.FakePoster
+    % See also webupload.updateSectionImage, simulate.simulationSpec, simulate.FakePoster
 
 
     opts = parseOptions(varargin);
@@ -99,46 +101,49 @@ function result = simulateAcquisition(varargin)
     files = struct('recipe', '', 'log', fullfile(workDir, spec.LogName), ...
         'stageRoot', fullfile(workDir, 'stage'));
     N = opts.NumSections;
-    sections = cell(1,N);
-    aborted = false;
-    abortReason = '';
+    sections = {};
+    finish = [];
 
 
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    % Main loop over sections
-    for kk=1:N
-        tStart = tic;
+    % Start call, one call per section, end call. A call is made Interval seconds after the
+    % previous one; the run stops at the first failure that would repeat.
+    files.recipe = beginAcquisition(opts.RecipeFile, files.log, workDir, N, datetime('now'));
+    start = runUpdate([], files, backend, 'ClearStage', true);
+    printCall('start', start, opts);
+    aborted = shouldAbort(start, opts.DryRun);
+    abortReason = abortText('start', start, aborted);
+    tPrev = tic;
+
+    kk = 0;
+    while ~aborted && kk<N
+        kk = kk + 1;
+        pause(max(0, opts.Interval - toc(tPrev)));
+        tPrev = tic;
         loggedSec = simulate.loggedDurationSec( ...
             simulate.simulatedDurationSec(kk,opts.Interval), opts.LogTimeScale);
         startTime = datetime('now') - seconds(loggedSec);    % FINISHED lands at the time of writing
 
-        if kk==1
-            files.recipe = beginAcquisition(opts.RecipeFile, files.log, workDir, N, startTime);
-        end
-
         sections{kk} = runSection(kk, N, startTime, loggedSec, files, backend);
-        if opts.Verbose
-            printSection(sections{kk}, N, opts.DryRun);
-        end
+        label = sprintf('section %d/%d', kk, N);
+        printCall(label, sections{kk}, opts);
+        aborted = shouldAbort(sections{kk}, opts.DryRun);
+        abortReason = abortText(label, sections{kk}, aborted);
+    end %while
 
-        if shouldAbort(sections{kk}, opts.DryRun)
-            aborted = true;
-            abortReason = sprintf('section %d failed (HTTP %g): %s', kk, ...
-                sections{kk}.httpStatus, sections{kk}.message);
-            sections = sections(1:kk);
-            break
-        end
-
-        if kk<N
-            pause(max(0, opts.Interval - toc(tStart)));
-        end
-    end %for
+    if ~aborted
+        pause(max(0, opts.Interval - toc(tPrev)));
+        finish = runUpdate(simulate.simulatedImages(N,N), files, backend, 'Finished', true);
+        printCall('finish', finish, opts);
+        aborted = shouldAbort(finish, opts.DryRun);
+        abortReason = abortText('finish', finish, aborted);
+    end
 
 
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     result = struct('workDir', workDir, 'recipePath', files.recipe, 'logPath', files.log, ...
         'dryRun', opts.DryRun, 'aborted', aborted, 'abortReason', abortReason, ...
-        'sections', [sections{:}], 'dryRunCalls', []);
+        'start', start, 'finish', finish, 'sections', [sections{:}], 'dryRunCalls', []);
     if opts.DryRun
         result.dryRunCalls = backend.recorder.Calls;
     end
@@ -329,51 +334,75 @@ function file = defaultRecipe()
 end %defaultRecipe
 
 
+function out = runUpdate(img,files,backend,varargin)
+    % Call webupload.updateSectionImage and reduce its result to the fields the run reports
+    %
+    % function out = runUpdate(img,files,backend,varargin)
+    %
+    % varargin are further options for updateSectionImage ('ClearStage', 'Finished').
+
+    update = webupload.updateSectionImage(img, files.recipe, files.log, backend.cfg, ...
+        'Poster', backend.poster, 'StageRoot', files.stageRoot, varargin{:});
+    out = struct('ok', update.ok, 'httpStatus', update.post.httpStatus, ...
+        'message', update.post.message, 'update', update);
+end %runUpdate
+
+
 function sec = runSection(k,N,startTime,loggedSec,files,backend)
-    % Write section k's log lines, build its images and push it through updateSectionImage
+    % Write section k's log lines, build its image and push it through updateSectionImage
     %
     % function sec = runSection(k,N,startTime,loggedSec,files,backend)
 
     % Log lines first, as in a real acquisition where FINISHED precedes the call.
     writeLines(files.log, simulate.simulatedLogLines(k,N,startTime,loggedSec), 'a');
-    [img,montage] = simulate.simulatedImages(k,N);
-    update = BakingTray.webpreview.updateSectionImage(img, files.recipe, files.log, ...
-        backend.cfg, 'Montage', montage, ...
-        'Poster', backend.poster, 'StageRoot', files.stageRoot, 'ClearStage', k==1);
+    out = runUpdate(simulate.simulatedImages(k,N), files, backend);
     sec = struct('section', k, 'startTime', startTime, 'durationSec', loggedSec, ...
-        'ok', update.ok, 'httpStatus', update.post.httpStatus, ...
-        'message', update.post.message, 'update', update);
+        'ok', out.ok, 'httpStatus', out.httpStatus, 'message', out.message, 'update', out.update);
 end %runSection
 
 
-function stop = shouldAbort(sec,dryRun)
+function stop = shouldAbort(out,dryRun)
     % True if a real upload failed in a way that will repeat
     %
-    % function stop = shouldAbort(sec,dryRun)
+    % function stop = shouldAbort(out,dryRun)
     %
-    % 429 means "too fast"; the next section is slower. Anything else (auth, size,
+    % 429 means "too fast"; the next call is slower. Anything else (auth, size,
     % network, staging) will repeat, so stop instead of failing N times.
 
-    stop = ~dryRun && ~sec.ok && ~isequal(sec.httpStatus, 429);
+    stop = ~dryRun && ~out.ok && ~isequal(out.httpStatus, 429);
 end %shouldAbort
 
 
-function printSection(sec,N,dryRun)
-    % Print one line per section. The message is already token-scrubbed by zipAndPost.
+function text = abortText(label,out,aborted)
+    % Describe a failed call for result.abortReason; '' if the run goes on
     %
-    % function printSection(sec,N,dryRun)
+    % function text = abortText(label,out,aborted)
 
+    text = '';
+    if aborted
+        text = sprintf('%s failed (HTTP %g): %s', label, out.httpStatus, out.message);
+    end
+end %abortText
+
+
+function printCall(label,out,opts)
+    % Print one line per call. The message is already token-scrubbed by zipAndPost.
+    %
+    % function printCall(label,out,opts)
+
+    if ~opts.Verbose
+        return
+    end
     status = 'FAILED';
-    if sec.ok
+    if out.ok
         status = 'ok';
     end
     mode = '';
-    if dryRun
+    if opts.DryRun
         mode = ' (dry run)';
     end
-    fprintf('section %d/%d: %s%s, HTTP %g: %s\n', sec.section, N, status, mode, ...
-        sec.httpStatus, sec.message);
-end %printSection
+    fprintf('%s: %s%s, HTTP %g: %s\n', label, status, mode, out.httpStatus, out.message);
+end %printCall
 
 
 function writeLines(file,lines,permission)

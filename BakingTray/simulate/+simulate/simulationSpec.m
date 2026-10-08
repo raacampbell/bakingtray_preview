@@ -23,7 +23,6 @@ function s = simulationSpec()
     s.CanaryMarker = 'testserver';              % a real run's config url must contain this
     s.AcquireFraction = 0.8;                    % share of a section spent imaging; the rest is cutting
     s.ImageSize = [240 320];                    % section image [rows cols]
-    s.MontageSize = [200 300];
     s.DigitScale = 6;                           % pixels per font cell when stamping the section number
     s.DigitPad = 8;                             % dark box padding around the stamped number
 
