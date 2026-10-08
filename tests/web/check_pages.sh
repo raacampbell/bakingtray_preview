@@ -32,12 +32,12 @@ lint_ok() { php -l "$1" >/dev/null; }
 # GET a URL; on any curl failure print a FAIL line naming the URL and abort.
 get() {
   local out
-  if ! out="$(curl -fsS "$1" 2>&1)"; then echo "FAIL  GET $1 -> $out"; exit 1; fi
+  if ! out="$(curl -fsS "$1" 2>&1)"; then echo "FAIL  GET $1 -> $out" >&2; exit 1; fi
   printf '%s' "$out"
 }
 head_of() {
   local out
-  if ! out="$(curl -fsS -D - -o /dev/null "$1" 2>&1)"; then echo "FAIL  GET $1 -> $out"; exit 1; fi
+  if ! out="$(curl -fsS -D - -o /dev/null "$1" 2>&1)"; then echo "FAIL  GET $1 -> $out" >&2; exit 1; fi
   tr -d '\r' <<<"$out"
 }
 meta_url_of() { sed -n 's/.*data-meta-url="\([^"]*\)".*/\1/p' <<<"$1" | head -n1; }
@@ -69,7 +69,8 @@ mkdir -p test-upload/system_data/demo_site
 cp system_data/demo_site/meta.json test-upload/system_data/demo_site/meta.json
 
 UPLOADED_AT="$(php -r 'echo json_decode(file_get_contents("system_data/demo_site/meta.json"), true)["uploaded_at"];')"
-STALE_AFTER="$(php -r '$c = require "config.php"; echo (int) $c["stale_after_seconds"];')"
+# Each deployment's own configured threshold, read from its own config.php.
+stale_after_of() { php -r '$c = require $argv[1]; echo (int) $c["stale_after_seconds"];' "$1"; }
 
 php -S "localhost:$PORT" router.php >/dev/null 2>&1 &
 SERVER_PID=$!
@@ -81,6 +82,7 @@ curl -s -o /dev/null "http://localhost:$PORT/index.php" || { echo "FAIL  server 
 
 for base in "" "test-upload/"; do
   label="${base:-root}"
+  STALE_AFTER="$(stale_after_of "${base}config.php")"
   idx="$(get "http://localhost:$PORT/${base}index.php")"
   site="$(get "http://localhost:$PORT/${base}site.php?site=demo_site")"
   for pair in "index:$idx" "site:$site"; do
@@ -108,13 +110,17 @@ for base in "" "test-upload/"; do
   check "$label site: Cache-Control: no-store" body_has "$hdrs" 'Cache-Control: no-store'
 done
 
-# A non-numeric stale_after_seconds must degrade to 900, not break the page.
-mkdir badcfg
-cp test-upload/index.php test-upload/site.php badcfg/
-printf '<?php return array_merge(require __DIR__ . "/../test-upload/config.php", ["stale_after_seconds" => "abc"]);' > badcfg/config.php
-for path in "index.php" "site.php?site=demo_site"; do
-  html="$(get "http://localhost:$PORT/badcfg/${path}")"
-  check "bad stale_after_seconds, $path: data-stale-after is 900" body_has "$html" 'data-stale-after="900"'
+# An invalid stale_after_seconds (PHP literal below) must degrade to 900, not break the page.
+n=0
+for bad in "'abc'" 0 -5 0.5; do
+  n=$((n + 1))
+  mkdir "badcfg$n"
+  cp test-upload/index.php test-upload/site.php "badcfg$n/"
+  printf '<?php return array_merge(require __DIR__ . "/../test-upload/config.php", ["stale_after_seconds" => %s]);' "$bad" > "badcfg$n/config.php"
+  for path in "index.php" "site.php?site=demo_site"; do
+    html="$(get "http://localhost:$PORT/badcfg$n/${path}")"
+    check "stale_after_seconds=$bad, $path: data-stale-after is 900" body_has "$html" 'data-stale-after="900"'
+  done
 done
 
 # Missing script: pages must fall back to an unconditional refresh, no empty <script>.
