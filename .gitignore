@@ -1,6 +1,4 @@
 .DS_Store
-tokens.json
-**/tokens.json
 brainsaw_settings*.json
 **/brainsaw_settings*.json
 brainsaw/logs/*.log
