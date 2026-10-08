@@ -82,15 +82,13 @@ The server only accepts microscopes listed in the private settings file,
 `<repo>/brainsaw_settings.json` locally (next to `brainsaw/`, git-ignored;
 format in `instructions.md` section 2). It also defines the view URLs.
 
-1. Pick a site id and a microscope id (letters, digits, `_`, `-`), e.g.
-   `sim_local` and `sim_mic`.
-2. Run ONE of these; it prints one 64-character token. Use a new token for
-   every microscope and never paste one into an issue or chat.
+1. Pick a site id and a microscope id (a letter, then letters, digits, `_`,
+   `-`), e.g. `sim_local` and `sim_mic`.
+2. Run this; it prints one 64-character token. Use a new token for every
+   microscope and never paste one into an issue or chat.
 
    ```bash
-   "<repo>/brainsaw/scripts/generate_token.sh"    # runs openssl rand -hex 32
    openssl rand -hex 32
-   php -r 'echo bin2hex(random_bytes(32));'       # Windows cmd: php -r "echo bin2hex(random_bytes(32));"
    ```
 
 3. The SAME token goes into the settings file here and into the MATLAB config
@@ -192,8 +190,8 @@ part only adds a simulator microscope to the deployment at
 ### B1. Add a simulator microscope to the server's settings file
 
 Generate a NEW token locally (A3 step 2; never reuse a localhost token). Add a
-site (an unguessable ID: it is the view URL, e.g. `sim_` plus a few random
-hex characters) with one microscope, e.g. `sim_mic`, and the new token to the
+site (an unguessable ID: it is the view URL, e.g. the output of
+`echo "sim_$(openssl rand -hex 8)"`) with one microscope, e.g. `sim_mic`, and the new token to the
 test deployment's settings file on the server (`server-setup.md` section 4).
 Checkpoint: `https://<your-host>/testserver/<site id>` shows a card for the
 new microscope.

@@ -20,15 +20,15 @@ brainsaw/
   view.php         every other missing path lands here: a private view or the one 404 page
   index.php        neutral landing page; lists nothing
   router.php       local only: makes `php -S` apply the same rules as .htaccess (never deployed)
-  .htaccess        HTTPS, the Authorization pass-through, sending missing paths to view.php
+  .htaccess        denies every *.json and every .php but index/upload/view.php; no listings,
+                   CGI or MultiViews; the Authorization pass-through; HTTPS redirect; every
+                   missing path to view.php
   js/
     autorefresh.js        polls meta, reloads on change, live "ago"/stale (inlined by lib.php)
     jquery-3.7.1.min.js   self-hosted, so no page makes a third-party request
     jquery.imageLens.js   magnifier lens
   system_data/     <site_ID>/<mic_ID>/ per microscope, created by uploads; never served directly
   logs/            upload.log, one line per request; never served directly
-  scripts/
-    generate_token.sh     prints a fresh random token (never deployed)
 ```
 
 Automated tests live in `tests/web/` at the repo root, not in `brainsaw/`.
@@ -55,12 +55,15 @@ the repo root, git-ignored; on the server: the path `stage_server.sh` writes in)
 }
 ```
 
-- IDs and the panopticon word: letters, digits, `_` and `-` only. `display_name` is optional.
-  `panopticon` is optional (no all-sites view without it).
+- IDs and the panopticon word: a letter, then letters, digits, `_` and `-`. `display_name` is
+  optional. `panopticon` is optional (no all-sites view without it).
 - The file is re-read on every request: no restart needed after editing it.
-- It is validated on every load. The panopticon word must differ from every site ID, and
-  neither may equal a file or folder name in `brainsaw/` (case is ignored: `js`, `logs`,
-  `system_data`, `upload.php`, ...). An invalid file is logged to the PHP error log
+- It is validated on every load. The panopticon word and the site IDs must all differ, and
+  none may equal a file or folder name in `brainsaw/`; microscope IDs within a site must
+  differ; case is ignored throughout (`js`, `logs`, `system_data`, ...). To check a file
+  before uploading it, from the repo root:
+  `php -r 'require "brainsaw/lib.php"; echo bs_validate_settings(json_decode(file_get_contents($argv[1]), true), bs_reserved_names()) ?? "ok", "\n";' FILE`
+  (prints `ok` or the reason; never the tokens). An invalid file is logged to the PHP error log
   (`brainsaw: invalid settings file: <reason>`) and treated as empty: every view 404s and every
   upload is refused. Nothing about the problem is shown to visitors.
 - Treat site IDs and the panopticon word like passwords: they are the view URLs (§3). Use
@@ -89,13 +92,16 @@ and log files are never servable (a recipe can hold a pasted secret such as a Sl
 
 Every view response carries `Referrer-Policy: no-referrer` and `X-Robots-Tag: noindex,
 nofollow`, and the HTML has a robots `noindex` meta tag, so view URLs do not leak through
-Referer headers or search engines. Asset and link URLs are built from the deployment base
-(from `SCRIPT_NAME`), so pages work in any sub-folder.
+Referer headers or search engines. Asset and link URLs are built from the deployment base,
+which is where `brainsaw/` sits below the web server's `DOCUMENT_ROOT`, so pages work in any
+sub-folder; if the app is not under `DOCUMENT_ROOT` every view is the 404 page (logged).
 
 How requests reach `view.php`: `.htaccess` sends every path that is not an existing file or
 folder to it (and switches off `MultiViews`, which could otherwise map `/upload` to
-`upload.php`); `router.php` does the same for `php -S`, and also refuses `system_data/`,
-`logs/` and `.ht*` with 403, as Apache does.
+`upload.php`). Before that, it refuses with 403 every `*.json` and every `.php` other than
+`index.php`, `upload.php` and `view.php`, so `lib.php` and `config.php` cannot be fetched even
+if PHP stopped running; `system_data/.htaccess` and `logs/.htaccess` deny everything in those
+folders. `router.php` does all of this for `php -S`.
 
 ## 4. Running it locally
 
@@ -127,7 +133,7 @@ of a request over `post_max_size`, which shows up as a 403.
 Keep the token out of the command line: put the header in a file only you can read.
 
 ```bash
-umask 077; printf 'Authorization: Bearer %s\n' "$(cat /path/to/token.txt)" > /tmp/auth.txt
+( umask 077; printf 'Authorization: Bearer %s\n' "$(cat /path/to/token.txt)" > /tmp/auth.txt )
 U=http://localhost:8000/upload.php
 curl -X POST "$U" -H @/tmp/auth.txt -F site_id=SITE_ID -F microscope_id=MIC_ID \
   -F "data=@test_images/all_data.zip;type=application/zip"
@@ -152,14 +158,15 @@ From the repo root (`node` 18+ and `php` needed):
 ```bash
 node --test tests/web/          # JS logic, control flow, PHP/JS ago-format parity
 tests/web/check_pages.sh        # the server on a temp copy with random settings; optional port argument
-tests/web/check_stage.sh        # stage_server.sh never stages untracked files; deploy command keeps data
+tests/web/check_stage.sh        # stage_server.sh: only committed files, refusals, deploy keeps data
 ```
 
 `check_pages.sh` copies `brainsaw/` (tracked and new files only) into a temp folder, writes a
-settings file with random words, IDs and tokens (two sites, two microscopes in one, a
-panopticon word), serves it with `php -S ... router.php` under a sub-folder, and checks the
-views, the identical 404s, the asset route, direct-access refusals, uploads, rate limits,
-settings validation, headers and the auto-refresh wiring.
+settings file with random words, IDs and tokens (two sites, microscopes including one named
+`logs`, a panopticon word), serves it with `php -S ... router.php` under a sub-folder, and
+checks the views, the identical 404s (status, headers and body, GET and HEAD), the asset
+route, direct-access refusals, the URL base, uploads, logging, rate limits, settings
+validation, headers and the auto-refresh wiring.
 
 ## 5. What gets uploaded
 
@@ -178,17 +185,17 @@ so a stray `.php` or `.htaccess` is never written. It then writes `meta.json` wi
 
 ## 6. Adding and removing sites and microscopes
 
-1. Pick IDs (`[A-Za-z0-9_-]`): an unguessable site ID (it is that lab's view URL) and a short
-   microscope ID.
-2. Generate one token per microscope: `brainsaw/scripts/generate_token.sh`, `openssl rand -hex
-   32`, or `php -r 'echo bin2hex(random_bytes(32));'`. Never reuse a token.
+1. Pick IDs (§2): an unguessable site ID (it is that lab's view URL), e.g.
+   `s$(openssl rand -hex 8)`, and a short microscope ID.
+2. Generate one token per microscope with `openssl rand -hex 32`. Never reuse a token.
 3. Add the entries to the settings file (§2). No restart needed.
 4. Send the lab their view URL `<base>/<SITE_ID>`, and for each microscope its `siteID`, `micID`
    and token for the MATLAB config, by a private channel.
 
 Removing: delete the entry. Its data under `system_data/<site>/<mic>/` stays on disk until you
 delete it. To revoke a view without touching uploads, there is no separate switch: change the
-site ID (and move its data folder) or remove the site.
+site ID (and move its data folder) or remove the site. A new site ID also means a new
+`siteID` in the MATLAB config of every microscope of that site.
 
 ## 7. Config knobs (`config.php`)
 

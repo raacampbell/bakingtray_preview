@@ -96,13 +96,15 @@ From the project root (`brainsaw_web_preview/`):
 ./stage_server.sh
 ```
 
-This fills `staging/testserver/` with the **git-tracked** files of `brainsaw/` only (an
-untracked or ignored file, such as a local settings file, log, upload or editor swap file,
-can never be staged), leaves out the local-only `router.php` and `scripts/`, points the staged
-`config.php` at `/home/www/www/brainsaw_private/brainsaw_settings.json`, and runs safety checks
-(no settings, token or log file, no token-like string, the `.htaccess` rules present, PHP
-syntax). `staging/` mirrors the server's `public/` folder and is git-ignored. Re-run it after
-every change in `brainsaw/`; uncommitted edits to tracked files are included.
+This fills `staging/testserver/` with `brainsaw/` **as committed in HEAD** (`git archive`), so
+an untracked or ignored file, such as a local settings file, log, upload or editor swap file,
+can never be staged. It refuses to run while a tracked file under `brainsaw/` has uncommitted
+changes: commit first. It leaves out the local-only `router.php`, points the staged
+`config.php` at `/home/www/www/brainsaw_private/brainsaw_settings.json` (refusing any settings
+path inside the web root, `--webroot`, default `/home/www/public`), and runs safety checks (no
+settings, token or log file, no dotfile or symlink, no token-like string, the `.htaccess`
+rules present, PHP syntax). `staging/` mirrors the server's `public/` folder and is
+git-ignored. Re-run it after every committed change in `brainsaw/`.
 
 ## 4. The settings file: generate locally, keep outside the web root
 
@@ -110,10 +112,12 @@ Generate it in a private folder **outside the repo and outside Dropbox**, never 
 
 ```bash
 PRIV="$HOME/brainsaw_private_local"
-mkdir -p "$PRIV" && chmod 700 "$PRIV" && umask 077
+mkdir -p "$PRIV" && chmod 700 "$PRIV"
+(
+umask 077                             # in a subshell, so your shell's umask is unchanged
 TOKEN="$(openssl rand -hex 32)"
-SITE="lab_$(openssl rand -hex 4)"     # unguessable: this ID is the lab's view URL
-PAN="$(openssl rand -hex 8)"          # the panopticon word
+SITE="s$(openssl rand -hex 8)"        # unguessable: this ID is the lab's view URL
+PAN="p$(openssl rand -hex 8)"         # the panopticon word (IDs and words start with a letter)
 printf '%s\n' "$TOKEN" > "$PRIV/test_mic_token.txt"
 cat > "$PRIV/brainsaw_settings.json" <<EOF
 {"panopticon": "$PAN",
@@ -124,12 +128,14 @@ cat > "$PRIV/brainsaw_webpreview_test.json" <<EOF
 {"url": "https://brainsaw.org/testserver/upload.php", "siteID": "$SITE", "micID": "test_mic", "token": "$TOKEN"}
 EOF
 printf 'site view:  https://brainsaw.org/testserver/%s\npanopticon: https://brainsaw.org/testserver/%s\n' "$SITE" "$PAN" > "$PRIV/view_urls.txt"
-unset TOKEN PAN
+)
 ```
 
-Keep the token and the two view URLs in your password manager too. Add sites and microscopes
-later by editing the **server's** copy (format: `instructions.md` §2); it is re-read on every
-request. Check a hand-edited file with `php -r 'var_dump(json_decode(file_get_contents($argv[1])) !== null);' FILE`.
+The subshell also means `TOKEN`, `SITE` and `PAN` vanish when it ends. Keep the token and the
+two view URLs in your password manager too. Add sites and microscopes later by editing the
+**server's** copy (format: `instructions.md` §2); it is re-read on every request. Check a
+hand-edited file before uploading it with the `bs_validate_settings` one-liner in
+`instructions.md` §2.
 
 Put it on the server (only this one file goes there):
 
@@ -162,21 +168,20 @@ The first is a dry run (`-n`): read its list before running the second.
 `public/testserver/`, then delete by hand every file and folder there that is not in
 `staging/testserver/`, except `system_data/<site>/` folders and `logs/*.log`.
 
-**After deploying this version over an older one**, delete by hand what the protect filter
-keeps but nothing uses any more: the old flat data folders such as
-`public/testserver/system_data/test_site/` (data now lives in `system_data/<site>/<mic>/`) and
-the old `/home/www/www/brainsaw_private/tokens.json`.
-
-Permissions: directories 755 and files 644 (set by `--chmod`). `system_data/` and `logs/` must
+Permissions: directories 755 and files 644, set by `--chmod` on **every** deploy, so a mode
+changed by hand on the server does not survive the next deploy. `system_data/` and `logs/` must
 be writable by PHP, which runs as your account under FastCGI, so 755 is enough. If uploads fail
-with 500 and the log says it cannot write, try 775 on those two folders.
+with 500 and the log says it cannot write, that is a host problem to raise with IONOS, not
+something to fix by hand.
 
 ## 6. PHP limits
 
 This host's limits (1024M / 128M) are plenty: preview zips are a few MB. On a host with low
 limits a too-large upload fails confusingly (PHP drops all form fields, giving a 403 instead of
-a clean 413): raise `post_max_size` and `upload_max_filesize` with a `php.ini` in the app folder
-(IONOS's documented method), or lower `max_zip_size` in `config.php` to match.
+a clean 413): raise `post_max_size` and `upload_max_filesize` (IONOS's documented method is a
+`php.ini` in the app folder; a file put there by hand is deleted by the next `--delete` deploy,
+so it would have to be committed in `brainsaw/`), or lower `max_zip_size` in `config.php` to
+match.
 
 ## 7. Test the deployment
 
@@ -198,12 +203,13 @@ per microscope every 5 s), ends with `N passed, M failed` and exits non-zero on 
 
 It checks: http redirects to https; upload GET 405, no token 401, wrong token, missing
 `microscope_id`, unknown site and unknown microscope all 403 (unknown site and microscope with
-the same reply); a real zip upload succeeds; the settings file, `tokens.json`, `upload.log`, the
-`system_data/` listing and the raw `meta.json`, recipe, acquisition log and image are all 403 or
-404; the landing page does not name the site; the site view links the microscope and sends
+the same reply); a real zip upload succeeds; the settings file, `upload.log`, `lib.php`,
+`router.php`, the `system_data/` listing and the raw `meta.json`, recipe, acquisition log and
+image are all 403 or 404, and the site's `system_data/` folder answers like a made-up one; the
+landing page does not name the site; the site view links the microscope and sends
 `Referrer-Policy` and `X-Robots-Tag`; the microscope page shows the image, served through PHP
-as `image/jpeg`; `?f=meta` works and `?f=recipe` is 404; an unknown word gives the same 404 as a
-random path.
+as `image/jpeg`; `?f=meta` works and `?f=recipe` is 404; an unknown word, a random path and the
+site view with a trailing slash all give the same 404. The site ID never appears in the output.
 
 "valid zip upload" passing means the `Authorization` header reaches PHP. If it fails with 401,
 see §9.
@@ -264,8 +270,7 @@ a redirect as a failure. For a simulated acquisition against the test deployment
 
 - [ ] `diag.php` (and any other scratch PHP file) is gone from the server.
 - [ ] No domain or subdomain serves `/home/www/www` or a folder inside it (see "Known facts").
-- [ ] Only `brainsaw_settings.json` is in `/home/www/www/brainsaw_private/` (mode 600, folder 700);
-      the old `tokens.json` is deleted.
+- [ ] Only the settings file is in `/home/www/www/brainsaw_private/` (mode 600, folder 700).
 - [ ] `PRIV` is outside the repo and Dropbox; tokens and view URLs are in your password manager.
 - [ ] Site IDs and the panopticon word are random, and none appears in the repo, an issue or a chat.
 - [ ] `tests/web/check_deployed.sh` finished with 0 failed, and §7.2 behaved as described.
@@ -292,15 +297,18 @@ above; with the `.htaccess` rewrite rule a real zip upload authenticates; the `.
 blocked.
 
 **Verified locally only (PHP built-in server with `router.php`):** everything in
-`tests/web/check_pages.sh` and `tests/web/check_stage.sh`, `check_deployed.sh` against a local
-server (all checks but the https redirect), and a simulated acquisition uploaded from MATLAB.
+`tests/web/check_pages.sh` and `tests/web/check_stage.sh`; a simulated acquisition uploaded
+from MATLAB; and a copy of `check_deployed.sh` with only its https requirement removed, run
+against a local server, which passed every check except the http-to-https redirect (the
+built-in server has no https). The script itself has not yet been run against IONOS.
 
 **Not yet verified on IONOS:**
 
-1. That `RewriteRule ^ view.php` routes missing paths to `view.php` and that `SCRIPT_NAME` is
-   `/testserver/view.php` there (the pages build every URL from it). `check_deployed.sh` checks
-   both indirectly (site view 200, image served through PHP, identical 404s).
-2. `Options -MultiViews` being accepted (a 500 on every page would show it is not; see §9).
+1. That `RewriteRule ^ view.php` routes missing paths to `view.php`, and that `DOCUMENT_ROOT`
+   is `/home/www/public` for the app (the pages build every URL from it). `check_deployed.sh`
+   checks both indirectly (site view 200, image served through PHP, identical 404s).
+2. `Options -MultiViews` and the two `FilesMatch` blocks being accepted (a 500 on every page
+   would show they are not; see §9).
 3. SSH/rsync access for the deploy command.
 4. The 30 MB upload (`--big`), auto-refresh and the magnifier in a real browser.
 5. That no domain serves `/home/www/www` (the panel check under "Known facts").
