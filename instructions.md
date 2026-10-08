@@ -226,8 +226,25 @@ the implementation returns, not aspirational.
 
 `config.php`'s `stale_after_seconds` (default 900 = 15 min) controls when a
 site's card turns red. To see it without waiting 15 minutes, temporarily
-lower it (e.g. to `10`), upload once, then wait 10s and reload — don't ship
-that change.
+lower it (e.g. to `10`), upload once, then watch the page: the "X ago" text
+counts up and the card turns red about 10 s after the upload **without a
+reload**, because the page recomputes both every 5 s from the embedded
+`uploaded_at` and `stale_after_seconds`. Don't ship that config change.
+
+### Testing auto-refresh
+
+Both pages poll each site's `meta.json` every 5 s (`js/autorefresh.js`) and
+reload themselves when `uploaded_at` differs from what the page was rendered
+with. With the dev server running, open the landing page and a site page,
+upload with the simulator or curl (see the test matrix), and both should
+update within ~5 s with no manual reload. Polling pauses in background tabs
+and runs immediately when the tab is shown again. Fetch errors/404s are
+ignored. Without JavaScript the pages fall back to a 60 s `<noscript>` meta
+refresh.
+
+Automated checks: `node --test brainsaw/tests/` (pure JS logic) and
+`bash brainsaw/tests/check_pages.sh` (renders the pages from a throwaway
+copy and checks the embedded script and attributes).
 
 ---
 
@@ -447,6 +464,18 @@ of these — edit both if you want the same limits in both places.
   (minutes) against section number, parsed from every `acqLog*.txt` file
   present by `bs_parse_acqlogs()`. Multiple log files for one site are
   merged and de-duplicated by section number. The dashed line is the mean.
+
+### Auto-refresh and "last updated"
+
+`bs_watch_attrs()` puts `data-meta-url`, `data-uploaded-at` and
+`data-stale-after` on each landing-page card and on the site page's status
+line. `js/autorefresh.js` (the single source, inlined into both pages by
+`bs_autorefresh_script()` so `test-upload/` needs no copy) polls those meta
+URLs every 5 s, reloads when any `uploaded_at` changed (including none to
+some), and recomputes the "X ago" text and the red stale styling using the
+same wording and threshold as `bs_human_ago()` and the server's stale rule.
+The script never builds URLs itself, so changing the data folder layout only
+affects the PHP that emits the attributes.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 type: infrastructure
 complexity: simple
-status: in progress
+status: in review
 ---
 
 # Viewer pages refresh themselves when new data is uploaded
