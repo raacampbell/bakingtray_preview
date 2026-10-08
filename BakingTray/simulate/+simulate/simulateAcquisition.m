@@ -231,16 +231,18 @@ end %checkTarget
 
 
 function isTest = isTestUrl(url,marker)
-    % True if url contains the canary marker or its host is exactly localhost or 127.0.0.1
+    % True if a path segment of url is the canary marker or its host is exactly localhost or 127.0.0.1
     %
     % function isTest = isTestUrl(url,marker)
     %
     % The host must be followed by an optional :port and then '/' or the end of the url, so
     % http://localhost@evil.example/ (userinfo), http://localhost.evil.com/ and
-    % https://x/localhost are not local.
+    % https://x/localhost are not local. The marker must be a whole segment of the path
+    % (not the host, a query string or part of a longer name), e.g. https://x/testserver/upload.php.
 
     isLocal = ~isempty(regexp(url, '^https?://(localhost|127\.0\.0\.1)(:\d+)?(/|$)', 'once'));
-    isTest = isLocal || contains(url, marker);
+    inPath = ~isempty(regexp(url, ['^https?://[^/?#]+(/[^/?#]*)*/', regexptranslate('escape', marker), '(/|$)'], 'once'));
+    isTest = isLocal || inPath;
 end %isTestUrl
 
 
