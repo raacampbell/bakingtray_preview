@@ -1,7 +1,7 @@
 ---
 type: infrastructure
 complexity: complex
-status: in review
+status: in progress
 ---
 
 # Sites with microscopes, private site views and a hidden all-sites view
@@ -97,3 +97,17 @@ Brainsaw will serve several labs ("sites"), each with one or more microscopes. R
 - node --test tests/web/, tests/web/check_stage.sh, and the MATLAB suite (both folders) pass; MATLAB dry run runs.
 - A real local end-to-end: start php -S with a temp settings file, run the simulator (DryRun false) against it
   for 2 sections with a site/mic in that file, and confirm with curl that the microscope page shows section 2.
+
+## Remaining review fixes
+All 20 review items are done. The only thing not repeated after the review fixes is the real
+local end-to-end (simulator with DryRun false). It passed before the fixes and is due again
+before merge.
+
+One-off migration steps for the PI (first deploy of this version to /testserver):
+- Commit first: stage_server.sh now refuses uncommitted changes under brainsaw/.
+- Delete the old flat data folder public/testserver/system_data/test_site/. The rsync protect
+  filter keeps it, but nothing reads it any more.
+- Delete /home/www/www/brainsaw_private/tokens.json. Create brainsaw_settings.json there as in
+  server-setup.md section 4. IDs and words must start with a letter.
+- Delete any local brainsaw/tokens.json in the main checkout. It is no longer git-ignored.
+- Check in the IONOS panel that no domain serves /home/www/www.
