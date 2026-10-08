@@ -1,7 +1,7 @@
 function out = toUint8(img,range)
     % Convert a gray (HxW) or RGB (HxWx3) numeric image to rounded uint8
     %
-    % function out = BakingTray.webpreview.toUint8(img,range)
+    % function out = webupload.toUint8(img,range)
     %
     % Purpose
     % Pure (no I/O). The image must be at least 2x2: vectors and scalars are not images.
@@ -31,13 +31,13 @@ function out = toUint8(img,range)
     % out - uint8 image the same size as img.
     %
     % Errors
-    % 'webpreview:toUint8:badImage' for non-numeric, wrongly shaped or unsupported-class
+    % 'webupload:toUint8:badImage' for non-numeric, wrongly shaped or unsupported-class
     %     images, for NaN or Inf in a floating-point image, and for floating-point
     %     images outside [0,1] when no range is given.
-    % 'webpreview:toUint8:badRange' if range is non-numeric, or is not empty or a
+    % 'webupload:toUint8:badRange' if range is non-numeric, or is not empty or a
     %     finite [lo hi] with hi>lo.
     %
-    % See also: BakingTray.webpreview.stageFiles
+    % See also: webupload.stageFiles
 
 
     narginchk(1,2)
@@ -47,34 +47,34 @@ function out = toUint8(img,range)
     end
 
     if ~isnumeric(img)
-        error('webpreview:toUint8:badImage', ...
+        error('webupload:toUint8:badImage', ...
             'Image must be numeric; got class "%s".', class(img))
     end
     if ~isnumeric(range)
-        error('webpreview:toUint8:badRange', ...
+        error('webupload:toUint8:badRange', ...
             'Range must be numeric; got class "%s".', class(range))
     end
 
     % Integer-class ranges would saturate and integer-divide
     range = double(range);
     if ~isempty(range) && ~(numel(range)==2 && all(isfinite(range)) && range(2)>range(1))
-        error('webpreview:toUint8:badRange', ...
+        error('webupload:toUint8:badRange', ...
             'Range must be empty or a finite [lo hi] with hi > lo.')
     end
 
     validDims = (ndims(img)==2 || (ndims(img)==3 && size(img,3)==3)) ...
                 && size(img,1)>=2 && size(img,2)>=2;
     if ~validDims
-        error('webpreview:toUint8:badImage', ...
+        error('webupload:toUint8:badImage', ...
             'Image must be at least 2x2, HxW or HxWx3; got size [%s].', num2str(size(img)))
     end
     if ~ismember(class(img),{'uint8','uint16','int16','single','double'})
-        error('webpreview:toUint8:badImage', 'Unsupported image class "%s".', class(img))
+        error('webupload:toUint8:badImage', 'Unsupported image class "%s".', class(img))
     end
 
     x = double(img);
     if isfloat(img) && any(~isfinite(x(:)))
-        error('webpreview:toUint8:badImage', 'Floating-point image contains NaN or Inf.')
+        error('webupload:toUint8:badImage', 'Floating-point image contains NaN or Inf.')
     end
 
     if isempty(range)
@@ -89,7 +89,7 @@ end % toUint8
 function range = defaultRange(img,x)
     % Class-dependent [lo hi] used when the caller gives no range
     %
-    % function range = BakingTray.webpreview.toUint8>defaultRange(img,x)
+    % function range = webupload.toUint8>defaultRange(img,x)
     %
     % Purpose
     % The mappings are described in toUint8. For uint16 and int16 the upper limit is the
@@ -103,7 +103,7 @@ function range = defaultRange(img,x)
     % range - [lo hi] to map to 0 and 255.
     %
     % Errors
-    % 'webpreview:toUint8:badImage' if a single or double image is not within [0,1].
+    % 'webupload:toUint8:badImage' if a single or double image is not within [0,1].
 
     switch class(img)
         case 'uint8'
@@ -112,7 +112,7 @@ function range = defaultRange(img,x)
             range = [0 max(max(x(:)),1)]; % max 0 would divide by zero
         otherwise % single, double
             if min(x(:))<0 || max(x(:))>1
-                error('webpreview:toUint8:badImage', ...
+                error('webupload:toUint8:badImage', ...
                     'Floating-point images must lie within [0,1] (or pass a range).')
             end
             range = [0 1];

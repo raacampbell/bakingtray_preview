@@ -1,31 +1,45 @@
 function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
-    % Stage and upload the web preview after a section. Never throws
+    % Stage and upload the web preview for one section or run. Never throws
     %
-    % function result = BakingTray.webpreview.updateSectionImage(img,recipePath,logPath,cfg, ...
-    %                                                              'Param1',val1,...)
+    % function result = webupload.updateSectionImage(img,recipePath,logPath,cfg, ...
+    %                                                 'Param1',val1,...)
     %
     % Purpose
-    % The call BakingTray makes when a section completes. It stages img, the optional
-    % 'Montage', the recipe and the acquisition log with BakingTray.webpreview.stageFiles, and
-    % writes status.json (finished = false), and uploads the stage folder with
-    % webupload.zipAndPost as source 'acq'. The microscope ID is SYSTEM.ID of the recipe
-    % passed in (webupload.readRecipe). If it cannot be read, or is not a valid ID,
-    % nothing is staged or uploaded and the call fails. The config is a
+    % The call that instrument and analysis code make to update the web preview: BakingTray
+    % when it starts, after each section and when it finishes (source 'acq'), StitchIt for
+    % its analysis (source 'analysis'). It stages the image, the optional 'Montage', the
+    % recipe and the acquisition log with webupload.stageFiles, writes status.json, and
+    % uploads the stage folder with webupload.zipAndPost. The microscope ID is SYSTEM.ID of
+    % the recipe passed in (webupload.readRecipe). If it cannot be read, or is not a valid
+    % ID, nothing is staged or uploaded and the call fails. The config is a
     % webupload.webConfig object that the caller builds once and passes in.
-    % Image conversion and 'Range' are documented in BakingTray.webpreview.toUint8.
     %
-    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/acq, with StageRoot
-    % defaulting to tempdir. It is reused between calls, so each section replaces the
-    % previous files instead of accumulating them. If a new recipe or log cannot be
-    % staged, the previous copy stays and is uploaded; this is reported (see
-    % result.stale). 'ClearStage',true empties the managed stage folder first; to do
-    % that at the start of a new acquisition without uploading anything, use
-    % BakingTray.webpreview.clearStage.
+    % img is [], a numeric array or the path of a jpg:
+    %   []             - no image. Any image staged by an earlier call is deleted first, so
+    %                    an old sample's image can never go up with a new recipe. Use it for
+    %                    the call at the start of a run, so the page shows the new recipe.
+    %   numeric array  - converted with webupload.toUint8 (see 'Range').
+    %   path of a jpg  - copied in as LastCompleteSection.jpg.
+    % Anything else fails the call. 'Montage' takes the same kinds of value, but only with
+    % Source 'analysis': with 'acq' the call fails and nothing is staged or sent.
+    %
+    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/<source>, with
+    % StageRoot defaulting to tempdir. It is reused between calls, so each call replaces
+    % the previous files instead of accumulating them. The recipe is always staged afresh
+    % from recipePath. If a new log cannot be staged, the previous copy stays and is
+    % uploaded; this is reported (see result.stale). 'ClearStage',true empties the
+    % managed stage folder first; to do that without uploading anything, use
+    % webupload.clearStage.
+    %
+    % 'Finished',true marks the run as ended in status.json. The server answers HTTP 429
+    % to an upload that follows another from the same site, microscope and source within
+    % its minimum interval. A Finished call must not be lost, so it waits that interval
+    % plus one second and tries once more; other calls are not retried.
     %
     % Deliberate catch-all: a section completing must never be interrupted by the
     % preview, so every failure inside the call (config, image or option problems,
     % staging, network, a throwing poster) is turned into a warning
-    % 'webpreview:updateSectionImage:failed' ("id: message") and result.ok = false. The
+    % 'webupload:updateSectionImage:failed' ("id: message") and result.ok = false. The
     % warning call itself is guarded, so warning('error',...) settings cannot make this
     % function throw. Errors in the arguments img, recipePath, logPath and cfg (which must
     % be a scalar, valid webConfig; a missing cfg is a failure too) are caught too, but a
@@ -36,17 +50,23 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % messages, including those from a custom Poster, with webConfig.scrub.
     %
     % Inputs
-    % img        - Numeric HxW or HxWx3 image of the section (see BakingTray.webpreview.toUint8).
+    % img        - [], a numeric HxW or HxWx3 image of the section (see
+    %              webupload.toUint8) or the path of a jpg.
     % recipePath - Path to the recipe file.
     % logPath    - Path to the acquisition log file.
     % cfg        - webupload.webConfig object.
     %
     % Inputs (optional param/val pairs)
-    % 'Montage'    - Numeric montage image to stage as well. Default is [].
-    % 'Range'      - Numeric [lo hi] used to scale the images. Default is [].
+    % 'Source'     - 'acq' (default) or 'analysis'.
+    % 'Montage'    - Image to stage as montage.jpg, as for img. Only with Source
+    %                'analysis'. Default is [].
+    % 'Range'      - Numeric [lo hi] used to scale numeric images. Default is [].
+    % 'Finished'   - Logical scalar written to status.json. Default is false.
+    % 'ConnectTimeout', 'ResponseTimeout' - Seconds. Passed to the upload for this call
+    %                only (see webupload.postZip). Default is the config values.
     % 'Poster'     - Function handle with the zipAndPost signature,
-    %                poster(folder,cfg,micID,source) -> struct(ok,httpStatus,message) with char
-    %                message, where cfg is a webupload.webConfig object. Default is
+    %                poster(folder,cfg,micID,source,...) -> struct(ok,httpStatus,message) with
+    %                char message, where cfg is a webupload.webConfig object. Default is
     %                @webupload.zipAndPost; tests inject a fake.
     % 'StageRoot'  - Non-empty text scalar. Folder holding the stage folders. Default is
     %                tempdir.
@@ -58,16 +78,15 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %   ok          - true if the upload succeeded.
     %   stage       - stageFiles result; [] if not reached.
     %   post        - struct with ok, httpStatus and message.
-    %   stageDir    - '' if not reached; a char path built from StageRoot, whereas
-    %                 stage.files are canonical, symlink-resolved paths.
+    %   stageDir    - '' if not reached; a char path built from StageRoot.
     %   recipeFresh - this call staged a new recipe.
     %   logFresh    - this call staged a new log.
     %   stale       - either of the above is false after staging. A notice
-    %                 'webpreview:updateSectionImage:stale' names the file when the
+    %                 'webupload:updateSectionImage:stale' names the file when the
     %                 upload otherwise succeeded.
     %   error       - scrubbed MException; [] on success.
     %
-    % See also: BakingTray.webpreview.clearStage, BakingTray.webpreview.stageFiles, webupload.zipAndPost
+    % See also: webupload.clearStage, webupload.stageFiles, webupload.zipAndPost
 
 
     result = emptyResult;
@@ -80,7 +99,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
 
     try
         if isempty(cfg)
-            error('webpreview:updateSectionImage:badConfig', ...
+            error('webupload:updateSectionImage:badConfig', ...
                 'cfg must be a webupload.webConfig object.')
         end
 
@@ -100,24 +119,24 @@ end % updateSectionImage
 function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % Stage the files, then upload the stage folder, recording what happened in result
     %
-    % function result = BakingTray.webpreview.updateSectionImage>runPipeline(result,img,recipePath,logPath,cfg,opts)
+    % function result = webupload.updateSectionImage>runPipeline(result,img,recipePath,logPath,cfg,opts)
     %
     % Purpose
-    % The part of updateSectionImage that runs inside its try/catch. Reads the microscope ID
-    % from the recipe, builds the stage folder path from cfg.siteID, the ID and
-    % opts.StageRoot (BakingTray.webpreview.stageDirFor checks both IDs, so they are safe as
-    % folder names), empties it if opts.ClearStage is true, stages the files with
-    % BakingTray.webpreview.stageFiles, writes status.json and uploads the folder with
-    % opts.Poster.
+    % The part of updateSectionImage that runs inside its try/catch. Refuses a montage
+    % for source 'acq'. Reads the microscope ID from the recipe, builds the stage folder
+    % path from cfg.siteID, the ID, opts.StageRoot and opts.Source (webupload.stageDirFor
+    % checks the IDs, so they are safe as folder names), empties it if opts.ClearStage is
+    % true, stages the files with webupload.stageFiles, writes status.json and uploads the
+    % folder with opts.Poster, once more after a 429 if opts.Finished.
     %
     % Anything that goes wrong before staging has finished is thrown and caught by
     % updateSectionImage. After that, failures are written to result.error instead, so the
-    % stage information survives into the returned result. If staging did not complete
-    % nothing is uploaded.
+    % stage information survives into the returned result. If staging did not complete,
+    % or left no recipe (the server refuses an upload without one), nothing is uploaded.
     %
     % Inputs
     % result     - Structure from emptyResult, to be filled in.
-    % img        - Numeric HxW or HxWx3 image of the section.
+    % img        - [], a numeric image or the path of a jpg.
     % recipePath - Path to the recipe file.
     % logPath    - Path to the acquisition log file.
     % cfg        - webupload.webConfig object.
@@ -128,14 +147,19 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     %          filled in. post and ok are set once the poster has returned. error is set if
     %          staging was incomplete or the poster threw.
 
-    % Read from the source recipe, never from a copy left in the stage by an earlier call
-    micID = webupload.readRecipe(char(recipePath));
-    stageDir = BakingTray.webpreview.stageDirFor(cfg,micID,opts.StageRoot);
-    if opts.ClearStage
-        BakingTray.webpreview.clearStageDir(stageDir);
+    if ~(isnumeric(opts.Montage) && isempty(opts.Montage)) && ~strcmp(opts.Source,'analysis')
+        error('webupload:updateSectionImage:montageNotAllowed', ...
+            'A montage can only be sent with Source ''analysis'', not ''%s''.', opts.Source)
     end
 
-    result.stage = BakingTray.webpreview.stageFiles(img,recipePath,logPath,stageDir, ...
+    % Read from the source recipe, never from a copy left in the stage by an earlier call
+    micID = webupload.readRecipe(char(recipePath));
+    stageDir = webupload.stageDirFor(cfg,micID,opts.StageRoot,opts.Source);
+    if opts.ClearStage
+        webupload.clearStageDir(stageDir);
+    end
+
+    result.stage = webupload.stageFiles(img,recipePath,logPath,stageDir, ...
                         'Montage',opts.Montage,'Range',opts.Range);
     result.stageDir = stageDir;
     result.recipeFresh = result.stage.recipeStaged;
@@ -143,16 +167,20 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     result.stale = ~(result.recipeFresh && result.logFresh);
 
 
-    if ~result.stage.stageOk
+    if ~result.stage.stageOk || ~result.recipeFresh
         % stageFiles has already warned with the cause; do not upload a partial stage
-        result.error = MException('webpreview:updateSectionImage:stageFailed', ...
+        result.error = MException('webupload:updateSectionImage:stageFailed', ...
             'staging in "%s" did not complete, nothing uploaded', stageDir);
         return
     end
 
     try
-        webupload.writeStatus(stageDir,false);
-        result.post = callPoster(opts.Poster,stageDir,cfg,micID);
+        webupload.writeStatus(stageDir,opts.Finished);
+        result.post = callPoster(opts,stageDir,cfg,micID);
+        if opts.Finished && isequal(result.post.httpStatus,429)
+            pause(webupload.serverLimits().minUploadIntervalSec + 1)
+            result.post = callPoster(opts,stageDir,cfg,micID);
+        end
         result.ok = result.post.ok;
     catch err
         result.error = err;
@@ -163,19 +191,20 @@ end % runPipeline
 function opts = parseOptions(varargin)
     % Parse and validate the param/val options of updateSectionImage
     %
-    % function opts = BakingTray.webpreview.updateSectionImage>parseOptions(varargin)
+    % function opts = webupload.updateSectionImage>parseOptions(varargin)
     %
     % Purpose
     % Uses inputParser, so unknown names and values of the wrong type throw. Text options
     % may arrive as strings; they are converted to char because everything downstream uses
-    % char paths.
+    % char paths. Montage is checked further by webupload.stageFiles.
     %
     % Inputs
     % varargin - The 'Param1',val1,... pairs documented in updateSectionImage.
     %
     % Outputs
-    % opts - Structure with fields Montage, Range, Poster, StageRoot (char) and
-    %        ClearStage (logical).
+    % opts - Structure with fields Source and StageRoot (char), Montage, Range, Finished
+    %        and ClearStage (logical), Poster, and the timeouts given as PosterArgs: a
+    %        cell row of 'Name',value pairs to append to the poster call.
 
     % True if x is a char row vector or string scalar with at least one character.
     isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
@@ -183,13 +212,20 @@ function opts = parseOptions(varargin)
     % true if x is a logical scalar or a real, non-NaN numeric scalar.
     isLogicalScalar = @(x) isscalar(x) && (islogical(x) || (isnumeric(x) && isreal(x) && ~isnan(x)));
 
+    % true if x is [] (not given) or a positive finite scalar number.
+    isTimeout = @(x) isnumeric(x) && (isempty(x) || (isscalar(x) && isreal(x) && isfinite(x) && x>0));
+
 
     params = inputParser;
-    params.FunctionName = 'BakingTray.webpreview.updateSectionImage';
+    params.FunctionName = 'webupload.updateSectionImage';
     params.CaseSensitive = false;
 
-    params.addParameter('Montage', [], @isnumeric)
+    params.addParameter('Source', 'acq', @(x) isNonEmptyText(x) && ismember(char(x),{'acq','analysis'}))
+    params.addParameter('Montage', [], @(x) isnumeric(x) || ischar(x) || isstring(x))
     params.addParameter('Range', [], @isnumeric)
+    params.addParameter('Finished', false, isLogicalScalar)
+    params.addParameter('ConnectTimeout', [], isTimeout)
+    params.addParameter('ResponseTimeout', [], isTimeout)
     params.addParameter('Poster', @webupload.zipAndPost, ...
                         @(x) isa(x,'function_handle') && isscalar(x))
     params.addParameter('StageRoot', tempdir, isNonEmptyText)
@@ -198,39 +234,48 @@ function opts = parseOptions(varargin)
 
     opts = params.Results;
 
+    opts.Source = char(opts.Source);
     opts.StageRoot = char(opts.StageRoot);
+    opts.Finished = logical(opts.Finished);
     opts.ClearStage = logical(opts.ClearStage);
+
+    opts.PosterArgs = {};
+    for name = {'ConnectTimeout','ResponseTimeout'}
+        if ~isempty(opts.(name{1}))
+            opts.PosterArgs = [opts.PosterArgs, name, {opts.(name{1})}];
+        end
+    end %for
 end % parseOptions
 
 
-
-
-function post = callPoster(poster,stageDir,cfg,micID)
+function post = callPoster(opts,stageDir,cfg,micID)
     % Call the poster and check that its reply has the expected form
     %
-    % function post = BakingTray.webpreview.updateSectionImage>callPoster(poster,stageDir,cfg,micID)
+    % function post = webupload.updateSectionImage>callPoster(opts,stageDir,cfg,micID)
     %
     % Purpose
     % A poster that throws propagates to the catch in updateSectionImage. Errors with
-    % 'webpreview:updateSectionImage:badReply' if the reply is not a scalar structure with
-    % the fields ok (logical scalar), httpStatus and message (char).
+    % 'webupload:updateSectionImage:badReply' if the reply is not a scalar structure with
+    % the fields ok (logical scalar), httpStatus and message (char). The timeouts are
+    % appended to the call only when the caller gave them.
     %
     % Inputs
-    % poster   - Function handle, poster(stageDir,cfg,micID,'acq'), as for the 'Poster' option.
+    % opts     - Options structure from parseOptions: the Poster, Source and PosterArgs
+    %            fields are used.
     % stageDir - Char path to the folder to upload.
     % cfg      - webupload.webConfig object.
-    % micID    - Microscope ID read from the staged recipe.
+    % micID    - Microscope ID read from the recipe.
     %
     % Outputs
     % post - The poster's reply: structure with fields ok, httpStatus and message.
 
-    post = poster(stageDir,cfg,micID,'acq');
+    post = opts.Poster(stageDir,cfg,micID,opts.Source,opts.PosterArgs{:});
     wellFormed = isstruct(post) && isscalar(post) ...
                  && all(isfield(post,{'ok','httpStatus','message'})) ...
                  && islogical(post.ok) && isscalar(post.ok) ...
                  && ischar(post.message) && (isrow(post.message) || isempty(post.message));
     if ~wellFormed
-        error('webpreview:updateSectionImage:badReply', ...
+        error('webupload:updateSectionImage:badReply', ...
             ['poster did not return struct(ok, httpStatus, message) ', ...
              'with logical ok and char message'])
     end
@@ -240,11 +285,11 @@ end % callPoster
 function result = finalise(result,caught,cfg)
     % Scrub the token from the message and fill result.error for every kind of failure
     %
-    % function result = BakingTray.webpreview.updateSectionImage>finalise(result,caught,cfg)
+    % function result = webupload.updateSectionImage>finalise(result,caught,cfg)
     %
     % Purpose
     % The error reported is, in order of preference, the error caught by updateSectionImage,
-    % then result.error set by runPipeline, then a 'webpreview:updateSectionImage:postFailed'
+    % then result.error set by runPipeline, then a 'webupload:updateSectionImage:postFailed'
     % error built from the poster's message. On success only result.post.message is scrubbed.
     % The reported error is rebuilt from the scrubbed text and its message is copied to
     % result.post.message.
@@ -266,7 +311,7 @@ function result = finalise(result,caught,cfg)
     elseif ~result.ok && ~isempty(result.error)
         err = result.error;
     elseif ~result.ok
-        err = MException('webpreview:updateSectionImage:postFailed','%s',result.post.message);
+        err = MException('webupload:updateSectionImage:postFailed','%s',result.post.message);
     else
         return
     end
@@ -283,11 +328,11 @@ end % finalise
 function notify(result)
     % Issue at most one warning describing a failed or stale upload
     %
-    % function BakingTray.webpreview.updateSectionImage>notify(result)
+    % function webupload.updateSectionImage>notify(result)
     %
     % Purpose
-    % Warns 'webpreview:updateSectionImage:failed' if result.ok is false. If the upload
-    % worked but result.stale is true, warns 'webpreview:updateSectionImage:stale'. If both
+    % Warns 'webupload:updateSectionImage:failed' if result.ok is false. If the upload
+    % worked but result.stale is true, warns 'webupload:updateSectionImage:stale'. If both
     % apply the failed warning is issued, with the names of the stale files added to its
     % text. stageFiles may already have issued its own warnings. The warning call is
     % guarded because with warning('error',...) in force it throws, and that must not
@@ -299,14 +344,14 @@ function notify(result)
     text = '';
     id = '';
     if ~result.ok
-        id = 'webpreview:updateSectionImage:failed';
+        id = 'webupload:updateSectionImage:failed';
         text = sprintf('Web preview not updated (%s: %s)', ...
                 result.error.identifier, result.error.message);
     end
 
     if result.stale
         if isempty(id)
-            id = 'webpreview:updateSectionImage:stale';
+            id = 'webupload:updateSectionImage:stale';
             text = 'Web preview uploaded with stale metadata';
         end
         text = sprintf(['%s; %s not refreshed for this section ', ...
@@ -329,7 +374,7 @@ end % notify
 function names = staleNames(result)
     % Describe which of the recipe and log were not refreshed
     %
-    % function names = BakingTray.webpreview.updateSectionImage>staleNames(result)
+    % function names = webupload.updateSectionImage>staleNames(result)
     %
     % Inputs
     % result - Result structure with the logical fields recipeFresh and logFresh.
@@ -351,7 +396,7 @@ end % staleNames
 function result = emptyResult
     % The result structure as it stands before anything has been done
     %
-    % function result = BakingTray.webpreview.updateSectionImage>emptyResult
+    % function result = webupload.updateSectionImage>emptyResult
     %
     % Outputs
     % result - Structure with the fields documented in updateSectionImage, set to their
