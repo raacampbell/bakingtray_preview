@@ -38,7 +38,9 @@ commit a filled-in copy.
 `url` must be `https://`; plain `http://` is accepted only for `localhost` /
 `127.0.0.1`, for testing against a local server. `siteID` may contain only
 letters, digits, `_` and `-`; `micID` (the microscope name) is also required
-and takes the same characters. Optional fields `connectTimeout`,
+and takes the same characters. The server keeps one token per microscope, so
+`siteID`, `micID` and `token` must all match its settings file; any mismatch
+is an HTTP 403. Optional fields `connectTimeout`,
 `responseTimeout`, `dataTimeout` (seconds; defaults 15, 60, 60) can be raised
 for slow uplinks. It is unverified whether ResponseTimeout/DataTimeout cover
 the transfer of the upload itself; a warning `webpreview:postZip:noTimeout`

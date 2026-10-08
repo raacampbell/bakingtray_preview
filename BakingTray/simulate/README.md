@@ -69,22 +69,23 @@ tab for any other shell command.** Stop the server with Ctrl-C. If it prints
 `Address already in use`, pick another port (e.g. 8001) here and in the config
 `url` (A4) and the page URLs.
 
-The built-in server ignores `.htaccess`; `router.php` makes it refuse recipe
-and log files under `/system_data/<site>/` (they can hold pasted secrets). It
-does not hide `tokens.json` or `logs/upload.log`, so keep `localhost` in the
-command; never use `0.0.0.0` or a LAN address. A simulation zip is a few
+The built-in server ignores `.htaccess`; `router.php` applies the same rules
+(nothing under `system_data/` or `logs/` is served directly, and the view URLs
+work). Keep `localhost` in the command; never use `0.0.0.0` or a LAN address,
+since this is a test server. A simulation zip is a few
 hundred KB, so PHP's default upload limits are fine; only for large real zips
 add `-d upload_max_filesize=250M -d post_max_size=250M` before `-S`.
 
-### A3. Make a site and a token (Terminal 2, then an editor)
+### A3. Make a site, a microscope and a token (Terminal 2, then an editor)
 
-The server only accepts sites listed in `brainsaw/tokens.json`. That file is
-secret and git-ignored. The tree may already hold one with demo entries: do
-not reuse those tokens.
+The server only accepts microscopes listed in the private settings file,
+`<repo>/brainsaw_settings.json` locally (next to `brainsaw/`, git-ignored;
+format in `instructions.md` section 2). It also defines the view URLs.
 
-1. Pick a site id (letters, digits, `_`, `-`), e.g. `sim_local`.
+1. Pick a site id and a microscope id (letters, digits, `_`, `-`), e.g.
+   `sim_local` and `sim_mic`.
 2. Run ONE of these; it prints one 64-character token. Use a new token for
-   every site and never paste one into an issue or chat.
+   every microscope and never paste one into an issue or chat.
 
    ```bash
    "<repo>/brainsaw/scripts/generate_token.sh"    # runs openssl rand -hex 32
@@ -92,25 +93,29 @@ not reuse those tokens.
    php -r 'echo bin2hex(random_bytes(32));'       # Windows cmd: php -r "echo bin2hex(random_bytes(32));"
    ```
 
-3. The SAME token goes into `tokens.json` here and into the MATLAB config in
-   A4. Edit the file in MATLAB (Mac and Windows): `edit(fullfile(repo,'brainsaw','tokens.json'))`.
-   Two entries show the comma rule (between entries, none after the last):
-   
+3. The SAME token goes into the settings file here and into the MATLAB config
+   in A4. Edit the file in MATLAB (Mac and Windows):
+   `edit(fullfile(repo,'brainsaw_settings.json'))`. If it is new, this is
+   the whole file (to add to an existing one, add the site under `"sites"`,
+   with a comma between entries and none after the last):
+
    ```json
    {
-     "existing_site": { "token": "AN_EXISTING_TOKEN", "display_name": "Existing" },
-     "sim_local": { "token": "PASTE_64_HEX_CHARS_HERE", "display_name": "Simulator (local)" }
+     "sites": {
+       "sim_local": { "display_name": "Simulator (local)",
+         "microscopes": { "sim_mic": { "token": "PASTE_64_HEX_CHARS_HERE" } } }
+     }
    }
    ```
-   
-   If the file is new, keep only the `sim_local` line. `display_name` is
-   optional. No restart needed.
+
+   `display_name` is optional. No restart needed.
 4. Optional syntax check (keep the semicolon so tokens are not echoed):
-   `jsondecode(fileread(fullfile(repo,'brainsaw','tokens.json')));`
-   An invalid `tokens.json` is treated as empty: uploads fail as 403 `unknown site_id`.
+   `jsondecode(fileread(fullfile(repo,'brainsaw_settings.json')));`
+   An invalid file is treated as empty: uploads fail with 403 and views say
+   `Not found`; the PHP terminal shows `brainsaw: invalid settings file: <reason>`.
 5. Checkpoint, before touching the simulator: open
-   `http://localhost:8000/index.php`. You should see one card for the new
-   site reading `no image yet`.
+   `http://localhost:8000/sim_local`. You should see one card for the new
+   microscope reading `no image yet`.
 
 ### A4. Make the MATLAB config (MATLAB)
 
@@ -135,8 +140,8 @@ Replace the contents with this (the example's `_note` key is harmless):
 }
 ```
 
-`siteID` and `token` must match the `tokens.json` entry exactly; `micID` is
-free-form for now (the server will check it later). Plain
+`siteID`, `micID` and `token` must match the settings file exactly: the
+server checks the token per microscope. Plain
 `http://` is accepted only for `localhost` / `127.0.0.1`; else `https://`.
 
 ### A5. Run the simulation (MATLAB)
@@ -159,13 +164,12 @@ two uploads closer than the server's 5 s minimum (HTTP 429, see
 Troubleshooting).
 
 Any failure other than 429 stops the run after that section (`r.aborted`,
-`r.abortReason`). Then open `http://localhost:8000/site.php?site=sim_local`
+`r.abortReason`). Then open `http://localhost:8000/sim_local/sim_mic`
 and look for:
 
 - the status line `Last updated 3s ago — section 2 of 5`; the image with its
-  section number stamped on it and a magnifier on hover (needs internet: jQuery
-  comes from code.jquery.com); the link `View montage (all optical planes,
-  single channel)`;
+  section number stamped on it and a magnifier on hover; the link `View
+  montage (all optical planes, single channel)`;
 - the metadata table: sample `SIMULATED`, total sections = `NumSections`, and
   `Estimated completion` (UTC);
 - the chart `Acquisition time per section` (needs 2 sections): its axis is
@@ -173,44 +177,28 @@ and look for:
   is about now; `'LogTimeScale', 60` gives a readable chart, with start times
   in the past.
 
-The page auto-refreshes every 60 s; reload by hand.
+The page reloads itself within about 5 s of each upload.
 
-Files land in `<repo>/brainsaw/system_data/sim_local/`; the server log is
-`<repo>/brainsaw/logs/upload.log` (tab separated: time, site id, status, IP,
-message). MATLAB-side files are in `r.workDir`.
+Files land in `<repo>/brainsaw/system_data/sim_local/sim_mic/`; the server log
+is `<repo>/brainsaw/logs/upload.log` (tab separated: time, site/microscope,
+status, IP, message). MATLAB-side files are in `r.workDir`.
 
-## Part B. A remote server
+## Part B. The test deployment (brainsaw.org/testserver)
 
-Only after Part A works. The host needs PHP 8.1+ with `zip`, HTTPS, and
-writable `system_data/` and `logs/`.
+Only after Part A works. Deploying the server is in `server-setup.md`; this
+part only adds a simulator microscope to the deployment at
+`https://<your-host>/testserver/`, which holds no real data.
 
-### B1. Get the code onto the host
+### B1. Add a simulator microscope to the server's settings file
 
-- **Server already runs `brainsaw/`** (the lab's is brainsaw.mouse.vision,
-  see `instructions.md` section 9): you only need `test-upload/` plus an
-  up-to-date `lib.php` next to it (`test-upload/upload.php` loads
-  `../lib.php`). Do NOT overwrite the host's `config.php` or `tokens.json`.
-- **First deploy:** upload the whole `brainsaw/` folder (cPanel File Manager
-  or SFTP), e.g. to `public_html/brainsaw/`, excluding your local
-  `tokens.json`, `logs/*.log` and `system_data/<your sim ids>/`. See
-  `instructions.md` section 9 for HTTPS, permissions and protecting
-  `tokens.json`; for low PHP limits add `brainsaw/.user.ini` with
-  `upload_max_filesize = 250M` and `post_max_size = 250M`.
+Generate a NEW token locally (A3 step 2; never reuse a localhost token). Add a
+site (an unguessable ID: it is the view URL, e.g. `sim_` plus a few random
+hex characters) with one microscope, e.g. `sim_mic`, and the new token to the
+test deployment's settings file on the server (`server-setup.md` section 4).
+Checkpoint: `https://<your-host>/testserver/<site id>` shows a card for the
+new microscope.
 
-### B2. Create `test-upload/tokens.json` on the host
-
-`test-upload/` has its own `tokens.json`, `system_data/` and log, so
-simulated data never mixes with real data. Generate a NEW token locally (A3
-step 2; never reuse a localhost token). In cPanel File Manager open
-`test-upload/`, New File `tokens.json`, Edit, paste the A3 JSON with site id
-`sim_remote` and the new token. Checkpoints:
-
-- `https://<your-host>/<path>/test-upload/tokens.json` must return 403;
-- `https://<your-host>/<path>/test-upload/index.php` shows a card for the new
-  site. (For the lab: `https://brainsaw.mouse.vision/brainsaw/test-upload/`,
-  from `instructions.md`.)
-
-### B3. Run against it
+### B2. Run against it
 
 1. Make a separate config in MATLAB, never the default one:
 
@@ -219,34 +207,31 @@ step 2; never reuse a localhost token). In cPanel File Manager open
    copyfile(fullfile(repo,'BakingTray','webpreview','webpreview_config.example.json'), cfgRemote)
    edit(cfgRemote)
    ```
-   with `url` = `https://<your-host>/<path>/test-upload/upload.php`,
-   `siteID` = `sim_remote`, any `micID`, and the new token.
+   with `url` = `https://<your-host>/testserver/upload.php`, the new `siteID`,
+   `micID` = `sim_mic`, and the new token.
 2. Run the A5 call with `'ConfigFile', cfgRemote`.
-3. Open `https://<your-host>/<path>/test-upload/site.php?site=sim_remote`.
+3. Open `https://<your-host>/testserver/<site id>/sim_mic`.
 
-Safety rule: a real run only accepts a config URL containing `test-upload` or
+Safety rule: a real run only accepts a config URL containing `testserver` or
 with host `localhost` / `127.0.0.1`; anything else errors unless you pass
 `'AllowProduction', true` (only when you mean to write fake data to that site).
-
-Production later: add a spare site with a new token to the live `tokens.json`
-and use a separate config with the live URL and `'AllowProduction', true`.
 
 ## Troubleshooting
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | `Config file not found: <path> (copy webpreview_config.example.json there and fill it in)`, `Config file ... is not valid JSON`, `... is missing field(s): ...`, `... is empty.` | no config at that path, or a typo in it | do A4; `url`, `siteID`, `micID`, `token` are all required |
 | `url must start with https:// (http:// is allowed only for localhost/127.0.0.1): <url>` | non-https URL to a remote host | use `https://` |
-| `config url "<url>" is neither a localhost url nor contains "test-upload"; refusing to upload fake data` | simulator safety rule | use a localhost or `test-upload` URL |
+| `config url "<url>" is neither a localhost url nor contains "testserver"; refusing to upload fake data` | simulator safety rule | use a localhost or `testserver` URL |
 | `section 1/5: FAILED, HTTP NaN: <message>` | no HTTP reply: server not running, wrong host/port, network (message is MATLAB's own, not verified) | start the server (A2); check `url` |
-| HTTP 403 `unknown site_id` / `invalid token` | id not in that deployment's `tokens.json`, `tokens.json` missing/invalid, token differs from config, or the request exceeded PHP's `post_max_size` (form fields dropped) | check entry and JSON; raise `post_max_size` (A2 flags / `.user.ini`) |
+| HTTP 403 `unknown site_id, microscope_id or token` | site or microscope not in that deployment's settings file, settings file missing/invalid, token differs from config, or the request exceeded PHP's `post_max_size` (form fields dropped); `logs/upload.log` says which | check the entry and JSON; raise `post_max_size` (A2 flags) |
 | HTTP 400 `no valid zip uploaded` | PHP rejected the file, e.g. over `upload_max_filesize` only | raise `upload_max_filesize` |
 | HTTP 413 / 415 (`zip file too large`, `file is not a valid zip archive`, `zip contained no recognized files`, ...) | zip over limits, corrupt, or empty | rerun; check the host's `zip` extension |
-| HTTP 429 `uploading too fast` | two uploads for one site under 5 s apart | `'Interval'` of 6 or more; below 5 the simulator warns `simulate:simulateAcquisition:fastInterval`. A 429 does not stop the run |
+| HTTP 429 `uploading too fast` | two uploads for one microscope under 5 s apart | `'Interval'` of 6 or more; below 5 the simulator warns `simulate:simulateAcquisition:fastInterval`. A 429 does not stop the run |
 | HTTP 500 `server error` | host cannot write `system_data/` or `logs/` | fix permissions (0755 usually enough) |
 | `server redirected (HTTP 3xx); redirects are not followed, check the url in the config` | wrong URL | fix `url` |
-| page says `Unknown site.` / `no image yet` | id not in that deployment's `tokens.json` / nothing uploaded yet | add it (A3); run the simulation; read `logs/upload.log` |
+| page says `Not found` / `no image yet` | site or microscope not in the settings file, settings file invalid, or a typo in the URL (case matters) / nothing uploaded yet | add it (A3); run the simulation; read `logs/upload.log` and the PHP terminal |
 
 ## Cleaning up
-Stop the PHP server (Ctrl-C in Terminal 1). Delete the test site's entry from
-`tokens.json` (remote: `test-upload/tokens.json`), its `system_data/<id>/`
-folder (remote: File Manager or SFTP), and the `_sim` config files (they hold tokens).
+Stop the PHP server (Ctrl-C in Terminal 1). Delete the simulator site from the
+settings file (local or on the server), its `system_data/<site>/` folder
+(remote: SFTP), and the `_sim` config files (they hold tokens).
