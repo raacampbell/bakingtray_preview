@@ -44,50 +44,41 @@ classdef WebConfigTest < matlab.unittest.TestCase
         end
 
         function missingFieldErrorsAndNamesField(tc)
-            for field = {'token', 'micID'}
+            for field = {'token', 'micID', 'siteID', 'url'}
                 f = tc.writeJson(rmfield(WebConfigTest.good(), field{1}));
-                tc.verifyError(@() webpreview.webConfig(f), 'webpreview:configIncomplete');
                 try
                     webpreview.webConfig(f);
+                    tc.verifyFail('expected the constructor to error');
                 catch err
+                    tc.verifyEqual(err.identifier, 'webpreview:configIncomplete');
                     tc.verifySubstring(err.message, field{1});
                 end
             end
         end
 
-        function emptyFieldErrors(tc)
-            s = WebConfigTest.good(); s.token = '';
-            tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configIncomplete');
-        end
-
-        function whitespaceOnlyFieldErrors(tc)
-            s = WebConfigTest.good(); s.token = '   ';
-            tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configIncomplete');
+        function emptyOrBlankFieldErrors(tc)
+            for blank = {'', '   '}
+                s = WebConfigTest.good(); s.token = blank{1};
+                tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configIncomplete');
+            end
         end
 
         function nonTextFieldErrorsWithWrongType(tc)
             for field = {'siteID', 'micID', 'token', 'url'}
-                s = WebConfigTest.good(); s.(field{1}) = 42;
-                tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
+                for bad = {42, ['ab'; 'cd']}
+                    s = WebConfigTest.good(); s.(field{1}) = bad{1};
+                    tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
+                end
             end
         end
 
-        function charMatrixTokenIsRejected(tc)
-            s = WebConfigTest.good(); s.token = ['ab'; 'cd'];
-            tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
-        end
-
         function malformedJsonErrors(tc)
-            f = fullfile(tc.Dir, 'bad.json');
-            fid = fopen(f, 'w'); fwrite(fid, '{not json'); fclose(fid);
+            f = tc.writeJson('{not json');
             tc.verifyError(@() webpreview.webConfig(f), 'webpreview:configInvalid');
         end
 
         function jsonArrayRootErrors(tc)
-            f = fullfile(tc.Dir, 'arr.json');
-            fid = fopen(f, 'w');
-            fwrite(fid, '[{"url":"https://a.b/c","siteID":"x","micID":"m","token":"t"},{"url":"https://a.b/c","siteID":"y","micID":"m","token":"u"}]');
-            fclose(fid);
+            f = tc.writeJson([WebConfigTest.good(), WebConfigTest.good()]);
             tc.verifyError(@() webpreview.webConfig(f), 'webpreview:configInvalid');
         end
 
@@ -138,8 +129,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
         function noArgUsesDefaultPathInHome(tc)
             tc.setHome(tc.Dir);
             s = WebConfigTest.good();
-            fid = fopen(fullfile(tc.Dir, '.brainsaw_webpreview.json'), 'w');
-            fwrite(fid, jsonencode(s)); fclose(fid);
+            tc.writeJson(s, '.brainsaw_webpreview.json');
             tc.verifyEqual(webpreview.webConfig().siteID, s.siteID);
         end
 
@@ -208,10 +198,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
 
         function constructorErrorsAreScrubbedWhenTokenHasEscapedQuotes(tc)
             % The JSON token abc"def is written abc\"def in the file.
-            f = fullfile(tc.Dir, 'cfg.json');
-            fid = fopen(f, 'w');
-            fwrite(fid, '{"url":"http://evil/abc\"def","siteID":"site-1","micID":"m","token":"abc\"def"}');
-            fclose(fid);
+            f = tc.writeJson('{"url":"http://evil/abc\"def","siteID":"site-1","micID":"m","token":"abc\"def"}');
             try
                 webpreview.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
@@ -224,10 +211,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
         function constructorErrorsAreScrubbedEvenIfTheJsonIsBroken(tc)
             % The token is found with a regexp on the raw text, so it is still removed
             % from the error message if the file cannot be parsed.
-            f = fullfile(tc.Dir, 'broken.json');
-            fid = fopen(f, 'w');
-            fwrite(fid, '{"url":"https://x.example/tok123", "token":"tok123" "oops"}');
-            fclose(fid);
+            f = tc.writeJson('{"url":"https://x.example/tok123", "token":"tok123" "oops"}');
             try
                 webpreview.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
@@ -263,10 +247,17 @@ classdef WebConfigTest < matlab.unittest.TestCase
     end
 
     methods (Access = private)
-        function f = writeJson(tc, s)
-            f = fullfile(tc.Dir, 'cfg.json');
+        function f = writeJson(tc, s, name)
+            % Write a struct (encoded as JSON) or raw text to a file in the scratch folder
+            if nargin < 3
+                name = 'cfg.json';
+            end
+            if ~ischar(s)
+                s = jsonencode(s);
+            end
+            f = fullfile(tc.Dir, name);
             fid = fopen(f, 'w');
-            fwrite(fid, jsonencode(s));
+            fwrite(fid, s);
             fclose(fid);
         end
 

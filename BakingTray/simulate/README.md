@@ -114,11 +114,11 @@ not reuse those tokens.
 
 ### A4. Make the MATLAB config (MATLAB)
 
-Work out the home folder (any OS, after the addpath in section 0), copy the
-example file, and edit the copy:
+Pick a home folder (after the addpath in section 0), copy the example file,
+and edit the copy:
 
 ```matlab
-home = getenv('HOME');   % getenv('USERPROFILE') on Windows
+home = getenv('HOME');   % on Windows use getenv('USERPROFILE')
 cfg = fullfile(home, '.brainsaw_webpreview_sim.json');
 copyfile(fullfile(repo,'BakingTray','webpreview','webpreview_config.example.json'), cfg)
 edit(cfg)
@@ -135,7 +135,8 @@ Replace the contents with this (the example's `_note` key is harmless):
 }
 ```
 
-`siteID` and `token` must match the `tokens.json` entry exactly. Plain
+`siteID` and `token` must match the `tokens.json` entry exactly; `micID` is
+free-form for now (the server will check it later). Plain
 `http://` is accepted only for `localhost` / `127.0.0.1`; else `https://`.
 
 ### A5. Run the simulation (MATLAB)
@@ -219,7 +220,7 @@ step 2; never reuse a localhost token). In cPanel File Manager open
    edit(cfgRemote)
    ```
    with `url` = `https://<your-host>/<path>/test-upload/upload.php`,
-   `siteID` = `sim_remote`, and the new token.
+   `siteID` = `sim_remote`, any `micID`, and the new token.
 2. Run the A5 call with `'ConfigFile', cfgRemote`.
 3. Open `https://<your-host>/<path>/test-upload/site.php?site=sim_remote`.
 

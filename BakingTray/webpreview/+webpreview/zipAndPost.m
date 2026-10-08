@@ -6,8 +6,8 @@ function result = zipAndPost(folder, cfg)
     % Purpose
     % The entry point for acquisition code. Any failure (missing folder, no files, too large,
     % network, bad cfg) is returned as result.ok = false with a message, with the token
-    % scrubbed, so imaging is never interrupted. The temp zip is always deleted. Blocks for up
-    % to the postZip timeouts.
+    % scrubbed by postZip, so imaging is never interrupted. The temp zip is always deleted.
+    % Blocks for up to the postZip timeouts.
     %
     % Inputs
     % folder - path to the folder holding the preview files.
@@ -24,12 +24,6 @@ function result = zipAndPost(folder, cfg)
         result = webpreview.postZip(zipPath, cfg);
     catch err
         result.message = err.message;
-    end
-
-    % If cfg is not a config object there is no token to scrub, and calling a method on it
-    % would throw
-    if isa(cfg, 'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg)
-        result.message = cfg.scrub(result.message);
     end
 end % zipAndPost
 

@@ -1,12 +1,14 @@
-classdef webConfig < handle
+classdef (Sealed) webConfig < handle
 
     % Handles loading and parsing of the web preview config file.
     %
     % Purpose
     % Reads the config file once, validates every field, and then holds the values as
     % read-only properties, so an existing webConfig object is always valid. The secret
-    % token is kept out of sight: it is a private, transient property that cannot be read,
-    % displayed or saved. Code that needs to use it asks the object to do so:
+    % token is kept out of sight: it is a private, transient property that cannot be read
+    % by property access, disp or save. (struct(cfg) can still expose it; that is a MATLAB
+    % limitation. A webConfig loaded from a MAT file has no token: build it from the JSON
+    % file, never save and load it.) Code that needs the token asks the object:
     %   authHeader - returns the HTTP Authorization header carrying the token
     %   scrub      - removes the token from a message that is going to be shown or logged
     %
@@ -32,7 +34,8 @@ classdef webConfig < handle
     properties (Access = private, Transient)
         % String defining the secret token for the transfer. Private so it cannot be read
         % or displayed from outside, and transient so it is never written to a MAT file.
-        token
+        % The empty default means scrub still works on an object loaded from one.
+        token = ''
     end % private properties
 
     properties (Constant, Hidden)
@@ -47,17 +50,11 @@ classdef webConfig < handle
             % function cfgObj = BakingTray.webpreview.webConfig(jsonFile)
             %
             % Purpose
-            % Handles loading and parsing of the web preview config file. The config file
-            % holds the secret token and must live outside the repository. See
-            % webpreview_config.example.json for the format. The constructor loads the
-            % config file (looks in the default location unless the user specifies a file)
-            % and errors if the file is missing or malformed, a field is absent/empty/not
+            % Errors if the file is missing or malformed, a field is absent/empty/not
             % text, siteID or micID have characters outside [A-Za-z0-9_-], url is not https
-            % (the exception is localhost, for testing), or a timeout is not a positive
-            % finite number. Values are trimmed. The required fields are url, siteID,
-            % micID and token. The timeouts are optional.
-            %
-            % The token is removed from the message of any error raised here.
+            % (except localhost, for testing), or a timeout is not a positive finite
+            % number. Values are trimmed. Required fields: url, siteID, micID, token. See
+            % webpreview_config.example.json. The token is removed from any error raised.
             %
             % Inputs
             % jsonFile - [optional] path to the JSON config file. If omitted, the
@@ -75,7 +72,8 @@ classdef webConfig < handle
             catch err
                 % The token is not known to the object if loading failed, so look for it
                 % in the raw file text
-                throwAsCaller(scrubbedException(err, tokenFromFile(jsonFile)));
+                throwAsCaller(MException(err.identifier, '%s', ...
+                    scrubText(err.message, tokenFromFile(jsonFile))));
             end
         end % constructor
 
@@ -176,14 +174,15 @@ classdef webConfig < handle
                     error('webpreview:configIncomplete', ...
                         'Config field "%s" in %s is empty.', name, jsonFile);
                 end
-                if endsWith(name, 'ID') && isempty(regexp(value, '^[a-zA-Z0-9_-]+$', 'once'))
+                if ismember(name, {'siteID', 'micID'}) && isempty(regexp(value, '^[a-zA-Z0-9_-]+$', 'once'))
                     error('webpreview:configInvalid', ...
-                        'Config %s in %s may only contain letters, digits, "_" and "-".', name, jsonFile);
+                        'Config field "%s" in %s may only contain letters, digits, "_" and "-".', ...
+                        name, jsonFile);
                 end
                 obj.(name) = value;
             end %for
 
-            obj.url = checkUrl(obj.url);
+            checkUrl(obj.url);
 
 
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -195,8 +194,8 @@ classdef webConfig < handle
                     value = raw.(name);
                     if ~(isnumeric(value) && isscalar(value) && isfinite(value) && value > 0)
                         error('webpreview:configWrongType', ...
-                            'Config %s: %s must be a positive finite number of seconds.', ...
-                            jsonFile, name);
+                            'Config field "%s" in %s must be a positive finite number of seconds.', ...
+                            name, jsonFile);
                     end
                 end
                 obj.(name) = double(value);
@@ -214,7 +213,6 @@ end % classdef
 % Local functions follow
 
 function p = defaultConfigPath()
-    % TODO -- will eventually change this so it looks in the BakingTray SETTINGS path
     % Per-user config location, outside any repository
     %
     % function p = BakingTray.webpreview.webConfig>defaultConfigPath()
@@ -223,6 +221,7 @@ function p = defaultConfigPath()
     % p - full path to .brainsaw_webpreview.json in the user's home directory. Errors with
     %     webpreview:noHome if the home directory cannot be determined.
 
+    % TODO -- will eventually change this so it looks in the BakingTray SETTINGS path
     if ispc
         home = getenv('USERPROFILE');
     else
@@ -237,24 +236,17 @@ function p = defaultConfigPath()
 end % defaultConfigPath
 
 
-function url = checkUrl(url)
+function checkUrl(url)
     % Require https, so the bearer token is never sent in clear text
     %
-    % function url = BakingTray.webpreview.webConfig>checkUrl(url)
+    % function BakingTray.webpreview.webConfig>checkUrl(url)
     %
     % Purpose
     % The one exception is plain http to localhost or 127.0.0.1 (optionally with a port), for
     % testing against a local dev server only. Errors with webpreview:insecureUrl otherwise.
     %
     % Inputs
-    % url - character vector holding the server URL.
-    %
-    % Outputs
-    % url - the input url, unchanged, if it is acceptable.
-
-    if ~ischar(url) || isempty(url)
-        error('webpreview:insecureUrl', 'url must be a non-empty character vector.');
-    end
+    % url - non-empty character row vector holding the server URL.
 
     isHttps = ~isempty(regexp(url, '^https://[^/\s]+', 'once'));
     isLocalDev = ~isempty(regexp(url, '^http://(localhost|127\.0\.0\.1)(:\d+)?(/|$)', 'once'));
@@ -272,8 +264,7 @@ function msg = scrubText(msg, token)
     % function msg = BakingTray.webpreview.webConfig>scrubText(msg, token)
     %
     % Purpose
-    % Never throws: if msg is not a character row vector the result is ''; if token is not
-    % a non-empty character row vector the message is returned unchanged.
+    % Never throws: if msg is not a character row vector the result is ''.
     %
     % Inputs
     % msg   - message text.
@@ -286,9 +277,7 @@ function msg = scrubText(msg, token)
         msg = '';
         return
     end
-    if ischar(token) && isrow(token)
-        msg = strrep(msg, token, '***');
-    end
+    msg = strrep(msg, token, '***');
 end % scrubText
 
 
@@ -311,12 +300,12 @@ function token = tokenFromFile(file)
 
     token = '';
     try
-        % The string may contain escaped quotes; decode it as JSON so the value matches
-        % what the constructor would have produced.
         tok = regexp(fileread(file),'"token"\s*:\s*"((?:[^"\\]|\\.)*)"','tokens','once');
         if ~isempty(tok)
             token = tok{1};
             try
+                % The string may contain escaped quotes; decode it as JSON so the value
+                % matches what the constructor would have produced.
                 token = jsondecode(['"' tok{1} '"']);
             catch
                 % Keep the undecoded text
@@ -324,32 +313,7 @@ function token = tokenFromFile(file)
             token = strtrim(token);
         end
     catch
-        token = '';
+        % Unreadable file: no token to find
     end %try
 end % tokenFromFile
 
-
-function ex = scrubbedException(err, token)
-    % Rebuild an error with the token removed from its message
-    %
-    % function ex = BakingTray.webpreview.webConfig>scrubbedException(err, token)
-    %
-    % Purpose
-    % An existing MException keeps its original message, so it has to be rebuilt from the
-    % scrubbed text. If the identifier is one MException rejects,
-    % 'webpreview:webConfig:unidentified' is used instead of throwing.
-    %
-    % Inputs
-    % err   - the MException to rebuild.
-    % token - secret to remove from its message; '' if unknown.
-    %
-    % Outputs
-    % ex - MException with the same identifier and the scrubbed message.
-
-    message = scrubText(err.message, token);
-    try
-        ex = MException(err.identifier, '%s', message);
-    catch
-        ex = MException('webpreview:webConfig:unidentified', '%s', message);
-    end
-end % scrubbedException

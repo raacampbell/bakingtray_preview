@@ -1,7 +1,8 @@
 function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % Stage and upload the web preview after a section. Never throws
     %
-    % function result = BakingTray.webpreview.updateSectionImage(img,recipePath,logPath,cfg,'Param1',val1,...)
+    % function result = BakingTray.webpreview.updateSectionImage(img,recipePath,logPath,cfg, ...
+    %                                                              'Param1',val1,...)
     %
     % Purpose
     % The call BakingTray makes when a section completes. It stages img, the optional
@@ -24,8 +25,9 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % 'webpreview:updateSectionImage:failed' ("id: message") and result.ok = false. The
     % warning call itself is guarded, so warning('error',...) settings cannot make this
     % function throw. Errors in the arguments img, recipePath, logPath and cfg (which must
-    % be a scalar, valid webConfig) are caught too, but a path variable that does not exist in the CALLER is an error MATLAB
-    % raises before this function runs, and cannot be caught here.
+    % be a scalar, valid webConfig; a missing cfg is a failure too) are caught too, but a
+    % path variable that does not exist in the CALLER is an error MATLAB raises before this
+    % function runs, and cannot be caught here.
     %
     % TOKEN: webConfig keeps the token private. It is scrubbed from result and warning
     % messages, including those from a custom Poster, with webConfig.scrub.
@@ -69,8 +71,13 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     result = emptyResult;
     caught = [];
 
+    % From here on cfg is [] unless it is a usable config; finalise relies on that
+    if nargin<4 || ~(isa(cfg,'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg))
+        cfg = [];
+    end
+
     try
-        if ~(isa(cfg,'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg))
+        if isempty(cfg)
             error('webpreview:updateSectionImage:badConfig', ...
                 'cfg must be a webpreview.webConfig object.')
         end
@@ -96,8 +103,9 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % Purpose
     % The part of updateSectionImage that runs inside its try/catch. Builds the stage folder
     % path from cfg.siteID, cfg.micID and opts.StageRoot (both IDs are charset-checked by
-    % webConfig, so they are safe to use as folder names), empties it if opts.ClearStage is true, stages the
-    % files with webpreview.stageFiles and uploads the folder with opts.Poster.
+    % webConfig, so they are safe to use as folder names), empties it if opts.ClearStage is
+    % true, stages the files with webpreview.stageFiles and uploads the folder with
+    % opts.Poster.
     %
     % Anything that goes wrong before staging has finished is thrown and caught by
     % updateSectionImage. After that, failures are written to result.error instead, so the
@@ -117,7 +125,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     %          filled in. post and ok are set once the poster has returned. error is set if
     %          staging was incomplete or the poster threw.
 
-    stageDir = webpreview.stageDirFor(cfg.siteID,cfg.micID,opts.StageRoot);
+    stageDir = webpreview.stageDirFor(cfg,opts.StageRoot);
     if opts.ClearStage
         webpreview.clearStageDir(stageDir);
     end
@@ -130,8 +138,6 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     result.stale = ~(result.recipeFresh && result.logFresh);
 
 
-    % From here on failures are recorded in result.error rather than thrown, so the
-    % stage information survives into the returned result.
     if ~result.stage.stageOk
         % stageFiles has already warned with the cause; do not upload a partial stage
         result.error = MException('webpreview:updateSectionImage:stageFailed', ...
@@ -165,8 +171,6 @@ function opts = parseOptions(varargin)
     % opts - Structure with fields Montage, Range, Poster, StageRoot (char) and
     %        ClearStage (logical).
 
-    % Define anon functions
-
     % True if x is a char row vector or string scalar with at least one character.
     isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
 
@@ -188,7 +192,6 @@ function opts = parseOptions(varargin)
 
     opts = params.Results;
 
-    % Text options may arrive as strings; everything downstream uses char paths
     opts.StageRoot = char(opts.StageRoot);
     opts.ClearStage = logical(opts.ClearStage);
 end % parseOptions
@@ -218,7 +221,7 @@ function post = callPoster(poster,stageDir,cfg)
     wellFormed = isstruct(post) && isscalar(post) ...
                  && all(isfield(post,{'ok','httpStatus','message'})) ...
                  && islogical(post.ok) && isscalar(post.ok) ...
-                 && ischar(post.message);
+                 && ischar(post.message) && (isrow(post.message) || isempty(post.message));
     if ~wellFormed
         error('webpreview:updateSectionImage:badReply', ...
             ['poster did not return struct(ok, httpStatus, message) ', ...
@@ -242,13 +245,15 @@ function result = finalise(result,caught,cfg)
     % Inputs
     % result - Result structure as left by runPipeline (or emptyResult if it was not reached).
     % caught - MException caught by updateSectionImage, or [] if there was none.
-    % cfg    - Config argument of updateSectionImage; the token is scrubbed from messages if
-    %          it is a webpreview.webConfig object.
+    % cfg    - webpreview.webConfig used to scrub the token from messages, or [] if the
+    %          caller did not supply a usable one.
     %
     % Outputs
     % result - The input with a scrubbed post.message, and error set if ok is false.
 
-    result.post.message = scrubMessage(result.post.message,cfg);
+    if ~isempty(cfg)
+        result.post.message = cfg.scrub(result.post.message);
+    end
     if ~isempty(caught)
         err = caught;
     elseif ~result.ok && ~isempty(result.error)
@@ -259,59 +264,13 @@ function result = finalise(result,caught,cfg)
         return
     end
 
-    result.post.message = scrubMessage(err.message,cfg);
-    result.error = scrubbedException(err.identifier,result.post.message);
+    result.post.message = err.message;
+    if ~isempty(cfg)
+        result.post.message = cfg.scrub(err.message);
+    end
+    % An existing MException keeps its original message, so rebuild it from the scrubbed text
+    result.error = MException(err.identifier,'%s',result.post.message);
 end % finalise
-
-
-function msg = scrubMessage(msg,cfg)
-    % Remove the token from a message, if there is a config object to say what it is
-    %
-    % function msg = BakingTray.webpreview.updateSectionImage>scrubMessage(msg,cfg)
-    %
-    % Purpose
-    % A cfg that is not a webConfig (the caller passed the wrong thing) has no token to
-    % remove.
-    %
-    % Inputs
-    % msg - Message text.
-    % cfg - webpreview.webConfig object, or anything else.
-    %
-    % Outputs
-    % msg - The message with the token replaced by '***' if cfg is a config object,
-    %       otherwise the input.
-
-    if isa(cfg,'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg)
-        msg = cfg.scrub(msg);
-    end
-end % scrubMessage
-
-
-function ex = scrubbedException(id,message)
-    % Make an MException from an identifier and an already-scrubbed message
-    %
-    % function ex = BakingTray.webpreview.updateSectionImage>scrubbedException(id,message)
-    %
-    % Purpose
-    % An existing MException keeps its original message, so a scrubbed one has to be rebuilt
-    % from the scrubbed text. A third-party error can carry an identifier that MException
-    % rejects; in that case 'webpreview:updateSectionImage:unidentified' is used instead of
-    % throwing.
-    %
-    % Inputs
-    % id      - Identifier of the original error.
-    % message - Message text with the token already removed.
-    %
-    % Outputs
-    % ex - MException with the given identifier (or the fallback) and message.
-
-    fallback = 'webpreview:updateSectionImage:unidentified';
-    try
-        ex = MException(id,'%s',message);
-    catch
-        ex = MException(fallback,'%s',message);
-    end
-end % scrubbedException
 
 
 function notify(result)

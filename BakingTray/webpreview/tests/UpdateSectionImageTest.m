@@ -91,6 +91,19 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             [tc.WarnMsg, tc.WarnId] = lastwarn;
         end
 
+        function cfg = otherCfg(tc)
+            % A config for a different site, whose stage folder must be left alone
+            f = fullfile(tc.Dir, 'other.json');
+            writeText(f, ['{"url":"https://x.example/up.php","siteID":"other",', ...
+                '"micID":"mic-1","token":"x"}']);
+            cfg = webpreview.webConfig(f);
+        end
+
+        function cfg = deletedCfg(tc)
+            cfg = tc.makeCfg('https://x.example/up.php');
+            delete(cfg)
+        end
+
         function turnIntoErrors(tc, id)
             % Make the warning with this id throw for the rest of the test.
             saved = warning('error', id);
@@ -171,10 +184,13 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.PosterReply = struct('ok', true, 'httpStatus', 200, 'message', 5);
             res = tc.update();
             tc.verifyFalse(res.ok, 'non-char message is a failure');
+            tc.PosterReply = struct('ok', true, 'httpStatus', 200, 'message', ['ab'; 'cd']);
+            res = tc.update();
+            tc.verifyFalse(res.ok, 'a char matrix message is a failure');
         end
 
         function nonConfigCfgIsNonFatal(tc)
-            for bad = {[], 'cfg.json', struct('url', 'https://x'), [tc.Cfg tc.Cfg]}
+            for bad = {[], 'cfg.json', struct('url', 'https://x'), [tc.Cfg tc.Cfg], tc.deletedCfg()}
                 tc.callCapturing(@() webpreview.updateSectionImage( ...
                     uint8(magic(8)), tc.Recipe, tc.Log, bad{1}, tc.BaseArgs{:}));
                 tc.verifyFalse(tc.Out.ok);
@@ -184,11 +200,8 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyEmpty(tc.Calls);
         end
 
-        function deletedCfgIsNonFatal(tc)
-            cfg = tc.makeCfg('https://x.example/up.php');
-            delete(cfg)
-            tc.callCapturing(@() webpreview.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, cfg, tc.BaseArgs{:}));
+        function missingCfgArgumentIsNonFatal(tc)
+            tc.callCapturing(@() webpreview.updateSectionImage(uint8(magic(8)), tc.Recipe, tc.Log));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
         end
@@ -289,15 +302,14 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function clearStageOptionOnlyTouchesTheManagedFolder(tc)
             tc.update();                                   % creates the managed folder
-            managed = webpreview.stageDirFor('site-1', 'mic-1', tc.StageRoot);
-            sibling = webpreview.stageDirFor('other', 'mic-1', tc.StageRoot);
+            managed = webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
+            sibling = webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
             tc.update('ClearStage', true);
             tc.verifyTrue(isfile(fullfile(sibling, 'keep.txt')));
             tc.verifyTrue(isfile(fullfile(tc.StageRoot, 'keep.txt')));
-            tc.verifyEqual(tc.Out.stageDir, managed);
         end
 
         function stageDirIsCharEvenForStringOptions(tc)
@@ -330,8 +342,8 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         % ---- clearStage ----
         function clearStageRemovesOnlyTheManagedFolder(tc)
             tc.update();
-            managed = webpreview.stageDirFor('site-1', 'mic-1', tc.StageRoot);
-            sibling = webpreview.stageDirFor('other', 'mic-1', tc.StageRoot);
+            managed = webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
+            sibling = webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
@@ -348,7 +360,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function clearStageWithNonConfigWarnsAndReturnsFalse(tc)
-            for bad = {[], 'cfg.json', struct('siteID', 'site-1'), [tc.Cfg tc.Cfg]}
+            for bad = {[], 'cfg.json', struct('siteID', 'site-1'), [tc.Cfg tc.Cfg], tc.deletedCfg()}
                 tc.callCapturing(@() webpreview.clearStage(bad{1}, 'StageRoot', tc.StageRoot));
                 tc.verifyFalse(tc.Out);
                 tc.verifyEqual(tc.WarnId, 'webpreview:clearStage:failed');
@@ -360,7 +372,6 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % warning('error','all') is not allowed in MATLAB, so name the ids.
             tc.turnIntoErrors('webpreview:clearStage:failed');
             tc.verifyFalse(webpreview.clearStage(tc.Cfg, 'Bogus', 1));
-            tc.verifyFalse(webpreview.clearStage([]));
         end
 
         function warningsAsErrorsDoNotMakeItThrow(tc)

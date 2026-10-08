@@ -48,7 +48,7 @@ is issued if this release lacks either property. Redirects are never followed
 ## Calling it from BakingTray
 
 Build the config object once, at startup, and keep it. It validates the file
-and holds the token privately (see Token below):
+and keeps the token private (see Token below):
 
 ```matlab
 cfg = webpreview.webConfig();            % or webpreview.webConfig(file)
@@ -108,15 +108,16 @@ acquisition log; `cfg` is the `webpreview.webConfig` object. Options:
 | `Poster` | function handle `poster(folder, cfg)` returning `struct(ok, httpStatus, message)`, where `cfg` is a `webpreview.webConfig` object; default `@webpreview.zipAndPost`; for tests |
 
 Result fields: `ok`; `stage` (the `stageFiles` result); `post` (`ok`,
-`httpStatus`, `message`); `stageDir` (a char path built from `StageRoot`; `stage.files` are canonical,
-symlink-resolved paths, so they can differ textually); `recipeFresh`,
+`httpStatus`, `message`); `stageDir` (a char path built from `StageRoot`;
+`stage.files` are canonical, symlink-resolved paths, so they can differ
+textually); `recipeFresh`,
 `logFresh` (this call staged a new recipe/log); `stale` (either is false; a
 log or recipe that is permanently absent keeps `stale` true on every
 section, with a notice each time); `error` (an `MException`
 built from the scrubbed message, `[]` on success).
 
-Failures: any problem inside the call (a `cfg` that is not a valid `webConfig`, image, options, staging,
-network, a throwing poster) becomes a warning
+Failures: any problem inside the call (a `cfg` that is not a valid
+`webConfig`, image, options, staging, network, a throwing poster) becomes a warning
 `webpreview:updateSectionImage:failed` of the form `id: message`, with
 `ok = false`. When the upload succeeded but the recipe or log could not be
 refreshed, the warning `webpreview:updateSectionImage:stale` names the file
@@ -126,14 +127,14 @@ notice per call, but `stageFiles` may warn first about the same cause. The
 warning call is guarded, so `warning('error', ...)` settings cannot make the
 function throw.
 
-Token: the config is held in a `webpreview.webConfig` object, which validates
-the file once and then keeps the token private. It cannot be read, displayed
-or saved from outside the object. Code that needs it calls `cfg.authHeader()`
-(the `Authorization` header) or `cfg.scrub(msg)` (removes the token from a
-message). An error raised while the config is being loaded is scrubbed by the
-constructor itself, using a regexp on the raw file text if the file cannot be
-parsed. Result and warning messages, including a custom `Poster`'s, are scrubbed
-with `cfg.scrub`.
+Token: `webpreview.webConfig` keeps the token private: it cannot be read by
+property access, `disp` or `save` (`struct(cfg)` still can expose it, a MATLAB
+limitation), and an object loaded from a MAT file has no token, so always build
+it from the JSON. Code that needs the token calls `cfg.authHeader()` (the
+`Authorization` header) or `cfg.scrub(msg)` (removes the token from a message).
+The constructor always scrubs its own errors, using a regexp on the raw file
+text, so they are safe even if the JSON cannot be parsed. Result and warning
+messages, including a custom `Poster`'s, are scrubbed with `cfg.scrub`.
 
 ## What is sent
 
@@ -145,13 +146,15 @@ A zip of up to four files, named to match the server's globs in
 - `recipe.yml` (or `recipe.yaml`, following the source), copied from the recipe
 - `acqLog.txt`, copied from the log
 
-The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>/<micID>`, reused between
-calls so only the latest files exist; it is not deleted afterwards. Two MATLAB
-sessions using the same site and microscope ID share it and will overwrite each
-other's files. The upload also carries `microscope_id`. Client-side limits (from the server
-defaults): at most 500 files and a 200 MB zip. If the server's PHP
-`post_max_size` is smaller than the zip, the failure can appear as an HTTP 403
-rather than 413.
+Form fields: `site_id`, `microscope_id`, `data` (the zip).
+
+The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>/<micID>`, reused
+between calls so only the latest files exist; it is not deleted afterwards. Two
+MATLAB sessions using the same site and microscope ID share it and will
+overwrite each other's files; give each its own `micID`. Client-side limits
+(from the server defaults): at most 500 files and a 200 MB zip. If the
+server's PHP `post_max_size` is smaller than the zip, the failure can appear as
+an HTTP 403 rather than 413.
 
 ## Images that are not uint8
 

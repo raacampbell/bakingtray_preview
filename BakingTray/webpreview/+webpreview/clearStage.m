@@ -9,7 +9,8 @@ function ok = clearStage(cfg,varargin)
     % micID. Removes just <StageRoot>/brainsaw_webpreview/<siteID>/<micID>, never its
     % siblings. Any failure (including a cfg that is not a valid webConfig) warns
     % 'webpreview:clearStage:failed' ("id: message") and returns false. The warning call is
-    % guarded so warning('error',...) cannot make this throw.
+    % guarded so warning('error',...) cannot make this throw. A symlink planted inside
+    % StageRoot is not guarded against, so StageRoot should be a per-user folder.
     %
     % Inputs
     % cfg - webpreview.webConfig object.
@@ -31,15 +32,16 @@ function ok = clearStage(cfg,varargin)
             error('webpreview:clearStage:badConfig','cfg must be a webpreview.webConfig object.')
         end
 
-        % Text may arrive as a string; everything downstream uses char paths
-        isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
+        isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) ...
+                              && strlength(x)>0;
         params = inputParser;
         params.FunctionName = 'webpreview.clearStage';
         params.CaseSensitive = false;
         params.addParameter('StageRoot', tempdir, isNonEmptyText)
         params.parse(varargin{:});
 
-        webpreview.clearStageDir(webpreview.stageDirFor(cfg.siteID,cfg.micID,char(params.Results.StageRoot)));
+        stageDir = webpreview.stageDirFor(cfg,params.Results.StageRoot);
+        webpreview.clearStageDir(stageDir);
         ok = true;
     catch err
         try
