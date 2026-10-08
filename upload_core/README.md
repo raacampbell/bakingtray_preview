@@ -11,16 +11,15 @@ Requires MATLAB R2019b or later (the oldest release BakingTray supports):
 `matlab.net.http.io.MultipartFormProvider` needs R2019b, and option parsing
 uses `inputParser`, not `arguments` blocks. No toolboxes are needed.
 
-Never add this repo's `BakingTray` folder to the path on a rig that has the
-real BakingTray installed, because the two `+BakingTray` packages would merge
-and could shadow each other.
-
 ## Path
 
 Add the `upload_core` folder (the one containing `+webupload`) to the MATLAB
 path: `addpath('<path>/upload_core')`. Add the folder itself, not the
-`+webupload` folder inside it, and not via `genpath`. From the repo root,
-`add_to_path` does this together with the BakingTray folders.
+`+webupload` folder inside it, and not via `genpath`. In this repo, on a
+development machine only, `add_to_path` does this together with the BakingTray
+folders; never add this repo's `BakingTray` folder to the path on a rig that has
+the real BakingTray installed, because the two `+BakingTray` packages would
+merge and could shadow each other.
 
 ## Config file
 

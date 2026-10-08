@@ -27,8 +27,10 @@ which simulate.simulateAcquisition      % should print a path
 r = simulate.simulateAcquisition('DryRun', true, 'NumSections', 3, 'Interval', 0);
 ```
 
-Add those three folders, not the `+` folders inside them; do not `savepath`
-(it could shadow a real BakingTray install). Never add this repo's `BakingTray` folder to the path on a rig that has the real BakingTray installed, because the two `+BakingTray` packages would merge and could shadow each other.
+Add those three folders, not the `+` folders inside them; do not `savepath`,
+and never add this repo's `BakingTray` folder to the path on a rig that has the
+real BakingTray installed, because the two `+BakingTray` packages would merge
+and could shadow each other.
 
 Each section prints a line like:
 

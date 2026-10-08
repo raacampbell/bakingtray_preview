@@ -4,12 +4,13 @@ The BakingTray-specific half of the brainsaw web preview client: stages a
 section image, recipe and acquisition log into a folder, then uploads it with
 the source-neutral `webupload` package in `upload_core/` (see
 `upload_core/README.md` for the config file, the token and the lower-level
-upload functions). The package mirrors `code/+BakingTray/+webpreview` in the
-real BakingTray repo.
+upload functions). The package is laid out to drop into
+`code/+BakingTray/+webpreview` in the real BakingTray repo.
 
 Requires MATLAB R2019b or later (the oldest release BakingTray supports);
-option parsing uses `inputParser`, not `arguments` blocks. No toolboxes are
-needed.
+option parsing uses `inputParser`, not `arguments` blocks. Staging uses only
+built-in MATLAB (`imwrite`, `copyfile`, `movefile`); the upload is in
+`webupload`. No toolboxes are needed.
 
 Never add this repo's `BakingTray` folder to the path on a rig that has the
 real BakingTray installed, because the two `+BakingTray` packages would merge
@@ -26,12 +27,8 @@ completes (below).
 
 ## Calling it from BakingTray
 
-Build the config object once, at startup, and keep it. It validates the file
-and keeps the token private (see `upload_core/README.md`):
-
-```matlab
-cfg = webupload.webConfig();            % or webupload.webConfig(file)
-```
+Build the `cfg` object once, at startup, as described in
+`upload_core/README.md` (`webupload.webConfig`), and keep it.
 
 At the start of a new acquisition, once, empty the managed stage folder so a
 previous run's recipe and log can never be sent. This needs no image and
@@ -106,6 +103,9 @@ notice per call, but `stageFiles` may warn first about the same cause. The
 warning call is guarded, so `warning('error', ...)` settings cannot make the
 function throw.
 
+Result and warning messages, including a custom `Poster`'s, are scrubbed with
+`cfg.scrub`, so the token never appears in them.
+
 ## What is sent
 
 A zip of up to four files, named to match the server's globs in
@@ -116,15 +116,12 @@ A zip of up to four files, named to match the server's globs in
 - `recipe.yml` (or `recipe.yaml`, following the source), copied from the recipe
 - `acqLog.txt`, copied from the log
 
-Form fields: `site_id`, `microscope_id`, `data` (the zip).
+The form fields and the client-side upload limits are in `upload_core/README.md`.
 
 The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>/<micID>`, reused
 between calls so only the latest files exist; it is not deleted afterwards. Two
 MATLAB sessions using the same site and microscope ID share it and will
-overwrite each other's files; give each its own `micID`. Client-side limits
-(from the server defaults): at most 500 files and a 200 MB zip. If the
-server's PHP `post_max_size` is smaller than the zip, the failure can appear as
-an HTTP 403 rather than 413.
+overwrite each other's files; give each its own `micID`.
 
 ## Images that are not uint8
 
@@ -137,8 +134,7 @@ The same `Range` applies to the montage. Details: `help BakingTray.webpreview.to
 
 ## Windows notes
 
-Only built-in MATLAB is used. Paths are built with `fullfile`. The stage
-folder is under `tempdir` (normally the user's `Temp`). Antivirus or a file
+The stage folder is under `tempdir` (normally the user's `Temp`). Antivirus or a file
 held open elsewhere can make a rename fail; that is a staging-failure warning,
 not an error.
 
