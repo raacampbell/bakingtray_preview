@@ -629,6 +629,28 @@ const BS_PAGE_STYLE = <<<CSS
 CSS;
 
 /**
+ * data-* attributes that tell js/autorefresh.js what to watch for one site:
+ * the meta.json URL (from the same url_base as the other site URLs, so the
+ * JS never builds paths), the uploaded_at this page was rendered with, and
+ * the stale threshold.
+ */
+function bs_watch_attrs(array $data, int $staleAfter): string
+{
+    return sprintf(
+        'data-meta-url="%s" data-uploaded-at="%s" data-stale-after="%d"',
+        htmlspecialchars($data['url_base'] . '/meta.json'),
+        htmlspecialchars((string) ($data['uploaded_at'] ?? '')),
+        $staleAfter
+    );
+}
+
+/** The auto-refresh script, inlined so every deployment shares one copy. */
+function bs_autorefresh_script(): string
+{
+    return '<script>' . file_get_contents(__DIR__ . '/js/autorefresh.js') . '</script>';
+}
+
+/**
  * Render the landing page listing every site. $config must provide:
  * tokens_file, system_data_dir, system_data_url_base, stale_after_seconds.
  */
@@ -651,7 +673,7 @@ function bs_render_viewer(array $config): void
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brainsaw — Live Section Preview</title>
-<meta http-equiv="refresh" content="45">
+<noscript><meta http-equiv="refresh" content="60"></noscript>
 <style><?= BS_PAGE_STYLE ?></style>
 </head>
 <body>
@@ -671,7 +693,7 @@ function bs_render_viewer(array $config): void
     }
     $sampleId = $data['recipe']['sample_id'] ?? null;
     ?>
-  <a class="card<?= $isStale ? ' stale' : '' ?>" href="site.php?site=<?= urlencode($siteId) ?>">
+  <a class="card<?= $isStale ? ' stale' : '' ?>" href="site.php?site=<?= urlencode($siteId) ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
     <?php if ($hasImage): ?>
       <img src="<?= htmlspecialchars($data['main_image_url']) ?>?t=<?= time() ?>" alt="<?= htmlspecialchars($displayName) ?>">
     <?php else: ?>
@@ -680,11 +702,12 @@ function bs_render_viewer(array $config): void
     <div class="meta">
       <div class="name"><?= htmlspecialchars($displayName) ?></div>
       <?php if ($sampleId): ?><div class="sample">Sample: <?= htmlspecialchars($sampleId) ?></div><?php endif; ?>
-      <div class="updated"><?= $ago !== null ? htmlspecialchars($ago) : 'never uploaded' ?></div>
+      <div class="updated"><?php if ($ago !== null): ?><span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>never uploaded<?php endif; ?></div>
     </div>
   </a>
 <?php endforeach; ?>
 </div>
+<?= bs_autorefresh_script() ?>
 </body>
 </html>
 <?php
@@ -740,7 +763,7 @@ function bs_render_site_page(array $config, string $siteId): void
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= htmlspecialchars($displayName) ?> — Brainsaw</title>
-<meta http-equiv="refresh" content="60">
+<noscript><meta http-equiv="refresh" content="60"></noscript>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="js/jquery.imageLens.js"></script>
 <style>
@@ -769,8 +792,8 @@ function bs_render_site_page(array $config, string $siteId): void
 
 <div class="layout">
   <div class="main-col">
-    <div class="status<?= $isStale ? ' stale' : '' ?>">
-      <?= $ago !== null ? 'Last updated ' . htmlspecialchars($ago) : 'No image uploaded yet' ?>
+    <div class="status<?= $isStale ? ' stale' : '' ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
+      <?php if ($ago !== null): ?>Last updated <span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>No image uploaded yet<?php endif; ?>
       <?php if ($acq['current_section'] !== null && $acq['total_sections'] !== null): ?>
         &mdash; section <?= (int) $acq['current_section'] ?> of <?= (int) $acq['total_sections'] ?>
       <?php endif; ?>
@@ -818,6 +841,7 @@ function bs_render_site_page(array $config, string $siteId): void
     </table>
   </div>
 </div>
+<?= bs_autorefresh_script() ?>
 </body>
 </html>
 <?php
