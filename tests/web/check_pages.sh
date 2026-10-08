@@ -28,7 +28,8 @@ body_lacks() { ! grep -qF -- "$2" <<<"$1"; }
 has_bare_meta_refresh() { grep 'http-equiv="refresh"' <<<"$1" | grep -qv '<noscript>'; }
 no_bare_meta_refresh()  { ! has_bare_meta_refresh "$1"; }
 
-check "php -l lib.php" php -l "$SRC/lib.php" >/dev/null
+lint_ok() { php -l "$1" >/dev/null; }
+check "php -l lib.php" lint_ok "$SRC/lib.php"
 
 if curl -s -o /dev/null "http://localhost:$PORT/"; then
   echo "FAIL  port $PORT is already in use; pass another port"; exit 1
