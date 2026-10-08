@@ -73,15 +73,18 @@ warning `webupload:updateSectionImage:failed` (`id: message`) and `res.ok =
 false`, so an acquisition is never interrupted. (It cannot catch a path
 variable that does not exist in the caller: MATLAB raises that before the
 function runs, so guard the call with `try`.) The call is synchronous and
-holds the caller for up to about the connect plus response timeouts when the
-server is dead; pass `'ConnectTimeout'` and `'ResponseTimeout'` to shorten
-that for a call that must not wait.
+holds the caller when the server is dead or stalled: by default up to about the
+connect, response and data timeouts of the config (15 s, 60 s, 60 s). Pass
+`'ConnectTimeout'`, `'ResponseTimeout'` and `'DataTimeout'` to shorten that for
+a call that must not wait. A Finished call that is answered with a 429 waits
+about 6 s and posts again, so it can block for about twice those timeouts plus
+6 s.
 
 `img` is one of:
 
 | `img` | meaning |
 | --- | --- |
-| `[]` | no image. A staged image is deleted first, so an old sample's image never goes up with a new recipe. Use for the call at the start of a run. |
+| `[]` | no image. A staged image is deleted (after the new files are in place, before the upload), so an old sample's image never goes up with a new recipe. Use for the call at the start of a run. |
 | numeric array (gray HxW or RGB HxWx3) | converted to a jpg (see below) |
 | path of a `.jpg` file | copied in as `LastCompleteSection.jpg` |
 
@@ -195,8 +198,8 @@ From the repo root:
 
 (use your own MATLAB path; `runtests('upload_core/tests')` alone runs just
 this package's tests). The tests add the packages to the path themselves. They
-need no real server (one test posts to a refused `127.0.0.1` port). Two tests
-wait about 6 s each: the 429 retry of a Finished call, and the simulator's
+need no real server (one test posts to a refused `127.0.0.1` port). Three tests
+wait about 6 s each: the two 429 retry tests of a Finished call, and the simulator's
 rate-limit run.
 
 Nothing in this module has been run against a live brainsaw server. Treat the

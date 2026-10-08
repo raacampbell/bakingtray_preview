@@ -13,13 +13,15 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % status.json is written separately, by webupload.writeStatus.
     %
     % An image (img or 'Montage') is one of: the literal [] (none; a previously staged one
-    % is deleted so it can never go up with a new recipe), a numeric array (converted with
+    % is deleted, after the new files are in place, so it can never go up with a new
+    % recipe), a numeric array (converted with
     % webupload.toUint8 and written as a jpg) or the path of a jpg file (copied as is).
     % Any other empty array is an error, as is anything else, a path that is not an
     % existing .jpg/.jpeg file, and an invalid 'Range'. All of these throw before
     % stageDir is touched, 'ClearStage' included.
     %
-    % FAILURE POLICY: a preview must never abort an acquisition, so
+    % FAILURE POLICY: a preview must never abort an acquisition, so any error in reading
+    % a recipe to compare sample IDs counts as "not the same sample", and
     %  - a log that is missing, not a path, or fails to copy only WARNS. The previously
     %    staged log is kept (result.logKept) only if the previously staged recipe has the
     %    same, non-empty sample ID as the new one; otherwise it is deleted, so an old
@@ -27,7 +29,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %  - a recipe that is missing, not a path, or fails to copy WARNS and the previously
     %    staged recipe is deleted, because a recipe left over from another sample must
     %    never be uploaded with new files;
-    %  - file-system failures while staging (cannot create or write stageDir, cannot
+    %  - file-system failures while staging (cannot create, clear or write stageDir, cannot
     %    rename or delete files) warn 'webupload:stageFiles:stageFailed' and set
     %    result.stageOk = false; the stage may then be incomplete.
     %
@@ -95,7 +97,11 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
                     'recipeSource', '', 'stageOk', true);
     try
         if params.Results.ClearStage
-            webupload.clearStageDir(stageDir);
+            try
+                webupload.clearStageDir(stageDir);
+            catch ME
+                error('webupload:stageFiles:ioFailure','clear folder: %s', ME.message)
+            end %try
         end
         result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stageDir);
     catch ME
@@ -185,17 +191,21 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
             'Recipe not staged (%s); any previously staged recipe is removed.', recipeProblem)
     end
     [logFile,logProblem] = resolveFile(logPath,'logPath');
+
+    % Decided before the recipe is replaced
+    keepLog = sameSample(fullfile(stageDir,spec.Names.Recipe),recipeFile);
     if ~isempty(logProblem)
+        fate = 'any previous log is removed';
+        if keepLog && isfile(fullfile(stageDir,spec.Names.Log))
+            fate = 'the previous log is kept';
+        end
         warning('webupload:stageFiles:missingLog', ...
-            'Acq log not staged (%s); keeping any previous log.', logProblem)
+            'Acq log not staged (%s); %s.', logProblem, fate)
     end
 
     % Delete only the in-progress files this call can create
     partPaths = fullfile(stageDir,strcat(struct2cell(spec.Names),spec.PartSuffix));
-    cleanup = onCleanup(@() deleteFiles(partPaths));
-
-    % Decided before the recipe is replaced
-    keepLog = sameSample(fullfile(stageDir,spec.Names.Recipe),recipeFile);
+    cleanup = onCleanup(@() cellfun(@(f) delete(f), partPaths(cellfun(@isfile,partPaths))));
 
     parts = [imagePart(mainSrc,'Main',stageDir,spec), ...
              imagePart(montageSrc,'Montage',stageDir,spec), ...
@@ -256,13 +266,17 @@ function tf = sameSample(stagedRecipe,newRecipe)
     % newRecipe    - Path of the new recipe, or '' if there is none.
     %
     % Outputs
-    % tf - false if either file is missing or either has no sample ID.
+    % tf - false if either file is missing or unreadable, or either has no sample ID.
 
     tf = false;
     if ~isempty(newRecipe) && isfile(stagedRecipe)
-        [~,oldSample] = webupload.readRecipe(stagedRecipe);
-        [~,newSample] = webupload.readRecipe(newRecipe);
-        tf = ~isempty(oldSample) && strcmp(oldSample,newSample);
+        try
+            [~,oldSample] = webupload.readRecipe(stagedRecipe);
+            [~,newSample] = webupload.readRecipe(newRecipe);
+            tf = ~isempty(oldSample) && strcmp(oldSample,newSample);
+        catch
+            % Deliberate: an unreadable recipe must not abort staging; the log is dropped
+        end %try
     end
 end % sameSample
 
@@ -291,22 +305,6 @@ function [file,problem] = resolveFile(p,label)
         problem = sprintf('"%s" is not an existing file', char(p));
     end
 end % resolveFile
-
-
-function deleteFiles(paths)
-    % Delete those of the given files that exist
-    %
-    % function webupload.stageFiles>deleteFiles(paths)
-    %
-    % Inputs
-    % paths - Cell array of full file paths.
-
-    for kk = 1:numel(paths)
-        if isfile(paths{kk})
-            delete(paths{kk});
-        end
-    end
-end % deleteFiles
 
 
 function p = imagePart(src,kind,stageDir,spec)
@@ -347,7 +345,7 @@ function p = imagePart(src,kind,stageDir,spec)
         end
     catch ME
         error('webupload:stageFiles:ioFailure','write "%s": %s', part, ME.message)
-    end
+    end %try
     p = struct('kind', kind, 'part', part);
 end % imagePart
 
@@ -382,7 +380,7 @@ function p = copyPart(src,kind,stageDir,spec)
     catch ME
         ok = false;
         msg = ME.message;
-    end
+    end %try
 
     if ~ok
         warning('webupload:stageFiles:copyFailed', 'Could not copy "%s": %s', src, msg)

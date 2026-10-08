@@ -206,6 +206,46 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyFalse(tc.Last.logKept);
         end
 
+        function theMissingLogWarningSaysWhatHappensToThePreviousLog(tc)
+            tc.stage(uint8(ones(8)));
+            same = tc.warningText(@() tc.stageOut(uint8(ones(8)), tc.Recipe, fullfile(tc.Dir, 'nope.txt')));
+            tc.verifySubstring(same, 'previous log is kept');
+            other = fullfile(tc.Dir, 'recipe_OTHER.yml');
+            writeText(other, sprintf('sample:\n  ID: OTHER\n'));
+            changed = tc.warningText(@() tc.stageOut(uint8(ones(8)), other, fullfile(tc.Dir, 'nope.txt')));
+            tc.verifySubstring(changed, 'previous log is removed');
+        end
+
+        function unreadableNewRecipeWarnsInsteadOfThrowing(tc)
+            tc.assumeFalse(ispc);
+            tc.stage(uint8(ones(8)));
+            fresh = fullfile(tc.Dir, 'recipe_fresh.yml');
+            writeText(fresh, sprintf('sample:\n  ID: SAMPLE\n'));
+            tc.assumeEqual(system(sprintf('chmod 000 "%s"', fresh)), 0);
+            tc.addTeardown(@() system(sprintf('chmod 644 "%s"', fresh)));
+            fid = fopen(fresh, 'r');
+            if fid > 0, fclose(fid); end
+            tc.assumeTrue(fid < 0, 'cannot make the recipe unreadable (running as root?)');
+            tc.verifyWarning(@() tc.stageOut(uint8(ones(8)), fresh, tc.Log), ...
+                'webupload:stageFiles:copyFailed');
+            tc.verifyFalse(tc.Last.recipeStaged);
+            tc.verifyFalse(isfile(fullfile(tc.Stage, 'recipe.yml')));
+        end
+
+        function failedClearStageWarnsAndReportsFailure(tc)
+            tc.assumeFalse(ispc);
+            tc.stage(uint8(ones(8)));
+            % A read-only parent stops the stage folder itself being removed
+            tc.assumeEqual(system(sprintf('chmod 555 "%s"', tc.Dir)), 0);
+            tc.addTeardown(@() system(sprintf('chmod 755 "%s"', tc.Dir)));
+            probe = fopen(fullfile(tc.Dir, 'probe.tmp'), 'w');
+            if probe > 0, fclose(probe); delete(fullfile(tc.Dir, 'probe.tmp')); end
+            tc.assumeTrue(probe < 0, 'cannot make the parent read-only (running as root?)');
+            tc.verifyWarning(@() tc.stageOut(uint8(ones(8)), tc.Recipe, tc.Log, 'ClearStage', true), ...
+                'webupload:stageFiles:stageFailed');
+            tc.verifyFalse(tc.Last.stageOk);
+        end
+
         function missingLogIsKeptForTheSameSampleAndReported(tc)
             tc.stage(uint8(ones(8)));
             tc.verifyWarning(@() tc.stageOut(uint8(ones(8)), tc.Recipe, fullfile(tc.Dir, 'nope.txt')), ...
@@ -363,6 +403,16 @@ classdef StageFilesTest < matlab.unittest.TestCase
 
         function stageTo(tc, stageDir, img)
             tc.Last = webupload.stageFiles(img, tc.Recipe, tc.Log, stageDir);
+        end
+
+        function msg = warningText(tc, fn)
+            % Text of the last warning issued while fn runs.
+            saved = warning('on', 'all');
+            restore = onCleanup(@() warning(saved));
+            lastwarn('');
+            fn();
+            msg = lastwarn;
+            tc.verifyNotEmpty(msg);
         end
 
         function out = readMain(tc)

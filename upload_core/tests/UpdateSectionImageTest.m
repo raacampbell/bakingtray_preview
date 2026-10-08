@@ -261,6 +261,13 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyFalse(isfolder(tc.StageRoot), 'nothing may be staged');
         end
 
+        function onlyALiteralEmptyMontageCountsAsNoMontageForAcq(tc)
+            tc.update('Montage', zeros(0, 3));
+            tc.verifyFalse(tc.Out.ok);
+            tc.verifySubstring(tc.WarnMsg, 'webupload:updateSectionImage:montageNotAllowed');
+            tc.verifyEmpty(tc.Calls);
+        end
+
         function montageIsStagedForAnalysis(tc)
             tc.update('Source', 'analysis', 'Montage', uint8(magic(8)));
             tc.verifyTrue(ismember('montage.jpg', tc.Calls.names));
@@ -336,6 +343,15 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyEqual(tc.Calls(2).extra, tc.Calls(1).extra, 'the retry uses the same timeouts');
             tc.verifyEqual(tc.Calls(2).status, struct('finished', true));
             tc.verifyGreaterThanOrEqual(waited, webupload.serverLimits().minUploadIntervalSec + 1);
+        end
+
+        function rateLimitedFinishedCallIsRetriedNoMoreThanOnce(tc)
+            tc.PosterReply = struct('ok', false, 'httpStatus', 429, 'message', 'rate limited');
+            res = tc.update('Finished', true);
+            tc.verifyFalse(res.ok);
+            tc.verifyEqual(res.post.httpStatus, 429);
+            tc.verifyNumElements(tc.Calls, 2);
+            tc.verifyFailedWarning();
         end
 
         function otherFailuresOfAFinishedCallAreNotRetried(tc)

@@ -15,9 +15,10 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % webupload.webConfig object that the caller builds once and passes in.
     %
     % img is [], a numeric array or the path of a jpg:
-    %   []             - no image. Any image staged by an earlier call is deleted first, so
-    %                    an old sample's image can never go up with a new recipe. Use it for
-    %                    the call at the start of a run, so the page shows the new recipe.
+    %   []             - no image. Any image staged by an earlier call is deleted (after
+    %                    the new files are in place, before the upload), so an old
+    %                    sample's image can never go up with a new recipe. Use it for the
+    %                    call at the start of a run, so the page shows the new recipe.
     %   numeric array  - converted with webupload.toUint8 (see 'Range').
     %   path of a jpg  - copied in as LastCompleteSection.jpg.
     % Anything else fails the call. 'Montage' takes the same kinds of value, but only with
@@ -159,7 +160,8 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     %          filled in. post and ok are set once the poster has returned. error is set if
     %          staging was incomplete or the poster threw.
 
-    if ~(isnumeric(opts.Montage) && isempty(opts.Montage)) && ~strcmp(opts.Source,'analysis')
+    noMontage = isa(opts.Montage,'double') && isequal(size(opts.Montage),[0 0]);
+    if ~noMontage && ~strcmp(opts.Source,'analysis')
         error('webupload:updateSectionImage:montageNotAllowed', ...
             'A montage can only be sent with Source ''analysis'', not ''%s''.', opts.Source)
     end
@@ -193,7 +195,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
         result.ok = result.post.ok;
     catch err
         result.error = err;
-    end
+    end %try
 end % runPipeline
 
 
@@ -390,5 +392,5 @@ function notify(result)
         warning(id,'%s',text)
     catch
         % Deliberately ignored, see above
-    end
+    end %try
 end % notify

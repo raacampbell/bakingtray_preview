@@ -41,9 +41,9 @@ function result = simulateAcquisition(varargin)
     % Inputs (optional param/val pairs)
     % 'ConfigFile' - Config JSON for the real upload (required unless DryRun).
     % 'NumSections' - Total number of sections, a positive integer (default 10).
-    % 'Interval' - Seconds between calls (default 5). The server rejects uploads
-    %              closer together than webupload.serverLimits().minUploadIntervalSec
-    %              (5 s); a real run with a smaller Interval warns
+    % 'Interval' - Seconds between calls. Default is 1 s more than the server's minimum
+    %              gap, webupload.serverLimits().minUploadIntervalSec (5 s), which it
+    %              rejects uploads closer than; a real run with a smaller Interval warns
     %              'simulate:simulateAcquisition:fastInterval'.
     % 'DryRun' - If true use simulate.FakePoster: nothing touches the network,
     %            no config or site is needed, and the files that would be
@@ -161,7 +161,7 @@ function opts = parseOptions(args)
     params.CaseSensitive = false;
     params.addParameter('ConfigFile', '', isText);
     params.addParameter('NumSections', 10, isNumScalar);
-    params.addParameter('Interval', 5, isNumScalar);
+    params.addParameter('Interval', webupload.serverLimits().minUploadIntervalSec + 1, isNumScalar);
     params.addParameter('DryRun', false, isFlag);
     params.addParameter('Poster', []);
     params.addParameter('AllowProduction', false, isFlag);

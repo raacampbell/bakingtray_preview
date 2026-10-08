@@ -167,10 +167,10 @@ You should see one line per call (start, 5 sections, finish), about 6 s apart:
 section 1/5: ok, HTTP 200: uploaded
 ```
 
-and the PHP terminal shows a `POST /upload.php` line for each. Interval 6, not
-5: each call is timed from the previous one's start, so upload-time variation can bring
-two uploads closer than the server's 5 s minimum (HTTP 429, see
-Troubleshooting).
+and the PHP terminal shows a `POST /upload.php` line for each. The default
+`Interval` is 6 s, not the server's 5 s minimum: each call is timed from the
+previous one's start, so upload-time variation could otherwise bring two uploads
+closer than the minimum (HTTP 429, see Troubleshooting).
 
 Any failure other than 429 stops the run after that call (`r.aborted`,
 `r.abortReason`). Then open `http://localhost:8000/sim_local/brainsaw`
