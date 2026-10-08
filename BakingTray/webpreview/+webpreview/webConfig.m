@@ -19,7 +19,7 @@ classdef webConfig < handle
     properties (SetAccess = private)
         url     % String defining the URL of the webserver
         siteID  % String defining the site (location) of the microscope
-        micID   % String defining the microscope name. Empty if not in the config file
+        micID   % String defining the microscope name
 
         % The following are timeouts in seconds that have default values defined in a
         % hidden constant property. The defaults are used if the values are missing from
@@ -54,8 +54,8 @@ classdef webConfig < handle
             % and errors if the file is missing or malformed, a field is absent/empty/not
             % text, siteID or micID have characters outside [A-Za-z0-9_-], url is not https
             % (the exception is localhost, for testing), or a timeout is not a positive
-            % finite number. Values are trimmed. The required fields are url, siteID and
-            % token. micID and the timeouts are optional.
+            % finite number. Values are trimmed. The required fields are url, siteID,
+            % micID and token. The timeouts are optional.
             %
             % The token is removed from the message of any error raised here.
             %
@@ -153,7 +153,7 @@ classdef webConfig < handle
                     'Config file %s must contain a single JSON object.', pathToConfigFile);
             end
 
-            required = {'url', 'siteID', 'token'};
+            required = {'url', 'siteID', 'micID', 'token'};
             absent = required(~isfield(raw, required));
             if ~isempty(absent)
                 error('webpreview:configIncomplete', ...
@@ -162,15 +162,10 @@ classdef webConfig < handle
 
 
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % Text fields: each must be a non-empty JSON string once trimmed
-            textFields = required;
-            if isfield(raw, 'micID')
-                textFields{end+1} = 'micID';
-            end
-
-            cfg = struct();
-            for ii = 1:numel(textFields)
-                name = textFields{ii};
+            % Text fields: each must be a non-empty JSON string once trimmed. The two IDs
+            % are used in folder names, so they are restricted to a safe character set.
+            for ii = 1:numel(required)
+                name = required{ii};
                 value = raw.(name);
                 if ~(ischar(value) && (isrow(value) || isempty(value)))
                     error('webpreview:configWrongType', ...
@@ -181,66 +176,30 @@ classdef webConfig < handle
                     error('webpreview:configIncomplete', ...
                         'Config field "%s" in %s is empty.', name, pathToConfigFile);
                 end
-                cfg.(name) = value;
+                if endsWith(name, 'ID') && isempty(regexp(value, '^[a-zA-Z0-9_-]+$', 'once'))
+                    error('webpreview:configInvalid', ...
+                        'Config %s in %s may only contain letters, digits, "_" and "-".', name, pathToConfigFile);
+                end
+                obj.(name) = value;
             end %for
 
-
-            % The regular expression used to ensure the site and microscope IDs are good
-            regexMatch = '^[a-zA-Z0-9_-]+$';
-
-            % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % Validate the site ID
-            if isempty(regexp(cfg.siteID, regexMatch, 'once'))
-                error('webpreview:configInvalid', ...
-                    'Config siteID in %s may only contain letters, digits, "_" and "-".', pathToConfigFile);
-            end
-            obj.siteID = cfg.siteID;
+            obj.url = checkUrl(obj.url);
 
 
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % Validate the microscope ID, which is optional
-            obj.micID = '';
-            if isfield(cfg, 'micID')
-                if isempty(regexp(cfg.micID, regexMatch, 'once'))
-                    error('webpreview:configInvalid', ...
-                        'Config micID in %s may only contain letters, digits, "_" and "-".', pathToConfigFile);
-                end
-                obj.micID = cfg.micID;
-            end
-
-
-            % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % The token (secret) was checked with the other text fields above
-            obj.token = cfg.token;
-
-
-            % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % Validate the URL
-            obj.url = checkUrl(cfg.url);
-
-
-            % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % Optional timeouts (seconds)
-            timeoutFields = obj.defaultTimeouts(:,1);
-
-            timeoutValWrong = @(x) ~(isnumeric(x) && isscalar(x) && isfinite(x) && x > 0);
-
-            for ii = 1:numel(timeoutFields)
-
-                % Read optional timeout value and error if it is not a valid number
-                if isfield(raw, timeoutFields{ii})
-                    suppliedValue = raw.(timeoutFields{ii});
-                    if timeoutValWrong(suppliedValue)
+            % Optional timeouts (seconds): use the default if absent, error if not a
+            % positive finite number
+            for ii = 1:size(obj.defaultTimeouts, 1)
+                [name, value] = obj.defaultTimeouts{ii, :};
+                if isfield(raw, name)
+                    value = raw.(name);
+                    if ~(isnumeric(value) && isscalar(value) && isfinite(value) && value > 0)
                         error('webpreview:configWrongType', ...
                             'Config %s: %s must be a positive finite number of seconds.', ...
-                            pathToConfigFile, timeoutFields{ii});
+                            pathToConfigFile, name);
                     end
-                    obj.(timeoutFields{ii}) = double(suppliedValue);
-                else
-                    % If field is missing use a default value
-                    obj.(timeoutFields{ii}) = obj.defaultTimeouts{ii,2};
                 end
-
+                obj.(name) = double(value);
             end %for
 
         end % loadFromFile
