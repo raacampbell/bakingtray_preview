@@ -21,7 +21,6 @@ classdef (Sealed) webConfig < handle
     properties (SetAccess = private)
         url     % String defining the URL of the webserver
         siteID  % String defining the site (location) of the microscope
-        micID   % String defining the microscope name
 
         % The following are timeouts in seconds that have default values defined in a
         % hidden constant property. The defaults are used if the values are missing from
@@ -40,6 +39,10 @@ classdef (Sealed) webConfig < handle
 
     properties (Constant, Hidden)
         defaultTimeouts = {'connectTimeout', 15; 'responseTimeout', 60; 'dataTimeout', 60};
+
+        % True for a positive finite numeric scalar: the rule for a timeout in seconds.
+        % postZip uses it for its per-call timeouts too.
+        isSeconds = @(x) isnumeric(x) && isscalar(x) && isfinite(x) && x > 0;
     end % hidden constant properties
 
 
@@ -51,21 +54,24 @@ classdef (Sealed) webConfig < handle
             %
             % Purpose
             % Errors if the file is missing or malformed, a field is absent/empty/not
-            % text, siteID or micID have characters outside [A-Za-z0-9_-], url is not https
-            % (except localhost, for testing), or a timeout is not a positive finite
-            % number. Values are trimmed. Required fields: url, siteID, micID, token. See
-            % webpreview_config.example.json. The token is removed from any error raised.
+            % text, siteID has characters outside [A-Za-z0-9_-] or does not start with a
+            % letter, url is not https (except localhost, for testing), or a timeout is not
+            % a positive finite number. Values are trimmed. Required fields: url, siteID,
+            % token. See webpreview_config.example.json. The token is removed from any
+            % error raised.
+            %
+            % A file with a micID field is refused (webupload:configMicID): the microscope ID
+            % is not a config setting, it is read from the recipe and passed to
+            % postZip/zipAndPost.
             %
             % Inputs
-            % jsonFile - [optional] path to the JSON config file. If omitted, the
-            %        file at ~/.brainsaw_webpreview.json is used.
+            % jsonFile - path to the JSON config file. There is no default location: the
+            %        caller decides where the file lives.
             %
             % Outputs
             % cfgObj - returns an instance of the webConfig object
 
-            if nargin < 1
-                jsonFile = defaultConfigPath;
-            end
+            narginchk(1,1)
 
             try
                 obj.loadFromFile(jsonFile);
@@ -131,7 +137,7 @@ classdef (Sealed) webConfig < handle
             % jsonFile - path to the JSON config file.
 
             if ~isfile(jsonFile)
-                error('webpreview:configMissing', ...
+                error('webupload:configMissing', ...
                     ['Config file not found: %s ', ...
                     '(copy webpreview_config.example.json there and fill it in)'], jsonFile);
             end
@@ -142,40 +148,46 @@ classdef (Sealed) webConfig < handle
             try
                 raw = jsondecode(fileread(jsonFile));
             catch err
-                error('webpreview:configInvalid', ...
+                error('webupload:configInvalid', ...
                     'Config file %s is not valid JSON: %s', jsonFile, err.message);
             end
 
             if ~(isstruct(raw) && isscalar(raw))
-                error('webpreview:configInvalid', ...
+                error('webupload:configInvalid', ...
                     'Config file %s must contain a single JSON object.', jsonFile);
             end
 
-            required = {'url', 'siteID', 'micID', 'token'};
+            if isfield(raw, 'micID')
+                error('webupload:configMicID', ...
+                    ['Config file %s has a "micID" field. The microscope ID is read from ', ...
+                    'the recipe (SYSTEM.ID), so remove "micID" from the config file.'], jsonFile);
+            end
+
+            required = {'url', 'siteID', 'token'};
             absent = required(~isfield(raw, required));
             if ~isempty(absent)
-                error('webpreview:configIncomplete', ...
+                error('webupload:configIncomplete', ...
                     'Config file %s is missing field(s): %s', jsonFile, strjoin(absent, ', '));
             end
 
 
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % Text fields: each must be a non-empty JSON string once trimmed. The two IDs
-            % are used in folder names, so they are restricted to a safe character set.
+            % Text fields: each must be a non-empty JSON string once trimmed. siteID is
+            % used in folder names, so it is restricted to a safe character set.
             for ii = 1:numel(required)
                 name = required{ii};
                 value = raw.(name);
                 if ~(ischar(value) && (isrow(value) || isempty(value)))
-                    error('webpreview:configWrongType', ...
+                    error('webupload:configWrongType', ...
                         'Config field "%s" in %s must be a JSON string.', name, jsonFile);
                 end
                 value = strtrim(value);
                 if isempty(value)
-                    error('webpreview:configIncomplete', ...
+                    error('webupload:configIncomplete', ...
                         'Config field "%s" in %s is empty.', name, jsonFile);
                 end
-                if ismember(name, {'siteID', 'micID'}) && isempty(regexp(value, '^[a-zA-Z][a-zA-Z0-9_-]*$', 'once'))
-                    error('webpreview:configInvalid', ...
+                if strcmp(name, 'siteID') && isempty(regexp(value, webupload.serverLimits().idRegexp, 'once'))
+                    error('webupload:configInvalid', ...
                         'Config field "%s" in %s must start with a letter and contain only letters, digits, "_" and "-".', ...
                         name, jsonFile);
                 end
@@ -192,8 +204,8 @@ classdef (Sealed) webConfig < handle
                 [name, value] = obj.defaultTimeouts{ii, :};
                 if isfield(raw, name)
                     value = raw.(name);
-                    if ~(isnumeric(value) && isscalar(value) && isfinite(value) && value > 0)
-                        error('webpreview:configWrongType', ...
+                    if ~obj.isSeconds(value)
+                        error('webupload:configWrongType', ...
                             'Config field "%s" in %s must be a positive finite number of seconds.', ...
                             name, jsonFile);
                     end
@@ -212,30 +224,6 @@ end % classdef
 % -----
 % Local functions follow
 
-function p = defaultConfigPath()
-    % Per-user config location, outside any repository
-    %
-    % function p = webupload.webConfig>defaultConfigPath()
-    %
-    % Outputs
-    % p - full path to .brainsaw_webpreview.json in the user's home directory. Errors with
-    %     webpreview:noHome if the home directory cannot be determined.
-
-    % TODO -- will eventually change this so it looks in the BakingTray SETTINGS path
-    if ispc
-        home = getenv('USERPROFILE');
-    else
-        home = getenv('HOME');
-    end
-
-    if isempty(home)
-        error('webpreview:noHome', 'Cannot determine the home directory.');
-    end
-
-    p = fullfile(home, '.brainsaw_webpreview.json');
-end % defaultConfigPath
-
-
 function checkUrl(url)
     % Require https, so the bearer token is never sent in clear text
     %
@@ -243,7 +231,7 @@ function checkUrl(url)
     %
     % Purpose
     % The one exception is plain http to localhost or 127.0.0.1 (optionally with a port), for
-    % testing against a local dev server only. Errors with webpreview:insecureUrl otherwise.
+    % testing against a local dev server only. Errors with webupload:insecureUrl otherwise.
     %
     % Inputs
     % url - non-empty character row vector holding the server URL.
@@ -251,7 +239,7 @@ function checkUrl(url)
     isHttps = ~isempty(regexp(url, '^https://[^/\s]+', 'once'));
     isLocalDev = ~isempty(regexp(url, '^http://(localhost|127\.0\.0\.1)(:\d+)?(/|$)', 'once'));
     if ~(isHttps || isLocalDev)
-        error('webpreview:insecureUrl', ...
+        error('webupload:insecureUrl', ...
             ['url must start with https:// ', ...
             '(http:// is allowed only for localhost/127.0.0.1): %s'], url);
     end

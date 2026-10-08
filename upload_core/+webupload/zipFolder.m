@@ -22,19 +22,19 @@ function zipPath = zipFolder(dirPath)
 
 
     if ~isfolder(dirPath)
-        error('webpreview:noSuchFolder', 'Folder not found: %s', dirPath);
+        error('webupload:noSuchFolder', 'Folder not found: %s', dirPath);
     end
 
     names = webupload.selectUploadable(dirPath);
     if isempty(names)
-        error('webpreview:noFiles', ...
+        error('webupload:noFiles', ...
             'No files with a recognised extension (%s) in %s', ...
             strjoin(webupload.allowedExtensions(), ' '), dirPath);
     end
 
     lim = webupload.serverLimits();
     if numel(names) > lim.maxEntries
-        error('webpreview:tooManyFiles', ...
+        error('webupload:tooManyFiles', ...
             '%d files in %s; the server accepts at most %d per upload.', ...
             numel(names), dirPath, lim.maxEntries);
     end
@@ -51,13 +51,13 @@ function zipPath = zipFolder(dirPath)
     end
 
     if ~isfile(zipPath)
-        error('webpreview:zipFailed', 'zip() did not create %s', zipPath);
+        error('webupload:zipFailed', 'zip() did not create %s', zipPath);
     end
 
     info = dir(zipPath);
     if info.bytes > lim.maxZipBytes
         delete(zipPath);
-        error('webpreview:zipTooLarge', ...
+        error('webupload:zipTooLarge', ...
             'Zip is %.1f MB; the server accepts at most %.0f MB.', ...
             info.bytes / 1024^2, lim.maxZipBytes / 1024^2);
     end

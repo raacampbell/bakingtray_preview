@@ -12,9 +12,9 @@ waits `Interval` seconds. Needs MATLAB R2019b or later, no toolboxes.
 Replace it including the angle brackets, and quote paths with spaces, e.g.
 `cd "<repo>/brainsaw"`.
 
-**Never use `~/.brainsaw_webpreview.json` for simulation.** That is the file
-real BakingTray reads on every acquisition. The simulator always gets its own
-config file via `'ConfigFile'` (below: `.brainsaw_webpreview_sim.json`).
+**Never point the simulator at the config file real BakingTray uses.** The
+simulator always gets its own config file via `'ConfigFile'` (below:
+`.brainsaw_webpreview_sim.json`).
 
 ## 0. Put the code on the MATLAB path, then dry-run
 
@@ -82,14 +82,16 @@ add `-d upload_max_filesize=250M -d post_max_size=250M` before `-S`.
 
 ### A3. Make a site, a microscope and a token (Terminal 2, then an editor)
 
-The server only accepts microscopes listed in the private settings file,
+The server only accepts sites and microscopes listed in the private settings file,
 `<repo>/brainsaw_settings.json` locally (next to `brainsaw/`, git-ignored;
 format in `instructions.md` section 2). It also defines the view URLs.
 
-1. Pick a site id and a microscope id (a letter, then letters, digits, `_`,
-   `-`), e.g. `sim_local` and `sim_mic`.
+1. Pick a site id (a letter, then letters, digits, `_`, `-`), e.g. `sim_local`.
+   The microscope id is not chosen here: the simulator sends the recipe's
+   `SYSTEM.ID`, which is `brainsaw` for the sample recipe, so list that
+   microscope.
 2. Run this; it prints one 64-character token. Use a new token for every
-   microscope and never paste one into an issue or chat.
+   site and never paste one into an issue or chat.
 
    ```bash
    openssl rand -hex 32
@@ -105,7 +107,8 @@ format in `instructions.md` section 2). It also defines the view URLs.
    {
      "sites": {
        "sim_local": { "display_name": "Simulator (local)",
-         "microscopes": { "sim_mic": { "token": "PASTE_64_HEX_CHARS_HERE" } } }
+         "token": "PASTE_64_HEX_CHARS_HERE",
+         "microscopes": { "brainsaw": {} } }
      }
    }
    ```
@@ -116,8 +119,8 @@ format in `instructions.md` section 2). It also defines the view URLs.
    An invalid file is treated as empty: uploads fail with 403 and views say
    `Not found`; the PHP terminal shows `brainsaw: invalid settings file: <reason>`.
 5. Checkpoint, before touching the simulator: open
-   `http://localhost:8000/sim_local`. You should see one card for the new
-   microscope reading `no image yet`.
+   `http://localhost:8000/sim_local`. You should see one card for the
+   `brainsaw` microscope reading `no image yet`.
 
 ### A4. Make the MATLAB config (MATLAB)
 
@@ -137,13 +140,13 @@ Replace the contents with this (the example's `_note` key is harmless):
 {
   "url": "http://localhost:8000/upload.php",
   "siteID": "sim_local",
-  "micID": "sim_mic",
   "token": "PASTE_64_HEX_CHARS_HERE"
 }
 ```
 
-`siteID`, `micID` and `token` must match the settings file exactly: the
-server checks the token per microscope. Plain
+`siteID` and `token` must match the settings file exactly: the server checks
+the token per site. The microscope ID is not in this file: it is `SYSTEM.ID` in
+the recipe (`brainsaw` for the sample recipe). Plain
 `http://` is accepted only for `localhost` / `127.0.0.1`; else `https://`.
 
 ### A5. Run the simulation (MATLAB)
@@ -166,7 +169,7 @@ two uploads closer than the server's 5 s minimum (HTTP 429, see
 Troubleshooting).
 
 Any failure other than 429 stops the run after that section (`r.aborted`,
-`r.abortReason`). Then open `http://localhost:8000/sim_local/sim_mic`
+`r.abortReason`). Then open `http://localhost:8000/sim_local/brainsaw`
 and look for:
 
 - the status line `Last updated 3s ago — section 2 of 5`; the image with its
@@ -181,7 +184,7 @@ and look for:
 
 The page reloads itself within about 5 s of each upload.
 
-Files land in `<repo>/brainsaw/system_data/sim_local/sim_mic/`; the server log
+Files land in `<repo>/brainsaw/system_data/sim_local/brainsaw/`; the server log
 is `<repo>/brainsaw/logs/upload.log` (tab separated: time, site/microscope,
 status, IP, message). MATLAB-side files are in `r.workDir`.
 
@@ -195,24 +198,24 @@ part only adds a simulator microscope to the deployment at
 
 Generate a NEW token locally (A3 step 2; never reuse a localhost token). Add a
 site (an unguessable ID: it is the view URL, e.g. the output of
-`echo "sim_$(openssl rand -hex 8)"`) with one microscope, e.g. `sim_mic`, and the new token to the
+`echo "sim_$(openssl rand -hex 8)"`) with the microscope `brainsaw` (the recipe's `SYSTEM.ID`), and the new token to the
 test deployment's settings file on the server (`server-setup.md` section 4).
 Checkpoint: `https://<your-host>/testserver/<site id>` shows a card for the
 new microscope.
 
 ### B2. Run against it
 
-1. Make a separate config in MATLAB, never the default one:
+1. Make a separate config in MATLAB, never the one real BakingTray uses:
 
    ```matlab
    cfgRemote = fullfile(home, '.brainsaw_webpreview_sim_remote.json');
    copyfile(fullfile(repo,'upload_core','webpreview_config.example.json'), cfgRemote)
    edit(cfgRemote)
    ```
-   with `url` = `https://<your-host>/testserver/upload.php`, the new `siteID`,
-   `micID` = `sim_mic`, and the new token.
+   with `url` = `https://<your-host>/testserver/upload.php`, the new `siteID`
+   and the new token.
 2. Run the A5 call with `'ConfigFile', cfgRemote`.
-3. Open `https://<your-host>/testserver/<site id>/sim_mic`.
+3. Open `https://<your-host>/testserver/<site id>/brainsaw`.
 
 Safety rule: a real run only accepts a config URL with `testserver` as a whole path segment (no `..`) or
 with host `localhost` / `127.0.0.1`; anything else errors unless you pass
@@ -221,7 +224,7 @@ with host `localhost` / `127.0.0.1`; anything else errors unless you pass
 ## Troubleshooting
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| `Config file not found: <path> (copy webpreview_config.example.json there and fill it in)`, `Config file ... is not valid JSON`, `... is missing field(s): ...`, `... is empty.` | no config at that path, or a typo in it | do A4; `url`, `siteID`, `micID`, `token` are all required |
+| `Config file not found: <path> (copy webpreview_config.example.json there and fill it in)`, `Config file ... is not valid JSON`, `... is missing field(s): ...`, `... is empty.` | no config at that path, or a typo in it | do A4; `url`, `siteID`, `token` are all required; a `micID` field is refused, the microscope ID comes from the recipe |
 | `url must start with https:// (http:// is allowed only for localhost/127.0.0.1): <url>` | non-https URL to a remote host | use `https://` |
 | `config url "<url>" is neither a localhost url nor has a "testserver" path segment; refusing to upload fake data` | simulator safety rule | use a localhost or `testserver` URL |
 | `section 1/5: FAILED, HTTP NaN: <message>` | no HTTP reply: server not running, wrong host/port, network (message is MATLAB's own, not verified) | start the server (A2); check `url` |

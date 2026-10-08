@@ -4,7 +4,7 @@ classdef FakePoster < handle
     % simulate.FakePoster
     %
     % Purpose
-    % Same contract as webupload.zipAndPost: post(folder,cfg) returns
+    % Same contract as webupload.zipAndPost: post(folder,cfg,micID,source) returns
     % struct(ok, httpStatus, message). Calls is a struct array with fields
     % folder, names (sorted file names), bytes (matching sizes) and logText
     % (contents of the staged acqLog.txt, '' if absent), captured at call time
@@ -22,10 +22,10 @@ classdef FakePoster < handle
     end %properties
 
     methods
-        function reply = post(obj,folder,~)
+        function reply = post(obj,folder,~,~,~)
             % Record the files in folder and return a successful reply without sending anything
             %
-            % function reply = post(obj,folder,cfg)
+            % function reply = post(obj,folder,cfg,micID,source)
 
             d = dir(folder);
             d = d(~[d.isdir]);

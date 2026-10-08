@@ -26,7 +26,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
             cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             tc.verifyEqual(cfg.url, 'https://example.org/upload.php');
             tc.verifyEqual(cfg.siteID, 'site_a-1');
-            tc.verifyEqual(cfg.micID, 'mic_1');
+            tc.verifyError(@() cfg.micID, ?MException);
         end
 
         function valuesAreTrimmed(tc)
@@ -40,17 +40,17 @@ classdef WebConfigTest < matlab.unittest.TestCase
 
         function missingFileErrors(tc)
             tc.verifyError(@() webupload.webConfig(fullfile(tc.Dir, 'absent.json')), ...
-                'webpreview:configMissing');
+                'webupload:configMissing');
         end
 
         function missingFieldErrorsAndNamesField(tc)
-            for field = {'token', 'micID', 'siteID', 'url'}
+            for field = {'token', 'siteID', 'url'}
                 f = tc.writeJson(rmfield(WebConfigTest.good(), field{1}));
                 try
                     webupload.webConfig(f);
                     tc.verifyFail('expected the constructor to error');
                 catch err
-                    tc.verifyEqual(err.identifier, 'webpreview:configIncomplete');
+                    tc.verifyEqual(err.identifier, 'webupload:configIncomplete');
                     tc.verifySubstring(err.message, field{1});
                 end
             end
@@ -59,35 +59,33 @@ classdef WebConfigTest < matlab.unittest.TestCase
         function emptyOrBlankFieldErrors(tc)
             for blank = {'', '   '}
                 s = WebConfigTest.good(); s.token = blank{1};
-                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configIncomplete');
+                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webupload:configIncomplete');
             end
         end
 
         function nonTextFieldErrorsWithWrongType(tc)
-            for field = {'siteID', 'micID', 'token', 'url'}
+            for field = {'siteID', 'token', 'url'}
                 for bad = {42, ['ab'; 'cd']}
                     s = WebConfigTest.good(); s.(field{1}) = bad{1};
-                    tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
+                    tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webupload:configWrongType');
                 end
             end
         end
 
         function malformedJsonErrors(tc)
             f = tc.writeJson('{not json');
-            tc.verifyError(@() webupload.webConfig(f), 'webpreview:configInvalid');
+            tc.verifyError(@() webupload.webConfig(f), 'webupload:configInvalid');
         end
 
         function jsonArrayRootErrors(tc)
             f = tc.writeJson([WebConfigTest.good(), WebConfigTest.good()]);
-            tc.verifyError(@() webupload.webConfig(f), 'webpreview:configInvalid');
+            tc.verifyError(@() webupload.webConfig(f), 'webupload:configInvalid');
         end
 
         function badIDsError(tc)
-            for field = {'siteID', 'micID'}
-                for bad = {'has space', 'a/b', '../x', 'a.b', '2photon', '_x', '-x'}
-                    s = WebConfigTest.good(); s.(field{1}) = bad{1};
-                    tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configInvalid');
-                end
+            for bad = {'has space', 'a/b', '../x', 'a.b', '2photon', '_x', '-x'}
+                s = WebConfigTest.good(); s.siteID = bad{1};
+                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webupload:configInvalid');
             end
         end
 
@@ -102,13 +100,13 @@ classdef WebConfigTest < matlab.unittest.TestCase
         function badTimeoutsError(tc)
             for bad = {-1, 0, 'soon', Inf, [1 2]}
                 s = WebConfigTest.good(); s.dataTimeout = bad{1};
-                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
+                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webupload:configWrongType');
             end
         end
 
         function httpUrlIsRejected(tc)
             s = WebConfigTest.good(); s.url = 'http://example.org/upload.php';
-            tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:insecureUrl');
+            tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webupload:insecureUrl');
         end
 
         function localhostHttpIsAllowed(tc)
@@ -122,20 +120,24 @@ classdef WebConfigTest < matlab.unittest.TestCase
         function lookalikeLocalhostHostIsRejected(tc)
             for u = {'http://localhost.evil.com/u', 'http://127.0.0.1.evil.com/u'}
                 s = WebConfigTest.good(); s.url = u{1};
-                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:insecureUrl');
+                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webupload:insecureUrl');
             end
         end
 
-        function noArgUsesDefaultPathInHome(tc)
-            tc.setHome(tc.Dir);
-            s = WebConfigTest.good();
-            tc.writeJson(s, '.brainsaw_webpreview.json');
-            tc.verifyEqual(webupload.webConfig().siteID, s.siteID);
+        function micIDInTheFileIsRefused(tc)
+            % The microscope ID is read from the recipe, so a config that has one is an error.
+            s = WebConfigTest.good(); s.micID = 'mic_1';
+            try
+                webupload.webConfig(tc.writeJson(s));
+                tc.verifyFail('expected the constructor to error');
+            catch err
+                tc.verifyEqual(err.identifier, 'webupload:configMicID');
+                tc.verifySubstring(err.message, 'recipe');
+            end
         end
 
-        function noArgErrorsWithoutHome(tc)
-            tc.setHome('');
-            tc.verifyError(@() webupload.webConfig(), 'webpreview:noHome');
+        function pathIsRequired(tc)
+            tc.verifyError(@() webupload.webConfig(), ?MException);
         end
 
         function propertiesCannotBeChangedAfterConstruction(tc)
@@ -190,7 +192,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
                 webupload.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
             catch err
-                tc.verifyEqual(err.identifier, 'webpreview:insecureUrl');
+                tc.verifyEqual(err.identifier, 'webupload:insecureUrl');
                 tc.verifyThat(err.message, ~matlab.unittest.constraints.ContainsSubstring(s.token));
                 tc.verifySubstring(err.message, 'http://evil.example/***');
             end
@@ -198,7 +200,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
 
         function constructorErrorsAreScrubbedWhenTokenHasEscapedQuotes(tc)
             % The JSON token abc"def is written abc\"def in the file.
-            f = tc.writeJson('{"url":"http://evil/abc\"def","siteID":"site-1","micID":"m","token":"abc\"def"}');
+            f = tc.writeJson('{"url":"http://evil/abc\"def","siteID":"site-1","token":"abc\"def"}');
             try
                 webupload.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
@@ -216,7 +218,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
                 webupload.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
             catch err
-                tc.verifyEqual(err.identifier, 'webpreview:configInvalid');
+                tc.verifyEqual(err.identifier, 'webupload:configInvalid');
                 tc.verifyThat(err.message, ~matlab.unittest.constraints.ContainsSubstring('tok123'));
             end
         end
@@ -237,7 +239,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
     methods (Static, Access = private)
         function s = good()
             s = struct('url', 'https://example.org/upload.php', ...
-                       'siteID', 'site_a-1', 'micID', 'mic_1', 'token', 'tok123');
+                       'siteID', 'site_a-1', 'token', 'tok123');
         end
 
         function setUrl(cfg, value)
@@ -259,15 +261,6 @@ classdef WebConfigTest < matlab.unittest.TestCase
             fid = fopen(f, 'w');
             fwrite(fid, s);
             fclose(fid);
-        end
-
-        function setHome(tc, folder)
-            % Point both home variables at folder and restore them afterwards.
-            for name = {'HOME', 'USERPROFILE'}
-                old = getenv(name{1});
-                setenv(name{1}, folder);
-                tc.addTeardown(@() setenv(name{1}, old));
-            end
         end
     end
 end

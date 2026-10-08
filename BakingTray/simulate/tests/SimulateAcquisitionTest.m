@@ -37,11 +37,11 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             tc.addTeardown(@() rmdir(tc.Dir, 's'));
             tc.Recipe = fullfile(tc.Dir, 'recipe_test.yml');
             writeText(tc.Recipe, sprintf(['Acquisition: {acqStartTime: ''2019/12/09 12:03:50''}\n' ...
-                'sample: {ID: REALSAMPLE, objectiveName: real objective 16x}\nmosaic:\n  numSections: 289.0\n']));
+                'sample: {ID: REALSAMPLE, objectiveName: real objective 16x}\nmosaic:\n  numSections: 289.0\nSYSTEM:\n  ID: brainsaw\n']));
             tc.Config = fullfile(tc.Dir, 'config.json');
-            writeText(tc.Config, '{"url":"https://x.example/testserver/upload.php","siteID":"sim-1","micID":"sim-mic","token":"TOK"}');
+            writeText(tc.Config, '{"url":"https://x.example/testserver/upload.php","siteID":"sim-1","token":"TOK"}');
             tc.ProdConfig = fullfile(tc.Dir, 'prod.json');
-            writeText(tc.ProdConfig, '{"url":"https://x.example/brainsaw/upload.php","siteID":"sim-1","micID":"sim-mic","token":"TOK"}');
+            writeText(tc.ProdConfig, '{"url":"https://x.example/brainsaw/upload.php","siteID":"sim-1","token":"TOK"}');
             tc.PosterStatus = NaN;
             tc.PosterCalls = 0;
             tc.StageSeen = zeros(0, 2);
@@ -242,7 +242,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             tc.verifyNumElements(r.dryRunCalls, 3);
             last = r.dryRunCalls(end);
             tc.verifyEqual(last.names, ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'montage.jpg', 'recipe.yml'});
+                {'LastCompleteSection.jpg', 'acqLog.txt', 'montage.jpg', 'recipe.yml', 'status.json'});
             tc.verifyTrue(all(last.bytes > 0));
             for k = 1:3     % the log grows by one FINISHED line per upload
                 nFinished = nnz(~cellfun(@isempty, ...
@@ -327,7 +327,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
 
         function clearStageOnlyOnFirstSection(tc)
             work = fullfile(tc.Dir, 'w2');
-            stale = fullfile(work, 'stage', 'brainsaw_webpreview', 'sim-1', 'stale.txt');
+            stale = fullfile(work, 'stage', 'brainsaw_webpreview', 'sim-1', 'brainsaw', 'acq', 'stale.txt');
             mkdir(fileparts(stale));
             writeText(stale, 'old');
             tc.runReal(@tc.markerPoster, 'NumSections', 2, 'WorkDir', work);
@@ -415,9 +415,9 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             for ii = 1:numel(urls)
                 cfg = tc.configWithUrl(urls{ii});
                 tc.verifyError(@() simulate.simulateAcquisition('ConfigFile', cfg, ...
-                    'NumSections', 1, 'Poster', @(~, ~) struct(), 'RecipeFile', tc.Recipe, ...
+                    'NumSections', 1, 'Poster', @(~, ~, ~, ~) struct(), 'RecipeFile', tc.Recipe, ...
                     'WorkDir', fullfile(tc.Dir, sprintf('wn%d', ii)), 'Verbose', false), ...
-                    'webpreview:insecureUrl', urls{ii});
+                    'webupload:insecureUrl', urls{ii});
             end
         end
 
@@ -438,7 +438,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         end
 
         function posterWithDryRunIsRejected(tc)
-            tc.verifyError(@() tc.dry('Poster', @(~, ~) struct()), ...
+            tc.verifyError(@() tc.dry('Poster', @(~, ~, ~, ~) struct()), ...
                 'simulate:simulateAcquisition:posterInDryRun');
         end
 
@@ -449,13 +449,13 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
     end
 
     methods
-        function reply = statusPoster(tc, ~, ~)
+        function reply = statusPoster(tc, ~, ~, ~, ~)
             % Scripted poster: replies with tc.PosterStatus as a failure.
             tc.PosterCalls = tc.PosterCalls + 1;
             reply = struct('ok', false, 'httpStatus', tc.PosterStatus, 'message', 'scripted failure');
         end
 
-        function reply = markerPoster(tc, folder, ~)
+        function reply = markerPoster(tc, folder, ~, ~, ~)
             % Records whether the stale file and its own earlier marker are
             % in the stage folder, then leaves a marker for the next call.
             marker = fullfile(folder, 'marker.txt');
@@ -469,7 +469,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         function cfg = configWithUrl(tc, url)
             % Write a config file whose url is the one given; return its path.
             cfg = tempname(tc.Dir);
-            writeText(cfg, sprintf('{"url":"%s","siteID":"sim-1","micID":"sim-mic","token":"TOK"}', url));
+            writeText(cfg, sprintf('{"url":"%s","siteID":"sim-1","token":"TOK"}', url));
         end
 
         function r = dry(tc, varargin)

@@ -1,19 +1,20 @@
-function ok = clearStage(cfg,varargin)
+function ok = clearStage(cfg,micID,varargin)
     % Empty the managed stage folder without uploading. Never throws
     %
-    % function ok = BakingTray.webpreview.clearStage(cfg,'Param1',val1,...)
+    % function ok = BakingTray.webpreview.clearStage(cfg,micID,'Param1',val1,...)
     %
     % Purpose
     % Call once at the start of a new acquisition so a previous run's recipe and log can
-    % never be sent with the first section. The config is needed only for the siteID and
-    % micID. Removes just <StageRoot>/brainsaw_webpreview/<siteID>/<micID>, never its
+    % never be sent with the first section. The config and micID give the folder.
+    % Removes just <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/acq, never its
     % siblings. Any failure (including a cfg that is not a valid webConfig) warns
     % 'webpreview:clearStage:failed' ("id: message") and returns false. The warning call is
     % guarded so warning('error',...) cannot make this throw. A symlink planted inside
     % StageRoot is not guarded against, so StageRoot should be a per-user folder.
     %
     % Inputs
-    % cfg - webupload.webConfig object.
+    % cfg   - webupload.webConfig object.
+    % micID - Microscope ID, as returned by webupload.readRecipe.
     %
     % Inputs (optional param/val pairs)
     % 'StageRoot'  - Non-empty text scalar. Folder holding the stage folders. Default is
@@ -40,7 +41,7 @@ function ok = clearStage(cfg,varargin)
         params.addParameter('StageRoot', tempdir, isNonEmptyText)
         params.parse(varargin{:});
 
-        stageDir = BakingTray.webpreview.stageDirFor(cfg,params.Results.StageRoot);
+        stageDir = BakingTray.webpreview.stageDirFor(cfg,micID,params.Results.StageRoot);
         BakingTray.webpreview.clearStageDir(stageDir);
         ok = true;
     catch err

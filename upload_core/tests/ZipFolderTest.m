@@ -72,24 +72,24 @@ classdef ZipFolderTest < matlab.unittest.TestCase
         end
 
         function emptyDirErrors(tc)
-            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webpreview:noFiles');
+            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webupload:noFiles');
         end
 
         function dirWithOnlyUnrecognisedFilesErrors(tc)
             ZipFolderTest.touch(tc.Dir, {'evil.php', 'raw.tif'});
-            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webpreview:noFiles');
+            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webupload:noFiles');
         end
 
         function missingDirErrors(tc)
             tc.verifyError(@() webupload.zipFolder(fullfile(tc.Dir, 'nope')), ...
-                'webpreview:noSuchFolder');
+                'webupload:noSuchFolder');
         end
 
         function tooManyFilesErrorsBeforeZipping(tc)
             lim = webupload.serverLimits();
             names = arrayfun(@(k) sprintf('f%d.txt', k), 1:lim.maxEntries + 1, 'UniformOutput', false);
             ZipFolderTest.touch(tc.Dir, names);
-            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webpreview:tooManyFiles');
+            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webupload:tooManyFiles');
         end
     end
 

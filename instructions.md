@@ -189,7 +189,7 @@ so a stray `.php` or `.htaccess` is never written. It then writes `meta.json` wi
    `s$(openssl rand -hex 8)`, and a short microscope ID.
 2. Generate one token per microscope with `openssl rand -hex 32`. Never reuse a token.
 3. Add the entries to the settings file (§2). No restart needed.
-4. Send the lab their view URL `<base>/<SITE_ID>`, and for each microscope its `siteID`, `micID`
+4. Send the lab their view URL `<base>/<SITE_ID>`, and for each microscope its `siteID`
    and token for the MATLAB config, by a private channel.
 
 Removing: delete the entry. Its data under `system_data/<site>/<mic>/` stays on disk until you

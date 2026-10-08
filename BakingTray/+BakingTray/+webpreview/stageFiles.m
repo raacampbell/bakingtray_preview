@@ -8,7 +8,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % globs in brainsaw/lib.php):
     %   LastCompleteSection.jpg   from img
     %   montage.jpg               from the 'Montage' image, if given
-    %   recipe.yml / recipe.yaml  copy of the recipe (extension follows the source)
+    %   recipe.yml                copy of the recipe, whatever the source extension
     %   acqLog.txt                copy of the log
     %
     % recipePath may be a file or a folder; for a folder the newest file matching the
@@ -147,7 +147,7 @@ function result = stageOnDisk(result,mainImg,montageImg,recipePath,logPath,stage
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     % Resolve sources before anything is deleted
     [recipeFile,recipeProblem] = resolveRecipe(recipePath,spec.Globs.Recipe);
-    recipeName = [spec.Names.RecipeBase recipeExtension(recipeFile)];
+    recipeName = spec.Names.Recipe;
     [recipeFile,recipeProblem] = rejectSourceInStage(recipeFile,recipeProblem,recipeName,stageAbs);
     if ~isempty(recipeProblem)
         warning('webpreview:stageFiles:missingRecipe', ...
@@ -206,30 +206,6 @@ end % stageOnDisk
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 % Sources
-
-function ext = recipeExtension(file)
-    % Extension to give the staged recipe, following that of the source
-    %
-    % function ext = BakingTray.webpreview.stageFiles>recipeExtension(file)
-    %
-    % Purpose
-    % Both '.yml' and '.yaml' match the server's recipe glob.
-    %
-    % Inputs
-    % file - Path to the recipe source, or '' if there is none.
-    %
-    % Outputs
-    % ext - '.yaml' if file ends in .yaml (any case), otherwise '.yml'.
-
-    ext = '.yml';
-    if ~isempty(file)
-        [~,~,thisExt] = fileparts(file);
-        if strcmpi(thisExt,'.yaml')
-            ext = '.yaml';
-        end
-    end
-end % recipeExtension
-
 
 function tf = isTextPath(p)
     % True for a non-empty char row vector or a non-empty string scalar
