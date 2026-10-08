@@ -30,8 +30,9 @@ nothing changed.
   stale rule, so a dead microscope still turns red without a reload. Keep the
   server-side rendering of these as the initial state.
 - Polling pauses while `document.hidden`, and polls immediately when the tab
-  becomes visible again. Fetch/JSON errors and 404s are ignored silently (keep
-  polling; a 404 at render time and a 404 now is "no change").
+  becomes visible again. Fetch/JSON errors and 404s never stop polling and
+  count as "no change" (a 404 at render time and a 404 now is "no change");
+  404s are silent, other failures log one console warning per URL and kind.
 - Remove the JS-dependent pages' unconditional meta refresh; keep a no-JS
   fallback: `<noscript><meta http-equiv="refresh" content="60"></noscript>` in
   `<head>`.
@@ -45,7 +46,8 @@ nothing changed.
 ## Inputs / outputs / interfaces
 - lib.php: `bs_render_viewer`, `bs_render_site_page` (HTML only; no change to
   upload handling, data layout, or any URL).
-- New: `brainsaw/js/autorefresh.js`, tests under `brainsaw/tests/` (new folder).
+- New: `brainsaw/js/autorefresh.js`, tests under `tests/web/` at the repo root (not inside `brainsaw/`,
+  which is deployed whole).
 
 ## Acceptance criteria
 - Node unit tests (`node --test`, no npm packages) for: human-ago output matches
@@ -65,3 +67,26 @@ nothing changed.
   the simulator, watch both pages update within ~5 s without manual reload).
 - `instructions.md` §3 ("Testing the viewer's stale indicator") and §11 updated
   to describe the new behaviour accurately.
+
+## As built (differences from and additions to the design above)
+- Tests live in `tests/web/`: `node --test tests/web/` (unit, control flow with a
+  fake DOM, `init()` wiring with a fake window, PHP/JS `humanAgo` parity) and
+  `tests/web/check_pages.sh [port]` (renders pages from a secret-free temp copy).
+- Clock skew: `<body data-server-now>` gives the server clock; "ago" and stale use
+  `Date.now()` plus the offset measured when the script runs (so "ago" can read a
+  second or two low).
+- Fetches abort after 4 s (counted as no change). The "ago"/stale display updates
+  every tick outside the poll busy gate. A visibility change during an in-flight
+  poll queues exactly one follow-up poll.
+- Error policy: 404 is silent; other failures warn once per URL and failure kind.
+- Reload-loop guard: a per-meta-URL map in `sessionStorage` (key per page URL) of
+  the last value reloaded for; no second reload for the same value. A
+  `sessionStorage` that throws on access disables the guard (one console warning)
+  without stopping polling.
+- Missing or unreadable `js/autorefresh.js`: error logged, page gets an
+  unconditional 60 s meta refresh and no `<script>`.
+- Pages send `Cache-Control: no-store`. `stale_after_seconds` is validated
+  (`bs_stale_after_seconds()`): a non-numeric or non-positive value is logged and
+  replaced by 900.
+- Known limitation: a newly added site appears on the landing page only after a
+  manual reload.

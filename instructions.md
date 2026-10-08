@@ -478,14 +478,18 @@ line; `<body data-server-now>` carries the server clock. `js/autorefresh.js`
 
 - polls those meta URLs every 5 s (each fetch aborted after 4 s) and reloads
   when any `uploaded_at` changed (including none to some). Errors and 404s
-  count as "no change" and log one console warning per URL. A
-  `sessionStorage` guard stops a reload loop if the page still differs after
-  reloading for the same value.
+  count as "no change". A per-URL `sessionStorage` guard stops a reload loop if the page still differs
+  after reloading for the same value (404s are silent; other failures warn
+  once per URL and kind).
 - recomputes the "X ago" text and the red stale styling every 5 s, using the
   same wording and threshold as `bs_human_ago()` and the server's stale
   rule, measured against the server clock so a wrong client clock does not
   matter.
-- pauses while the tab is hidden and polls at once when it is shown again.
+- pauses while the tab is hidden and polls at once when it is shown again
+  (if a poll is already running, one more runs right after it).
+
+The clock offset is measured once, when the script runs, so "ago" can read a
+second or two low until the next reload.
 
 The script never builds URLs itself, so changing the data folder layout only
 affects the PHP that emits the attributes. Pages are sent with
