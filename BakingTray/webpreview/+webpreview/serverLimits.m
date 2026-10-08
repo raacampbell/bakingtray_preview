@@ -11,4 +11,4 @@ function lim = serverLimits()
     % lim - structure with fields maxEntries (files per zip) and maxZipBytes (zip size).
 
     lim = struct('maxEntries', 500, 'maxZipBytes', 200 * 1024^2);
-end
+end % serverLimits

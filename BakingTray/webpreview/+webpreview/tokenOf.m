@@ -18,4 +18,4 @@ function token = tokenOf(cfg)
             && ischar(cfg.token) && isrow(cfg.token)
         token = cfg.token;
     end
-end
+end % tokenOf

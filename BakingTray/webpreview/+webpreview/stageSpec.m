@@ -24,4 +24,4 @@ function s = stageSpec
     s.Globs.Log = '*cqLog*.txt';
     s.JpegQuality = 85;
     s.PartSuffix = '.part';
-end
+end % stageSpec

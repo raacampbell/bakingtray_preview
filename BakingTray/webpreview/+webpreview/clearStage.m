@@ -43,11 +43,25 @@ function ok = clearStage(varargin)
             % Deliberately ignored: warning('error',...) must not escape
         end
     end %try
-end
+end % clearStage
 
 
 function opts = parseOptions(varargin)
-    % Parse the name/value options. Unknown names and values of the wrong type throw
+    % Parse and validate the param/val options of clearStage
+    %
+    % function opts = BakingTray.webpreview.clearStage>parseOptions(varargin)
+    %
+    % Purpose
+    % Uses inputParser, so unknown names and values of the wrong type throw. Text options
+    % may arrive as strings; they are converted to char because everything downstream uses
+    % char paths.
+    %
+    % Inputs
+    % varargin - The 'Param1',val1,... pairs documented in clearStage.
+    %
+    % Outputs
+    % opts - Structure with the char fields ConfigFile and StageRoot.
+
     params = inputParser;
     params.FunctionName = 'webpreview.clearStage';
     params.CaseSensitive = false;
@@ -59,17 +73,36 @@ function opts = parseOptions(varargin)
     % Text options may arrive as strings; everything downstream uses char paths
     opts.ConfigFile = char(params.Results.ConfigFile);
     opts.StageRoot = char(params.Results.StageRoot);
-end
+end % parseOptions
 
 
 function tf = isTextScalar(x)
-    % True for a char row (or empty) or a string scalar
+    % True for a char row vector, an empty char or a string scalar
+    %
+    % function tf = BakingTray.webpreview.clearStage>isTextScalar(x)
+    %
+    % Inputs
+    % x - Any value.
+    %
+    % Outputs
+    % tf - true if x is a char row vector, a 0x0 char (so '' is accepted) or a string
+    %      scalar.
+
     tf = (ischar(x) && (isrow(x) || isequal(size(x),[0 0]))) || (isstring(x) && isscalar(x));
-end
+end % isTextScalar
 
 
 function tf = isNonEmptyText(x)
-    % True for a non-empty char row or a non-empty string scalar
+    % True for a non-empty char row vector or a non-empty string scalar
+    %
+    % function tf = BakingTray.webpreview.clearStage>isNonEmptyText(x)
+    %
+    % Inputs
+    % x - Any value.
+    %
+    % Outputs
+    % tf - true if x is a char row vector or string scalar with at least one character.
+
     tf = ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x)));
     tf = tf && strlength(x)>0;
-end
+end % isNonEmptyText

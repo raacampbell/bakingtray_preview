@@ -104,11 +104,39 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
             'Staging in "%s" failed: %s', stageDir, ME.message)
         result.stageOk = false;
     end %try
-end
+end % stageFiles
 
 
 function result = stageOnDisk(result,mainImg,montageImg,recipePath,logPath,stageDir)
     % Write the part files, rename them into place and clear stale files
+    %
+    % function result = BakingTray.webpreview.stageFiles>stageOnDisk(result,mainImg,montageImg,recipePath,logPath,stageDir)
+    %
+    % Purpose
+    % The file-system half of stageFiles. Resolves the recipe and log sources first, before
+    % anything is deleted; an unusable source only warns and the previously staged copy is
+    % kept. Then writes the images and copies the sources under '.part' names, renames each
+    % into place (commitParts) and deletes stale files of other names that the server
+    % would match. If a montage was not given, any previously staged montage is stale and
+    % is deleted.
+    %
+    % File-system failures in ensureFolder and writeImagePart are thrown as
+    % 'webpreview:stageFiles:ioFailure' and handled by stageFiles. Failures to rename or to
+    % delete stale files warn 'webpreview:stageFiles:stageFailed' and set result.stageOk to
+    % false.
+    %
+    % Inputs
+    % result     - Result structure from stageFiles, to be filled in.
+    % mainImg    - uint8 image to write as the main image.
+    % montageImg - uint8 montage image, or [] for no montage.
+    % recipePath - Path to the recipe file or to a folder containing it.
+    % logPath    - Path to the acquisition log file.
+    % stageDir   - Char path to the stage folder. Created if absent.
+    %
+    % Outputs
+    % result - The input with files, montageStaged, recipeStaged, logStaged and
+    %          recipeSource filled in, and stageOk set to false if anything failed.
+
     spec = webpreview.stageSpec;
     hasMontage = ~isempty(montageImg);
 
@@ -173,14 +201,26 @@ function result = stageOnDisk(result,mainImg,montageImg,recipePath,logPath,stage
         warning('webpreview:stageFiles:stageFailed', ...
             'Staging in "%s" incomplete: %s', stageDir, strjoin(failures,'; '))
     end
-end
+end % stageOnDisk
 
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 % Sources
 
 function ext = recipeExtension(file)
-    % '.yaml' if the source says so, otherwise '.yml'; both match the server glob
+    % Extension to give the staged recipe, following that of the source
+    %
+    % function ext = BakingTray.webpreview.stageFiles>recipeExtension(file)
+    %
+    % Purpose
+    % Both '.yml' and '.yaml' match the server's recipe glob.
+    %
+    % Inputs
+    % file - Path to the recipe source, or '' if there is none.
+    %
+    % Outputs
+    % ext - '.yaml' if file ends in .yaml (any case), otherwise '.yml'.
+
     ext = '.yml';
     if ~isempty(file)
         [~,~,thisExt] = fileparts(file);
@@ -188,16 +228,42 @@ function ext = recipeExtension(file)
             ext = '.yaml';
         end
     end
-end
+end % recipeExtension
 
 
 function tf = isTextPath(p)
+    % True for a non-empty char row vector or a non-empty string scalar
+    %
+    % function tf = BakingTray.webpreview.stageFiles>isTextPath(p)
+    %
+    % Inputs
+    % p - Any value.
+    %
+    % Outputs
+    % tf - true if p can be used as a path, i.e. it is text with at least one character.
+
     tf = (ischar(p) && isrow(p) && ~isempty(p)) || (isstring(p) && isscalar(p) && strlength(p)>0);
-end
+end % isTextPath
 
 
 function [file,problem] = resolveRecipe(recipePath,glob)
-    % File to copy as the recipe, or '' plus a human-readable problem
+    % Work out which file to copy as the recipe
+    %
+    % function [file,problem] = BakingTray.webpreview.stageFiles>resolveRecipe(recipePath,glob)
+    %
+    % Purpose
+    % If recipePath is a file it is used as is. If it is a folder, the newest file in it
+    % matching glob is used (see newestIn). If no file is found the reason is returned in
+    % problem rather than thrown.
+    %
+    % Inputs
+    % recipePath - Path to a recipe file or to a folder containing one.
+    % glob       - Server glob for recipe files, used when recipePath is a folder.
+    %
+    % Outputs
+    % file    - Path of the recipe to copy, or '' if none was found.
+    % problem - Human-readable reason if file is empty, otherwise ''.
+
     file = '';
     problem = '';
     if ~isTextPath(recipePath)
@@ -218,10 +284,25 @@ function [file,problem] = resolveRecipe(recipePath,glob)
     else
         problem = sprintf('path "%s" does not exist', recipePath);
     end
-end
+end % resolveRecipe
 
 
 function [file,problem] = resolveLog(logPath)
+    % Check that the acquisition log exists
+    %
+    % function [file,problem] = BakingTray.webpreview.stageFiles>resolveLog(logPath)
+    %
+    % Purpose
+    % Unlike resolveRecipe, logPath must be a file; a folder is not accepted. A problem is
+    % returned rather than thrown.
+    %
+    % Inputs
+    % logPath - Path to the acquisition log file.
+    %
+    % Outputs
+    % file    - Char path of the log to copy, or '' if it is unusable.
+    % problem - Human-readable reason if file is empty, otherwise ''.
+
     file = '';
     problem = '';
     if ~isTextPath(logPath)
@@ -231,12 +312,29 @@ function [file,problem] = resolveLog(logPath)
     else
         problem = sprintf('"%s" is not an existing file', char(logPath));
     end
-end
+end % resolveLog
 
 
 function [file,problem] = rejectSourceInStage(file,problem,targetName,stageAbs)
-    % A source inside stageDir is only safe if replacing it by its own staged copy
-    % (same name); otherwise clearing stale files could delete it.
+    % Refuse a source file that lies inside the stage folder under the wrong name
+    %
+    % function [file,problem] = BakingTray.webpreview.stageFiles>rejectSourceInStage(file,problem,targetName,stageAbs)
+    %
+    % Purpose
+    % A source inside the stage folder is only safe if it has the same name as the staged
+    % copy that will replace it. Otherwise deleting stale files could delete the source.
+    % Such a source is dropped and the reason is returned in problem.
+    %
+    % Inputs
+    % file       - Path of the source from resolveRecipe or resolveLog. May be ''.
+    % problem    - The problem reported by that function. Passed through if file is accepted.
+    % targetName - Name the source will have once staged.
+    % stageAbs   - Canonical path of the stage folder (see canonicalPath).
+    %
+    % Outputs
+    % file    - The input file, or '' if it was rejected.
+    % problem - The input problem, or a description of why file was rejected.
+
     if isempty(file)
         return
     end
@@ -246,24 +344,51 @@ function [file,problem] = rejectSourceInStage(file,problem,targetName,stageAbs)
         problem = sprintf('source "%s" lies inside the stage folder under a different name', file);
         file = '';
     end
-end
+end % rejectSourceInStage
 
 
 function file = newestIn(folder,names)
-    % Newest by modification time; ties broken by name for determinism
+    % Full path of the most recently modified file out of those named
+    %
+    % function file = BakingTray.webpreview.stageFiles>newestIn(folder,names)
+    %
+    % Purpose
+    % Files with the same modification time are ordered as they appear in names, so the
+    % result is deterministic.
+    %
+    % Inputs
+    % folder - Folder holding the files.
+    % names  - Non-empty cell row of file names in folder.
+    %
+    % Outputs
+    % file - Full path of the newest file.
+
     d = cellfun(@(n) dir(fullfile(folder,n)), names);
     [~,order] = sortrows([-[d.datenum]' (1:numel(d))']);
     file = fullfile(folder,names{order(1)});
-end
+end % newestIn
 
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 % Paths
 
 function p = canonicalPath(p)
-    % Absolute path; with the JVM also with symlinks (and, on case-insensitive
-    % systems, case) resolved. Without the JVM, or if resolution fails, the fileattrib
-    % result is used, so two spellings of one folder may then compare unequal.
+    % Absolute path with symlinks resolved where possible
+    %
+    % function p = BakingTray.webpreview.stageFiles>canonicalPath(p)
+    %
+    % Purpose
+    % With the JVM the path also has symlinks (and, on case-insensitive systems, case)
+    % resolved. Without the JVM, or if resolution fails, the fileattrib result is used, so
+    % two spellings of one folder may then compare unequal. Only a java.io.IOException is
+    % tolerated; any other error is rethrown.
+    %
+    % Inputs
+    % p - Path to an existing file or folder.
+    %
+    % Outputs
+    % p - The canonical path.
+
     [ok,info] = fileattrib(p);
     if ok
         p = info.Name;
@@ -282,34 +407,75 @@ function p = canonicalPath(p)
             end
         end %try
     end
-end
+end % canonicalPath
 
 
 function tf = samePath(a,b)
-    % File systems on Windows and macOS are case-insensitive by default
+    % True if two names or paths are the same, using the platform's case rules
+    %
+    % function tf = BakingTray.webpreview.stageFiles>samePath(a,b)
+    %
+    % Purpose
+    % File systems on Windows and macOS are case-insensitive by default, so the comparison
+    % ignores case there and is case-sensitive elsewhere. Does not resolve paths: use
+    % canonicalPath first if needed.
+    %
+    % Inputs
+    % a, b - Char row vectors to compare.
+    %
+    % Outputs
+    % tf - true if a and b match.
+
     if ispc || ismac
         tf = strcmpi(a,b);
     else
         tf = strcmp(a,b);
     end
-end
+end % samePath
 
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 % Listing and deleting
 
 function names = listMatching(folder,glob)
-    % Names of regular files in folder matching a server glob
+    % Names of regular files in a folder that match a server glob
+    %
+    % function names = BakingTray.webpreview.stageFiles>listMatching(folder,glob)
+    %
+    % Inputs
+    % folder - Folder to list.
+    % glob   - Server glob pattern, translated with webpreview.globToRegexp.
+    %
+    % Outputs
+    % names - Cell row of file names (not paths). Subfolders are not included. Empty if
+    %         nothing matches.
+
     d = dir(folder);
     d = d(~[d.isdir]);
     names = {d.name};
     names = names(~cellfun(@isempty, regexp(names,webpreview.globToRegexp(glob),'once')));
-end
+end % listMatching
 
 
 function remaining = removeMatching(folder,glob,keepName)
-    % Delete matching files other than keepName; return those still present afterwards
-    % (delete only warns on locked or read-only files).
+    % Delete files matching a server glob, except one, and report any that survive
+    %
+    % function remaining = BakingTray.webpreview.stageFiles>removeMatching(folder,glob,keepName)
+    %
+    % Purpose
+    % Used to delete stale files that the server would otherwise pick up. delete only warns
+    % on locked or read-only files, so each file is checked afterwards.
+    %
+    % Inputs
+    % folder   - Folder to clear.
+    % glob     - Server glob pattern for the files to delete.
+    % keepName - Name of the file to leave alone (compared with samePath). Use '' to keep
+    %            nothing.
+    %
+    % Outputs
+    % remaining - Cell array of the names that matched but were still present after the
+    %             delete. Empty if all were removed.
+
     remaining = {};
     for thisName = listMatching(folder,glob)
         if ~samePath(thisName{1},keepName)
@@ -319,30 +485,58 @@ function remaining = removeMatching(folder,glob,keepName)
             end
         end
     end %for
-end
+end % removeMatching
 
 
 function f = staleFailure(remaining)
+    % Turn a list of undeletable stale files into an entry for the failures list
+    %
+    % function f = BakingTray.webpreview.stageFiles>staleFailure(remaining)
+    %
+    % Inputs
+    % remaining - Cell array of names returned by removeMatching.
+    %
+    % Outputs
+    % f - Empty cell if remaining is empty, otherwise a cell holding one message that
+    %     names the files.
+
     f = {};
     if ~isempty(remaining)
         f = {sprintf('could not delete stale file(s): %s', strjoin(remaining,', '))};
     end
-end
+end % staleFailure
 
 
 function deleteFiles(paths)
+    % Delete those of the given files that exist
+    %
+    % function BakingTray.webpreview.stageFiles>deleteFiles(paths)
+    %
+    % Inputs
+    % paths - Cell array of full file paths.
+
     for kk = 1:numel(paths)
         if isfile(paths{kk})
             delete(paths{kk});
         end
     end
-end
+end % deleteFiles
 
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 % File-system writes: every failure is reported as ioFailure
 
 function ensureFolder(folder)
+    % Create a folder if it does not exist
+    %
+    % function BakingTray.webpreview.stageFiles>ensureFolder(folder)
+    %
+    % Purpose
+    % Errors with 'webpreview:stageFiles:ioFailure' (see throwIo) if it cannot be created.
+    %
+    % Inputs
+    % folder - Char path of the folder.
+
     if isfolder(folder)
         return
     end
@@ -351,10 +545,30 @@ function ensureFolder(folder)
     if ~ok
         throwIo('create folder "%s": %s', folder, msg)
     end
-end
+end % ensureFolder
 
 
 function p = writeImagePart(img8,kind,finalName,glob,stageAbs,spec)
+    % Write a uint8 image as a JPEG under its '.part' name
+    %
+    % function p = BakingTray.webpreview.stageFiles>writeImagePart(img8,kind,finalName,glob,stageAbs,spec)
+    %
+    % Purpose
+    % The file is renamed to finalName later by commitParts. Errors with
+    % 'webpreview:stageFiles:ioFailure' (see throwIo) if the write fails.
+    %
+    % Inputs
+    % img8      - uint8 image to write.
+    % kind      - 'main' or 'montage'.
+    % finalName - Name the file will have once renamed into place.
+    % glob      - Server glob matching stale versions of this file.
+    % stageAbs  - Canonical path of the stage folder.
+    % spec      - Structure from webpreview.stageSpec.
+    %
+    % Outputs
+    % p - Structure with fields kind, final, part (full path written) and glob, as used
+    %     by commitParts.
+
     part = fullfile(stageAbs,[finalName spec.PartSuffix]);
     try
         % Explicit format: '.part' is not an image extension
@@ -363,12 +577,31 @@ function p = writeImagePart(img8,kind,finalName,glob,stageAbs,spec)
         throwIo('write "%s": %s', part, ME.message)
     end
     p = struct('kind', kind, 'final', finalName, 'part', part, 'glob', glob);
-end
+end % writeImagePart
 
 
 function p = copyPart(src,kind,finalName,glob,stageAbs,spec)
-    % Copy a source to a temporary name. A failed copy warns and returns [] so the
-    % previous staged copy survives; it is not a stage failure.
+    % Copy a source file to its '.part' name
+    %
+    % function p = BakingTray.webpreview.stageFiles>copyPart(src,kind,finalName,glob,stageAbs,spec)
+    %
+    % Purpose
+    % The file is renamed to finalName later by commitParts. A failed copy warns
+    % 'webpreview:stageFiles:copyFailed' and returns [] so the previous staged copy
+    % survives; it is not a stage failure.
+    %
+    % Inputs
+    % src       - Path of the file to copy, or '' if there is nothing to copy.
+    % kind      - 'recipe' or 'log'.
+    % finalName - Name the file will have once renamed into place.
+    % glob      - Server glob matching stale versions of this file.
+    % stageAbs  - Canonical path of the stage folder.
+    % spec      - Structure from webpreview.stageSpec.
+    %
+    % Outputs
+    % p - Structure with fields kind, final, part (full path written) and glob, as used
+    %     by commitParts. [] if src was empty or the copy failed.
+
     p = [];
     if isempty(src)
         return
@@ -388,13 +621,30 @@ function p = copyPart(src,kind,finalName,glob,stageAbs,spec)
         return
     end
     p = struct('kind', kind, 'final', finalName, 'part', part, 'glob', glob);
-end
+end % copyPart
 
 
 function [committed,failures] = commitParts(parts,stageAbs)
-    % Rename each part over its final name (the same-named old file is never
-    % pre-deleted, so a failed rename leaves it intact), and only then delete stale
-    % files of other names. Returns what was actually renamed into place.
+    % Rename each part file over its final name, then delete stale files of other names
+    %
+    % function [committed,failures] = BakingTray.webpreview.stageFiles>commitParts(parts,stageAbs)
+    %
+    % Purpose
+    % The same-named old file is never deleted beforehand, so a failed rename leaves it
+    % intact. Stale files matching the part's glob under other names are deleted only after
+    % that part has been renamed successfully.
+    %
+    % Inputs
+    % parts    - Structure array from writeImagePart and copyPart, with fields kind, final,
+    %            part and glob. May be empty.
+    % stageAbs - Canonical path of the stage folder.
+    %
+    % Outputs
+    % committed - Structure array with fields kind and path, listing what was actually
+    %             renamed into place.
+    % failures  - Cell row of messages for renames that failed and for stale files that
+    %             could not be deleted. Empty if all went well.
+
     committed = struct('kind', {}, 'path', {});
     failures = {};
     for kk = 1:numel(parts)
@@ -409,9 +659,21 @@ function [committed,failures] = commitParts(parts,stageAbs)
         stale = removeMatching(stageAbs,parts(kk).glob,parts(kk).final);
         failures = [failures, staleFailure(stale)]; %#ok<AGROW>
     end %for
-end
+end % commitParts
 
 
 function throwIo(fmt,varargin)
+    % Raise the error that stageFiles treats as a tolerated file-system failure
+    %
+    % function BakingTray.webpreview.stageFiles>throwIo(fmt,varargin)
+    %
+    % Purpose
+    % Always errors with 'webpreview:stageFiles:ioFailure'. stageFiles catches this one
+    % identifier and turns it into a warning; any other error is rethrown.
+    %
+    % Inputs
+    % fmt      - Format string for the message, as for sprintf.
+    % varargin - Values for fmt.
+
     error('webpreview:stageFiles:ioFailure',fmt,varargin{:})
-end
+end % throwIo

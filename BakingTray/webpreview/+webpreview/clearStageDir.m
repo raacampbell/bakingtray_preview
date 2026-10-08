@@ -35,4 +35,4 @@ function clearStageDir(folder)
         error('webpreview:clearStageDir:failed', ...
             'could not clear stage folder "%s": %s', folder, msg)
     end
-end
+end % clearStageDir

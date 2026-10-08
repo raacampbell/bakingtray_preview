@@ -55,4 +55,4 @@ function rx = globToRegexp(glob)
     end %while
 
     rx = [rx '$'];
-end
+end % globToRegexp

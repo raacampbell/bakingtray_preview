@@ -94,4 +94,4 @@ function cfg = loadConfig(file)
     catch err
         error('webpreview:configWrongType', 'Config %s: %s', file, err.message);
     end
-end
+end % loadConfig

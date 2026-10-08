@@ -25,15 +25,21 @@ function result = zipAndPost(folder, cfg)
         result.message = err.message;
     end
     result.message = webpreview.scrubToken(result.message, webpreview.tokenOf(cfg));
-end
+end % zipAndPost
 
 
 function deleteQuietly(path)
     % Delete a file if it exists
     %
     % function BakingTray.webpreview.zipAndPost>deleteQuietly(path)
+    %
+    % Purpose
+    % Used to remove the temporary zip. Does nothing if the file is already gone.
+    %
+    % Inputs
+    % path - Path to the file to delete.
 
     if isfile(path)
         delete(path);
     end
-end
+end % deleteQuietly

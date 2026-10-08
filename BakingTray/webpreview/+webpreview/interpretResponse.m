@@ -37,4 +37,4 @@ function result = interpretResponse(httpStatus, body)
             result.message = sprintf('upload failed (HTTP %d)', httpStatus);
         end
     end
-end
+end % interpretResponse

@@ -21,4 +21,4 @@ function msg = scrubToken(msg, token)
     if ischar(token) && ~isempty(token)
         msg = strrep(msg, token, '***');
     end
-end
+end % scrubToken

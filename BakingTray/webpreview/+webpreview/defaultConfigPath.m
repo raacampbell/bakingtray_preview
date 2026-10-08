@@ -18,4 +18,4 @@ function p = defaultConfigPath()
     end
 
     p = fullfile(home, '.brainsaw_webpreview.json');
-end
+end % defaultConfigPath

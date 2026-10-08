@@ -45,11 +45,20 @@ function d = stageDirFor(siteID,stageRoot)
     end
 
     d = fullfile(char(stageRoot),'brainsaw_webpreview',siteID);
-end
+end % stageDirFor
 
 
 function tf = isNonEmptyText(x)
     % True for a non-empty char row vector or a non-empty string scalar
+    %
+    % function tf = BakingTray.webpreview.stageDirFor>isNonEmptyText(x)
+    %
+    % Inputs
+    % x - Any value.
+    %
+    % Outputs
+    % tf - true if x is a char row vector or string scalar with at least one character.
+
     tf = (ischar(x) && isrow(x)) || (isstring(x) && isscalar(x));
     tf = tf && strlength(x)>0;
-end
+end % isNonEmptyText

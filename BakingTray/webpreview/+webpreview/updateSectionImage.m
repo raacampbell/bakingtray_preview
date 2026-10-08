@@ -74,9 +74,12 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
     caught = [];
 
     try
+        % Parse the optional param/val pairs with the local function parseOptions
         opts = parseOptions(varargin{:});
         cfg = loadCfg(opts.ConfigFile);
         token = webpreview.tokenOf(cfg);
+
+
         result = runPipeline(result,img,recipePath,logPath,cfg,opts);
     catch err
         caught = err;
@@ -87,12 +90,38 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
 
     result = finalise(result,caught,token);
     notify(result)
-end
+end % updateSectionImage
 
 
 function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
-    % Stage, then post. siteID is charset-checked by loadConfig, so it is safe to use
-    % as a folder name.
+    % Stage the files, then upload the stage folder, recording what happened in result
+    %
+    % function result = BakingTray.webpreview.updateSectionImage>runPipeline(result,img,recipePath,logPath,cfg,opts)
+    %
+    % Purpose
+    % The part of updateSectionImage that runs inside its try/catch. Builds the stage folder
+    % path from cfg.siteID and opts.StageRoot (siteID is charset-checked by loadConfig, so
+    % it is safe to use as a folder name), empties it if opts.ClearStage is true, stages the
+    % files with webpreview.stageFiles and uploads the folder with opts.Poster.
+    %
+    % Anything that goes wrong before staging has finished is thrown and caught by
+    % updateSectionImage. After that, failures are written to result.error instead, so the
+    % stage information survives into the returned result. If staging did not complete
+    % nothing is uploaded.
+    %
+    % Inputs
+    % result     - Structure from emptyResult, to be filled in.
+    % img        - Numeric HxW or HxWx3 image of the section.
+    % recipePath - Path to the recipe file or to a folder containing it.
+    % logPath    - Path to the acquisition log file.
+    % cfg        - Configuration structure from webpreview.loadConfig.
+    % opts       - Options structure from parseOptions.
+    %
+    % Outputs
+    % result - The input structure with stage, stageDir, recipeFresh, logFresh and stale
+    %          filled in. post and ok are set once the poster has returned. error is set if
+    %          staging was incomplete or the poster threw.
+
     stageDir = webpreview.stageDirFor(cfg.siteID,opts.StageRoot);
     if opts.ClearStage
         webpreview.clearStageDir(stageDir);
@@ -121,11 +150,26 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     catch err
         result.error = err;
     end
-end
+end % runPipeline
 
 
 function opts = parseOptions(varargin)
-    % Parse the name/value options. Unknown names and values of the wrong type throw
+    % Parse and validate the param/val options of updateSectionImage
+    %
+    % function opts = BakingTray.webpreview.updateSectionImage>parseOptions(varargin)
+    %
+    % Purpose
+    % Uses inputParser, so unknown names and values of the wrong type throw. Text options
+    % may arrive as strings; they are converted to char because everything downstream uses
+    % char paths.
+    %
+    % Inputs
+    % varargin - The 'Param1',val1,... pairs documented in updateSectionImage.
+    %
+    % Outputs
+    % opts - Structure with fields ConfigFile (char), Montage, Range, Poster,
+    %        StageRoot (char) and ClearStage (logical).
+
     params = inputParser;
     params.FunctionName = 'webpreview.updateSectionImage';
     params.CaseSensitive = false;
@@ -145,39 +189,97 @@ function opts = parseOptions(varargin)
     opts.ConfigFile = char(opts.ConfigFile);
     opts.StageRoot = char(opts.StageRoot);
     opts.ClearStage = logical(opts.ClearStage);
-end
+end % parseOptions
 
 
 function tf = isTextScalar(x)
-    % True for a char row (or empty) or a string scalar
+    % True for a char row vector, an empty char or a string scalar
+    %
+    % function tf = BakingTray.webpreview.updateSectionImage>isTextScalar(x)
+    %
+    % Inputs
+    % x - Any value.
+    %
+    % Outputs
+    % tf - true if x is a char row vector, a 0x0 char (so '' is accepted) or a string
+    %      scalar.
+
     tf = (ischar(x) && (isrow(x) || isequal(size(x),[0 0]))) || (isstring(x) && isscalar(x));
-end
+end % isTextScalar
 
 
 function tf = isNonEmptyText(x)
-    % True for a non-empty char row or a non-empty string scalar
+    % True for a non-empty char row vector or a non-empty string scalar
+    %
+    % function tf = BakingTray.webpreview.updateSectionImage>isNonEmptyText(x)
+    %
+    % Inputs
+    % x - Any value.
+    %
+    % Outputs
+    % tf - true if x is a char row vector or string scalar with at least one character.
+
     tf = ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x)));
     tf = tf && strlength(x)>0;
-end
+end % isNonEmptyText
 
 
 function tf = isLogicalScalar(x)
-    % True for a logical scalar or a real, non-NaN numeric scalar (converted by logical)
+    % True for a logical scalar or a real, non-NaN numeric scalar
+    %
+    % function tf = BakingTray.webpreview.updateSectionImage>isLogicalScalar(x)
+    %
+    % Purpose
+    % Numeric scalars are accepted because parseOptions converts the value with logical.
+    %
+    % Inputs
+    % x - Any value.
+    %
+    % Outputs
+    % tf - true if x is a logical scalar or a real, non-NaN numeric scalar.
+
     tf = isscalar(x) && (islogical(x) || (isnumeric(x) && isreal(x) && ~isnan(x)));
-end
+end % isLogicalScalar
 
 
 function cfg = loadCfg(file)
+    % Load the config from the default location or from the file given
+    %
+    % function cfg = BakingTray.webpreview.updateSectionImage>loadCfg(file)
+    %
+    % Inputs
+    % file - Config file path as char or string. Empty means webpreview.loadConfig uses
+    %        its default location.
+    %
+    % Outputs
+    % cfg - Configuration structure from webpreview.loadConfig.
+
     if isempty(file)
         cfg = webpreview.loadConfig();
     else
         cfg = webpreview.loadConfig(char(file));
     end
-end
+end % loadCfg
 
 
 function post = callPoster(poster,stageDir,cfg)
-    % A poster that throws propagates to updateSectionImage's catch
+    % Call the poster and check that its reply has the expected form
+    %
+    % function post = BakingTray.webpreview.updateSectionImage>callPoster(poster,stageDir,cfg)
+    %
+    % Purpose
+    % A poster that throws propagates to the catch in updateSectionImage. Errors with
+    % 'webpreview:updateSectionImage:badReply' if the reply is not a scalar structure with
+    % the fields ok (logical scalar), httpStatus and message (char).
+    %
+    % Inputs
+    % poster   - Function handle, poster(stageDir,cfg), as for the 'Poster' option.
+    % stageDir - Char path to the folder to upload.
+    % cfg      - Configuration structure from webpreview.loadConfig.
+    %
+    % Outputs
+    % post - The poster's reply: structure with fields ok, httpStatus and message.
+
     post = poster(stageDir,cfg);
     wellFormed = isstruct(post) && isscalar(post) ...
                  && all(isfield(post,{'ok','httpStatus','message'})) ...
@@ -188,12 +290,27 @@ function post = callPoster(poster,stageDir,cfg)
             ['poster did not return struct(ok, httpStatus, message) ', ...
              'with logical ok and char message'])
     end
-end
+end % callPoster
 
 
 function token = rawToken(opts)
-    % Best effort: the token text from the raw config file, so that a parse error that
-    % quotes the file is still scrubbed. Never throws
+    % Best-effort read of the token straight from the raw config file. Never throws
+    %
+    % function token = BakingTray.webpreview.updateSectionImage>rawToken(opts)
+    %
+    % Purpose
+    % Used when the config could not be loaded, so that a parse error message which quotes
+    % the file can still have the token scrubbed from it. The token is found with a regexp
+    % on the file text rather than by parsing the JSON.
+    %
+    % Inputs
+    % opts - Options structure from parseOptions, or [] if the options could not be parsed.
+    %        The file read is opts.ConfigFile, or the default config location if that is
+    %        empty or opts is not a structure.
+    %
+    % Outputs
+    % token - Char row vector, or '' if no token could be found.
+
     token = '';
     try
         if isstruct(opts) && ~isempty(opts.ConfigFile)
@@ -216,11 +333,29 @@ function token = rawToken(opts)
     catch
         token = '';
     end %try
-end
+end % rawToken
 
 
 function result = finalise(result,caught,token)
-    % Scrub the message and fill result.error for every kind of failure
+    % Scrub the token from the message and fill result.error for every kind of failure
+    %
+    % function result = BakingTray.webpreview.updateSectionImage>finalise(result,caught,token)
+    %
+    % Purpose
+    % The error reported is, in order of preference, the error caught by updateSectionImage,
+    % then result.error set by runPipeline, then a 'webpreview:updateSectionImage:postFailed'
+    % error built from the poster's message. On success only result.post.message is scrubbed.
+    % The reported error is rebuilt from the scrubbed text and its message is copied to
+    % result.post.message.
+    %
+    % Inputs
+    % result - Result structure as left by runPipeline (or emptyResult if it was not reached).
+    % caught - MException caught by updateSectionImage, or [] if there was none.
+    % token  - Secret to scrub from messages; '' if unknown.
+    %
+    % Outputs
+    % result - The input with a scrubbed post.message, and error set if ok is false.
+
     result.post.message = webpreview.scrubToken(result.post.message,token);
     if ~isempty(caught)
         err = caught;
@@ -234,26 +369,52 @@ function result = finalise(result,caught,token)
 
     result.post.message = webpreview.scrubToken(err.message,token);
     result.error = scrubbedException(err.identifier,result.post.message);
-end
+end % finalise
 
 
 function ex = scrubbedException(id,message)
-    % Rebuilt from the scrubbed text: an MException keeps its original message.
-    % A third-party error can carry an identifier MException rejects; fall back to a
-    % fixed one rather than throw.
+    % Make an MException from an identifier and an already-scrubbed message
+    %
+    % function ex = BakingTray.webpreview.updateSectionImage>scrubbedException(id,message)
+    %
+    % Purpose
+    % An existing MException keeps its original message, so a scrubbed one has to be rebuilt
+    % from the scrubbed text. A third-party error can carry an identifier that MException
+    % rejects; in that case 'webpreview:updateSectionImage:unidentified' is used instead of
+    % throwing.
+    %
+    % Inputs
+    % id      - Identifier of the original error.
+    % message - Message text with the token already removed.
+    %
+    % Outputs
+    % ex - MException with the given identifier (or the fallback) and message.
+
     fallback = 'webpreview:updateSectionImage:unidentified';
     try
         ex = MException(id,'%s',message);
     catch
         ex = MException(fallback,'%s',message);
     end
-end
+end % scrubbedException
 
 
 function notify(result)
-    % One notice per call from this function (stageFiles may have warned first).
-    % Guarded: with warning('error',...) in force the warning call throws, and that
-    % must not escape.
+    % Issue at most one warning describing a failed or stale upload
+    %
+    % function BakingTray.webpreview.updateSectionImage>notify(result)
+    %
+    % Purpose
+    % Warns 'webpreview:updateSectionImage:failed' if result.ok is false. If the upload
+    % worked but result.stale is true, warns 'webpreview:updateSectionImage:stale'. If both
+    % apply the failed warning is issued, with the names of the stale files added to its
+    % text. stageFiles may already have issued its own warnings. The warning call is
+    % guarded because with warning('error',...) in force it throws, and that must not
+    % escape.
+    %
+    % Inputs
+    % result - Result structure returned by updateSectionImage.
+
     text = '';
     id = '';
     if ~result.ok
@@ -281,10 +442,20 @@ function notify(result)
     catch
         % Deliberately ignored, see above
     end
-end
+end % notify
 
 
 function names = staleNames(result)
+    % Describe which of the recipe and log were not refreshed
+    %
+    % function names = BakingTray.webpreview.updateSectionImage>staleNames(result)
+    %
+    % Inputs
+    % result - Result structure with the logical fields recipeFresh and logFresh.
+    %
+    % Outputs
+    % names - 'recipe', 'acq log' or 'recipe and acq log'. '' if both are fresh.
+
     parts = {};
     if ~result.recipeFresh
         parts{end+1} = 'recipe';
@@ -293,12 +464,22 @@ function names = staleNames(result)
         parts{end+1} = 'acq log';
     end
     names = strjoin(parts,' and ');
-end
+end % staleNames
 
 
 function result = emptyResult
+    % The result structure as it stands before anything has been done
+    %
+    % function result = BakingTray.webpreview.updateSectionImage>emptyResult
+    %
+    % Outputs
+    % result - Structure with the fields documented in updateSectionImage, set to their
+    %          "nothing happened" values: ok false, stage [], post.ok false with
+    %          post.httpStatus NaN and an empty post.message, stageDir '', recipeFresh,
+    %          logFresh and stale false, and error [].
+
     result = struct('ok', false, 'stage', [], ...
         'post', struct('ok',false,'httpStatus',NaN,'message',''), ...
         'stageDir', '', 'recipeFresh', false, 'logFresh', false, 'stale', false, ...
         'error', []);
-end
+end % emptyResult

@@ -83,11 +83,28 @@ function out = toUint8(img,range)
 
     scaled = (x-range(1)) / (range(2)-range(1));
     out = uint8(round(255 * min(max(scaled,0),1)));
-end
+end % toUint8
 
 
 function range = defaultRange(img,x)
     % Class-dependent [lo hi] used when the caller gives no range
+    %
+    % function range = BakingTray.webpreview.toUint8>defaultRange(img,x)
+    %
+    % Purpose
+    % The mappings are described in toUint8. For uint16 and int16 the upper limit is the
+    % image maximum, but at least 1 so that an all-zero image does not divide by zero.
+    %
+    % Inputs
+    % img - The original image. Only its class is used.
+    % x   - The same image converted to double.
+    %
+    % Outputs
+    % range - [lo hi] to map to 0 and 255.
+    %
+    % Errors
+    % 'webpreview:toUint8:badImage' if a single or double image is not within [0,1].
+
     switch class(img)
         case 'uint8'
             range = [0 255];
@@ -100,4 +117,4 @@ function range = defaultRange(img,x)
             end
             range = [0 1];
     end %switch
-end
+end % defaultRange

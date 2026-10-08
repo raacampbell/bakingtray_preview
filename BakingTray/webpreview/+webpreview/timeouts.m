@@ -28,4 +28,4 @@ function t = timeouts(cfg)
         end
         t.(erase(names{ii, 1}, 'Timeout')) = double(value);
     end %for
-end
+end % timeouts

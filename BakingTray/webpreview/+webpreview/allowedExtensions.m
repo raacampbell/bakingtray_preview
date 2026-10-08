@@ -10,4 +10,4 @@ function exts = allowedExtensions()
     % exts - cell row of lower-case extensions without the leading dot.
 
     exts = {'jpg', 'jpeg', 'png', 'txt', 'yml', 'yaml', 'json', 'csv', 'log'};
-end
+end % allowedExtensions

@@ -61,15 +61,22 @@ function zipPath = zipFolder(dirPath)
             'Zip is %.1f MB; the server accepts at most %.0f MB.', ...
             info.bytes / 1024^2, lim.maxZipBytes / 1024^2);
     end
-end
+end % zipFolder
 
 
 function deleteQuietly(path)
     % Delete a file if it exists
     %
     % function BakingTray.webpreview.zipFolder>deleteQuietly(path)
+    %
+    % Purpose
+    % Used to remove a partial zip left behind if zip() fails. Does nothing if the file is
+    % not there.
+    %
+    % Inputs
+    % path - Path to the file to delete.
 
     if isfile(path)
         delete(path);
     end
-end
+end % deleteQuietly

@@ -63,7 +63,7 @@ function result = postZip(zipPath, cfg)
     end
 
     result.message = webpreview.scrubToken(result.message, token);
-end
+end % postZip
 
 
 function opts = makeOptions(t)
@@ -71,8 +71,18 @@ function opts = makeOptions(t)
     %
     % function opts = BakingTray.webpreview.postZip>makeOptions(t)
     %
-    % t is the structure returned by webpreview.timeouts. MaxRedirects = 0 is set
-    % unconditionally because it protects the bearer token.
+    % Purpose
+    % MaxRedirects = 0 is set unconditionally because it protects the bearer token. The
+    % ResponseTimeout and DataTimeout properties are not present in every MATLAB release;
+    % if one is missing a warning 'webpreview:postZip:noTimeout' is issued and that timeout
+    % is not applied.
+    %
+    % Inputs
+    % t - Structure with fields connect, response and data (seconds), as returned by
+    %     webpreview.timeouts.
+    %
+    % Outputs
+    % opts - matlab.net.http.HTTPOptions object.
 
     opts = matlab.net.http.HTTPOptions();
     opts.MaxRedirects = 0; % security-relevant: set unconditionally
@@ -89,4 +99,4 @@ function opts = makeOptions(t)
                 'that timeout is not applied.'], optional{ii, 1});
         end
     end %for
-end
+end % makeOptions

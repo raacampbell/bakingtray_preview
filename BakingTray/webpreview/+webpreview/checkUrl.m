@@ -24,4 +24,4 @@ function url = checkUrl(url)
             ['url must start with https:// ', ...
             '(http:// is allowed only for localhost/127.0.0.1): %s'], url);
     end
-end
+end % checkUrl

@@ -25,4 +25,4 @@ function names = selectUploadable(dirPath)
         & ~startsWith(names, '.') ...
         & ~contains(names, {'*', '?'});
     names = names(keep);
-end
+end % selectUploadable
