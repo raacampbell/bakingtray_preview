@@ -7,9 +7,8 @@ classdef FakePoster < handle
     % Same contract as webupload.zipAndPost: post(folder,cfg,micID,source,...) returns
     % struct(ok, httpStatus, message). Calls is a struct array with fields
     % folder, names (sorted file names), bytes (matching sizes), finished (the flag in
-    % status.json) and logText
-    % (contents of the staged acqLog.txt, '' if absent), captured at call time
-    % because the next section overwrites the stage folder.
+    % status.json) and logText (contents of the staged acqLog.txt, '' if absent),
+    % captured at call time because the next section overwrites the stage folder.
     %
     % Example
     % p = simulate.FakePoster();

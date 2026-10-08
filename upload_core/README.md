@@ -1,11 +1,13 @@
 # webupload (MATLAB)
 
-The source-neutral half of the brainsaw web preview client: loads and
-validates the config file, zips a folder, and uploads the zip to the brainsaw
-server using only built-in MATLAB (`zip`, `matlab.net.http`), so it works on
-Windows and Mac with no external tools. It knows nothing about where the
-folder came from. BakingTray stages its files with `BakingTray.webpreview`
-(see `BakingTray/README.md`) and then hands the folder to this package.
+The brainsaw web preview client, shared by BakingTray (source `acq`) and
+StitchIt (source `analysis`): loads and validates the config file, stages the
+preview files in a clean folder under the names the server keeps, writes
+`status.json`, zips the folder, and uploads the zip to the brainsaw server,
+using only built-in MATLAB (`imwrite`, `zip`, `matlab.net.http`), so it works
+on Windows and Mac with no external tools. It knows nothing about BakingTray or
+StitchIt: each calls `webupload.updateSectionImage` (below). Example call sites
+for BakingTray are in `BakingTray/README.md`.
 
 Requires MATLAB R2019b or later (the oldest release BakingTray supports):
 `matlab.net.http.io.MultipartFormProvider` needs R2019b, and option parsing
@@ -16,10 +18,8 @@ uses `inputParser`, not `arguments` blocks. No toolboxes are needed.
 Add the `upload_core` folder (the one containing `+webupload`) to the MATLAB
 path: `addpath('<path>/upload_core')`. Add the folder itself, not the
 `+webupload` folder inside it, and not via `genpath`. In this repo, on a
-development machine only, `add_to_path` does this together with the BakingTray
-folders; never add this repo's `BakingTray` folder to the path on a rig that has
-the real BakingTray installed, because the two `+BakingTray` packages would
-merge and could shadow each other.
+development machine, `add_to_path` does this together with the simulator
+folder.
 
 ## Config file
 
@@ -64,13 +64,82 @@ it from the JSON. Code that needs the token calls `cfg.authHeader()` (the
 The constructor always scrubs its own errors, using a regexp on the raw file
 text, so they are safe even if the JSON cannot be parsed.
 
+## Updating the web preview
+
+`res = webupload.updateSectionImage(img, recipePath, logPath, cfg, 'Source', src, ...)`
+is the call instrument and analysis code make. It stages the files, writes
+`status.json`, zips and uploads, and **never throws**: any problem becomes a
+warning `webupload:updateSectionImage:failed` (`id: message`) and `res.ok =
+false`, so an acquisition is never interrupted. (It cannot catch a path
+variable that does not exist in the caller: MATLAB raises that before the
+function runs, so guard the call with `try`.) The call is synchronous and
+holds the caller for up to about the connect plus response timeouts when the
+server is dead; pass `'ConnectTimeout'` and `'ResponseTimeout'` to shorten
+that for a call that must not wait.
+
+`img` is one of:
+
+| `img` | meaning |
+| --- | --- |
+| `[]` | no image. A staged image is deleted first, so an old sample's image never goes up with a new recipe. Use for the call at the start of a run. |
+| numeric array (gray HxW or RGB HxWx3) | converted to a jpg (see below) |
+| path of a `.jpg` file | copied in as `LastCompleteSection.jpg` |
+
+Anything else makes the call fail. `recipePath` is the recipe file and
+`logPath` the acquisition log. The microscope ID is `SYSTEM.ID` of the recipe
+(`readRecipe`); if it is missing or invalid nothing is staged or sent.
+
+| option | meaning |
+| --- | --- |
+| `Source` | `'acq'` (default) or `'analysis'` |
+| `Montage` | image to send as `montage.jpg`, as for `img` (array or jpg path). Only with `Source` `'analysis'`: with `'acq'` the call fails and sends nothing |
+| `Finished` | `true` writes `{"finished": true}` into `status.json` (default `false`). Only a Finished call is retried, once, after a 429, waiting the server's minimum upload interval plus 1 s |
+| `ConnectTimeout`, `ResponseTimeout` | seconds, for this call only (see `postZip`) |
+| `Range` | `[lo hi]` for non-uint8 arrays (below) |
+| `ClearStage` | `true` empties the stage folder first; default `false` |
+| `StageRoot` | parent of the stage folder; default `tempdir`; text options may be strings, paths are returned as char |
+| `Poster` | function handle `poster(folder, cfg, micID, source, ...)` returning `struct(ok, httpStatus, message)`; default `@webupload.zipAndPost`; for tests |
+
+Result fields: `ok`; `stage` (the `stageFiles` result); `post` (`ok`,
+`httpStatus`, `message`); `stageDir`; `recipeFresh`, `logFresh` (this call
+staged a new recipe/log); `stale` (either is false; a log that is permanently
+absent keeps `stale` true on every call, with a notice each time); `error` (an
+`MException` built from the scrubbed message, `[]` on success). The recipe is
+always copied afresh: if it cannot be staged, any recipe left from an earlier
+call is deleted and nothing is uploaded. The log may fall back to the previous
+one, reported as `stale` (`webupload:updateSectionImage:stale`). Messages,
+including a custom `Poster`'s, are scrubbed with `cfg.scrub`, so the token
+never appears in them.
+
+The stage folder is `<StageRoot>/brainsaw_webpreview/<siteID>/<micID>/<source>`,
+reused between calls so only the latest files exist; it is not deleted
+afterwards. Two MATLAB sessions using the same site, microscope ID, source and
+`StageRoot` share it and will overwrite each other's files.
+`webupload.clearStage(cfg, micID, 'Source', src)` empties it without
+uploading anything; it never throws (warning `webupload:clearStage:failed`).
+
+`webupload.stageFiles(img, recipePath, logPath, stageDir)` is usable alone. It
+writes `LastCompleteSection.jpg`, `montage.jpg` (if given), `recipe.yml` and
+`acqLog.txt` under temporary `.part` names and renames them into place, so a
+zip taken meanwhile never sees a half-written file. Files in the stage with
+other names are left alone: the server ignores them.
+
+### Images that are not uint8
+
+uint8 is used as is. uint16 and int16 are autoscaled to `[0 max(img)]`, so
+11-14 bit camera data is not near-black; negatives clamp to 0. Pass
+`'Range', [lo hi]` for a fixed mapping (`lo` becomes 0, `hi` 255, clamped), for
+example `[0 4095]` for a 12-bit camera so brightness does not change from
+section to section. single/double must lie in [0,1] unless `Range` is given.
+The same `Range` applies to the montage. Details: `help webupload.toUint8`.
+
 ## Uploading a folder
 
 `webupload.zipAndPost(folder, cfg, micID, source)` zips a folder, uploads and
 deletes the temp zip, returning `struct(ok, httpStatus, message)` and never
 throwing. `zipFolder`, `postZip` and `selectUploadable` are also usable alone.
 
-`source` is `'acq'` (from BakingTray) or `'analysis'` (from StitchIt). `micID`
+`source` is `'acq'` (BakingTray) or `'analysis'` (StitchIt). `micID`
 must match the server's ID rule (`serverLimits().idRegexp`): a letter, then
 letters, digits, `_` and `-`. `micID` and `source` may be char or string. If
 either is wrong the result is `ok = false` with a message that says whether the
@@ -108,10 +177,22 @@ result structure.
 
 Only built-in MATLAB is used. Paths are built with `fullfile`. MATLAB does not
 expand `%VAR%` in paths: use `getenv('USERPROFILE')` when you need the home
-folder.
+folder. The stage folder is under `tempdir` (normally the user's `Temp`).
+Antivirus or a file held open elsewhere can make a rename fail; that is a
+staging-failure warning (`webupload:stageFiles:stageFailed`), not an error.
 
 ## Tests
 
-Run `runtests(fullfile(<repo>, 'upload_core', 'tests'))`; the tests add the
-package to the path themselves. They need no real server (one test posts to a
-refused `127.0.0.1` port).
+From the repo root:
+
+```
+/Applications/MATLAB_R2023b.app/bin/matlab -batch "add_to_path; r=[runtests('upload_core/tests'), runtests('BakingTray/tests'), runtests('BakingTray/simulate/tests')]; disp(table(r))"
+```
+
+(use your own MATLAB path; `runtests('upload_core/tests')` alone runs just
+this package's tests). The tests add the packages to the path themselves. They
+need no real server (one test posts to a refused `127.0.0.1` port), and one
+waits about 7 s to check the 429 retry.
+
+Nothing in this module has been run against a live brainsaw server. Treat the
+first real acquisition as the test, on a spare site ID.

@@ -239,10 +239,10 @@ chmod 600 ~/.brainsaw_webpreview_test.json
 ```
 
 ```matlab
-addpath('<repo>/upload_core', '<repo>/BakingTray')    % the folders CONTAINING +webupload and +BakingTray
+addpath('<repo>/upload_core')    % the folder CONTAINING +webupload
 cfg = webupload.webConfig(fullfile(getenv('HOME'),'.brainsaw_webpreview_test.json'));
 img = imread('<repo>/test_images/LastCompleteSection_01.jpg');
-res = BakingTray.webpreview.updateSectionImage(img, ...
+res = webupload.updateSectionImage(img, ...
     '<repo>/test_images/recipe_SW_FG12_3_FG_12_2_191209_120354.yml', ...
     '<repo>/test_images/acqLog_SW_FG12_3_FG_12_2.txt', cfg);
 disp(res.ok), disp(res.post)
