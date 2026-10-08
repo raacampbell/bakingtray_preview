@@ -4,41 +4,44 @@ classdef FakePoster < handle
     % simulate.FakePoster
     %
     % Purpose
-    % Same contract as webupload.zipAndPost: post(folder,cfg,micID,source) returns
+    % Same contract as webupload.zipAndPost: post(folder,cfg,micID,source,...) returns
     % struct(ok, httpStatus, message). Calls is a struct array with fields
-    % folder, names (sorted file names), bytes (matching sizes) and logText
-    % (contents of the staged acqLog.txt, '' if absent), captured at call time
-    % because the next section overwrites the stage folder.
+    % folder, names (sorted file names), bytes (matching sizes), finished (the flag in
+    % status.json), timeouts (the extra arguments of the call) and logText (contents of
+    % the staged acqLog.txt, '' if absent), captured at call time because the next
+    % section overwrites the stage folder.
     %
     % Example
     % p = simulate.FakePoster();
-    % BakingTray.webpreview.updateSectionImage(..., 'Poster', @p.post)
+    % webupload.updateSectionImage(..., 'Poster', @p.post)
     % p.Calls(end).names     % files in the stage folder at the last call
     %
-    % See also webupload.zipAndPost, BakingTray.webpreview.updateSectionImage
+    % See also webupload.zipAndPost, webupload.updateSectionImage
 
     properties (SetAccess = private)
-        Calls = struct('folder', {}, 'names', {}, 'bytes', {}, 'logText', {})
+        Calls = struct('folder', {}, 'names', {}, 'bytes', {}, 'finished', {}, 'timeouts', {}, 'logText', {})
     end %properties
 
     methods
-        function reply = post(obj,folder,~,~,~)
+        function reply = post(obj,folder,~,~,~,varargin)
             % Record the files in folder and return a successful reply without sending anything
             %
-            % function reply = post(obj,folder,cfg,micID,source)
+            % function reply = post(obj,folder,cfg,micID,source,varargin)
 
             d = dir(folder);
             d = d(~[d.isdir]);
             [names,order] = sort({d.name});
 
-            logFile = fullfile(folder, BakingTray.webpreview.stageSpec().Names.Log);
+            logFile = fullfile(folder, webupload.stageSpec().Names.Log);
             logText = '';
             if isfile(logFile)
                 logText = fileread(logFile);
             end
 
             obj.Calls(end+1) = struct('folder', folder, 'names', {names}, ...
-                'bytes', [d(order).bytes], 'logText', logText);
+                'bytes', [d(order).bytes], ...
+                'finished', jsondecode(fileread(fullfile(folder, 'status.json'))).finished, ...
+                'timeouts', {varargin}, 'logText', logText);
             reply = struct('ok', true, 'httpStatus', 200, 'message', 'dry run: nothing sent');
         end %post
     end %methods

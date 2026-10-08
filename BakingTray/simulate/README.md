@@ -1,12 +1,15 @@
 # simulate
 
 Fakes an acquisition and sends it to a Brainsaw web server, using the real
-BakingTray web preview code (`upload_core` and `BakingTray/+BakingTray/+webpreview`). It is a test tool only
-and is never part of the BakingTray install.
+web preview code (`webupload` in `upload_core`). It is a test tool only and is
+never part of the BakingTray install.
 
-For each section it builds a synthetic image and montage, appends to a fresh
-acquisition log, calls `BakingTray.webpreview.updateSectionImage`, prints one line, then
-waits `Interval` seconds. Needs MATLAB R2019b or later, no toolboxes.
+It makes the calls BakingTray makes to `webupload.updateSectionImage`: a start
+call (new recipe and log, no image), then for each section a synthetic image
+and an appended acquisition log, then an end call with `'Finished', true`. It
+prints one line per call and waits `Interval` seconds between calls. No
+montage is sent (BakingTray never sends one). Needs MATLAB R2019b or later, no
+toolboxes.
 
 `<repo>` is the folder you cloned (it contains `BakingTray/` and `brainsaw/`).
 Replace it including the angle brackets, and quote paths with spaces, e.g.
@@ -22,25 +25,26 @@ No server, config file or site is needed; nothing is sent.
 
 ```matlab
 repo = '<repo>';    % e.g. '/Users/you/code/brainsaw_web_preview' or 'C:\code\brainsaw_web_preview'
-addpath(fullfile(repo,'upload_core'), fullfile(repo,'BakingTray'), fullfile(repo,'BakingTray','simulate'))
+addpath(fullfile(repo,'upload_core'), fullfile(repo,'BakingTray','simulate'))
 which simulate.simulateAcquisition      % should print a path
 r = simulate.simulateAcquisition('DryRun', true, 'NumSections', 3, 'Interval', 0);
 ```
 
-Add those three folders, not the `+` folders inside them; do not `savepath`,
-and never add this repo's `BakingTray` folder to the path on a rig that has the
-real BakingTray installed, because the two `+BakingTray` packages would merge
-and could shadow each other.
+Add those two folders, not the `+` folders inside them; do not `savepath`.
+From the repo root, `add_to_path` does the same.
 
-Each section prints a line like:
+Each call prints a line like:
 
 ```
+start: ok (dry run), HTTP 200: dry run: nothing sent
 section 1/3: ok (dry run), HTTP 200: dry run: nothing sent
+finish: ok (dry run), HTTP 200: dry run: nothing sent
 ```
 
 Files go to a new folder under `tempname`, returned in `r.workDir`.
 `r.dryRunCalls(end).names` lists what would have been zipped
-(`LastCompleteSection.jpg`, `acqLog.txt`, `montage.jpg`, `recipe.yml`).
+(`LastCompleteSection.jpg`, `acqLog.txt`, `recipe.yml`, `status.json`; the
+start call has no image).
 
 ## Part A. Localhost (do this first)
 
@@ -156,25 +160,24 @@ r = simulate.simulateAcquisition('ConfigFile', cfg, 'NumSections', 5, 'Interval'
 ```
 
 There is no default `ConfigFile`, so a forgotten argument cannot reach a
-production site. MATLAB is blocked while it runs (about 30 s; Ctrl-C aborts).
-You should see one line per section, about 6 s apart:
+production site. MATLAB is blocked while it runs (about 40 s; Ctrl-C aborts).
+You should see one line per call (start, 5 sections, finish), about 6 s apart:
 
 ```
 section 1/5: ok, HTTP 200: uploaded
 ```
 
-and the PHP terminal shows a `POST /upload.php` line for each. Interval 6, not
-5: each section is timed from its start, so upload-time variation can bring
-two uploads closer than the server's 5 s minimum (HTTP 429, see
-Troubleshooting).
+and the PHP terminal shows a `POST /upload.php` line for each. The default
+`Interval` is 6 s, not the server's 5 s minimum: each call is timed from the
+previous one's start, so upload-time variation could otherwise bring two uploads
+closer than the minimum (HTTP 429, see Troubleshooting).
 
-Any failure other than 429 stops the run after that section (`r.aborted`,
+Any failure other than 429 stops the run after that call (`r.aborted`,
 `r.abortReason`). Then open `http://localhost:8000/sim_local/brainsaw`
 and look for:
 
 - the status line `Last updated 3s ago — section 2 of 5`; the image with its
-  section number stamped on it and a magnifier on hover; the link `View
-  montage (all optical planes, single channel)`;
+  section number stamped on it and a magnifier on hover; no montage link;
 - the metadata table: sample `SIMULATED`, total sections = `NumSections`, and
   `Estimated completion` (UTC);
 - the chart `Acquisition time per section` (needs 2 sections): its axis is

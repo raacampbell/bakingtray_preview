@@ -1,158 +1,91 @@
-# BakingTray.webpreview (MATLAB)
+# BakingTray side of the web preview
 
-The BakingTray-specific half of the brainsaw web preview client: stages a
-section image, recipe and acquisition log into a folder, then uploads it with
-the source-neutral `webupload` package in `upload_core/` (see
-`upload_core/README.md` for the config file, the token and the lower-level
-upload functions). The package is laid out to drop into
-`code/+BakingTray/+webpreview` in the real BakingTray repo.
+The staging and upload code is not BakingTray-specific: it is the
+`webupload` package in `upload_core/` (see `upload_core/README.md` for the
+config file, the token, `webupload.updateSectionImage` and its options). This
+folder holds only what is on the BakingTray side:
 
-Requires MATLAB R2019b or later (the oldest release BakingTray supports);
-option parsing uses `inputParser`, not `arguments` blocks. Staging uses only
-built-in MATLAB (`imwrite`, `copyfile`, `movefile`); the upload is in
-`webupload`. No toolboxes are needed.
+- `simulate/`, a fake acquisition for testing the pipeline and the server
+  (`simulate/README.md`);
+- `tests/`, tests that use the simulator's sample recipe;
+- the example call sites below.
 
-Never add this repo's `BakingTray` folder to the path on a rig that has the
-real BakingTray installed, because the two `+BakingTray` packages would merge
-and could shadow each other.
+Nothing here is installed into BakingTray, and these examples do not change it.
+The real BakingTray needs `upload_core` on its MATLAB path (the folder
+containing `+webupload`) and a `webupload.webConfig` object, built once at
+startup and kept, as described in `upload_core/README.md`.
 
-## Path
+## Example call sites
 
-Add `upload_core` and this `BakingTray` folder (the one containing
-`+BakingTray`) to the MATLAB path: from the repo root run `add_to_path`, which
-also adds `BakingTray/simulate`. Add the folders themselves, not the `+`
-folders inside them, and not via `genpath`. Then create the config file (see
-`upload_core/README.md`) and call `updateSectionImage` after each section
-completes (below).
+BakingTray uses source `acq` and never sends a montage. Each call is guarded
+twice: `which` keeps acquisition running if `upload_core` is not on the path,
+and `try`/`catch` covers a path variable that does not exist (MATLAB raises that
+before `updateSectionImage` starts, so it cannot be caught inside it).
+`updateSectionImage` itself never throws.
 
-## Calling it from BakingTray
+### Start of an acquisition (`bake.m`)
 
-Build the `cfg` object once, at startup, as described in
-`upload_core/README.md` (`webupload.webConfig`), and keep it.
-
-At the start of a new acquisition, once, empty the managed stage folder so a
-previous run's recipe and log can never be sent. This needs no image and
-uploads nothing (so it does not use up the server's rate limit):
-
-```matlab
-ok = BakingTray.webpreview.clearStage(cfg, micID);
-```
-
-`clearStage` takes the option `StageRoot` like `updateSectionImage`, needs the
-config and the microscope ID (`SYSTEM.ID` from the recipe, see below), and removes just
-`<StageRoot>/brainsaw_webpreview/<siteID>/<micID>/acq`, never sibling folders or anything
-else under `StageRoot`. It never throws: on failure it warns
-`webpreview:clearStage:failed` and returns `false`. (`updateSectionImage` with
-`'ClearStage', true` does the same clearing before staging.)
-
-After each section completes (a hook sketch; `img`, `recipePath`, `logPath`
-and `cfg` are variables BakingTray already has at that point; the
-`which` check keeps acquisition running if the folder is not on the path, and
-the `try` covers anything else):
+Once, after the recipe and the acquisition log exist. No image yet (`[]`), so
+the page shows the new recipe and any image from a previous run is deleted;
+`'ClearStage', true` also empties the stage folder. The short timeouts (connect
+5 s, response 10 s, data 10 s) limit how long the call can hold up the start of
+the acquisition when the server is slow or dead; it is unverified whether the
+response and data timeouts cover the transfer of the upload itself, so treat
+10 s as the aim, not a guarantee.
 
 ```matlab
-% img: latest section image, recipePath: recipe file,
-% logPath: acquisition log, cfg: the webupload.webConfig built at startup
-if ~isempty(which('BakingTray.webpreview.updateSectionImage'))
+if ~isempty(which('webupload.updateSectionImage'))
     try
-        res = BakingTray.webpreview.updateSectionImage(img, recipePath, logPath, cfg, ...
-            'Montage', montageImg, 'Range', [0 4095]);
+        webupload.updateSectionImage([], recipePath, logPath, cfg, 'ClearStage', true, ...
+            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
     end
 end
 ```
 
-`updateSectionImage` itself never throws for anything that goes wrong while
-it runs. Two things it cannot protect against: a path variable that does not
-exist in the caller (MATLAB raises that error before the function starts, so
-it has to be guarded in the caller, as the `try` above does), and the call
-blocking: it is synchronous and holds the acquisition thread for up to about
-the connect plus response timeouts (roughly 15 s + 60 s by default) when the
-server is dead or stalled.
+### After each section (`sliceSample.m`, during the cut)
 
-Arguments: `img` is the latest section image (gray HxW or RGB HxWx3);
-`recipePath` is the recipe file; `logPath` the
-acquisition log; `cfg` is the `webupload.webConfig` object. Options:
+`img` is the latest section image (gray HxW or RGB HxWx3). Non-uint8 images are
+autoscaled; pass `'Range', [0 4095]` for a fixed mapping (see
+`upload_core/README.md`).
 
-| option | meaning |
-| --- | --- |
-| `Montage` | optional montage image, sent as `montage.jpg` |
-| `Range` | `[lo hi]` for non-uint8 images (see below) |
-| `ClearStage` | `true` empties the managed stage folder first; default `false` |
-| `StageRoot` | parent of the stage folder; default `tempdir`; text options may be strings, paths are returned as char |
-| `Poster` | function handle `poster(folder, cfg)` returning `struct(ok, httpStatus, message)`, where `cfg` is a `webupload.webConfig` object; default `@webupload.zipAndPost`; for tests |
+```matlab
+if ~isempty(which('webupload.updateSectionImage'))
+    try
+        webupload.updateSectionImage(img, recipePath, logPath, cfg, ...
+            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10, 'Range', [0 4095]);
+    catch ME
+        warning('preview:unexpected', 'Web preview failed: %s', ME.message);
+    end
+end
+```
 
-Result fields: `ok`; `stage` (the `stageFiles` result); `post` (`ok`,
-`httpStatus`, `message`); `stageDir` (a char path built from `StageRoot`;
-`stage.files` are canonical, symlink-resolved paths, so they can differ
-textually); `recipeFresh`,
-`logFresh` (this call staged a new recipe/log); `stale` (either is false; a
-log or recipe that is permanently absent keeps `stale` true on every
-section, with a notice each time); `error` (an `MException`
-built from the scrubbed message, `[]` on success).
+### End of an acquisition (`bake.m`)
 
-Failures: any problem inside the call (a `cfg` that is not a valid
-`webConfig`, image, options, staging, network, a throwing poster) becomes a warning
-`webpreview:updateSectionImage:failed` of the form `id: message`, with
-`ok = false`. When the upload succeeded but the recipe or log could not be
-refreshed, the warning `webpreview:updateSectionImage:stale` names the file
-and says the previously staged copy, if any, was used; in a failure the same
-text is added to the failed warning. This function issues at most one
-notice per call, but `stageFiles` may warn first about the same cause. The
-warning call is guarded, so `warning('error', ...)` settings cannot make the
-function throw.
+Marks the run finished on the page. No image (`[]`) is passed: the server keeps the
+image already stored for the same sample, and a last image of a different scale
+would change the brightness. If the server answers 429 (this call comes soon
+after the last section's) it waits about 6 s and tries once more, so this call
+can block for longer than the others.
 
-Result and warning messages, including a custom `Poster`'s, are scrubbed with
-`cfg.scrub`, so the token never appears in them.
+```matlab
+if ~isempty(which('webupload.updateSectionImage'))
+    try
+        webupload.updateSectionImage([], recipePath, logPath, cfg, 'Finished', true, ...
+            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
+    catch ME
+        warning('preview:unexpected', 'Web preview failed: %s', ME.message);
+    end
+end
+```
 
-## What is sent
+The result structure (`ok`, `post`, `error`, ...) is described in
+`upload_core/README.md`; assign it (`res = webupload.updateSectionImage(...)`)
+if the caller wants it.
 
-A zip of up to four files, named to match the server's globs in
-`brainsaw/lib.php`:
+## Tests
 
-- `LastCompleteSection.jpg` from `img`
-- `montage.jpg` from `Montage`, only if given (a stale one is removed when not)
-- `recipe.yml`, copied from the recipe whatever its extension
-- `acqLog.txt`, copied from the log
-
-The form fields and the client-side upload limits are in `upload_core/README.md`.
-
-Uploads use source `acq`, and `status.json` (`{"finished": false}`) is added to
-the zip; see `upload_core/README.md` for `status.json`, `webupload.readRecipe`
-and the other fields. The microscope ID is `SYSTEM.ID` of the recipe passed in,
-not a config setting. If it cannot be read or is not a valid ID, nothing is
-staged or uploaded. A `Poster` is called as `poster(folder, cfg, micID, source)`.
-
-The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>/<micID>/acq`, reused
-between calls so only the latest files exist; it is not deleted afterwards. Two
-MATLAB sessions using the same site, microscope ID and `StageRoot` share it and
-will overwrite each other's files.
-
-## Images that are not uint8
-
-uint8 is used as is. uint16 and int16 are autoscaled to `[0 max(img)]`, so
-11-14 bit camera data is not near-black; negatives clamp to 0. Pass
-`'Range', [lo hi]` for a fixed mapping (`lo` becomes 0, `hi` 255, clamped),
-for example `[0 4095]` for a 12-bit camera so brightness does not change from
-section to section. single/double must lie in [0,1] unless `Range` is given.
-The same `Range` applies to the montage. Details: `help BakingTray.webpreview.toUint8`.
-
-## Windows notes
-
-The stage folder is under `tempdir` (normally the user's `Temp`). Antivirus or a file
-held open elsewhere can make a rename fail; that is a staging-failure warning,
-not an error.
-
-## Lower-level pieces
-
-`BakingTray.webpreview.stageFiles` is usable alone; the upload functions
-(`zipAndPost`, `zipFolder`, `postZip`, `webConfig`) are in `webupload`.
-
-## Tests and limitations
-
-Run `runtests(fullfile(<repo>, 'BakingTray', 'tests'))`; the tests add the
-packages to the path themselves. They need no real server.
-
-Nothing in this module has been run against a live brainsaw server. Treat the
-first real acquisition as the test, on a spare site ID.
+The command that runs every test (including `upload_core/tests`) is in
+`upload_core/README.md`, under Tests; use your own MATLAB path in it.
+`add_to_path` puts `upload_core` and `BakingTray/simulate` on the path.

@@ -224,6 +224,14 @@ classdef WebConfigTest < matlab.unittest.TestCase
         end
 
         % ---- not config ----
+        function minUploadIntervalMatchesServerConfig(tc)
+            cfgFile = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'brainsaw', 'config.php');
+            tc.assumeTrue(isfile(cfgFile), 'brainsaw/config.php not present');
+            tok = regexp(fileread(cfgFile), '''min_upload_interval_seconds''\s*=>\s*(\d+)', 'tokens', 'once');
+            tc.assertNotEmpty(tok, 'min_upload_interval_seconds not found in config.php');
+            tc.verifyEqual(webupload.serverLimits().minUploadIntervalSec, str2double(tok{1}));
+        end
+
         function nameWhitelistMatchesServer(tc)
             libFile = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'brainsaw', 'lib.php');
             tc.assumeTrue(isfile(libFile), 'brainsaw/lib.php not present');

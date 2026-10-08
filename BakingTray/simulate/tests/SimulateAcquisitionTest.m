@@ -15,17 +15,16 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         T0 = datetime(2026, 10, 7, 12, 3, 50)
         PosterStatus    % http status the scripted poster returns (NaN: ok)
         PosterCalls     % number of calls the scripted poster saw
+        PosterOkCalls   % number of leading calls the scripted poster answers with success
         StageSeen       % per call: [stale file present, marker present before the call]
     end
 
     methods (TestClassSetup)
         function addPackageToPath(tc)
-            % simulate/ and the BakingTray and webupload packages it drives
+            % simulate/ and the webupload package it drives
             simDir = fileparts(fileparts(mfilename('fullpath')));
-            bakingTrayDir = fileparts(simDir);
-            coreDir = fullfile(fileparts(bakingTrayDir), 'upload_core');
+            coreDir = fullfile(fileparts(fileparts(simDir)), 'upload_core');
             tc.applyFixture(matlab.unittest.fixtures.PathFixture(simDir));
-            tc.applyFixture(matlab.unittest.fixtures.PathFixture(bakingTrayDir));
             tc.applyFixture(matlab.unittest.fixtures.PathFixture(coreDir));
         end
     end
@@ -44,6 +43,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             writeText(tc.ProdConfig, '{"url":"https://x.example/brainsaw/upload.php","siteID":"sim-1","token":"TOK"}');
             tc.PosterStatus = NaN;
             tc.PosterCalls = 0;
+            tc.PosterOkCalls = 0;
             tc.StageSeen = zeros(0, 2);
         end
     end
@@ -163,13 +163,10 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         % ---- images ----
         function imagesAreUint8WithSpecSizes(tc)
             spec = simulate.simulationSpec();
-            [img, montage] = simulate.simulatedImages(12, 20);
+            img = simulate.simulatedImages(12, 20);
             tc.verifyClass(img, 'uint8');
             tc.verifySize(img, [spec.ImageSize 3]);
-            tc.verifyClass(montage, 'uint8');
-            tc.verifySize(montage, spec.MontageSize);
-            tc.verifyEqual(BakingTray.webpreview.toUint8(img), img);
-            tc.verifyEqual(BakingTray.webpreview.toUint8(montage), montage);
+            tc.verifyEqual(webupload.toUint8(img), img);
         end
 
         function imagesDifferBetweenSectionsAndAreRepeatable(tc)
@@ -199,14 +196,13 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         end
 
         function simulatedImagesStageWithStageFiles(tc)
-            [img, montage] = simulate.simulatedImages(4, 9);
+            img = simulate.simulatedImages(4, 9);
             logFile = fullfile(tc.Dir, 'acqLog_x.txt');
             writeText(logFile, 'x');
             stageDir = fullfile(tc.Dir, 'stage');
-            res = BakingTray.webpreview.stageFiles(img, tc.Recipe, logFile, stageDir, 'Montage', montage);
+            res = webupload.stageFiles(img, tc.Recipe, logFile, stageDir);
             tc.verifyTrue(res.stageOk);
             tc.verifyTrue(isfile(fullfile(stageDir, 'LastCompleteSection.jpg')));
-            tc.verifyTrue(isfile(fullfile(stageDir, 'montage.jpg')));
         end
 
         % ---- recipe patching ----
@@ -233,21 +229,34 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         end
 
         % ---- dry run end to end ----
-        function dryRunStagesAllFilesForThreeSections(tc)
+        function dryRunMakesAStartCallSectionCallsAndAnEndCall(tc)
             [~, finishRe] = serverRegexes();
             r = tc.dry('NumSections', 3);
             tc.verifyTrue(r.dryRun);
             tc.verifyFalse(r.aborted);
-            tc.verifyTrue(all([r.sections.ok]));
-            tc.verifyNumElements(r.dryRunCalls, 3);
-            last = r.dryRunCalls(end);
-            tc.verifyEqual(last.names, ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'montage.jpg', 'recipe.yml', 'status.json'});
-            tc.verifyTrue(all(last.bytes > 0));
-            for k = 1:3     % the log grows by one FINISHED line per upload
+            tc.verifyTrue(all([r.start.ok, r.sections.ok, r.finish.ok]));
+            tc.verifyNumElements(r.sections, 3);
+            calls = r.dryRunCalls;
+            tc.verifyNumElements(calls, 5);
+            tc.verifyEqual(calls(1).names, {'acqLog.txt', 'recipe.yml', 'status.json'}, ...
+                'the start call has no image');
+            for k = 2:4
+                tc.verifyEqual(calls(k).names, ...
+                    {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'status.json'}, ...
+                    'no montage is ever sent');
+                tc.verifyTrue(all(calls(k).bytes > 0));
+            end
+            tc.verifyEqual(calls(5).names, {'acqLog.txt', 'recipe.yml', 'status.json'}, ...
+                'the end call has no image');
+            tc.verifyEqual([calls.finished], [false false false false true]);
+            for k = 1:5     % every call carries the timeouts a rig would use
+                tc.verifyEqual(calls(k).timeouts, ...
+                    {'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10});
+            end
+            for k = 1:5     % the log grows by one FINISHED line per section, none at the start
                 nFinished = nnz(~cellfun(@isempty, ...
-                    regexp(splitlines(r.dryRunCalls(k).logText), finishRe, 'once')));
-                tc.verifyEqual(nFinished, k);
+                    regexp(splitlines(calls(k).logText), finishRe, 'once')));
+                tc.verifyEqual(nFinished, min(k-1, 3));
             end
         end
 
@@ -312,7 +321,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
                 'ConfigFile', tc.Config, 'NumSections', 1, 'Interval', 5, 'Poster', @poster.post, ...
                 'WorkDir', fullfile(tc.Dir, 'w'), 'RecipeFile', tc.Recipe, 'Verbose', false));
             tc.verifyFalse(r.dryRun);
-            tc.verifyNumElements(poster.Calls, 1);
+            tc.verifyNumElements(poster.Calls, 3);
             tc.verifyEmpty(r.dryRunCalls);
         end
 
@@ -325,13 +334,13 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             tc.verifyWarningFree(@() tc.dry('NumSections', 1, 'Interval', 0));
         end
 
-        function clearStageOnlyOnFirstSection(tc)
+        function clearStageOnlyAtTheStartCall(tc)
             work = fullfile(tc.Dir, 'w2');
             stale = fullfile(work, 'stage', 'brainsaw_webpreview', 'sim-1', 'brainsaw', 'acq', 'stale.txt');
             mkdir(fileparts(stale));
             writeText(stale, 'old');
             tc.runReal(@tc.markerPoster, 'NumSections', 2, 'WorkDir', work);
-            tc.verifyEqual(tc.StageSeen(1, :), [0 0]);   % stale file cleared at call 1
+            tc.verifyEqual(tc.StageSeen(1, :), [0 0]);   % stale file cleared at the start call
             tc.verifyEqual(tc.StageSeen(2, 2), 1);       % call 1's marker survives to call 2
         end
 
@@ -340,15 +349,26 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             r = tc.runReal(@tc.statusPoster, 'NumSections', 3);
             tc.verifyTrue(r.aborted);
             tc.verifyEqual(tc.PosterCalls, 1);
-            tc.verifyNumElements(r.sections, 1);
-            tc.verifyNotEmpty(strfind(r.abortReason, '403'));
+            tc.verifyEmpty(r.sections);
+            tc.verifyEmpty(r.finish);
+            tc.verifyNotEmpty(strfind(r.abortReason, 'start failed (HTTP 403)'));
+        end
+
+        function failureInASectionStopsTheRunAfterThatSection(tc)
+            tc.PosterStatus = 403;
+            tc.PosterOkCalls = 2;
+            r = tc.runReal(@tc.statusPoster, 'NumSections', 3);
+            tc.verifyTrue(r.aborted);
+            tc.verifyEqual(tc.PosterCalls, 3);
+            tc.verifyNumElements(r.sections, 2);
+            tc.verifyNotEmpty(strfind(r.abortReason, 'section 2/3 failed'));
         end
 
         function rateLimitDoesNotAbortTheRun(tc)
             tc.PosterStatus = 429;
             r = tc.runReal(@tc.statusPoster, 'NumSections', 3);
             tc.verifyFalse(r.aborted);
-            tc.verifyEqual(tc.PosterCalls, 3);
+            tc.verifyEqual(tc.PosterCalls, 6);    % start, 3 sections, end and its one retry
             tc.verifyNumElements(r.sections, 3);
         end
 
@@ -360,28 +380,30 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         end
 
         function realRunRefusesNonTestUploadUrl(tc)
+            tc.silenceFastInterval();
             poster = simulate.FakePoster();
-            args = {'ConfigFile', tc.ProdConfig, 'NumSections', 1, 'Interval', 5, 'Poster', @poster.post, ...
+            args = {'ConfigFile', tc.ProdConfig, 'NumSections', 1, 'Interval', 0, 'Poster', @poster.post, ...
                 'WorkDir', fullfile(tc.Dir, 'w4'), 'RecipeFile', tc.Recipe, 'Verbose', false};
             tc.verifyError(@() simulate.simulateAcquisition(args{:}), ...
                 'simulate:simulateAcquisition:productionUrl');
             tc.verifyEmpty(poster.Calls);
             simulate.simulateAcquisition(args{:}, 'AllowProduction', true);
-            tc.verifyNumElements(poster.Calls, 1);
+            tc.verifyNumElements(poster.Calls, 3);
         end
 
         function realRunAcceptsLocalhostUrls(tc)
+            tc.silenceFastInterval();
             urls = {'http://localhost:8000/upload.php', 'http://localhost/upload.php', ...
                 'http://localhost', 'http://127.0.0.1:8000/upload.php', ...
                 'http://127.0.0.1/upload.php', 'https://localhost/upload.php'};
             for ii = 1:numel(urls)
                 cfg = tc.configWithUrl(urls{ii});
                 poster = simulate.FakePoster();
-                args = {'ConfigFile', cfg, 'NumSections', 1, 'Interval', 5, 'Poster', @poster.post, ...
+                args = {'ConfigFile', cfg, 'NumSections', 1, 'Interval', 0, 'Poster', @poster.post, ...
                     'WorkDir', fullfile(tc.Dir, sprintf('wl%d', ii)), 'RecipeFile', tc.Recipe, ...
                     'Verbose', false};
                 simulate.simulateAcquisition(args{:});
-                tc.verifyNumElements(poster.Calls, 1, urls{ii});
+                tc.verifyNumElements(poster.Calls, 3, urls{ii});
             end
         end
 
@@ -449,13 +471,17 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
     end
 
     methods
-        function reply = statusPoster(tc, ~, ~, ~, ~)
-            % Scripted poster: replies with tc.PosterStatus as a failure.
+        function reply = statusPoster(tc, ~, ~, ~, ~, varargin)
+            % Scripted poster: succeeds for the first tc.PosterOkCalls calls, then replies
+            % with tc.PosterStatus as a failure.
             tc.PosterCalls = tc.PosterCalls + 1;
             reply = struct('ok', false, 'httpStatus', tc.PosterStatus, 'message', 'scripted failure');
+            if tc.PosterCalls <= tc.PosterOkCalls
+                reply = struct('ok', true, 'httpStatus', 200, 'message', 'ok');
+            end
         end
 
-        function reply = markerPoster(tc, folder, ~, ~, ~)
+        function reply = markerPoster(tc, folder, ~, ~, ~, varargin)
             % Records whether the stale file and its own earlier marker are
             % in the stage folder, then leaves a marker for the next call.
             marker = fullfile(folder, 'marker.txt');
@@ -470,6 +496,12 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             % Write a config file whose url is the one given; return its path.
             cfg = tempname(tc.Dir);
             writeText(cfg, sprintf('{"url":"%s","siteID":"sim-1","token":"TOK"}', url));
+        end
+
+        function silenceFastInterval(tc)
+            % Tests that use Interval 0 in real mode would otherwise warn about the rate limit.
+            saved = warning('off', 'simulate:simulateAcquisition:fastInterval');
+            tc.addTeardown(@warning, saved);
         end
 
         function r = dry(tc, varargin)
@@ -488,7 +520,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             % keeps the test fast, so the (expected) rate-limit warning and the
             % per-failure warnings of updateSectionImage are silenced here.
             saved = warning('off', 'simulate:simulateAcquisition:fastInterval');
-            saved2 = warning('off', 'webpreview:updateSectionImage:failed');
+            saved2 = warning('off', 'webupload:updateSectionImage:failed');
             restore = onCleanup(@() warning([saved; saved2]));
             o = struct('ConfigFile', tc.Config, 'Interval', 0, 'Poster', poster, ...
                 'WorkDir', fullfile(tc.Dir, 'wreal'), 'RecipeFile', tc.Recipe, 'Verbose', false);

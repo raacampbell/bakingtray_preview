@@ -1,22 +1,20 @@
-function [img,montage] = simulatedImages(k,N)
-    % Synthetic section image (RGB) and montage (gray) for section k of N
+function img = simulatedImages(k,N)
+    % Synthetic section image (RGB) for section k of N
     %
-    % function [img,montage] = simulate.simulatedImages(k,N)
+    % function img = simulate.simulatedImages(k,N)
     %
     % Purpose
     % Pure and deterministic (a private random stream seeded by k, so the global
-    % stream is untouched). Both are uint8: img is HxWx3 (smooth gradient whose
-    % colour shifts with k/N, plus noise, with the section number stamped white on
-    % a dark box at the top left); montage is HxW gray (gradient, blob, noise).
-    % Sizes come from simulate.simulationSpec.
+    % stream is untouched). img is uint8 HxWx3: a smooth gradient whose colour shifts
+    % with k/N, plus noise, with the section number stamped white on a dark box at
+    % the top left. The size comes from simulate.simulationSpec.
     %
     % Inputs
     % k - Section number, a positive integer.
     % N - Total number of sections, a positive integer.
     %
     % Outputs
-    % img     - uint8 HxWx3 section image.
-    % montage - uint8 HxW montage image.
+    % img - uint8 HxWx3 section image.
     %
     % See also simulate.simulationSpec, simulate.renderNumberMask
 
@@ -33,7 +31,6 @@ function [img,montage] = simulatedImages(k,N)
     spec = simulate.simulationSpec();
     stream = RandStream('mt19937ar', 'Seed', k);
     img = stampNumber(gradientRgb(spec.ImageSize, k/N, stream), k, spec);
-    montage = grayMontage(spec.MontageSize, stream);
 
 end %simulatedImages
 
@@ -73,15 +70,3 @@ function out = stampNumber(rgb,k,spec)
     out(repmat(digits,[1 1 3])) = 1;
     out = uint8(round(255 * min(max(out,0),1)));
 end %stampNumber
-
-
-function gray = grayMontage(sz,stream)
-    % Gray montage: a Gaussian blob plus noise, as uint8
-    %
-    % function gray = grayMontage(sz,stream)
-
-    [x,y] = meshgrid(linspace(-1,1,sz(2)), linspace(-1,1,sz(1)));
-    blob = exp(-4 * (x.^2 + 1.5*y.^2));
-    gray = 0.1 + 0.7*blob + 0.05*rand(stream,sz);
-    gray = uint8(round(255 * min(max(gray,0),1)));
-end %grayMontage
