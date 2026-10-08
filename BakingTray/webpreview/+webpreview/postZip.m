@@ -9,6 +9,12 @@ function result = postZip(zipPath, cfg)
     % connectTimeout, responseTimeout and dataTimeout properties (seconds; defaults 15, 60,
     % 60) set the timeouts. The token is sent with cfg.authHeader, so it is never read here.
     %
+    % The multipart body is assembled in memory (buildMultipart) so the request has a
+    % Content-Length. The brainsaw server's PHP runs under FastCGI on IONOS and silently drops
+    % every form field, including site_id, from a request sent without one (chunked transfer
+    % encoding), which shows up as "unknown site_id". The whole zip is read into memory; real
+    % preview zips are a few MB and the server limit is 200 MB.
+    %
     % Redirects are never followed: the request carries a bearer token, and a redirect could
     % send it to an http:// or other host. A 3xx answer returns ok = false.
     %
@@ -44,11 +50,13 @@ function result = postZip(zipPath, cfg)
 
 
         % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        % Build and send the request
-        body = matlab.net.http.io.MultipartFormProvider( ...
-            'site_id', cfg.siteID, ...
-            'data', matlab.net.http.io.FileProvider(zipPath));
-        req = matlab.net.http.RequestMessage('POST', cfg.authHeader, body);
+        % Build and send the request. The multipart body is built in memory, not streamed
+        % from a MultipartFormProvider, so that the request carries a Content-Length (see
+        % buildMultipart for why).
+        [payload, contentType] = buildMultipart(cfg.siteID, zipPath);
+        body = matlab.net.http.MessageBody();
+        body.Payload = payload; % raw bytes; setting Data instead would be converted by Content-Type
+        req = matlab.net.http.RequestMessage('POST', [cfg.authHeader, contentType], body);
 
         resp = req.send(cfg.url, opts);
         result = webpreview.interpretResponse(double(resp.StatusCode), resp.Body.Data);
@@ -96,3 +104,48 @@ function opts = makeOptions(cfg)
         end
     end %for
 end % makeOptions
+
+
+function [payload, contentType] = buildMultipart(siteID, zipPath)
+    % Build a multipart/form-data body in memory with the site ID and the zip file
+    %
+    % function [payload, contentType] = BakingTray.webpreview.postZip>buildMultipart(siteID, zipPath)
+    %
+    % Purpose
+    % Streaming the body with matlab.net.http.io.MultipartFormProvider gives a request with no
+    % Content-Length (chunked), and the brainsaw server's PHP (FastCGI) then receives none of
+    % the form fields. Building the bytes here lets MATLAB send the length. The layout follows
+    % RFC 7578: a 'site_id' text part, then a 'data' file part (application/zip), each preceded
+    % by a boundary line, with CRLF line endings, and a closing boundary.
+    %
+    % Inputs
+    % siteID  - Char row vector: the site identifier (letters, digits, '_' and '-' only, as
+    %           checked by webpreview.webConfig).
+    % zipPath - Path to the zip file to send. It is read into memory.
+    %
+    % Outputs
+    % payload     - uint8 row vector holding the whole request body.
+    % contentType - matlab.net.http.field.ContentTypeField with the multipart boundary.
+
+    % A random boundary; with 16 hex digits it will not occur in the zip by accident.
+    boundary = sprintf('----BrainsawBoundary%08x%08x', randi(2^31-1), randi(2^31-1));
+
+    fid = fopen(zipPath, 'r');
+    if fid < 0
+        error('webpreview:noZip', 'Could not open zip file: %s', zipPath);
+    end
+    closer = onCleanup(@() fclose(fid));
+    zipBytes = fread(fid, Inf, '*uint8')';
+    clear closer
+
+    siteField = unicode2native(sprintf( ...
+        '--%s\r\nContent-Disposition: form-data; name="site_id"\r\n\r\n%s\r\n', ...
+        boundary, siteID), 'UTF-8');
+    fileHeader = unicode2native(sprintf( ...
+        ['--%s\r\nContent-Disposition: form-data; name="data"; filename="system_data.zip"\r\n', ...
+         'Content-Type: application/zip\r\n\r\n'], boundary), 'UTF-8');
+    closing = unicode2native(sprintf('\r\n--%s--\r\n', boundary), 'UTF-8');
+
+    payload = [siteField, fileHeader, zipBytes, closing];
+    contentType = matlab.net.http.field.ContentTypeField(['multipart/form-data; boundary=', boundary]);
+end % buildMultipart

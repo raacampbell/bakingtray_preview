@@ -342,6 +342,16 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyTrue(tc.Out.ok);
         end
 
+        function configObjectIsAccepted(tc)
+            cfg = webpreview.webConfig(tc.ConfigFile);
+            tc.callCapturing(@() webpreview.updateSectionImage( ...
+                uint8(magic(8)), tc.Recipe, tc.Log, 'ConfigFile', cfg, ...
+                'StageRoot', tc.StageRoot, 'Poster', @tc.recordingPoster));
+            tc.verifyTrue(tc.Out.ok);
+            tc.verifyNumElements(tc.Calls, 1);
+            tc.verifyEqual(tc.Calls.cfg.siteID, 'site-1');
+        end
+
         function okMessageIsScrubbedToo(tc)
             tc.PosterReply = struct('ok', true, 'httpStatus', 200, 'message', ['ok ' tc.Token]);
             res = tc.update();

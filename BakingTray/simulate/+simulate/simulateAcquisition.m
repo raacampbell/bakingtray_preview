@@ -219,7 +219,7 @@ function checkTarget(configFile,allowProduction,spec)
     %
     % function checkTarget(configFile,allowProduction,spec)
 
-    cfg = webpreview.loadConfig(configFile);
+    cfg = webpreview.webConfig(configFile);
     if ~allowProduction && ~isTestUrl(cfg.url, spec.CanaryMarker)
         error('simulate:simulateAcquisition:productionUrl', ...
             ['config url "%s" is neither a localhost url nor contains "%s"; refusing to ', ...

@@ -40,7 +40,8 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
     % logPath    - Path to the acquisition log file.
     %
     % Inputs (optional param/val pairs)
-    % 'ConfigFile' - Text scalar. Config file to use. Empty (default) means the default
+    % 'ConfigFile' - Either a webpreview.webConfig object, or a text scalar path to a
+    %                config file. Empty (default) means the config file in the default
     %                location.
     % 'Montage'    - Numeric montage image to stage as well. Default is [].
     % 'Range'      - Numeric [lo hi] used to scale the images. Default is [].
@@ -79,8 +80,11 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
         opts = parseOptions(varargin{:});
 
 
-        % Load the config file from the default location unless the user has supplied another
-        if isempty(opts.ConfigFile)
+        % Use the config object if one was given, otherwise load the config file from the path
+        % given, or from the default location if there is none
+        if isa(opts.ConfigFile,'webpreview.webConfig')
+            cfg = opts.ConfigFile;
+        elseif isempty(opts.ConfigFile)
             cfg = webpreview.webConfig();
         else
             cfg = webpreview.webConfig(opts.ConfigFile);
@@ -176,8 +180,10 @@ function opts = parseOptions(varargin)
 
     % Define anon functions
 
-    % True for a char row vector, an empty char or a string scalar
-    isTextScalar = @(x) (ischar(x) && (isrow(x) || isequal(size(x),[0 0]))) || (isstring(x) && isscalar(x));
+    % True for a webConfig object, a char row vector, an empty char or a string scalar
+    cfgCheck = @(x) isa(x,'webpreview.webConfig') || ...
+        (ischar(x) && (isrow(x) || isequal(size(x),[0 0]))) || ...
+        (isstring(x) && isscalar(x)) ;
 
     % True if x is a char row vector or string scalar with at least one character.
     isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
@@ -190,7 +196,7 @@ function opts = parseOptions(varargin)
     params.FunctionName = 'webpreview.updateSectionImage';
     params.CaseSensitive = false;
 
-    params.addParameter('ConfigFile', '', isTextScalar) % empty means the default location
+    params.addParameter('ConfigFile', '', cfgCheck) % empty means the default location
     params.addParameter('Montage', [], @isnumeric)
     params.addParameter('Range', [], @isnumeric)
     params.addParameter('Poster', @webpreview.zipAndPost, ...
@@ -201,8 +207,11 @@ function opts = parseOptions(varargin)
 
     opts = params.Results;
 
-    % Text options may arrive as strings; everything downstream uses char paths
-    opts.ConfigFile = char(opts.ConfigFile);
+    % Text options may arrive as strings; everything downstream uses char paths. A webConfig
+    % object is kept as it is.
+    if ~isa(opts.ConfigFile,'webpreview.webConfig')
+        opts.ConfigFile = char(opts.ConfigFile);
+    end
     opts.StageRoot = char(opts.StageRoot);
     opts.ClearStage = logical(opts.ClearStage);
 end % parseOptions
