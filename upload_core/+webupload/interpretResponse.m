@@ -1,7 +1,7 @@
 function result = interpretResponse(httpStatus, body)
     % Turn an HTTP status and decoded body into a result structure
     %
-    % function result = BakingTray.webpreview.interpretResponse(httpStatus, body)
+    % function result = webupload.interpretResponse(httpStatus, body)
     %
     % Purpose
     % Success needs both HTTP 200 and {"status":"ok"} in the body. Pure function, so it is

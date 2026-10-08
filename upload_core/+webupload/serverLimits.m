@@ -1,7 +1,7 @@
 function lim = serverLimits()
     % Upload size limits the client checks before sending
     %
-    % function lim = BakingTray.webpreview.serverLimits()
+    % function lim = webupload.serverLimits()
     %
     % Purpose
     % Defaults of max_zip_entries and max_zip_size in brainsaw/lib.php. The server config may

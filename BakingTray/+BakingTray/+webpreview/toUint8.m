@@ -37,7 +37,7 @@ function out = toUint8(img,range)
     % 'webpreview:toUint8:badRange' if range is non-numeric, or is not empty or a
     %     finite [lo hi] with hi>lo.
     %
-    % See also: webpreview.stageFiles
+    % See also: BakingTray.webpreview.stageFiles
 
 
     narginchk(1,2)

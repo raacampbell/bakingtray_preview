@@ -7,7 +7,7 @@ function result = simulateAcquisition(varargin)
     % For each section 1..NumSections: build a synthetic RGB section image and a
     % gray montage, append that section's lines to a fresh acquisition log (exact
     % real format, see simulate.simulatedLogLines), call
-    % webpreview.updateSectionImage, print one line with the outcome (the token is
+    % BakingTray.webpreview.updateSectionImage, print one line with the outcome (the token is
     % never printed), then wait so the section took Interval seconds of wall
     % clock. The first call passes 'ClearStage', true, as BakingTray does at the
     % start of an acquisition.
@@ -49,7 +49,7 @@ function result = simulateAcquisition(varargin)
     %            no config or site is needed, and the files that would be
     %            sent are recorded in result.dryRunCalls. Never aborts. Default false.
     % 'Poster' - Function handle poster(folder,cfg), as for updateSectionImage;
-    %            default @webpreview.zipAndPost. Not allowed with DryRun.
+    %            default @webupload.zipAndPost. Not allowed with DryRun.
     % 'AllowProduction' - If true skip the testserver/localhost url check (default false).
     % 'LogTimeScale' - Multiplies the durations written to the log only (default 1,
     %                  see Time above).
@@ -72,7 +72,7 @@ function result = simulateAcquisition(varargin)
     %          httpStatus, message, update = the updateSectionImage result),
     %          dryRunCalls (FakePoster calls, [] if not a dry run).
     %
-    % See also webpreview.updateSectionImage, simulate.simulationSpec, simulate.FakePoster
+    % See also BakingTray.webpreview.updateSectionImage, simulate.simulationSpec, simulate.FakePoster
 
 
     opts = parseOptions(varargin);
@@ -81,7 +81,7 @@ function result = simulateAcquisition(varargin)
 
     cfg = [];   % a dry run builds its own throwaway config in chooseBackend
     if ~opts.DryRun
-        cfg = webpreview.webConfig(char(opts.ConfigFile));
+        cfg = webupload.webConfig(char(opts.ConfigFile));
         checkTarget(cfg, opts.AllowProduction, spec);
         if opts.Interval<spec.MinInterval
             warning('simulate:simulateAcquisition:fastInterval', ...
@@ -283,9 +283,9 @@ function backend = chooseBackend(opts,spec,workDir,cfg)
         backend.poster = @recorder.post;
         configFile = fullfile(workDir, 'dryrun_config.json');
         writeLines(configFile, {jsonencode(spec.DryRunConfig)}, 'w');
-        backend.cfg = webpreview.webConfig(configFile);
+        backend.cfg = webupload.webConfig(configFile);
     elseif isempty(opts.Poster)
-        backend.poster = @webpreview.zipAndPost;
+        backend.poster = @webupload.zipAndPost;
     else
         backend.poster = opts.Poster;
     end
@@ -337,7 +337,7 @@ function sec = runSection(k,N,startTime,loggedSec,files,backend)
     % Log lines first, as in a real acquisition where FINISHED precedes the call.
     writeLines(files.log, simulate.simulatedLogLines(k,N,startTime,loggedSec), 'a');
     [img,montage] = simulate.simulatedImages(k,N);
-    update = webpreview.updateSectionImage(img, files.recipe, files.log, ...
+    update = BakingTray.webpreview.updateSectionImage(img, files.recipe, files.log, ...
         backend.cfg, 'Montage', montage, ...
         'Poster', backend.poster, 'StageRoot', files.stageRoot, 'ClearStage', k==1);
     sec = struct('section', k, 'startTime', startTime, 'durationSec', loggedSec, ...

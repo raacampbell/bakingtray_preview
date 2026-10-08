@@ -1,5 +1,5 @@
 classdef ZipFolderTest < matlab.unittest.TestCase
-    % Tests for webpreview.zipFolder and selectUploadable. Each test builds
+    % Tests for webupload.zipFolder and selectUploadable. Each test builds
     % its own tiny folder.
 
     properties
@@ -26,7 +26,7 @@ classdef ZipFolderTest < matlab.unittest.TestCase
             drop = {'evil.php', '.htaccess', 'raw.tif', 'noext'};
             ZipFolderTest.touch(tc.Dir, [keep, drop]);
 
-            zipPath = webpreview.zipFolder(tc.Dir);
+            zipPath = webupload.zipFolder(tc.Dir);
             tc.addTeardown(@() delete(zipPath));
 
             tc.verifyEqual(sort(ZipFolderTest.listZip(zipPath)), sort(keep(:)));
@@ -34,12 +34,12 @@ classdef ZipFolderTest < matlab.unittest.TestCase
 
         function dotfilesAreSkippedEvenWithGoodExtension(tc)
             ZipFolderTest.touch(tc.Dir, {'.hidden.txt', '.env.json', 'ok.txt'});
-            tc.verifyEqual(webpreview.selectUploadable(tc.Dir), {'ok.txt'});
+            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'ok.txt'});
         end
 
         function bracketNamesAreKept(tc)
             ZipFolderTest.touch(tc.Dir, {'a[1].txt', 'a1.txt'});
-            zipPath = webpreview.zipFolder(tc.Dir);
+            zipPath = webupload.zipFolder(tc.Dir);
             tc.addTeardown(@() delete(zipPath));
             tc.verifyEqual(sort(ZipFolderTest.listZip(zipPath)), {'a1.txt'; 'a[1].txt'});
         end
@@ -48,7 +48,7 @@ classdef ZipFolderTest < matlab.unittest.TestCase
             % '*' and '?' are illegal in Windows file names; only test where possible.
             tc.assumeFalse(ispc);
             ZipFolderTest.touch(tc.Dir, {'we*ird.txt', 'we?ird.txt', 'ok.txt'});
-            tc.verifyEqual(webpreview.selectUploadable(tc.Dir), {'ok.txt'});
+            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'ok.txt'});
         end
 
         function zipIsFlatAndIgnoresSubfolders(tc)
@@ -57,7 +57,7 @@ classdef ZipFolderTest < matlab.unittest.TestCase
             mkdir(sub);
             ZipFolderTest.touch(sub, {'nested.txt'});
 
-            zipPath = webpreview.zipFolder(tc.Dir);
+            zipPath = webupload.zipFolder(tc.Dir);
             tc.addTeardown(@() delete(zipPath));
 
             tc.verifyEqual(ZipFolderTest.listZip(zipPath), {'top.txt'});
@@ -65,31 +65,31 @@ classdef ZipFolderTest < matlab.unittest.TestCase
 
         function zipEndsInDotZipAndExists(tc)
             ZipFolderTest.touch(tc.Dir, {'a.txt'});
-            zipPath = webpreview.zipFolder(tc.Dir);
+            zipPath = webupload.zipFolder(tc.Dir);
             tc.addTeardown(@() delete(zipPath));
             tc.verifyTrue(endsWith(zipPath, '.zip'));
             tc.verifyEqual(exist(zipPath, 'file'), 2);
         end
 
         function emptyDirErrors(tc)
-            tc.verifyError(@() webpreview.zipFolder(tc.Dir), 'webpreview:noFiles');
+            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webpreview:noFiles');
         end
 
         function dirWithOnlyUnrecognisedFilesErrors(tc)
             ZipFolderTest.touch(tc.Dir, {'evil.php', 'raw.tif'});
-            tc.verifyError(@() webpreview.zipFolder(tc.Dir), 'webpreview:noFiles');
+            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webpreview:noFiles');
         end
 
         function missingDirErrors(tc)
-            tc.verifyError(@() webpreview.zipFolder(fullfile(tc.Dir, 'nope')), ...
+            tc.verifyError(@() webupload.zipFolder(fullfile(tc.Dir, 'nope')), ...
                 'webpreview:noSuchFolder');
         end
 
         function tooManyFilesErrorsBeforeZipping(tc)
-            lim = webpreview.serverLimits();
+            lim = webupload.serverLimits();
             names = arrayfun(@(k) sprintf('f%d.txt', k), 1:lim.maxEntries + 1, 'UniformOutput', false);
             ZipFolderTest.touch(tc.Dir, names);
-            tc.verifyError(@() webpreview.zipFolder(tc.Dir), 'webpreview:tooManyFiles');
+            tc.verifyError(@() webupload.zipFolder(tc.Dir), 'webpreview:tooManyFiles');
         end
     end
 

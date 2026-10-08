@@ -5,17 +5,17 @@ function clearStageDir(folder)
     %
     % Purpose
     % Removes folder and everything in it. Only pass folders obtained from
-    % webpreview.stageDirFor, because the delete is recursive.
+    % BakingTray.webpreview.stageDirFor, because the delete is recursive.
     %
     % Inputs
     % folder - Non-empty text scalar: path of the stage folder to remove, e.g.
-    %          webpreview.clearStageDir(webpreview.stageDirFor(cfg,stageRoot))
+    %          BakingTray.webpreview.clearStageDir(BakingTray.webpreview.stageDirFor(cfg,stageRoot))
     %
     % Errors
     % 'webpreview:clearStageDir:badArgument' if folder is not a non-empty text scalar.
     % 'webpreview:clearStageDir:failed' if the folder exists but cannot be removed.
     %
-    % See also: webpreview.stageDirFor, webpreview.clearStage
+    % See also: BakingTray.webpreview.stageDirFor, BakingTray.webpreview.clearStage
 
 
     narginchk(1,1)

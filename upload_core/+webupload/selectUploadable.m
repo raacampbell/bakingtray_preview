@@ -1,13 +1,13 @@
 function names = selectUploadable(dirPath)
     % File names (not paths) in dirPath that the server will keep
     %
-    % function names = BakingTray.webpreview.selectUploadable(dirPath)
+    % function names = webupload.selectUploadable(dirPath)
     %
     % Purpose
     % Returns a cell row; empty when nothing matches. Skipped:
     %   - subfolders
     %   - dotfiles (the server drops basenames starting with '.')
-    %   - extensions not in webpreview.allowedExtensions
+    %   - extensions not in webupload.allowedExtensions
     %   - names containing '*' or '?': zip() treats those as wildcards and would match other
     %     files. Other special-looking characters such as [ ] are not wildcards for zip().
     %
@@ -21,7 +21,7 @@ function names = selectUploadable(dirPath)
     names = {d(~[d.isdir]).name};
     [~, ~, ext] = cellfun(@fileparts, names, 'UniformOutput', false);
     ext = lower(strrep(ext, '.', ''));
-    keep = ismember(ext, webpreview.allowedExtensions()) ...
+    keep = ismember(ext, webupload.allowedExtensions()) ...
         & ~startsWith(names, '.') ...
         & ~contains(names, {'*', '?'});
     names = names(keep);

@@ -47,7 +47,7 @@ classdef (Sealed) webConfig < handle
         function obj = webConfig(jsonFile)
             % Read upload settings for web preview from the config JSON file
             %
-            % function cfgObj = BakingTray.webpreview.webConfig(jsonFile)
+            % function cfgObj = webupload.webConfig(jsonFile)
             %
             % Purpose
             % Errors if the file is missing or malformed, a field is absent/empty/not
@@ -81,7 +81,7 @@ classdef (Sealed) webConfig < handle
         function header = authHeader(obj)
             % The HTTP Authorization header carrying the token
             %
-            % function header = BakingTray.webpreview.webConfig.authHeader
+            % function header = webupload.webConfig.authHeader
             %
             % Purpose
             % The way to send the token without reading it. Use this rather than building
@@ -97,7 +97,7 @@ classdef (Sealed) webConfig < handle
         function msg = scrub(obj, msg)
             % Replace every occurrence of the token in a message with '***'
             %
-            % function msg = BakingTray.webpreview.webConfig.scrub(msg)
+            % function msg = webupload.webConfig.scrub(msg)
             %
             % Purpose
             % Call this on any text that may be shown to the user or logged and that could
@@ -121,7 +121,7 @@ classdef (Sealed) webConfig < handle
         function loadFromFile(obj, jsonFile)
             % Read the file, validate the contents and set the properties
             %
-            % function BakingTray.webpreview.webConfig>loadFromFile(jsonFile)
+            % function webupload.webConfig>loadFromFile(jsonFile)
             %
             % Purpose
             % Called by the constructor. Errors here are given the token-scrubbing
@@ -215,7 +215,7 @@ end % classdef
 function p = defaultConfigPath()
     % Per-user config location, outside any repository
     %
-    % function p = BakingTray.webpreview.webConfig>defaultConfigPath()
+    % function p = webupload.webConfig>defaultConfigPath()
     %
     % Outputs
     % p - full path to .brainsaw_webpreview.json in the user's home directory. Errors with
@@ -239,7 +239,7 @@ end % defaultConfigPath
 function checkUrl(url)
     % Require https, so the bearer token is never sent in clear text
     %
-    % function BakingTray.webpreview.webConfig>checkUrl(url)
+    % function webupload.webConfig>checkUrl(url)
     %
     % Purpose
     % The one exception is plain http to localhost or 127.0.0.1 (optionally with a port), for
@@ -261,7 +261,7 @@ end % checkUrl
 function msg = scrubText(msg, token)
     % Replace every occurrence of token in msg with '***'
     %
-    % function msg = BakingTray.webpreview.webConfig>scrubText(msg, token)
+    % function msg = webupload.webConfig>scrubText(msg, token)
     %
     % Purpose
     % Never throws: if msg is not a character row vector the result is ''.
@@ -284,7 +284,7 @@ end % scrubText
 function token = tokenFromFile(file)
     % Best-effort read of the token straight from the raw config file. Never throws
     %
-    % function token = BakingTray.webpreview.webConfig>tokenFromFile(file)
+    % function token = webupload.webConfig>tokenFromFile(file)
     %
     % Purpose
     % Used when loading failed, so that an error message which quotes the file or one of

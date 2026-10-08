@@ -1,13 +1,13 @@
 classdef UpdateSectionImageTest < matlab.unittest.TestCase
-    % Tests for webpreview.updateSectionImage with an injected fake Poster, so
+    % Tests for BakingTray.webpreview.updateSectionImage with an injected fake Poster, so
     % nothing touches the network (except one test against a refused localhost
     % port). All inputs are synthetic temp files.
-    % Run: runtests(fullfile(<repo>, 'BakingTray', 'webpreview', 'tests'))
+    % Run: runtests(fullfile(<repo>, 'BakingTray', 'tests'))
 
     properties
         Dir          % scratch root, removed after each test
         StageRoot    % stage root handed to the function (never the real tempdir)
-        Cfg          % webpreview.webConfig handed to the functions under test
+        Cfg          % webupload.webConfig handed to the functions under test
         Recipe
         Log
         Token = 'SECRETTOKEN123'
@@ -27,6 +27,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         function addPackageToPath(tc)
             root = fileparts(fileparts(mfilename('fullpath')));
             tc.applyFixture(matlab.unittest.fixtures.PathFixture(root));
+            tc.applyFixture(matlab.unittest.fixtures.PathFixture(fullfile(fileparts(root), 'upload_core')));
         end
     end
 
@@ -55,11 +56,11 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             f = fullfile(tc.Dir, 'config.json');
             writeText(f, sprintf( ...
                 '{"url":"%s","siteID":"site-1","micID":"mic-1","token":"%s"}', url, tc.Token));
-            cfg = webpreview.webConfig(f);
+            cfg = webupload.webConfig(f);
         end
 
         function reply = recordingPoster(tc, folder, cfg)
-            % Same signature as webpreview.zipAndPost; records what it saw.
+            % Same signature as webupload.zipAndPost; records what it saw.
             d = dir(folder);
             tc.Calls(end+1) = struct('folder', folder, 'cfg', cfg, ...
                 'names', {sort({d(~[d.isdir]).name})});
@@ -75,7 +76,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function res = update(tc, varargin)
             % Run with the fake poster; store result and the warning issued.
-            tc.callCapturing(@() webpreview.updateSectionImage( ...
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage( ...
                 uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, tc.BaseArgs{:}, varargin{:}));
             res = tc.Out;
         end
@@ -96,7 +97,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             f = fullfile(tc.Dir, 'other.json');
             writeText(f, ['{"url":"https://x.example/up.php","siteID":"other",', ...
                 '"micID":"mic-1","token":"x"}']);
-            cfg = webpreview.webConfig(f);
+            cfg = webupload.webConfig(f);
         end
 
         function cfg = deletedCfg(tc)
@@ -141,7 +142,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % A double image above 1 is an error without Range, so success
             % proves Range reached toUint8; 2048 of [0 4095] is 128.
             img = 2048 * ones(16);
-            tc.callCapturing(@() webpreview.updateSectionImage(img, tc.Recipe, tc.Log, tc.Cfg, ...
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage(img, tc.Recipe, tc.Log, tc.Cfg, ...
                 tc.BaseArgs{:}, 'Range', [0 4095]));
             tc.verifyTrue(tc.Out.ok);
             px = imread(fullfile(tc.Out.stageDir, 'LastCompleteSection.jpg'));
@@ -191,7 +192,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function nonConfigCfgIsNonFatal(tc)
             for bad = {[], 'cfg.json', struct('url', 'https://x'), [tc.Cfg tc.Cfg], tc.deletedCfg()}
-                tc.callCapturing(@() webpreview.updateSectionImage( ...
+                tc.callCapturing(@() BakingTray.webpreview.updateSectionImage( ...
                     uint8(magic(8)), tc.Recipe, tc.Log, bad{1}, tc.BaseArgs{:}));
                 tc.verifyFalse(tc.Out.ok);
                 tc.verifyFailedWarning();
@@ -201,13 +202,13 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function missingCfgArgumentIsNonFatal(tc)
-            tc.callCapturing(@() webpreview.updateSectionImage(uint8(magic(8)), tc.Recipe, tc.Log));
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage(uint8(magic(8)), tc.Recipe, tc.Log));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
         end
 
         function badImageIsNonFatal(tc)
-            tc.callCapturing(@() webpreview.updateSectionImage(uint8(1), tc.Recipe, tc.Log, ...
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage(uint8(1), tc.Recipe, tc.Log, ...
                 tc.Cfg, tc.BaseArgs{:}));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
@@ -215,7 +216,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function argumentShapeErrorIsNonFatal(tc)
-            tc.callCapturing(@() webpreview.updateSectionImage( ...
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage( ...
                 uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, 'Bogus', 1));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
@@ -302,8 +303,8 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function clearStageOptionOnlyTouchesTheManagedFolder(tc)
             tc.update();                                   % creates the managed folder
-            managed = webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
-            sibling = webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
+            managed = BakingTray.webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
+            sibling = BakingTray.webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
@@ -313,7 +314,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function stageDirIsCharEvenForStringOptions(tc)
-            tc.callCapturing(@() webpreview.updateSectionImage( ...
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage( ...
                 uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, ...
                 'StageRoot', string(tc.StageRoot), 'Poster', @tc.recordingPoster));
             tc.verifyClass(tc.Out.stageDir, 'char');
@@ -332,7 +333,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % error with a malformed one, so this is the nearest case that can be tested.
             % error() cannot output a value, so the poster must be a real function.
             poster = @throwWithoutId;
-            tc.callCapturing(@() webpreview.updateSectionImage( ...
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage( ...
                 uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, ...
                 'StageRoot', tc.StageRoot, 'Poster', poster));
             tc.verifyFalse(tc.Out.ok);
@@ -342,12 +343,12 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         % ---- clearStage ----
         function clearStageRemovesOnlyTheManagedFolder(tc)
             tc.update();
-            managed = webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
-            sibling = webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
+            managed = BakingTray.webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
+            sibling = BakingTray.webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
-            ok = webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot);
+            ok = BakingTray.webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot);
             tc.verifyTrue(ok);
             tc.verifyFalse(isfolder(managed));
             tc.verifyTrue(isfile(fullfile(sibling, 'keep.txt')));
@@ -356,12 +357,12 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function clearStageOnAbsentFolderIsOk(tc)
-            tc.verifyTrue(webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot));
+            tc.verifyTrue(BakingTray.webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot));
         end
 
         function clearStageWithNonConfigWarnsAndReturnsFalse(tc)
             for bad = {[], 'cfg.json', struct('siteID', 'site-1'), [tc.Cfg tc.Cfg], tc.deletedCfg()}
-                tc.callCapturing(@() webpreview.clearStage(bad{1}, 'StageRoot', tc.StageRoot));
+                tc.callCapturing(@() BakingTray.webpreview.clearStage(bad{1}, 'StageRoot', tc.StageRoot));
                 tc.verifyFalse(tc.Out);
                 tc.verifyEqual(tc.WarnId, 'webpreview:clearStage:failed');
                 tc.verifySubstring(tc.WarnMsg, 'webpreview:clearStage:badConfig');
@@ -371,12 +372,12 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         function clearStageNeverThrowsEvenForBadArguments(tc)
             % warning('error','all') is not allowed in MATLAB, so name the ids.
             tc.turnIntoErrors('webpreview:clearStage:failed');
-            tc.verifyFalse(webpreview.clearStage(tc.Cfg, 'Bogus', 1));
+            tc.verifyFalse(BakingTray.webpreview.clearStage(tc.Cfg, 'Bogus', 1));
         end
 
         function warningsAsErrorsDoNotMakeItThrow(tc)
             tc.turnIntoErrors('webpreview:updateSectionImage:failed');
-            res = webpreview.updateSectionImage(uint8(1), tc.Recipe, tc.Log, tc.Cfg, ...
+            res = BakingTray.webpreview.updateSectionImage(uint8(1), tc.Recipe, tc.Log, tc.Cfg, ...
                 tc.BaseArgs{:});
             tc.verifyFalse(res.ok);
         end
@@ -385,7 +386,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % Port 9 on localhost refuses the connection; plain http is
             % accepted by webConfig for localhost only.
             tc.Cfg = tc.makeCfg('http://127.0.0.1:9/up.php');
-            tc.callCapturing(@() webpreview.updateSectionImage( ...
+            tc.callCapturing(@() BakingTray.webpreview.updateSectionImage( ...
                 uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, 'StageRoot', tc.StageRoot));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();

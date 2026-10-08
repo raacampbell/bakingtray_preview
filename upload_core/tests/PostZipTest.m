@@ -28,7 +28,7 @@ classdef PostZipTest < matlab.unittest.TestCase
         function unreachableUrlReturnsNotOkWithoutThrowing(tc)
             zipPath = tc.makeZip();
             % Port 1 on localhost: connection refused immediately.
-            res = webpreview.postZip(zipPath, tc.makeCfg());
+            res = webupload.postZip(zipPath, tc.makeCfg());
             PostZipTest.verifyNetworkFailure(tc, res);
         end
 
@@ -37,21 +37,21 @@ classdef PostZipTest < matlab.unittest.TestCase
             zipPath = tc.makeZip();
             cfg = tc.makeCfg();
             before = rng;
-            webpreview.postZip(zipPath, cfg);
+            webupload.postZip(zipPath, cfg);
             tc.verifyEqual(rng, before);
         end
 
         function zipAndPostFailureIsNonFatal(tc)
             fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
-            res = webpreview.zipAndPost(tc.Dir, tc.makeCfg());
+            res = webupload.zipAndPost(tc.Dir, tc.makeCfg());
             PostZipTest.verifyNetworkFailure(tc, res);
         end
 
         function zipAndPostReportsFolderProblemsWithoutThrowing(tc)
-            res = webpreview.zipAndPost(tc.Dir, tc.makeCfg());   % no files
+            res = webupload.zipAndPost(tc.Dir, tc.makeCfg());   % no files
             tc.verifyFalse(res.ok);
             tc.verifyNotEmpty(res.message);
-            res = webpreview.zipAndPost(fullfile(tc.Dir, 'nope'), tc.makeCfg());
+            res = webupload.zipAndPost(fullfile(tc.Dir, 'nope'), tc.makeCfg());
             tc.verifyFalse(res.ok);
         end
 
@@ -59,7 +59,7 @@ classdef PostZipTest < matlab.unittest.TestCase
             % A recognised file makes zipFolder succeed, so postZip is reached.
             fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
             for bad = {[], 'str', struct('url', 'https://x'), struct('url', 5, 'siteID', 1, 'token', 7)}
-                res = webpreview.zipAndPost(tc.Dir, bad{1});
+                res = webupload.zipAndPost(tc.Dir, bad{1});
                 tc.verifyFalse(res.ok);
                 tc.verifyNotEmpty(res.message);
             end
@@ -70,8 +70,8 @@ classdef PostZipTest < matlab.unittest.TestCase
             % must not let the token reach the message.
             fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
             cfg = tc.makeCfg('url', ['http://127.0.0.1:1/', PostZipTest.Token]);
-            res1 = webpreview.postZip(tc.makeZip(), cfg);
-            res2 = webpreview.zipAndPost(tc.Dir, cfg);
+            res1 = webupload.postZip(tc.makeZip(), cfg);
+            res2 = webupload.zipAndPost(tc.Dir, cfg);
             for res = {res1, res2}
                 tc.verifyFalse(res{1}.ok);
                 tc.verifyNotEmpty(res{1}.message);
@@ -89,7 +89,7 @@ classdef PostZipTest < matlab.unittest.TestCase
             srv.setSoTimeout(5000);
             cfg = tc.makeCfg('url', sprintf('http://127.0.0.1:%d/upload.php', srv.getLocalPort()), ...
                              'responseTimeout', 2, 'dataTimeout', 2);
-            res = webpreview.postZip(tc.makeZip(), cfg);
+            res = webupload.postZip(tc.makeZip(), cfg);
             tc.verifyFalse(res.ok);
             conn = srv.accept();
             tc.addTeardown(@() conn.close());
@@ -107,43 +107,43 @@ classdef PostZipTest < matlab.unittest.TestCase
         end
 
         function redirectStatusIsNotOkAndSaysSo(tc)
-            r = webpreview.interpretResponse(302, '');
+            r = webupload.interpretResponse(302, '');
             tc.verifyFalse(r.ok);
             tc.verifySubstring(r.message, 'redirect');
         end
 
         function missingZipReturnsNotOk(tc)
-            res = webpreview.postZip(fullfile(tc.Dir, 'nope.zip'), tc.makeCfg());
+            res = webupload.postZip(fullfile(tc.Dir, 'nope.zip'), tc.makeCfg());
             tc.verifyFalse(res.ok);
             tc.verifyNotEmpty(res.message);
         end
 
         function badCfgReturnsNotOk(tc)
-            res = webpreview.postZip('whatever.zip', struct('url', 'https://x'));
+            res = webupload.postZip('whatever.zip', struct('url', 'https://x'));
             tc.verifyFalse(res.ok);
             tc.verifySubstring(res.message, 'webConfig');
         end
 
         function status200WithOkBodyIsOk(tc)
-            r = webpreview.interpretResponse(200, struct('status', 'ok', 'files', {{'a.jpg'}}));
+            r = webupload.interpretResponse(200, struct('status', 'ok', 'files', {{'a.jpg'}}));
             tc.verifyTrue(r.ok);
             tc.verifyEqual(r.httpStatus, 200);
         end
 
         function status200OkWithoutFilesIsOk(tc)
-            r = webpreview.interpretResponse(200, struct('status', 'ok'));
+            r = webupload.interpretResponse(200, struct('status', 'ok'));
             tc.verifyTrue(r.ok);
         end
 
         function status200WithErrorBodyIsNotOk(tc)
-            r = webpreview.interpretResponse(200, struct('status', 'error', 'message', 'boom'));
+            r = webupload.interpretResponse(200, struct('status', 'error', 'message', 'boom'));
             tc.verifyFalse(r.ok);
             tc.verifySubstring(r.message, 'boom');
         end
 
         function errorStatusesAreNotOkAndKeepServerMessage(tc)
             for code = [401 403 413 415 429]
-                r = webpreview.interpretResponse(code, struct('status', 'error', 'message', 'nope'));
+                r = webupload.interpretResponse(code, struct('status', 'error', 'message', 'nope'));
                 tc.verifyFalse(r.ok);
                 tc.verifyEqual(r.httpStatus, code);
                 tc.verifySubstring(r.message, 'nope');
@@ -153,11 +153,11 @@ classdef PostZipTest < matlab.unittest.TestCase
         function nonJsonEmptyAndArrayBodiesAreHandled(tc)
             bodies = {'<html>oops</html>', [], '', struct('status', {'ok', 'ok'}), {1, 2}};
             for ii = 1:numel(bodies)
-                r = webpreview.interpretResponse(200, bodies{ii});
+                r = webupload.interpretResponse(200, bodies{ii});
                 tc.verifyFalse(r.ok);
                 tc.verifyNotEmpty(r.message);
             end
-            r = webpreview.interpretResponse(500, '<html>oops</html>');
+            r = webupload.interpretResponse(500, '<html>oops</html>');
             tc.verifyEqual(r.httpStatus, 500);
         end
     end
@@ -192,7 +192,7 @@ classdef PostZipTest < matlab.unittest.TestCase
             fid = fopen(f, 'w');
             fwrite(fid, jsonencode(s));
             fclose(fid);
-            cfg = webpreview.webConfig(f);
+            cfg = webupload.webConfig(f);
         end
 
         function zipPath = makeZip(tc)

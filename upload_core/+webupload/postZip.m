@@ -1,10 +1,10 @@
 function result = postZip(zipPath, cfg)
     % Upload a zip to the brainsaw server; never throws
     %
-    % function result = BakingTray.webpreview.postZip(zipPath, cfg)
+    % function result = webupload.postZip(zipPath, cfg)
     %
     % Purpose
-    % Uploads the zip with a bearer token. cfg is a webpreview.webConfig object, which has
+    % Uploads the zip with a bearer token. cfg is a webupload.webConfig object, which has
     % already checked the url (https only), siteID, micID and token when it was created. Its
     % connectTimeout, responseTimeout and dataTimeout properties (seconds; defaults 15, 60,
     % 60) set the timeouts. The token is sent with cfg.authHeader, so it is never read here.
@@ -29,18 +29,18 @@ function result = postZip(zipPath, cfg)
     %
     % Inputs
     % zipPath - path to the zip file to upload.
-    % cfg - webpreview.webConfig object. Anything else is reported as result.ok = false.
+    % cfg - webupload.webConfig object. Anything else is reported as result.ok = false.
     %
     % Outputs
     % result - structure with fields ok, httpStatus and message. httpStatus is NaN if no
     %          response arrived.
 
     result = struct('ok', false, 'httpStatus', NaN, 'message', '');
-    cfgIsValid = isa(cfg, 'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg);
+    cfgIsValid = isa(cfg, 'webupload.webConfig') && isscalar(cfg) && isvalid(cfg);
 
     try
         if ~cfgIsValid
-            error('webpreview:badConfig', 'cfg must be a webpreview.webConfig object.');
+            error('webpreview:badConfig', 'cfg must be a webupload.webConfig object.');
         end
 
         opts = makeOptions(cfg);
@@ -59,7 +59,7 @@ function result = postZip(zipPath, cfg)
         req = matlab.net.http.RequestMessage('POST', [cfg.authHeader, contentType], body);
 
         resp = req.send(cfg.url, opts);
-        result = webpreview.interpretResponse(double(resp.StatusCode), resp.Body.Data);
+        result = webupload.interpretResponse(double(resp.StatusCode), resp.Body.Data);
     catch err
         result.message = err.message;
     end
@@ -73,7 +73,7 @@ end % postZip
 function opts = makeOptions(cfg)
     % Build HTTPOptions with no redirects and the timeouts from the config
     %
-    % function opts = BakingTray.webpreview.postZip>makeOptions(cfg)
+    % function opts = webupload.postZip>makeOptions(cfg)
     %
     % Purpose
     % MaxRedirects = 0 is set unconditionally because it protects the bearer token. The
@@ -82,7 +82,7 @@ function opts = makeOptions(cfg)
     % is not applied.
     %
     % Inputs
-    % cfg - webpreview.webConfig object. Its connectTimeout, responseTimeout and
+    % cfg - webupload.webConfig object. Its connectTimeout, responseTimeout and
     %       dataTimeout properties are used.
     %
     % Outputs
@@ -109,7 +109,7 @@ end % makeOptions
 function [payload, contentType] = buildMultipart(cfg, zipPath)
     % Build a multipart/form-data body in memory with the site and microscope IDs and the zip
     %
-    % function [payload, contentType] = BakingTray.webpreview.postZip>buildMultipart(cfg, zipPath)
+    % function [payload, contentType] = webupload.postZip>buildMultipart(cfg, zipPath)
     %
     % Purpose
     % Streaming the body with matlab.net.http.io.MultipartFormProvider gives a request with no
@@ -119,7 +119,7 @@ function [payload, contentType] = buildMultipart(cfg, zipPath)
     % by a boundary line, with CRLF line endings, and a closing boundary.
     %
     % Inputs
-    % cfg     - webpreview.webConfig object; its siteID and micID are sent.
+    % cfg     - webupload.webConfig object; its siteID and micID are sent.
     % zipPath - Path to the zip file to send. It is read into memory.
     %
     % Outputs
