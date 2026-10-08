@@ -4,8 +4,8 @@ The Brainsaw server receives a zip from each microscope after every section and 
 latest image, montage, recipe metadata and per-section timing on private web pages. Code lives
 in `brainsaw/`. This document covers: what the files are, the private settings file, view URLs,
 running it locally, uploads, adding sites and microscopes, and the auto-refresh. Deploying to
-IONOS is in `server-setup.md`. The upload client is the MATLAB `webpreview` package
-(`BakingTray/webpreview/README.md`).
+IONOS is in `server-setup.md`. The upload client is the MATLAB `webupload` and `BakingTray.webpreview` packages
+(`upload_core/README.md` and `BakingTray/README.md`).
 
 `<base>` below is wherever `brainsaw/` is deployed: `http://localhost:8000` locally,
 `https://brainsaw.org/testserver` on the test deployment.

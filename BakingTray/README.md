@@ -1,59 +1,36 @@
-# webpreview (MATLAB)
+# BakingTray.webpreview (MATLAB)
 
-Stages a section image, recipe and acquisition log, zips them, and uploads
-them to the brainsaw server using only built-in MATLAB (`zip`, `imwrite`,
-`matlab.net.http`), so it works on Windows and Mac with no external tools.
+The BakingTray-specific half of the brainsaw web preview client: stages a
+section image, recipe and acquisition log into a folder, then uploads it with
+the source-neutral `webupload` package in `upload_core/` (see
+`upload_core/README.md` for the config file, the token and the lower-level
+upload functions). The package mirrors `code/+BakingTray/+webpreview` in the
+real BakingTray repo.
 
-Requires MATLAB R2019b or later (the oldest release BakingTray supports):
-`matlab.net.http.io.MultipartFormProvider` needs R2019b, and option parsing
-uses `inputParser`, not `arguments` blocks. No toolboxes are needed.
+Requires MATLAB R2019b or later (the oldest release BakingTray supports);
+option parsing uses `inputParser`, not `arguments` blocks. No toolboxes are
+needed.
 
-## Dropping it into BakingTray
+Never add this repo's `BakingTray` folder to the path on a rig that has the
+real BakingTray installed, because the two `+BakingTray` packages would merge
+and could shadow each other.
 
-1. Copy the `webpreview` folder (the one containing `+webpreview`) into the
-   BakingTray tree, or leave it where it is, and add that folder to the MATLAB
-   path: `addpath('<path>/BakingTray/webpreview')`. Add the folder itself, not
-   the `+webpreview` folder inside it, and not via `genpath`.
-2. Create the config file (below).
-3. Call `updateSectionImage` after each section completes (below).
+## Path
 
-## Config file
-
-Copy `webpreview_config.example.json` to `~/.brainsaw_webpreview.json`
-(`.brainsaw_webpreview.json` in `getenv('USERPROFILE')` on Windows). This is
-the default location, outside any repository, because the file holds the
-secret token. To keep it elsewhere pass its path to `webpreview.webConfig`;
-name such a copy `webpreview_config.json` so `.gitignore` protects it. Never
-commit a filled-in copy.
-
-```json
-{
-  "url": "https://your-server.example/brainsaw/upload.php",
-  "siteID": "YOUR_SITE_ID",
-  "micID": "YOUR_MICROSCOPE_ID",
-  "token": "YOUR_SECRET_TOKEN"
-}
-```
-
-`url` must be `https://`; plain `http://` is accepted only for `localhost` /
-`127.0.0.1`, for testing against a local server. `siteID` must start with a letter and contain only
-letters, digits, `_` and `-`; `micID` (the microscope name) is also required
-and takes the same characters. The server keeps one token per microscope, so
-`siteID`, `micID` and `token` must all match its settings file; any mismatch
-is an HTTP 403. Optional fields `connectTimeout`,
-`responseTimeout`, `dataTimeout` (seconds; defaults 15, 60, 60) can be raised
-for slow uplinks. It is unverified whether ResponseTimeout/DataTimeout cover
-the transfer of the upload itself; a warning `webpreview:postZip:noTimeout`
-is issued if this release lacks either property. Redirects are never followed
-(the token must not be re-sent elsewhere); a 3xx reply is a failure.
+Add `upload_core` and this `BakingTray` folder (the one containing
+`+BakingTray`) to the MATLAB path: from the repo root run `add_to_path`, which
+also adds `BakingTray/simulate`. Add the folders themselves, not the `+`
+folders inside them, and not via `genpath`. Then create the config file (see
+`upload_core/README.md`) and call `updateSectionImage` after each section
+completes (below).
 
 ## Calling it from BakingTray
 
 Build the config object once, at startup, and keep it. It validates the file
-and keeps the token private (see Token below):
+and keeps the token private (see `upload_core/README.md`):
 
 ```matlab
-cfg = webpreview.webConfig();            % or webpreview.webConfig(file)
+cfg = webupload.webConfig();            % or webupload.webConfig(file)
 ```
 
 At the start of a new acquisition, once, empty the managed stage folder so a
@@ -61,7 +38,7 @@ previous run's recipe and log can never be sent. This needs no image and
 uploads nothing (so it does not use up the server's rate limit):
 
 ```matlab
-ok = webpreview.clearStage(cfg);
+ok = BakingTray.webpreview.clearStage(cfg);
 ```
 
 `clearStage` takes the option `StageRoot` like `updateSectionImage`, needs the
@@ -78,10 +55,10 @@ the `try` covers anything else):
 
 ```matlab
 % img: latest section image, recipePath: recipe file or folder,
-% logPath: acquisition log, cfg: the webpreview.webConfig built at startup
-if ~isempty(which('webpreview.updateSectionImage'))
+% logPath: acquisition log, cfg: the webupload.webConfig built at startup
+if ~isempty(which('BakingTray.webpreview.updateSectionImage'))
     try
-        res = webpreview.updateSectionImage(img, recipePath, logPath, cfg, ...
+        res = BakingTray.webpreview.updateSectionImage(img, recipePath, logPath, cfg, ...
             'Montage', montageImg, 'Range', [0 4095]);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
@@ -99,7 +76,7 @@ server is dead or stalled.
 
 Arguments: `img` is the latest section image (gray HxW or RGB HxWx3);
 `recipePath` is the recipe file, or the folder holding it; `logPath` the
-acquisition log; `cfg` is the `webpreview.webConfig` object. Options:
+acquisition log; `cfg` is the `webupload.webConfig` object. Options:
 
 | option | meaning |
 | --- | --- |
@@ -107,7 +84,7 @@ acquisition log; `cfg` is the `webpreview.webConfig` object. Options:
 | `Range` | `[lo hi]` for non-uint8 images (see below) |
 | `ClearStage` | `true` empties the managed stage folder first; default `false` |
 | `StageRoot` | parent of the stage folder; default `tempdir`; text options may be strings, paths are returned as char |
-| `Poster` | function handle `poster(folder, cfg)` returning `struct(ok, httpStatus, message)`, where `cfg` is a `webpreview.webConfig` object; default `@webpreview.zipAndPost`; for tests |
+| `Poster` | function handle `poster(folder, cfg)` returning `struct(ok, httpStatus, message)`, where `cfg` is a `webupload.webConfig` object; default `@webupload.zipAndPost`; for tests |
 
 Result fields: `ok`; `stage` (the `stageFiles` result); `post` (`ok`,
 `httpStatus`, `message`); `stageDir` (a char path built from `StageRoot`;
@@ -128,15 +105,6 @@ text is added to the failed warning. This function issues at most one
 notice per call, but `stageFiles` may warn first about the same cause. The
 warning call is guarded, so `warning('error', ...)` settings cannot make the
 function throw.
-
-Token: `webpreview.webConfig` keeps the token private: it cannot be read by
-property access, `disp` or `save` (`struct(cfg)` still can expose it, a MATLAB
-limitation), and an object loaded from a MAT file has no token, so always build
-it from the JSON. Code that needs the token calls `cfg.authHeader()` (the
-`Authorization` header) or `cfg.scrub(msg)` (removes the token from a message).
-The constructor always scrubs its own errors, using a regexp on the raw file
-text, so they are safe even if the JSON cannot be parsed. Result and warning
-messages, including a custom `Poster`'s, are scrubbed with `cfg.scrub`.
 
 ## What is sent
 
@@ -165,32 +133,24 @@ uint8 is used as is. uint16 and int16 are autoscaled to `[0 max(img)]`, so
 `'Range', [lo hi]` for a fixed mapping (`lo` becomes 0, `hi` 255, clamped),
 for example `[0 4095]` for a 12-bit camera so brightness does not change from
 section to section. single/double must lie in [0,1] unless `Range` is given.
-The same `Range` applies to the montage. Details: `help webpreview.toUint8`.
+The same `Range` applies to the montage. Details: `help BakingTray.webpreview.toUint8`.
 
 ## Windows notes
 
-Only built-in MATLAB is used. Paths are built with `fullfile`. MATLAB does not
-expand `%VAR%` in paths: use `getenv('USERPROFILE')` when you need the home
-folder. The stage folder is under `tempdir` (normally the user's `Temp`).
-Antivirus or a file held open elsewhere can make a rename fail; that is a
-staging-failure warning, not an error.
+Only built-in MATLAB is used. Paths are built with `fullfile`. The stage
+folder is under `tempdir` (normally the user's `Temp`). Antivirus or a file
+held open elsewhere can make a rename fail; that is a staging-failure warning,
+not an error.
 
 ## Lower-level pieces
 
-`zipAndPost(folder, cfg)` zips a folder, uploads and deletes the temp zip,
-returning `struct(ok, httpStatus, message)` and never throwing; `zipFolder`,
-`postZip` and `stageFiles` are also usable alone, and `webpreview.webConfig(file)`
-loads and validates a config file. The extension
-whitelist (`allowedExtensions`) mirrors `BS_ZIP_ALLOWED_EXTENSIONS` in
-`brainsaw/lib.php`; a test compares them when `lib.php` is present. Dotfiles
-and names containing `*` or `?` are skipped (the latter are wildcards to
-`zip`).
+`BakingTray.webpreview.stageFiles` is usable alone; the upload functions
+(`zipAndPost`, `zipFolder`, `postZip`, `webConfig`) are in `webupload`.
 
 ## Tests and limitations
 
-Run `runtests(fullfile(<repo>, 'BakingTray', 'webpreview', 'tests'))`; the
-tests add the package to the path themselves. They need no real server (one
-test posts to a refused `127.0.0.1` port).
+Run `runtests(fullfile(<repo>, 'BakingTray', 'tests'))`; the tests add the
+packages to the path themselves. They need no real server.
 
 Nothing in this module has been run against a live brainsaw server. Treat the
 first real acquisition as the test, on a spare site ID.
