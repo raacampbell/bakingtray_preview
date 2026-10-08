@@ -1,8 +1,9 @@
 'use strict';
-// Run: node --test brainsaw/tests/
+// Run from the repo root: node --test tests/web/
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { humanAgo, isStale, hasChanged, fetchUploadedAt } = require('../js/autorefresh.js');
+const A = require('../../brainsaw/js/autorefresh.js');
+const { humanAgo, isStale, hasChanged, fetchUploadedAt, clockOffset } = require('../../brainsaw/js/autorefresh.js');
 
 // Mirrors bs_human_ago() in lib.php branch by branch.
 test('humanAgo: seconds branch', () => {
