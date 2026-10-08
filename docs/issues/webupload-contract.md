@@ -46,3 +46,17 @@ The agreed plan (PI, 2026-10-08) has two upload sources: `acq` (BakingTray) and 
 - The full MATLAB suite passes, from the worktree root: `/Applications/MATLAB_R2023b.app/bin/matlab -batch "add_to_path; r=[runtests('upload_core/tests'), runtests('BakingTray/tests'), runtests('BakingTray/simulate/tests')]; disp(table(r))"`. The baseline is 175 passed, 0 failed, 2 incomplete. Report the new counts.
 - R2019b compatible: no `arguments` blocks or other post-2019b features.
 - Doc-string usage lines and README updated.
+
+## Open after review (merged for testing, 2026-10-08)
+Merged at the PI's request before these were fixed. Status stays `in review` until they are.
+- High: `readRecipe.m:66`: the block-style regexp overflows the stack on a recipe with ~50k lines in `SYSTEM:` and
+  kills MATLAB (exit 132). Cap the recipe size before parsing, or scan lines instead of regexp.
+- Medium: `stageFiles` still uploads the previous staged `recipe.yml` if copying the new one fails (warns `stale`).
+  The recipe must never fall back; the log may.
+- Medium: undefined by the shared rule, so MATLAB and PHP may disagree: nested or multi-line flow maps, duplicate
+  `SYSTEM:`, ` #` inside quotes, commas/braces in quoted flow values, comment lines inside a block, `ID:x` without a
+  space, non-ASCII (read as Latin-1, PHP reads UTF-8). Extend the rule and vectors, then both parsers.
+- Low: `WebConfigTest.m:146,153` assert MATLAB built-in IDs; `upload_core/README.md` and the vector names still mention
+  BakingTray; `updateSectionImage.m:222` comment says "staged recipe"; bad-`source` message omits the value;
+  `stageDirFor`/`clearStage` refuse string micIDs; dead folder support in `stageFiles`/`resolveRecipe`.
+- Not yet checked: every commit green (fix 9) and docs-vs-code consistency (fix 10).
