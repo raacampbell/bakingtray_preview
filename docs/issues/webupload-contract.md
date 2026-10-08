@@ -51,9 +51,9 @@ The agreed plan (PI, 2026-10-08) has two upload sources: `acq` (BakingTray) and 
 Merged at the PI's request before these were fixed. Status stays `in review` until they are.
 - Medium: `stageFiles` still uploads the previous staged `recipe.yml` if copying the new one fails (warns `stale`).
   The recipe must never fall back; the log may.
-- Medium: undefined by the shared rule, so MATLAB and PHP may disagree: nested or multi-line flow maps, duplicate
-  `SYSTEM:`, ` #` inside quotes, commas/braces in quoted flow values, comment lines inside a block, `ID:x` without a
-  space, non-ASCII (read as Latin-1, PHP reads UTF-8). Extend the rule and vectors, then both parsers.
+- Accepted, not fixing (PI, 2026-10-09): recipe layouts BakingTray never writes (nested or multi-line flow maps,
+  duplicate `SYSTEM:`, ` #` inside quotes, braces in quoted flow values, comment lines in a block, `ID:x` without a
+  space, non-ASCII) where the MATLAB and PHP parsers could disagree. A disagreement is refused with a 400, never mixed.
 - Low: `WebConfigTest.m:146,153` assert MATLAB built-in IDs; `upload_core/README.md` and the vector names still mention
   BakingTray; `updateSectionImage.m:222` comment says "staged recipe"; bad-`source` message omits the value;
   `stageDirFor`/`clearStage` refuse string micIDs; dead folder support in `stageFiles`/`resolveRecipe`.
