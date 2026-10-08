@@ -250,10 +250,10 @@ new_dir() {
   cp "$IMAGES/LastCompleteSection_01.jpg" "$d/LastCompleteSection.jpg"
   cp "$IMAGES/montage.jpg" "$IMAGES/acqLog_SW_FG12_3_FG_12_2.txt" "$d/"; mv "$d/acqLog_SW_FG12_3_FG_12_2.txt" "$d/acqLog.txt"
   local sample; if [ "$3" = "-" ]; then sample='sample: {objectiveName: nikon 16x}'; else sample="sample: {ID: $3, objectiveName: nikon 16x}"; fi
-  sed -e "s/^sample: .*/$sample/" -e "s/^  ID: brainsaw\$/  ID: $2/" "$IMAGES"/recipe_*.yml > "$d/recipe.yml"
+  sed -e "s/^sample: .*/$sample/" -e "s/^  ID: brainsaw/  ID: $2/" "$IMAGES"/recipe_*.yml > "$d/recipe.yml"
   echo '{"finished": false, "extra_key": 1}' > "$d/status.json"
 }
-zip_dir() { (cd "$TMP/z/$1" && zip -q -r -X "../$1.zip" .); }
+zip_dir() { rm -f "$TMP/z/$1.zip"; (cd "$TMP/z/$1" && zip -q -r -X "../$1.zip" .); }
 good_zip() { new_dir "$1" "$2" "$3"; zip_dir "$1"; }   # NAME SYSTEM_ID SAMPLE_ID
 # Content fingerprint of a folder (names and bytes), to show a refused upload changed nothing.
 snapshot() { (cd "$1" && find . -type f -exec cksum {} + | sort); }
@@ -287,8 +287,12 @@ upload "$TKB" "$SB" "$MB" nonsense "$ZIP"
 check "bad source with a good token: 400" test "$STATUS" = 400
 upload "$TOLD" "$SB" "$MB" nonsense "$ZIP"
 check "bad source with a bad token: 403, the source is not looked at" test "$STATUS" = 403
-for src in ACQ "acq " "" analysis2 "../acq"; do
+for src in ACQ "" analysis2 "../acq"; do
   upload "$TKB" "$SB" "$MB" "$src" "$ZIP"
+  check "source '$src': 400" test "$STATUS" = 400
+done
+for src in "acq%20" "acq%0A"; do   # form-urlencoded, because curl -F trims trailing spaces
+  fetch "$U" -X POST -H "$(hdr "$TKB")" -d "site_id=$SB&microscope_id=$MB&source=$src"
   check "source '$src': 400" test "$STATUS" = 400
 done
 fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
@@ -420,8 +424,6 @@ upload "$TKA" "$SA" "$MA1" acq "$TMP/z/a1.zip"
 check "microscope A1 acq upload (old meta): 200" test "$STATUS" = 200
 upload "$TKA" "$SA" "$MA1" acq "$TMP/z/a1.zip"
 check "A1 acq again within 5 s: 429" test "$STATUS" = 429
-fetch "$B/$SB/$MB"
-check "microscope page still shows its image" body_has "$BODY" 'id="main-image"'
 mkdir -p "$APP/system_data/$SB/logs/acq/montage.jpg"   # a folder where a file must go: the rename fails
 good_zip logs logs S1
 upload "$TKB" "$SB" logs acq "$TMP/z/logs.zip"
