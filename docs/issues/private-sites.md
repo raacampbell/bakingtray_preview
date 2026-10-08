@@ -1,7 +1,7 @@
 ---
 type: infrastructure
 complexity: complex
-status: in progress
+status: in review
 ---
 
 # Sites with microscopes, private site views and a hidden all-sites view
@@ -98,10 +98,19 @@ Brainsaw will serve several labs ("sites"), each with one or more microscopes. R
 - A real local end-to-end: start php -S with a temp settings file, run the simulator (DryRun false) against it
   for 2 sections with a site/mic in that file, and confirm with curl that the microscope page shows section 2.
 
-## Remaining review fixes
-All 20 review items are done. The only thing not repeated after the review fixes is the real
-local end-to-end (simulator with DryRun false). It passed before the fixes and is due again
-before merge.
+## Review record
+First review: 20 findings (security and style), all fixed. The real local end-to-end was then
+re-run and passed (3 sections; site, panopticon and microscope pages, assets, identical 404s).
+webConfig now requires IDs to start with a letter, as the server does.
+
+Second review (fix round): fixed tokens.json is git-ignored again (stray token files in the
+main checkout were exposed); no -ExecCGI in brainsaw/.htaccess (it could 403 every page under
+php-cgi); simulator safety check rejects /../ and its message says "path segment"; router.php
+allows the entry points only at the app root; settings replaced by copy-then-mv. Accepted, not
+fixed (low): two simultaneous uploads from one microscope can race on meta.json.tmp (500 for
+an upload whose files landed); stage_server.sh compares --settings-path as a string, so
+"/../" can slip past its web-root guard; in Apache a file named view.php inside system_data/
+would be served (nothing can put one there: the zip whitelist blocks .php).
 
 One-off migration steps for the PI (first deploy of this version to /testserver):
 - Commit first: stage_server.sh now refuses uncommitted changes under brainsaw/.
@@ -109,5 +118,6 @@ One-off migration steps for the PI (first deploy of this version to /testserver)
   filter keeps it, but nothing reads it any more.
 - Delete /home/www/www/brainsaw_private/tokens.json. Create brainsaw_settings.json there as in
   server-setup.md section 4. IDs and words must start with a letter.
-- Delete any local brainsaw/tokens.json in the main checkout. It is no longer git-ignored.
+- Delete the local brainsaw/tokens.json and brainsaw/test-upload/tokens.json in the main
+  checkout; nothing reads them any more.
 - Check in the IONOS panel that no domain serves /home/www/www.

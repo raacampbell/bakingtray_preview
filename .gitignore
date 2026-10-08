@@ -1,6 +1,6 @@
 .DS_Store
 brainsaw_settings*.json
-**/brainsaw_settings*.json
+tokens.json
 brainsaw/logs/*.log
 brainsaw/system_data/*/
 BakingTray/**/webpreview_credentials.*

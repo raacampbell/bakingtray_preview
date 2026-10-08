@@ -223,7 +223,7 @@ function checkTarget(cfg,allowProduction,spec)
 
     if ~allowProduction && ~isTestUrl(cfg.url, spec.CanaryMarker)
         error('simulate:simulateAcquisition:productionUrl', ...
-            ['config url "%s" is neither a localhost url nor contains "%s"; refusing to ', ...
+            ['config url "%s" is neither a localhost url nor has a "%s" path segment; refusing to ', ...
              'upload fake data (pass ''AllowProduction'', true to override)'], ...
             cfg.scrub(cfg.url), spec.CanaryMarker);
     end
@@ -231,7 +231,8 @@ end %checkTarget
 
 
 function isTest = isTestUrl(url,marker)
-    % True if a path segment of url is the canary marker or its host is exactly localhost or 127.0.0.1
+    % True if a path segment of url is the canary marker or its host is exactly localhost or 127.0.0.1,
+    % and url has no ".." segment
     %
     % function isTest = isTestUrl(url,marker)
     %
@@ -242,7 +243,7 @@ function isTest = isTestUrl(url,marker)
 
     isLocal = ~isempty(regexp(url, '^https?://(localhost|127\.0\.0\.1)(:\d+)?(/|$)', 'once'));
     inPath = ~isempty(regexp(url, ['^https?://[^/?#]+(/[^/?#]*)*/', regexptranslate('escape', marker), '(/|$)'], 'once'));
-    isTest = isLocal || inPath;
+    isTest = (isLocal || inPath) && isempty(regexp(url, '/\.\.(/|$)', 'once'));   % no /../ to climb out of it
 end %isTestUrl
 
 

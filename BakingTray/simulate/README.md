@@ -210,7 +210,7 @@ new microscope.
 2. Run the A5 call with `'ConfigFile', cfgRemote`.
 3. Open `https://<your-host>/testserver/<site id>/sim_mic`.
 
-Safety rule: a real run only accepts a config URL containing `testserver` or
+Safety rule: a real run only accepts a config URL with `testserver` as a whole path segment (no `..`) or
 with host `localhost` / `127.0.0.1`; anything else errors unless you pass
 `'AllowProduction', true` (only when you mean to write fake data to that site).
 
@@ -219,7 +219,7 @@ with host `localhost` / `127.0.0.1`; anything else errors unless you pass
 | --- | --- | --- |
 | `Config file not found: <path> (copy webpreview_config.example.json there and fill it in)`, `Config file ... is not valid JSON`, `... is missing field(s): ...`, `... is empty.` | no config at that path, or a typo in it | do A4; `url`, `siteID`, `micID`, `token` are all required |
 | `url must start with https:// (http:// is allowed only for localhost/127.0.0.1): <url>` | non-https URL to a remote host | use `https://` |
-| `config url "<url>" is neither a localhost url nor contains "testserver"; refusing to upload fake data` | simulator safety rule | use a localhost or `testserver` URL |
+| `config url "<url>" is neither a localhost url nor has a "testserver" path segment; refusing to upload fake data` | simulator safety rule | use a localhost or `testserver` URL |
 | `section 1/5: FAILED, HTTP NaN: <message>` | no HTTP reply: server not running, wrong host/port, network (message is MATLAB's own, not verified) | start the server (A2); check `url` |
 | HTTP 403 `unknown site_id, microscope_id or token` | site or microscope not in that deployment's settings file, settings file missing/invalid, token differs from config, or the request exceeded PHP's `post_max_size` (form fields dropped); `logs/upload.log` says which | check the entry and JSON; raise `post_max_size` (A2 flags) |
 | HTTP 400 `no valid zip uploaded` | PHP rejected the file, e.g. over `upload_max_filesize` only | raise `upload_max_filesize` |

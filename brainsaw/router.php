@@ -26,7 +26,7 @@ if (!str_starts_with($path, $base . '/') || preg_match('#(^|/)\.\.(/|$)#', $rel)
 
 // Case-insensitive because the local file system may ignore case.
 $denied = '#^/(system_data|logs)(/|$)|(^|/)\.ht|\.json$|\.php$#i';
-if (preg_match($denied, $rel) && !preg_match('#/(index|upload|view)\.php$#', $rel)) {
+if (preg_match($denied, $rel) && !preg_match('#^/(index|upload|view)\.php$#', $rel)) {
     http_response_code(403);
     header('Content-Type: text/plain');
     echo 'Forbidden';

@@ -141,8 +141,8 @@ Put it on the server (only this one file goes there):
 
 ```bash
 ssh USER@HOST 'mkdir -p /home/www/www/brainsaw_private && chmod 700 /home/www/www/brainsaw_private'
-scp "$PRIV/brainsaw_settings.json" USER@HOST:/home/www/www/brainsaw_private/brainsaw_settings.json
-ssh USER@HOST 'chmod 600 /home/www/www/brainsaw_private/brainsaw_settings.json'
+scp "$PRIV/brainsaw_settings.json" USER@HOST:/home/www/www/brainsaw_private/brainsaw_settings.json.new
+ssh USER@HOST 'cd /home/www/www/brainsaw_private && chmod 600 brainsaw_settings.json.new && mv brainsaw_settings.json.new brainsaw_settings.json'
 ```
 
 `USER@HOST` is the SFTP/SSH login from the IONOS panel. With an SFTP program instead, create
@@ -250,7 +250,7 @@ disp(res.ok), disp(res.post)
 
 Expect `res.ok` true and `res.post.httpStatus` 200. Use the exact `https` URL: the client treats
 a redirect as a failure. For a simulated acquisition against the test deployment see
-`BakingTray/simulate/README.md` (its safety rule accepts URLs containing `testserver`).
+`BakingTray/simulate/README.md` (its safety rule accepts URLs with `testserver` as a path segment).
 
 ## 9. Troubleshooting
 

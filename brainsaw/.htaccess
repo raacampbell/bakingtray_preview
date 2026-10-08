@@ -9,9 +9,9 @@
     Require all granted
 </FilesMatch>
 
-# No directory listings, no CGI, and no MultiViews: MultiViews would map a request for
+# No directory listings and no MultiViews: MultiViews would map a request for
 # /upload to upload.php, so a view word could be shadowed by a file name.
-Options -Indexes -ExecCGI -MultiViews
+Options -Indexes -MultiViews
 
 # No <IfModule> guard: without mod_rewrite the app cannot work, and a 500 says so at once.
 RewriteEngine On
