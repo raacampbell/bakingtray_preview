@@ -94,16 +94,15 @@ not reuse those tokens.
 
 3. The SAME token goes into `tokens.json` here and into the MATLAB config in
    A4. Edit the file in MATLAB (Mac and Windows): `edit(fullfile(repo,'brainsaw','tokens.json'))`.
-   Avoid rich-text editors (curly quotes break JSON). Two entries show the
-   comma rule (between entries, none after the last):
-
+   Two entries show the comma rule (between entries, none after the last):
+   
    ```json
    {
      "existing_site": { "token": "AN_EXISTING_TOKEN", "display_name": "Existing" },
      "sim_local": { "token": "PASTE_64_HEX_CHARS_HERE", "display_name": "Simulator (local)" }
    }
    ```
-
+   
    If the file is new, keep only the `sim_local` line. `display_name` is
    optional. No restart needed.
 4. Optional syntax check (keep the semicolon so tokens are not echoed):
