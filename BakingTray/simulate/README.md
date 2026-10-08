@@ -118,7 +118,7 @@ Work out the home folder (any OS, after the addpath in section 0), copy the
 example file, and edit the copy:
 
 ```matlab
-home = fileparts(webpreview.defaultConfigPath());
+home = getenv('HOME');   % getenv('USERPROFILE') on Windows
 cfg = fullfile(home, '.brainsaw_webpreview_sim.json');
 copyfile(fullfile(repo,'BakingTray','webpreview','webpreview_config.example.json'), cfg)
 edit(cfg)
@@ -130,6 +130,7 @@ Replace the contents with this (the example's `_note` key is harmless):
 {
   "url": "http://localhost:8000/upload.php",
   "siteID": "sim_local",
+  "micID": "sim_mic",
   "token": "PASTE_64_HEX_CHARS_HERE"
 }
 ```
@@ -232,7 +233,7 @@ and use a separate config with the live URL and `'AllowProduction', true`.
 ## Troubleshooting
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| `Config file not found: <path> (copy webpreview_config.example.json there and fill it in)`, `Config file ... is not valid JSON`, `... is missing field(s): ...`, `... is empty.` | no config at that path, or a typo in it | do A4; `url`, `siteID`, `token` are all required |
+| `Config file not found: <path> (copy webpreview_config.example.json there and fill it in)`, `Config file ... is not valid JSON`, `... is missing field(s): ...`, `... is empty.` | no config at that path, or a typo in it | do A4; `url`, `siteID`, `micID`, `token` are all required |
 | `url must start with https:// (http:// is allowed only for localhost/127.0.0.1): <url>` | non-https URL to a remote host | use `https://` |
 | `config url "<url>" is neither a localhost url nor contains "test-upload"; refusing to upload fake data` | simulator safety rule | use a localhost or `test-upload` URL |
 | `section 1/5: FAILED, HTTP NaN: <message>` | no HTTP reply: server not running, wrong host/port, network (message is MATLAB's own, not verified) | start the server (A2); check `url` |

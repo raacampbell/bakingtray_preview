@@ -22,22 +22,23 @@ uses `inputParser`, not `arguments` blocks. No toolboxes are needed.
 Copy `webpreview_config.example.json` to `~/.brainsaw_webpreview.json`
 (`.brainsaw_webpreview.json` in `getenv('USERPROFILE')` on Windows). This is
 the default location, outside any repository, because the file holds the
-secret token. To keep it elsewhere pass `'ConfigFile'`; name such a copy
-`webpreview_config.json` so `.gitignore` protects it. Never commit a
-filled-in copy.
+secret token. To keep it elsewhere pass its path to `webpreview.webConfig`;
+name such a copy `webpreview_config.json` so `.gitignore` protects it. Never
+commit a filled-in copy.
 
 ```json
 {
   "url": "https://your-server.example/brainsaw/upload.php",
   "siteID": "YOUR_SITE_ID",
+  "micID": "YOUR_MICROSCOPE_ID",
   "token": "YOUR_SECRET_TOKEN"
 }
 ```
 
 `url` must be `https://`; plain `http://` is accepted only for `localhost` /
 `127.0.0.1`, for testing against a local server. `siteID` may contain only
-letters, digits, `_` and `-`. An optional `micID` (the microscope name) takes
-the same characters. Optional fields `connectTimeout`,
+letters, digits, `_` and `-`; `micID` (the microscope name) is also required
+and takes the same characters. Optional fields `connectTimeout`,
 `responseTimeout`, `dataTimeout` (seconds; defaults 15, 60, 60) can be raised
 for slow uplinks. It is unverified whether ResponseTimeout/DataTimeout cover
 the transfer of the upload itself; a warning `webpreview:postZip:noTimeout`
@@ -46,33 +47,40 @@ is issued if this release lacks either property. Redirects are never followed
 
 ## Calling it from BakingTray
 
+Build the config object once, at startup, and keep it. It validates the file
+and holds the token privately (see Token below):
+
+```matlab
+cfg = webpreview.webConfig();            % or webpreview.webConfig(file)
+```
+
 At the start of a new acquisition, once, empty the managed stage folder so a
 previous run's recipe and log can never be sent. This needs no image and
 uploads nothing (so it does not use up the server's rate limit):
 
 ```matlab
-ok = webpreview.clearStage('ConfigFile', cfgFile);   % '' for the default location
+ok = webpreview.clearStage(cfg);
 ```
 
-`clearStage` takes `ConfigFile` and `StageRoot` like `updateSectionImage`,
-needs the config only for the site ID, and removes just
-`<StageRoot>/brainsaw_webpreview/<siteID>`, never sibling folders or anything
+`clearStage` takes the option `StageRoot` like `updateSectionImage`, needs the
+config only for the site and microscope IDs, and removes just
+`<StageRoot>/brainsaw_webpreview/<siteID>/<micID>`, never sibling folders or anything
 else under `StageRoot`. It never throws: on failure it warns
 `webpreview:clearStage:failed` and returns `false`. (`updateSectionImage` with
 `'ClearStage', true` does the same clearing before staging.)
 
 After each section completes (a hook sketch; `img`, `recipePath`, `logPath`
-and `cfgFile` are variables BakingTray already has at that point; the
+and `cfg` are variables BakingTray already has at that point; the
 `which` check keeps acquisition running if the folder is not on the path, and
 the `try` covers anything else):
 
 ```matlab
 % img: latest section image, recipePath: recipe file or folder,
-% logPath: acquisition log, cfgFile: '' for the default config location
+% logPath: acquisition log, cfg: the webpreview.webConfig built at startup
 if ~isempty(which('webpreview.updateSectionImage'))
     try
-        res = webpreview.updateSectionImage(img, recipePath, logPath, ...
-            'ConfigFile', cfgFile, 'Montage', montageImg, 'Range', [0 4095]);
+        res = webpreview.updateSectionImage(img, recipePath, logPath, cfg, ...
+            'Montage', montageImg, 'Range', [0 4095]);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
     end
@@ -89,11 +97,10 @@ server is dead or stalled.
 
 Arguments: `img` is the latest section image (gray HxW or RGB HxWx3);
 `recipePath` is the recipe file, or the folder holding it; `logPath` the
-acquisition log. Options:
+acquisition log; `cfg` is the `webpreview.webConfig` object. Options:
 
 | option | meaning |
 | --- | --- |
-| `ConfigFile` | config path; default `~/.brainsaw_webpreview.json` |
 | `Montage` | optional montage image, sent as `montage.jpg` |
 | `Range` | `[lo hi]` for non-uint8 images (see below) |
 | `ClearStage` | `true` empties the managed stage folder first; default `false` |
@@ -108,7 +115,7 @@ log or recipe that is permanently absent keeps `stale` true on every
 section, with a notice each time); `error` (an `MException`
 built from the scrubbed message, `[]` on success).
 
-Failures: any problem inside the call (config, image, options, staging,
+Failures: any problem inside the call (a `cfg` that is not a valid `webConfig`, image, options, staging,
 network, a throwing poster) becomes a warning
 `webpreview:updateSectionImage:failed` of the form `id: message`, with
 `ok = false`. When the upload succeeded but the recipe or log could not be
@@ -125,8 +132,8 @@ or saved from outside the object. Code that needs it calls `cfg.authHeader()`
 (the `Authorization` header) or `cfg.scrub(msg)` (removes the token from a
 message). An error raised while the config is being loaded is scrubbed by the
 constructor itself, using a regexp on the raw file text if the file cannot be
-parsed. Once the config has been read, result and warning messages are scrubbed
-with `cfg.scrub`. A custom `Poster` is scrubbed only after the config was read.
+parsed. Result and warning messages, including a custom `Poster`'s, are scrubbed
+with `cfg.scrub`.
 
 ## What is sent
 
@@ -138,10 +145,10 @@ A zip of up to four files, named to match the server's globs in
 - `recipe.yml` (or `recipe.yaml`, following the source), copied from the recipe
 - `acqLog.txt`, copied from the log
 
-The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>`, reused between
+The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>/<micID>`, reused between
 calls so only the latest files exist; it is not deleted afterwards. Two MATLAB
-sessions using the same site ID share it and will overwrite each other's
-files; give each its own site ID. Client-side limits (from the server
+sessions using the same site and microscope ID share it and will overwrite each
+other's files. The upload also carries `microscope_id`. Client-side limits (from the server
 defaults): at most 500 files and a 200 MB zip. If the server's PHP
 `post_max_size` is smaller than the zip, the failure can appear as an HTTP 403
 rather than 413.
@@ -180,6 +187,5 @@ Run `runtests(fullfile(<repo>, 'BakingTray', 'webpreview', 'tests'))`; the
 tests add the package to the path themselves. They need no real server (one
 test posts to a refused `127.0.0.1` port).
 
-Nothing in this module has been run against a live brainsaw server, and the
-`updateSectionImage` code and its tests have not yet been executed in MATLAB.
-Treat the first real acquisition as the test, on a spare site ID.
+Nothing in this module has been run against a live brainsaw server. Treat the
+first real acquisition as the test, on a spare site ID.
