@@ -630,6 +630,24 @@ const BS_PAGE_STYLE = <<<CSS
 CSS;
 
 /**
+ * stale_after_seconds from config as a positive int. A missing key means the
+ * 900 s default; a present but non-numeric or non-positive value is logged and
+ * also replaced by 900, so a config typo degrades the page instead of breaking it.
+ */
+function bs_stale_after_seconds(array $config): int
+{
+    if (!array_key_exists('stale_after_seconds', $config)) {
+        return 900;
+    }
+    $value = $config['stale_after_seconds'];
+    if (is_numeric($value) && $value > 0) {
+        return (int) $value;
+    }
+    error_log('brainsaw: invalid stale_after_seconds in config (' . var_export($value, true) . '); using 900');
+    return 900;
+}
+
+/**
  * data-* attributes that tell js/autorefresh.js what to watch for one site:
  * the meta.json URL (from the same url_base as the other site URLs, so the
  * JS never builds paths), the uploaded_at this page was rendered with, and
@@ -680,7 +698,7 @@ function bs_autorefresh_script(?string $js): string
 function bs_render_viewer(array $config): void
 {
     $tokens = bs_load_tokens($config['tokens_file']);
-    $staleAfter = (int) ($config['stale_after_seconds'] ?? 900);
+    $staleAfter = bs_stale_after_seconds($config);
 
     $sites = [];
     foreach ($tokens as $siteId => $info) {
@@ -755,7 +773,7 @@ function bs_render_site_page(array $config, string $siteId): void
     }
 
     $displayName = $tokens[$siteId]['display_name'] ?? $siteId;
-    $staleAfter = (int) ($config['stale_after_seconds'] ?? 900);
+    $staleAfter = bs_stale_after_seconds($config);
     $data = bs_load_site_data($config, $siteId);
     $recipe = $data['recipe'];
     $acq = $data['acquisition'];
