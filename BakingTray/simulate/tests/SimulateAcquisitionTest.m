@@ -9,7 +9,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
     properties
         Dir
         Recipe
-        Config          % config whose url is a test-upload canary
+        Config          % config whose url is a testserver canary
         ProdConfig      % config whose url is not
         Fmt = 'yyyy/MM/dd HH:mm:ss'
         T0 = datetime(2026, 10, 7, 12, 3, 50)
@@ -37,7 +37,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             writeText(tc.Recipe, sprintf(['Acquisition: {acqStartTime: ''2019/12/09 12:03:50''}\n' ...
                 'sample: {ID: REALSAMPLE, objectiveName: real objective 16x}\nmosaic:\n  numSections: 289.0\n']));
             tc.Config = fullfile(tc.Dir, 'config.json');
-            writeText(tc.Config, '{"url":"https://x.example/brainsaw/test-upload/upload.php","siteID":"sim-1","micID":"sim-mic","token":"TOK"}');
+            writeText(tc.Config, '{"url":"https://x.example/testserver/upload.php","siteID":"sim-1","micID":"sim-mic","token":"TOK"}');
             tc.ProdConfig = fullfile(tc.Dir, 'prod.json');
             writeText(tc.ProdConfig, '{"url":"https://x.example/brainsaw/upload.php","siteID":"sim-1","micID":"sim-mic","token":"TOK"}');
             tc.PosterStatus = NaN;
@@ -389,7 +389,8 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
                 'https://localhost.evil.com/upload.php', ...
                 'https://127.0.0.1.evil.com/upload.php', ...
                 'https://x.example/localhost', ...
-                'https://x.example/upload.php?h=http://localhost/'};
+                'https://x.example/upload.php?h=http://localhost/', ...
+                'https://x.example/test-upload/upload.php'};   % the retired marker
             for ii = 1:numel(urls)
                 cfg = tc.configWithUrl(urls{ii});
                 poster = simulate.FakePoster();

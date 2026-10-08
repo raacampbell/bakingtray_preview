@@ -43,7 +43,9 @@ classdef StageFilesTest < matlab.unittest.TestCase
             lib = fullfile(repo, 'brainsaw', 'lib.php');
             tc.verifyTrue(isfile(lib), ['server source not found at ' lib]);
             txt = fileread(lib);
-            tok = regexp(txt, 'bs_find_(?:latest|all)\(\$siteDir, ''([^'']+)''\)', 'tokens');
+            % Images are found through BS_ASSETS, the recipe and logs by direct glob calls.
+            tok = [regexp(txt, '''(?:main|montage)'' => \[''([^'']+)''', 'tokens'), ...
+                   regexp(txt, 'bs_find_(?:latest|all)\(\$micDir, ''([^'']+)''\)', 'tokens')];
             found = cellfun(@(t) t{1}, tok, 'UniformOutput', false);
             expected = {tc.Globs.Main, tc.Globs.Montage, tc.Globs.Recipe, tc.Globs.Log};
             tc.verifyEqual(found, expected);

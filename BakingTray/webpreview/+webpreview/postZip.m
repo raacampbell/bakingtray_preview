@@ -126,8 +126,9 @@ function [payload, contentType] = buildMultipart(cfg, zipPath)
     % payload     - uint8 row vector holding the whole request body.
     % contentType - matlab.net.http.field.ContentTypeField with the multipart boundary.
 
-    % A random boundary; with 16 hex digits it will not occur in the zip by accident.
-    boundary = sprintf('----BrainsawBoundary%08x%08x', randi(2^31-1), randi(2^31-1));
+    % A random boundary that will not occur in the zip by accident. It comes from Java's UUID
+    % so that uploading never changes the state of MATLAB's global random number generator.
+    boundary = ['----BrainsawBoundary', strrep(char(java.util.UUID.randomUUID().toString()), '-', '')];
 
     fid = fopen(zipPath, 'r');
     if fid < 0

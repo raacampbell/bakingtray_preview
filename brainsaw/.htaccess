@@ -1,27 +1,35 @@
-# tokens.json and logs must never be servable directly, even though PHP
-# reads them server-side. Prefer moving tokens.json outside public_html
-# entirely (see instructions.md); this is a defense-in-depth backstop.
-
-<Files "tokens.json">
-    Require all denied
-</Files>
-
+# Logs must never be servable directly, even though PHP writes them. The settings file
+# (tokens, view words) lives outside the web root and is never in this folder.
 <FilesMatch "\.log$">
     Require all denied
 </FilesMatch>
 
-# Pass the Authorization header through to PHP. On hosts where PHP runs as
+# No directory listings, no CGI, and no MultiViews: MultiViews would map a request for
+# /upload to upload.php, so a view word could be shadowed by a file name.
+Options -Indexes -ExecCGI -MultiViews
+
+# 1. Pass the Authorization header through to PHP. On hosts where PHP runs as
 # CGI/FastCGI (e.g. IONOS: SAPI cgi-fcgi) Apache otherwise drops it and every
-# upload gets a 401. This copies it into an environment variable; lib.php
-# then reads it via apache_request_headers(). Keep this ABOVE the other
-# rewrite rules and do not add an [L] flag. Harmless where it already arrives.
+# upload gets a 401. This copies it into an environment variable; lib.php reads
+# $_SERVER['HTTP_AUTHORIZATION'] first, then REDIRECT_HTTP_AUTHORIZATION (the name
+# it gets after an internal rewrite), then apache_request_headers(). Keep this rule
+# first and without an [L] flag, so the rules below still run.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
 
-# Force HTTPS (relies on the host's SSL certificate). Harmless if already
-# behind HTTPS-only.
-RewriteEngine On
+# 2. Force HTTPS (relies on the host's SSL certificate).
+<IfModule mod_rewrite.c>
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# 3. Every path that is not an existing file or folder goes to view.php, which shows a
+# private view or the one 404 page; so an unknown word looks exactly like any other
+# missing page. router.php does the same for `php -S`.
+<IfModule mod_rewrite.c>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ view.php [L]
+</IfModule>

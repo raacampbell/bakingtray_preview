@@ -14,7 +14,7 @@ function result = simulateAcquisition(varargin)
     %
     % SAFETY: a real run must be given an explicit 'ConfigFile' (there is no
     % default, so a forgotten argument can never reach a production site) and the
-    % config's url must contain 'test-upload' or have the host localhost or
+    % config's url must contain 'testserver' or have the host localhost or
     % 127.0.0.1 (optional port), which can never be a production site. Pass
     % 'AllowProduction', true to override that check, only when you really mean to
     % write fake data to the named site. A dry run uploads nothing and needs neither.
@@ -50,7 +50,7 @@ function result = simulateAcquisition(varargin)
     %            sent are recorded in result.dryRunCalls. Never aborts. Default false.
     % 'Poster' - Function handle poster(folder,cfg), as for updateSectionImage;
     %            default @webpreview.zipAndPost. Not allowed with DryRun.
-    % 'AllowProduction' - If true skip the test-upload/localhost url check (default false).
+    % 'AllowProduction' - If true skip the testserver/localhost url check (default false).
     % 'LogTimeScale' - Multiplies the durations written to the log only (default 1,
     %                  see Time above).
     % 'WorkDir' - Working folder for the recipe copy, log and stage folder;
@@ -209,7 +209,7 @@ function checkOptions(opts)
     end
     if ~opts.DryRun && isempty(opts.ConfigFile)
         error('simulate:simulateAcquisition:noConfig', ...
-            ['a real run needs an explicit ''ConfigFile'' (pointing at a test-upload or ', ...
+            ['a real run needs an explicit ''ConfigFile'' (pointing at a testserver or ', ...
              'localhost site); use ''DryRun'', true to run without one']);
     end
 end %checkOptions

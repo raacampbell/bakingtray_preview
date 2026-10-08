@@ -32,6 +32,15 @@ classdef PostZipTest < matlab.unittest.TestCase
             PostZipTest.verifyNetworkFailure(tc, res);
         end
 
+        function uploadLeavesGlobalRandomStateAlone(tc)
+            % The multipart body is built before the refused connection, so this covers it.
+            zipPath = tc.makeZip();
+            cfg = tc.makeCfg();
+            before = rng;
+            webpreview.postZip(zipPath, cfg);
+            tc.verifyEqual(rng, before);
+        end
+
         function zipAndPostFailureIsNonFatal(tc)
             fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
             res = webpreview.zipAndPost(tc.Dir, tc.makeCfg());
@@ -91,6 +100,8 @@ classdef PostZipTest < matlab.unittest.TestCase
             end
             tc.verifyNotEmpty(regexp(request, '(?i)content-length:\s*\d+', 'once'), ...
                 'a Content-Length header is what stops IONOS FastCGI dropping the form fields');
+            tc.verifyEmpty(regexp(request, '(?i)transfer-encoding:\s*chunked', 'once'), ...
+                'a chunked request loses every form field on IONOS FastCGI');
             tc.verifyNotEmpty(regexp(request, 'name="?site_id"?\s+site_a', 'once'));
             tc.verifyNotEmpty(regexp(request, 'name="?microscope_id"?\s+mic_1', 'once'));
         end

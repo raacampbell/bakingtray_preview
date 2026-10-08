@@ -1,119 +1,104 @@
 #!/usr/bin/env bash
-# Build the deployable copy of the Brainsaw server in ./staging/.
+# Build the deployable copy of the Brainsaw server in ./staging/<dest>/.
 #
-# Run from the project root:   ./stage_server.sh
+# Run from the project root:   ./stage_server.sh [options]
 #
 # What it does
-#   Copies the files that belong on the web server from ./brainsaw/ into
-#   ./staging/<dest>/, leaving out everything that must never be uploaded
-#   (tokens, local logs, local test data, the dev router, the test-upload canary,
-#   client scripts). It then points the staged config.php at the token file's
-#   location on the server and runs safety checks.
+#   Copies the git-TRACKED files under ./brainsaw/ (never untracked or ignored ones, so a
+#   local secret, log, upload or editor file cannot be staged) into ./staging/<dest>/,
+#   leaving out the local-only dev router and scripts/. It then points the staged
+#   config.php at the settings file's location on the server and runs safety checks.
+#   Edits to tracked files are staged as they are in the working tree.
 #
-#   ./staging/ mirrors the server's `public/` folder, so one rsync puts everything
-#   in the right place:   staging/<dest>/  ->  public/<dest>/
+#   ./staging/ mirrors the server's `public/` folder:   staging/<dest>/  ->  public/<dest>/
+#   The deploy command printed at the end does exactly that.
 #
-# The staging folder holds NO secrets and is git-ignored. tokens.json is NOT
-# staged: it lives outside the project and outside the web root (see server-setup.md §4).
+# The staging folder holds NO secrets and is git-ignored. The settings file (sites,
+# microscopes, tokens, view words) is NOT staged: it lives outside the web root on the
+# server (see server-setup.md).
 #
 # Options
-#   --dest NAME          folder under public/ to deploy into (default: testserver)
-#   --tokens-path PATH   absolute path of tokens.json ON THE SERVER
-#                        (default: /home/www/www/brainsaw_private/tokens.json)
-#   --no-demo            leave out system_data/demo_site (the pre-filled demo card)
-#   -h, --help           show this text
+#   --dest NAME            folder under public/ to deploy into, letters, digits, _ and -
+#                          only (default: testserver)
+#   --settings-path PATH   absolute path of the settings file ON THE SERVER; required
+#                          unless --dest is testserver (default for testserver:
+#                          /home/www/www/brainsaw_private/brainsaw_settings.json)
+#   -h, --help             show this text
 #
-# Re-running is safe: ./staging/<dest>/ is rebuilt to match exactly (files that
-# were staged before and are no longer wanted are removed from staging only).
+# Re-running is safe: ./staging/<dest>/ is rebuilt from scratch.
 set -euo pipefail
 
 DEST="testserver"
-TOKENS_PATH="/home/www/www/brainsaw_private/tokens.json"
-INCLUDE_DEMO=1
+SETTINGS_PATH=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --dest)        DEST="${2:?--dest needs a value}"; shift 2 ;;
-    --tokens-path) TOKENS_PATH="${2:?--tokens-path needs a value}"; shift 2 ;;
-    --no-demo)     INCLUDE_DEMO=0; shift ;;
-    -h|--help)     sed -n '2,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --dest)          DEST="${2-}"; shift 2 || shift ;;
+    --settings-path) SETTINGS_PATH="${2-}"; shift 2 || shift ;;
+    -h|--help)       sed -n '2,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Unknown option: $1 (try --help)" >&2; exit 2 ;;
   esac
 done
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$ROOT/brainsaw"
-STAGING="$ROOT/staging"
 
 fail() { echo "ERROR: $*" >&2; exit 1; }
 
-[ -f "$SRC/lib.php" ] || fail "run this from the project root (could not find $SRC/lib.php)"
-command -v rsync >/dev/null || fail "rsync not found"
+[ -f "$SRC/lib.php" ] || fail "could not find $SRC/lib.php"
+git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1 || fail "$ROOT is not a git checkout; only tracked files may be staged"
 
-# Because rsync --delete is used below, only accept a plain relative sub-folder name.
-case "$DEST" in
-  ""|"."|".."|/*|*..*|*[!A-Za-z0-9._/-]*) fail "--dest must be a simple relative folder name like 'testserver' (got '$DEST')" ;;
-esac
-case "$TOKENS_PATH" in
-  /*) ;;
-  *) fail "--tokens-path must be an absolute path on the server (got '$TOKENS_PATH')" ;;
-esac
+# The name ends up in rm -rf and rsync --delete paths, so only a plain folder name is allowed.
+[[ "$DEST" =~ ^[A-Za-z0-9_-]+$ ]] || fail "--dest must be letters, digits, _ or - only (got '$DEST')"
+if [ -z "$SETTINGS_PATH" ]; then
+  [ "$DEST" = testserver ] || fail "--settings-path is required for --dest $DEST (each deployment has its own settings file)"
+  SETTINGS_PATH="/home/www/www/brainsaw_private/brainsaw_settings.json"
+fi
+# Plain characters only, so the path needs no quoting in sed or PHP.
+[[ "$SETTINGS_PATH" =~ ^/[A-Za-z0-9_./-]+$ ]] || fail "--settings-path must be an absolute path of letters, digits, _ . / - (got '$SETTINGS_PATH')"
 
-OUT="$STAGING/$DEST"
+OUT="$ROOT/staging/$DEST"
+rm -rf "$OUT"
 mkdir -p "$OUT"
 
-EXCLUDES=(
-  --exclude='.DS_Store'
-  --exclude='tokens.json'
-  --exclude='test-upload/'
-  --exclude='router.php'
-  --exclude='clients/'
-  --exclude='scripts/'
-  --exclude='logs/*.log'
-  --exclude='system_data/sim_local/'
-  --exclude='system_data/our_scope_1/'
-)
-if [ "$INCLUDE_DEMO" -eq 0 ]; then
-  EXCLUDES+=(--exclude='system_data/demo_site/')
-fi
+# --- copy the tracked app files ------------------------------------------------
+while IFS= read -r -d '' f; do
+  rel="${f#brainsaw/}"
+  case "$rel" in router.php|scripts/*) continue ;; esac   # local-only tools
+  [ -f "$ROOT/$f" ] || fail "$f is tracked but missing from the working tree; commit or restore it"
+  mkdir -p "$OUT/$(dirname "$rel")"
+  cp "$ROOT/$f" "$OUT/$rel"
+done < <(git -C "$ROOT" ls-files -z -- brainsaw)
 
-# --delete-excluded also removes anything staged earlier that is now excluded.
-rsync -a --delete --delete-excluded "${EXCLUDES[@]}" "$SRC/" "$OUT/"
-
-# The server needs logs/ and system_data/ to exist (rsync keeps their .htaccess files).
-mkdir -p "$OUT/logs" "$OUT/system_data"
-
-# --- point config.php at the server's token file ------------------------------
+# --- point config.php at the server's settings file -----------------------------
 CFG="$OUT/config.php"
-grep -q "__DIR__ . '/tokens.json'" "$CFG" || fail "config.php no longer has the expected tokens_file line; edit this script"
-python3 - "$CFG" "$TOKENS_PATH" <<'PYEOF'
-import sys
-cfg, path = sys.argv[1], sys.argv[2]
-t = open(cfg, encoding='utf-8').read()
-old = "__DIR__ . '/tokens.json'"
-assert t.count(old) == 1
-open(cfg, 'w', encoding='utf-8', newline='').write(t.replace(old, "'" + path.replace("\\", "\\\\").replace("'", "\\'") + "'"))
-PYEOF
+LOCAL_SETTINGS="dirname(__DIR__) . '/brainsaw_settings.json'"
+[ "$(grep -cF "$LOCAL_SETTINGS" "$CFG")" -eq 1 ] || fail "config.php no longer has the expected settings_file line; edit this script"
+sed -i.bak "s#dirname(__DIR__) \. '/brainsaw_settings\.json'#'$SETTINGS_PATH'#" "$CFG"
+rm -f "$CFG.bak"
 
 # --- safety checks ------------------------------------------------------------
 problems=0
 note() { echo "  CHECK FAILED: $*" >&2; problems=$((problems+1)); }
 
 echo "Checks:"
-[ -z "$(find "$OUT" -name tokens.json)" ] || note "a tokens.json is in the staged tree"
-[ -z "$(find "$OUT" -name '*.log')" ]     || note "a .log file is in the staged tree"
+[ -z "$(find "$OUT" -name '*settings*.json' -o -name tokens.json)" ] || note "a settings or tokens file is in the staged tree"
+[ -z "$(find "$OUT" -name '*.log')" ] || note "a .log file is in the staged tree"
+[ -z "$(find "$OUT" -name '.*' ! -name .htaccess)" ] || note "a dotfile other than .htaccess is in the staged tree"
 grep -q 'E=HTTP_AUTHORIZATION' "$OUT/.htaccess" || note ".htaccess is missing the Authorization rewrite rule (uploads would fail with 401 on FastCGI hosts)"
+grep -q 'RewriteRule ^ view.php' "$OUT/.htaccess" || note ".htaccess is missing the rule that sends missing paths to view.php"
+grep -q -- '-MultiViews' "$OUT/.htaccess" || note ".htaccess does not switch off MultiViews"
 grep -q 'Require all denied' "$OUT/system_data/.htaccess" || note "system_data/.htaccess is missing its deny rule"
-[ -f "$OUT/logs/.htaccess" ] || note "logs/.htaccess is missing"
+grep -q 'Require all denied' "$OUT/logs/.htaccess" || note "logs/.htaccess is missing its deny rule"
 
 # A 64-character hex string looks like a token. None should be in text files here.
 leaks="$(grep -rIlE '[0-9a-fA-F]{64}' "$OUT" || true)"
 [ -z "$leaks" ] || note "a 64-hex-character string (looks like a token) is in: $leaks"
 
-# Only the tokens_file line may differ from the repo's config.php.
+# Only the settings_file line may differ from the repo's config.php.
 changed="$(diff "$SRC/config.php" "$CFG" | grep -c '^[<>]' || true)"
-[ "$changed" -eq 2 ] || note "config.php differs from the repo copy in more than the tokens_file line"
-grep -q "'tokens_file' *=> '$TOKENS_PATH'," "$CFG" || note "config.php does not point at $TOKENS_PATH"
+[ "$changed" -eq 2 ] || note "config.php differs from the repo copy in more than the settings_file line"
+grep -q "'settings_file' *=> '$SETTINGS_PATH'," "$CFG" || note "config.php does not point at $SETTINGS_PATH"
 
 if command -v php >/dev/null; then
   for f in "$OUT"/*.php; do
@@ -127,15 +112,19 @@ fi
 echo "  all checks passed"
 
 # --- report ---------------------------------------------------------------------
+# --delete removes files that left the app (old endpoints); the protect filters keep what
+# the server itself writes: uploaded data in system_data/<site>/ and logs/*.log.
+FLAGS="--delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log'"
 echo
 echo "Staged into: $OUT"
 echo "Files:"
 ( cd "$OUT" && find . -type f | sort | sed 's/^\.\//  /' )
 echo
-echo "tokens.json on the server will be read from: $TOKENS_PATH"
-echo "(it is NOT staged; upload it once, separately: see server-setup.md section 4)"
+echo "The settings file on the server will be read from: $SETTINGS_PATH"
+echo "(it is NOT staged; put it there separately: see server-setup.md)"
 echo
-echo "Next: send staging/ to the server's public/ folder, for example"
-echo "  rsync -avzn --chmod=D755,F644 -e ssh staging/ USER@HOST:/home/www/public/    # -n = dry run, shows what would change"
-echo "  rsync -avz  --chmod=D755,F644 -e ssh staging/ USER@HOST:/home/www/public/    # the real thing"
-echo "No --delete is used on purpose: it would delete uploaded site data and logs on the server."
+echo "Next: send staging/$DEST/ to the server's public/$DEST/ (USER@HOST: your SSH login). Dry run first:"
+echo "  rsync -azn $FLAGS -e ssh staging/$DEST/ USER@HOST:/home/www/public/$DEST/"
+echo "  rsync -az $FLAGS -e ssh staging/$DEST/ USER@HOST:/home/www/public/$DEST/"
+echo "--delete removes server files that are no longer part of the app; the two protect"
+echo "filters keep uploaded data (system_data/<site>/) and the logs."

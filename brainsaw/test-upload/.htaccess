@@ -1,7 +1,0 @@
-<Files "tokens.json">
-    Require all denied
-</Files>
-
-<FilesMatch "\.log$">
-    Require all denied
-</FilesMatch>
