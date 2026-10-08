@@ -22,7 +22,6 @@
 
             // Creating lens
             var target = $("<div style='" + lensStyle + "' class='" + options.lensCss + "'>&nbsp;</div>").appendTo($(this).parent());
-            var targetSize = target.size();
 
             // Calculating actual size of image
             var imageSrc = options.imageSrc ? options.imageSrc : $(this).attr("src");
@@ -31,7 +30,7 @@
             var widthRatio = 0;
             var heightRatio = 0;
 
-            $(imageTag).load(function () {
+            $(imageTag).on("load", function () {
                 widthRatio = $(this).width() / obj.width();
                 heightRatio = $(this).height() / obj.height();
             }).appendTo($(this).parent());
