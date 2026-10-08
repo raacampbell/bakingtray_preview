@@ -89,6 +89,8 @@ classdef PostZipTest < matlab.unittest.TestCase
             while in.available() > 0
                 request(end+1) = char(mod(in.read(), 256)); %#ok<AGROW> small request
             end
+            tc.verifyNotEmpty(regexp(request, '(?i)content-length:\s*\d+', 'once'), ...
+                'a Content-Length header is what stops IONOS FastCGI dropping the form fields');
             tc.verifyNotEmpty(regexp(request, 'name="?site_id"?\s+site_a', 'once'));
             tc.verifyNotEmpty(regexp(request, 'name="?microscope_id"?\s+mic_1', 'once'));
         end
