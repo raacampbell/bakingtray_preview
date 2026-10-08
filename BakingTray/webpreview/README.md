@@ -36,7 +36,7 @@ commit a filled-in copy.
 ```
 
 `url` must be `https://`; plain `http://` is accepted only for `localhost` /
-`127.0.0.1`, for testing against a local server. `siteID` may contain only
+`127.0.0.1`, for testing against a local server. `siteID` must start with a letter and contain only
 letters, digits, `_` and `-`; `micID` (the microscope name) is also required
 and takes the same characters. The server keeps one token per microscope, so
 `siteID`, `micID` and `token` must all match its settings file; any mismatch

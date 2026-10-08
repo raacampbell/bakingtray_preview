@@ -84,7 +84,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
 
         function badIDsError(tc)
             for field = {'siteID', 'micID'}
-                for bad = {'has space', 'a/b', '../x', 'a.b'}
+                for bad = {'has space', 'a/b', '../x', 'a.b', '2photon', '_x', '-x'}
                     s = WebConfigTest.good(); s.(field{1}) = bad{1};
                     tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configInvalid');
                 end
