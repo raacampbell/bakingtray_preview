@@ -27,15 +27,17 @@ before `updateSectionImage` starts, so it cannot be caught inside it).
 
 Once, after the recipe and the acquisition log exist. No image yet (`[]`), so
 the page shows the new recipe and any image from a previous run is deleted;
-`'ClearStage', true` also empties the stage folder. The short timeouts keep the
-call from holding up the start of the acquisition when the server is slow or
-dead.
+`'ClearStage', true` also empties the stage folder. The short timeouts (connect
+5 s, response 10 s, data 10 s) limit how long the call can hold up the start of
+the acquisition when the server is slow or dead; it is unverified whether the
+response and data timeouts cover the transfer of the upload itself, so treat
+10 s as the aim, not a guarantee.
 
 ```matlab
 if ~isempty(which('webupload.updateSectionImage'))
     try
-        webupload.updateSectionImage([], recipePath, logPath, cfg, ...
-            'ClearStage', true, 'ConnectTimeout', 5, 'ResponseTimeout', 10);
+        webupload.updateSectionImage([], recipePath, logPath, cfg, 'ClearStage', true, ...
+            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
     end
@@ -52,7 +54,7 @@ autoscaled; pass `'Range', [0 4095]` for a fixed mapping (see
 if ~isempty(which('webupload.updateSectionImage'))
     try
         webupload.updateSectionImage(img, recipePath, logPath, cfg, ...
-            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'Range', [0 4095]);
+            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10, 'Range', [0 4095]);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
     end
@@ -61,15 +63,17 @@ end
 
 ### End of an acquisition (`bake.m`)
 
-Marks the run finished on the page. If the server answers 429 (this call comes
-soon after the last section's) it waits about 6 s and tries once more, so this
-call can block for longer than the others.
+Marks the run finished on the page. No image (`[]`) is passed: the server keeps the
+image already stored for the same sample, and a last image of a different scale
+would change the brightness. If the server answers 429 (this call comes soon
+after the last section's) it waits about 6 s and tries once more, so this call
+can block for longer than the others.
 
 ```matlab
 if ~isempty(which('webupload.updateSectionImage'))
     try
-        webupload.updateSectionImage(img, recipePath, logPath, cfg, ...
-            'Finished', true, 'ConnectTimeout', 5, 'ResponseTimeout', 10);
+        webupload.updateSectionImage([], recipePath, logPath, cfg, 'Finished', true, ...
+            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
     end
@@ -82,10 +86,6 @@ if the caller wants it.
 
 ## Tests
 
-From the repo root (this runs everything, including `upload_core/tests`):
-
-```
-/Applications/MATLAB_R2023b.app/bin/matlab -batch "add_to_path; r=[runtests('upload_core/tests'), runtests('BakingTray/tests'), runtests('BakingTray/simulate/tests')]; disp(table(r))"
-```
-
+The command that runs every test (including `upload_core/tests`) is in
+`upload_core/README.md`, under Tests; use your own MATLAB path in it.
 `add_to_path` puts `upload_core` and `BakingTray/simulate` on the path.

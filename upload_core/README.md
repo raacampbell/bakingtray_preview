@@ -93,8 +93,8 @@ Anything else makes the call fail. `recipePath` is the recipe file and
 | --- | --- |
 | `Source` | `'acq'` (default) or `'analysis'` |
 | `Montage` | image to send as `montage.jpg`, as for `img` (array or jpg path). Only with `Source` `'analysis'`: with `'acq'` the call fails and sends nothing |
-| `Finished` | `true` writes `{"finished": true}` into `status.json` (default `false`). Only a Finished call is retried, once, after a 429, waiting the server's minimum upload interval plus 1 s |
-| `ConnectTimeout`, `ResponseTimeout` | seconds, for this call only (see `postZip`) |
+| `Finished` | `true` writes `{"finished": true}` into `status.json` (default `false`). Only a Finished call is retried, once, after a 429, waiting this client's copy of the server's minimum upload interval (`serverLimits().minUploadIntervalSec`, 5 s) plus 1 s, with the same timeouts. A site that raises the interval on the server will answer the retry with another 429, and the Finished flag is lost (`ok` false, with the usual warning) |
+| `ConnectTimeout`, `ResponseTimeout`, `DataTimeout` | seconds, for this call only (see `postZip`; whether `ResponseTimeout` and `DataTimeout` cover the upload transfer itself is unverified) |
 | `Range` | `[lo hi]` for non-uint8 arrays (below) |
 | `ClearStage` | `true` empties the stage folder first; default `false` |
 | `StageRoot` | parent of the stage folder; default `tempdir`; text options may be strings, paths are returned as char |
@@ -106,14 +106,18 @@ staged a new recipe/log); `stale` (either is false; a log that is permanently
 absent keeps `stale` true on every call, with a notice each time); `error` (an
 `MException` built from the scrubbed message, `[]` on success). The recipe is
 always copied afresh: if it cannot be staged, any recipe left from an earlier
-call is deleted and nothing is uploaded. The log may fall back to the previous
-one, reported as `stale` (`webupload:updateSectionImage:stale`). Messages,
+call is deleted and nothing is uploaded. If the log cannot be staged, the
+previous one is uploaded only when the previously staged recipe has the same
+sample ID as the new one; otherwise no log is uploaded. Either way the call is
+reported as `stale` (`webupload:updateSectionImage:stale`). Messages,
 including a custom `Poster`'s, are scrubbed with `cfg.scrub`, so the token
 never appears in them.
 
 The stage folder is `<StageRoot>/brainsaw_webpreview/<siteID>/<micID>/<source>`,
 reused between calls so only the latest files exist; it is not deleted
-afterwards. Two MATLAB sessions using the same site, microscope ID, source and
+afterwards. Where `tempdir` is shared between users (Linux `/tmp`), pass a
+private folder as `StageRoot`. The sources (recipe, log, jpg) must not be inside
+the stage folder: it holds fixed file names that are overwritten or deleted. Two MATLAB sessions using the same site, microscope ID, source and
 `StageRoot` share it and will overwrite each other's files.
 `webupload.clearStage(cfg, micID, 'Source', src)` empties it without
 uploading anything; it never throws (warning `webupload:clearStage:failed`).
@@ -191,8 +195,9 @@ From the repo root:
 
 (use your own MATLAB path; `runtests('upload_core/tests')` alone runs just
 this package's tests). The tests add the packages to the path themselves. They
-need no real server (one test posts to a refused `127.0.0.1` port), and one
-waits about 7 s to check the 429 retry.
+need no real server (one test posts to a refused `127.0.0.1` port). Two tests
+wait about 6 s each: the 429 retry of a Finished call, and the simulator's
+rate-limit run.
 
 Nothing in this module has been run against a live brainsaw server. Treat the
 first real acquisition as the test, on a spare site ID.

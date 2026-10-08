@@ -9,7 +9,7 @@ status: in review
 
 # Move staging and the section-upload entry point into the core
 
-StitchIt needs exactly what `BakingTray.webpreview` has: copy files to a clean folder under the contract names, write `status.json`, zip, post. So nothing in `BakingTray/+BakingTray/+webpreview` is BakingTray-specific. Move all of it into `upload_core/+webupload/` and delete the `BakingTray.webpreview` package (the PI confirmed this).
+StitchIt needs exactly what `BakingTray.webpreview` has: copy files to a clean folder under the contract names, write `status.json`, zip, post. So nothing in `BakingTray/+BakingTray/+webpreview` is BakingTray-specific. Move all of it into `upload_core/+webupload/` and delete the `BakingTray.webpreview` package.
 
 - Moves: `stageFiles`, `stageSpec`, `stageDirFor`, `clearStage`, `clearStageDir`, `toUint8`, `updateSectionImage` (plus their tests, to `upload_core/tests/`). `globToRegexp` is deleted (fixed names made it obsolete). Where sensible merge tiny helpers into their callers (PI prefers fewer, less bitty functions) but do not rewrite working logic needlessly. Rename error/warning IDs `webpreview:*` coming from the moved code to `webupload:*` (code, tests, READMEs).
 - `webupload.updateSectionImage(img, recipePath, logPath, cfg, 'Source', src, ...)`:

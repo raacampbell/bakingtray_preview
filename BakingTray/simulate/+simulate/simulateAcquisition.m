@@ -9,7 +9,7 @@ function result = simulateAcquisition(varargin)
     % stage folder first). Then for each section 1..NumSections: build a synthetic RGB
     % section image, append that section's lines to the acquisition log (exact real
     % format, see simulate.simulatedLogLines) and call updateSectionImage. Finally the
-    % end call, with the last image and 'Finished', true. Each call prints one line with
+    % end call, with no image and 'Finished', true (the server keeps the last image). Each call prints one line with
     % the outcome (the token is never printed), and the calls are Interval seconds apart.
     %
     % SAFETY: a real run must be given an explicit 'ConfigFile' (there is no
@@ -129,7 +129,7 @@ function result = simulateAcquisition(varargin)
 
     if ~aborted
         pause(max(0, opts.Interval - toc(tPrev)));
-        finish = runUpdate(simulate.simulatedImages(N,N), files, backend, 'Finished', true);
+        finish = runUpdate([], files, backend, 'Finished', true);   % as bake.m: no image
         [aborted,abortReason] = checkCall('finish', finish, opts);
     end
 
