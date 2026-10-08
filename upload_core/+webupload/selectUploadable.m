@@ -4,12 +4,10 @@ function names = selectUploadable(dirPath)
     % function names = webupload.selectUploadable(dirPath)
     %
     % Purpose
-    % Returns a cell row; empty when nothing matches. Skipped:
-    %   - subfolders
-    %   - dotfiles (the server drops basenames starting with '.')
-    %   - extensions not in webupload.allowedExtensions
-    %   - names containing '*' or '?': zip() treats those as wildcards and would match other
-    %     files. Other special-looking characters such as [ ] are not wildcards for zip().
+    % Returns a cell row; empty when nothing matches. Only files whose name is exactly one of
+    % webupload.allowedNames are kept. Subfolders are skipped, and so is anything else, which
+    % also rules out dotfiles and names containing '*' or '?' (zip() treats those as wildcards
+    % and would match other files).
     %
     % Inputs
     % dirPath - path to the folder to scan.
@@ -19,10 +17,5 @@ function names = selectUploadable(dirPath)
 
     d = dir(dirPath);
     names = {d(~[d.isdir]).name};
-    [~, ~, ext] = cellfun(@fileparts, names, 'UniformOutput', false);
-    ext = lower(strrep(ext, '.', ''));
-    keep = ismember(ext, webupload.allowedExtensions()) ...
-        & ~startsWith(names, '.') ...
-        & ~contains(names, {'*', '?'});
-    names = names(keep);
+    names = names(ismember(names, webupload.allowedNames()));
 end % selectUploadable
