@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Checks stage_server.sh on a throwaway git copy of this repo's working tree: untracked
-# secrets and junk planted in brainsaw/ are never staged, unsafe options are refused, the
-# safety net catches a token-like string, and the printed deploy command removes files that
-# left the app while keeping what the server wrote (uploaded data, logs).
+# Checks stage_server.sh on a throwaway git copy of this repo's working tree: an untracked
+# secret is never staged, uncommitted edits to tracked files stop staging, unsafe options are
+# refused, the safety net catches a token-like string, and the printed deploy command removes
+# files that left the app while keeping what the server wrote (uploaded data, logs).
 # Usage (from anywhere): tests/web/check_stage.sh
 set -euo pipefail
 
@@ -30,37 +30,37 @@ done < <(git -C "$ROOT" ls-files -z --cached --others --exclude-standard)
 G init -q
 G add -A
 G commit -qm snapshot
-
-# --- plant things that must never be staged ---
 B="$REPO/brainsaw"
-printf 'SECRET=%s\n' "$(openssl rand -hex 32)" > "$B/.env"
-openssl rand -hex 32 > "$B/.lib.php.swp"
-echo 'a log line' > "$B/logs/extra.log"
-echo '{"panopticon": "x"}' > "$B/brainsaw_settings.json"
-echo '{}' > "$B/tokens.json"
-echo 'notes' > "$B/js/untracked.js"
-mkdir -p "$B/system_data/s/m"
-echo '{"uploaded_at": "x"}' > "$B/system_data/s/m/meta.json"
-
-check "stage (default testserver) succeeds" stage
 OUT="$REPO/staging/testserver"
-for f in .env .lib.php.swp logs/extra.log brainsaw_settings.json tokens.json js/untracked.js system_data/s router.php scripts; do
-  check "not staged: $f" test ! -e "$OUT/$f"
-done
+
+# --- an untracked secret is never staged ---
+openssl rand -hex 32 > "$B/.env"
+check "stage (default testserver) succeeds with an untracked secret present" stage
+check "untracked secret not staged" test ! -e "$OUT/.env"
 staged="$(cd "$OUT" && find . -type f | sed 's#^\./##' | sort)"
-tracked="$(git -C "$REPO" ls-files brainsaw | sed 's#^brainsaw/##' | grep -v -e '^router\.php$' -e '^scripts/' | sort)"
-check "staged files are exactly the tracked app files" test "$staged" = "$tracked"
+tracked="$(git -C "$REPO" ls-files brainsaw | sed 's#^brainsaw/##' | grep -vx 'router\.php' | sort)"
+check "staged files are exactly the committed app files minus router.php" test "$staged" = "$tracked"
 check "config points at the default server settings path" \
   grep -q "'settings_file' *=> '/home/www/www/brainsaw_private/brainsaw_settings.json'," "$OUT/config.php"
+rm "$B/.env"
+
+# --- uncommitted edits to tracked files stop staging ---
+echo '// local edit' >> "$B/lib.php"
+check "uncommitted edit to a tracked file: refused" refused
+check "  ... and says why" grep -q 'uncommitted changes' "$TMP/out"
+G checkout -q -- brainsaw/lib.php
 
 # --- options ---
+check "--help prints the options" bash -c 'cd "$1" && ./stage_server.sh --help | grep -q -- "--settings-path PATH"' _ "$REPO"
 for d in ./ ../x . .. a/b "" "x y" /abs 'a$b' '-x'; do
   check "--dest '$d' refused" refused --dest "$d"
 done
 check "--dest other than testserver needs --settings-path" refused --dest live
 check "--settings-path must be absolute"                   refused --dest live --settings-path rel/settings.json
 check "--settings-path with odd characters refused"        refused --dest live --settings-path "/a b/settings.json"
-check "--tokens-path is gone"                              refused --tokens-path /x/tokens.json
+check "--settings-path inside the web root refused"        refused --dest live --settings-path /home/www/public/s.json
+check "  ... also with another --webroot"                  refused --dest live --settings-path /srv/web/x/s.json --webroot /srv/web
+check "unknown option refused"                             refused --tokens-path /x/tokens.json
 check "--dest live with --settings-path succeeds"          stage --dest live --settings-path /srv/private/live_settings.json
 check "live config points at the given path" grep -q "'settings_file' *=> '/srv/private/live_settings.json'," "$REPO/staging/live/config.php"
 
@@ -83,11 +83,11 @@ check "deploy: server log kept"               test -f "$SERVER/logs/upload.log"
 check "deploy: app files arrived"             test -f "$SERVER/view.php" -a -f "$SERVER/system_data/.htaccess"
 check "deploy: dry-run variant printed"       grep -qE '^  rsync -azn --delete' "$TMP/out"
 
-# --- the safety net: a token-like string in a tracked file stops staging ---
+# --- the safety net: a token-like string in a committed file stops staging ---
 openssl rand -hex 32 > "$B/js/oops.txt"
 G add brainsaw/js/oops.txt
 G commit -qm oops
-check "64-hex string in a tracked file: staging refused" refused
+check "64-hex string in a committed file: staging refused" refused
 check "  ... and says why" grep -q '64-hex' "$TMP/out"
 
 exit "$fail"
