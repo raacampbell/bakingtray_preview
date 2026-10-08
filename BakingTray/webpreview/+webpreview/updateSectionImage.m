@@ -1,16 +1,16 @@
-function result = updateSectionImage(img,recipePath,logPath,varargin)
+function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % Stage and upload the web preview after a section. Never throws
     %
-    % function result = BakingTray.webpreview.updateSectionImage(img,recipePath,logPath,'Param1',val1,...)
+    % function result = BakingTray.webpreview.updateSectionImage(img,recipePath,logPath,cfg,'Param1',val1,...)
     %
     % Purpose
-    % The call BakingTray makes when a section completes. It loads the config
-    % (webpreview.webConfig; default location unless 'ConfigFile' is given), stages
-    % img, the optional 'Montage', the recipe and the acquisition log with
-    % webpreview.stageFiles, and uploads the stage folder with webpreview.zipAndPost.
+    % The call BakingTray makes when a section completes. It stages img, the optional
+    % 'Montage', the recipe and the acquisition log with webpreview.stageFiles, and
+    % uploads the stage folder with webpreview.zipAndPost. The config is a
+    % webpreview.webConfig object that the caller builds once and passes in.
     % Image conversion and 'Range' are documented in webpreview.toUint8.
     %
-    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>, with StageRoot
+    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>, with StageRoot
     % defaulting to tempdir. It is reused between calls, so each section replaces the
     % previous files instead of accumulating them. If a new recipe or log cannot be
     % staged, the previous copy stays and is uploaded; this is reported (see
@@ -23,25 +23,21 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
     % staging, network, a throwing poster) is turned into a warning
     % 'webpreview:updateSectionImage:failed' ("id: message") and result.ok = false. The
     % warning call itself is guarded, so warning('error',...) settings cannot make this
-    % function throw. Errors in the arguments img, recipePath and logPath are caught
-    % too, but a path variable that does not exist in the CALLER is an error MATLAB
+    % function throw. Errors in the arguments img, recipePath, logPath and cfg (which must
+    % be a scalar, valid webConfig) are caught too, but a path variable that does not exist in the CALLER is an error MATLAB
     % raises before this function runs, and cannot be caught here.
     %
-    % TOKEN: the config is held in a webpreview.webConfig object, which keeps the token
-    % private. An error raised while the config is being loaded is scrubbed of the token by
-    % webConfig itself. Once the config has been read, the token is also scrubbed from
-    % result and warning messages with webConfig.scrub. Messages from a custom Poster are
-    % scrubbed only after the config was read.
+    % TOKEN: webConfig keeps the token private. It is scrubbed from result and warning
+    % messages, including those from a custom Poster, with webConfig.scrub.
     %
     % Inputs
     % img        - Numeric HxW or HxWx3 image of the section (see webpreview.toUint8).
     % recipePath - Path to the recipe file or to a folder containing it (see
     %              webpreview.stageFiles).
     % logPath    - Path to the acquisition log file.
+    % cfg        - webpreview.webConfig object.
     %
     % Inputs (optional param/val pairs)
-    % 'ConfigFile' - Text scalar. Config file to use. Empty (default) means the default
-    %                location.
     % 'Montage'    - Numeric montage image to stage as well. Default is [].
     % 'Range'      - Numeric [lo hi] used to scale the images. Default is [].
     % 'Poster'     - Function handle with the zipAndPost signature,
@@ -71,21 +67,16 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
 
 
     result = emptyResult;
-    cfg = [];
     caught = [];
 
     try
-        % Parse the optional param/val pairs with the local function parseOptions
-        opts = parseOptions(varargin{:});
-
-
-        % Load the config file from the default location unless the user has supplied another
-        if isempty(opts.ConfigFile)
-            cfg = webpreview.webConfig();
-        else
-            cfg = webpreview.webConfig(opts.ConfigFile);
+        if ~(isa(cfg,'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg))
+            error('webpreview:updateSectionImage:badConfig', ...
+                'cfg must be a webpreview.webConfig object.')
         end
 
+        % Parse the optional param/val pairs with the local function parseOptions
+        opts = parseOptions(varargin{:});
 
         result = runPipeline(result,img,recipePath,logPath,cfg,opts);
     catch err
@@ -104,8 +95,8 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     %
     % Purpose
     % The part of updateSectionImage that runs inside its try/catch. Builds the stage folder
-    % path from cfg.siteID and opts.StageRoot (siteID is charset-checked by webConfig, so
-    % it is safe to use as a folder name), empties it if opts.ClearStage is true, stages the
+    % path from cfg.siteID, cfg.micID and opts.StageRoot (both IDs are charset-checked by
+    % webConfig, so they are safe to use as folder names), empties it if opts.ClearStage is true, stages the
     % files with webpreview.stageFiles and uploads the folder with opts.Poster.
     %
     % Anything that goes wrong before staging has finished is thrown and caught by
@@ -126,7 +117,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     %          filled in. post and ok are set once the poster has returned. error is set if
     %          staging was incomplete or the poster threw.
 
-    stageDir = webpreview.stageDirFor(cfg.siteID,opts.StageRoot);
+    stageDir = webpreview.stageDirFor(cfg.siteID,cfg.micID,opts.StageRoot);
     if opts.ClearStage
         webpreview.clearStageDir(stageDir);
     end
@@ -171,13 +162,10 @@ function opts = parseOptions(varargin)
     % varargin - The 'Param1',val1,... pairs documented in updateSectionImage.
     %
     % Outputs
-    % opts - Structure with fields ConfigFile (char), Montage, Range, Poster,
-    %        StageRoot (char) and ClearStage (logical).
+    % opts - Structure with fields Montage, Range, Poster, StageRoot (char) and
+    %        ClearStage (logical).
 
     % Define anon functions
-
-    % True for a char row vector, an empty char or a string scalar
-    isTextScalar = @(x) (ischar(x) && (isrow(x) || isequal(size(x),[0 0]))) || (isstring(x) && isscalar(x));
 
     % True if x is a char row vector or string scalar with at least one character.
     isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
@@ -190,7 +178,6 @@ function opts = parseOptions(varargin)
     params.FunctionName = 'webpreview.updateSectionImage';
     params.CaseSensitive = false;
 
-    params.addParameter('ConfigFile', '', isTextScalar) % empty means the default location
     params.addParameter('Montage', [], @isnumeric)
     params.addParameter('Range', [], @isnumeric)
     params.addParameter('Poster', @webpreview.zipAndPost, ...
@@ -202,7 +189,6 @@ function opts = parseOptions(varargin)
     opts = params.Results;
 
     % Text options may arrive as strings; everything downstream uses char paths
-    opts.ConfigFile = char(opts.ConfigFile);
     opts.StageRoot = char(opts.StageRoot);
     opts.ClearStage = logical(opts.ClearStage);
 end % parseOptions
@@ -256,8 +242,8 @@ function result = finalise(result,caught,cfg)
     % Inputs
     % result - Result structure as left by runPipeline (or emptyResult if it was not reached).
     % caught - MException caught by updateSectionImage, or [] if there was none.
-    % cfg    - webpreview.webConfig object used to scrub the token from messages, or [] if
-    %          the config was not loaded.
+    % cfg    - Config argument of updateSectionImage; the token is scrubbed from messages if
+    %          it is a webpreview.webConfig object.
     %
     % Outputs
     % result - The input with a scrubbed post.message, and error set if ok is false.
@@ -284,18 +270,18 @@ function msg = scrubMessage(msg,cfg)
     % function msg = BakingTray.webpreview.updateSectionImage>scrubMessage(msg,cfg)
     %
     % Purpose
-    % If the config could not be loaded no token is known. Errors from loading the config
-    % have already been scrubbed by webpreview.webConfig.
+    % A cfg that is not a webConfig (the caller passed the wrong thing) has no token to
+    % remove.
     %
     % Inputs
     % msg - Message text.
-    % cfg - webpreview.webConfig object, or [] if the config was not loaded.
+    % cfg - webpreview.webConfig object, or anything else.
     %
     % Outputs
     % msg - The message with the token replaced by '***' if cfg is a config object,
     %       otherwise the input.
 
-    if isa(cfg,'webpreview.webConfig')
+    if isa(cfg,'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg)
         msg = cfg.scrub(msg);
     end
 end % scrubMessage

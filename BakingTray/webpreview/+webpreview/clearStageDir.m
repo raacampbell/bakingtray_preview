@@ -9,7 +9,7 @@ function clearStageDir(folder)
     %
     % Inputs
     % folder - Non-empty text scalar: path of the stage folder to remove, e.g.
-    %          webpreview.clearStageDir(webpreview.stageDirFor(siteID,stageRoot))
+    %          webpreview.clearStageDir(webpreview.stageDirFor(siteID,micID,stageRoot))
     %
     % Errors
     % 'webpreview:clearStageDir:badArgument' if folder is not a non-empty text scalar.

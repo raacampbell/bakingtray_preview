@@ -41,10 +41,10 @@ classdef webConfig < handle
 
 
     methods
-        function obj = webConfig(pathToConfigFile)
+        function obj = webConfig(jsonFile)
             % Read upload settings for web preview from the config JSON file
             %
-            % function cfgObj = BakingTray.webpreview.webConfig(pathToConfigFile)
+            % function cfgObj = BakingTray.webpreview.webConfig(jsonFile)
             %
             % Purpose
             % Handles loading and parsing of the web preview config file. The config file
@@ -60,22 +60,22 @@ classdef webConfig < handle
             % The token is removed from the message of any error raised here.
             %
             % Inputs
-            % pathToConfigFile - [optional] path to the JSON config file. If omitted, the
+            % jsonFile - [optional] path to the JSON config file. If omitted, the
             %        file at ~/.brainsaw_webpreview.json is used.
             %
             % Outputs
             % cfgObj - returns an instance of the webConfig object
 
             if nargin < 1
-                pathToConfigFile = defaultConfigPath;
+                jsonFile = defaultConfigPath;
             end
 
             try
-                obj.loadFromFile(pathToConfigFile);
+                obj.loadFromFile(jsonFile);
             catch err
                 % The token is not known to the object if loading failed, so look for it
                 % in the raw file text
-                throwAsCaller(scrubbedException(err, tokenFromFile(pathToConfigFile)));
+                throwAsCaller(scrubbedException(err, tokenFromFile(jsonFile)));
             end
         end % constructor
 
@@ -120,44 +120,44 @@ classdef webConfig < handle
 
     methods (Access = private)
 
-        function loadFromFile(obj, pathToConfigFile)
+        function loadFromFile(obj, jsonFile)
             % Read the file, validate the contents and set the properties
             %
-            % function BakingTray.webpreview.webConfig>loadFromFile(pathToConfigFile)
+            % function BakingTray.webpreview.webConfig>loadFromFile(jsonFile)
             %
             % Purpose
             % Called by the constructor. Errors here are given the token-scrubbing
             % treatment by the constructor, so it is fine for messages to quote the file.
             %
             % Inputs
-            % pathToConfigFile - path to the JSON config file.
+            % jsonFile - path to the JSON config file.
 
-            if ~isfile(pathToConfigFile)
+            if ~isfile(jsonFile)
                 error('webpreview:configMissing', ...
                     ['Config file not found: %s ', ...
-                    '(copy webpreview_config.example.json there and fill it in)'], pathToConfigFile);
+                    '(copy webpreview_config.example.json there and fill it in)'], jsonFile);
             end
 
 
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             % Read and check the structure of the file
             try
-                raw = jsondecode(fileread(pathToConfigFile));
+                raw = jsondecode(fileread(jsonFile));
             catch err
                 error('webpreview:configInvalid', ...
-                    'Config file %s is not valid JSON: %s', pathToConfigFile, err.message);
+                    'Config file %s is not valid JSON: %s', jsonFile, err.message);
             end
 
             if ~(isstruct(raw) && isscalar(raw))
                 error('webpreview:configInvalid', ...
-                    'Config file %s must contain a single JSON object.', pathToConfigFile);
+                    'Config file %s must contain a single JSON object.', jsonFile);
             end
 
             required = {'url', 'siteID', 'micID', 'token'};
             absent = required(~isfield(raw, required));
             if ~isempty(absent)
                 error('webpreview:configIncomplete', ...
-                    'Config file %s is missing field(s): %s', pathToConfigFile, strjoin(absent, ', '));
+                    'Config file %s is missing field(s): %s', jsonFile, strjoin(absent, ', '));
             end
 
 
@@ -169,16 +169,16 @@ classdef webConfig < handle
                 value = raw.(name);
                 if ~(ischar(value) && (isrow(value) || isempty(value)))
                     error('webpreview:configWrongType', ...
-                        'Config field "%s" in %s must be a JSON string.', name, pathToConfigFile);
+                        'Config field "%s" in %s must be a JSON string.', name, jsonFile);
                 end
                 value = strtrim(value);
                 if isempty(value)
                     error('webpreview:configIncomplete', ...
-                        'Config field "%s" in %s is empty.', name, pathToConfigFile);
+                        'Config field "%s" in %s is empty.', name, jsonFile);
                 end
                 if endsWith(name, 'ID') && isempty(regexp(value, '^[a-zA-Z0-9_-]+$', 'once'))
                     error('webpreview:configInvalid', ...
-                        'Config %s in %s may only contain letters, digits, "_" and "-".', name, pathToConfigFile);
+                        'Config %s in %s may only contain letters, digits, "_" and "-".', name, jsonFile);
                 end
                 obj.(name) = value;
             end %for
@@ -196,7 +196,7 @@ classdef webConfig < handle
                     if ~(isnumeric(value) && isscalar(value) && isfinite(value) && value > 0)
                         error('webpreview:configWrongType', ...
                             'Config %s: %s must be a positive finite number of seconds.', ...
-                            pathToConfigFile, name);
+                            jsonFile, name);
                     end
                 end
                 obj.(name) = double(value);

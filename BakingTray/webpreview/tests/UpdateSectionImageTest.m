@@ -7,7 +7,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
     properties
         Dir          % scratch root, removed after each test
         StageRoot    % stage root handed to the function (never the real tempdir)
-        ConfigFile
+        Cfg          % webpreview.webConfig handed to the functions under test
         Recipe
         Log
         Token = 'SECRETTOKEN123'
@@ -36,8 +36,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             mkdir(tc.Dir);
             tc.addTeardown(@() rmdir(tc.Dir, 's'));
             tc.StageRoot = fullfile(tc.Dir, 'stageroot');
-            tc.ConfigFile = fullfile(tc.Dir, 'config.json');
-            writeText(tc.ConfigFile, tc.configText('https://x.example/up.php'));
+            tc.Cfg = tc.makeCfg('https://x.example/up.php');
             tc.Recipe = fullfile(tc.Dir, 'recipe_A.yml');
             tc.Log = fullfile(tc.Dir, 'acqLog_A.txt');
             writeText(tc.Recipe, 'sample: A');
@@ -52,8 +51,11 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
     end
 
     methods
-        function txt = configText(tc, url)
-            txt = sprintf('{"url":"%s","siteID":"site-1","token":"%s"}', url, tc.Token);
+        function cfg = makeCfg(tc, url)
+            f = fullfile(tc.Dir, 'config.json');
+            writeText(f, sprintf( ...
+                '{"url":"%s","siteID":"site-1","micID":"mic-1","token":"%s"}', url, tc.Token));
+            cfg = webpreview.webConfig(f);
         end
 
         function reply = recordingPoster(tc, folder, cfg)
@@ -68,25 +70,14 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function args = get.BaseArgs(tc)
-            args = {'ConfigFile', tc.ConfigFile, 'StageRoot', tc.StageRoot, ...
-                'Poster', @tc.recordingPoster};
+            args = {'StageRoot', tc.StageRoot, 'Poster', @tc.recordingPoster};
         end
 
         function res = update(tc, varargin)
             % Run with the fake poster; store result and the warning issued.
             tc.callCapturing(@() webpreview.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, tc.BaseArgs{:}, varargin{:}));
+                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, tc.BaseArgs{:}, varargin{:}));
             res = tc.Out;
-        end
-
-        function setHome(tc, folder)
-            % Point the default config location at a synthetic home so tests
-            % never read the developer's real config.
-            mkdir(folder);
-            for name = {'HOME', 'USERPROFILE'}
-                tc.addTeardown(@setenv, name{1}, getenv(name{1}));
-                setenv(name{1}, folder);
-            end
         end
 
         function callCapturing(tc, fn)
@@ -98,6 +89,12 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             lastwarn('');
             tc.Out = fn();
             [tc.WarnMsg, tc.WarnId] = lastwarn;
+        end
+
+        function turnIntoErrors(tc, id)
+            % Make the warning with this id throw for the rest of the test.
+            saved = warning('error', id);
+            tc.addTeardown(@warning, saved);
         end
 
         function verifyFailedWarning(tc)
@@ -119,6 +116,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyEqual(tc.Calls.names, ...
                 {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml'});
             tc.verifyEqual(tc.Calls.cfg.siteID, 'site-1');
+            tc.verifyEqual(res.stageDir, fullfile(tc.StageRoot, 'brainsaw_webpreview', 'site-1', 'mic-1'));
         end
 
         function montageIsStaged(tc)
@@ -130,29 +128,11 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % A double image above 1 is an error without Range, so success
             % proves Range reached toUint8; 2048 of [0 4095] is 128.
             img = 2048 * ones(16);
-            tc.callCapturing(@() webpreview.updateSectionImage(img, tc.Recipe, tc.Log, ...
+            tc.callCapturing(@() webpreview.updateSectionImage(img, tc.Recipe, tc.Log, tc.Cfg, ...
                 tc.BaseArgs{:}, 'Range', [0 4095]));
             tc.verifyTrue(tc.Out.ok);
             px = imread(fullfile(tc.Out.stageDir, 'LastCompleteSection.jpg'));
             tc.verifyEqual(double(px), 128 * ones(16), 'AbsTol', 2);
-        end
-
-        function missingConfigIsNonFatal(tc)
-            tc.ConfigFile = fullfile(tc.Dir, 'absent.json');
-            res = tc.update();
-            tc.verifyFalse(res.ok);
-            tc.verifyFailedWarning();
-            tc.verifySubstring(tc.WarnMsg, 'webpreview:configMissing');
-            tc.verifySubstring(res.post.message, 'absent.json');
-            tc.verifyEmpty(tc.Calls);
-        end
-
-        function invalidConfigIsNonFatal(tc)
-            writeText(tc.ConfigFile, 'not json');
-            res = tc.update();
-            tc.verifyFalse(res.ok);
-            tc.verifyFailedWarning();
-            tc.verifyEmpty(tc.Calls);
         end
 
         function errorFieldIsPopulatedOnFailure(tc)
@@ -193,18 +173,37 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyFalse(res.ok, 'non-char message is a failure');
         end
 
+        function nonConfigCfgIsNonFatal(tc)
+            for bad = {[], 'cfg.json', struct('url', 'https://x'), [tc.Cfg tc.Cfg]}
+                tc.callCapturing(@() webpreview.updateSectionImage( ...
+                    uint8(magic(8)), tc.Recipe, tc.Log, bad{1}, tc.BaseArgs{:}));
+                tc.verifyFalse(tc.Out.ok);
+                tc.verifyFailedWarning();
+                tc.verifySubstring(tc.WarnMsg, 'webpreview:updateSectionImage:badConfig');
+            end
+            tc.verifyEmpty(tc.Calls);
+        end
+
+        function deletedCfgIsNonFatal(tc)
+            cfg = tc.makeCfg('https://x.example/up.php');
+            delete(cfg)
+            tc.callCapturing(@() webpreview.updateSectionImage( ...
+                uint8(magic(8)), tc.Recipe, tc.Log, cfg, tc.BaseArgs{:}));
+            tc.verifyFalse(tc.Out.ok);
+            tc.verifyFailedWarning();
+        end
+
         function badImageIsNonFatal(tc)
             tc.callCapturing(@() webpreview.updateSectionImage(uint8(1), tc.Recipe, tc.Log, ...
-                tc.BaseArgs{:}));
+                tc.Cfg, tc.BaseArgs{:}));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
             tc.verifyEmpty(tc.Calls);
         end
 
         function argumentShapeErrorIsNonFatal(tc)
-            tc.setHome(fullfile(tc.Dir, 'home'));
             tc.callCapturing(@() webpreview.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, 'Bogus', 1));
+                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, 'Bogus', 1));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
         end
@@ -288,43 +287,10 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyThat(tc.WarnMsg, ~matlab.unittest.constraints.ContainsSubstring(tc.Token));
         end
 
-        function bestEffortScrubWhenConfigIsRejected(tc)
-            % The webConfig constructor rejects this url and its error echoes it, token
-            % and all; no config object comes back, so the constructor has to scrub it.
-            writeText(tc.ConfigFile, tc.configText(['http://evil/' tc.Token]));
-            res = tc.update();
-            tc.verifyFailedWarning();
-            tc.verifySubstring(tc.WarnMsg, 'webpreview:insecureUrl');
-            tc.verifyThat(res.post.message, ~matlab.unittest.constraints.ContainsSubstring(tc.Token));
-            tc.verifyThat(tc.WarnMsg, ~matlab.unittest.constraints.ContainsSubstring(tc.Token));
-            tc.verifyThat(res.error.message, ~matlab.unittest.constraints.ContainsSubstring(tc.Token));
-        end
-
-        function bestEffortScrubHandlesEscapedQuotes(tc)
-            % The JSON token abc"def is written abc\"def in the file.
-            writeText(tc.ConfigFile, ...
-                '{"url":"http://evil/abc\"def","siteID":"site-1","token":"abc\"def"}');
-            tc.update();
-            tc.verifyFailedWarning();
-            tc.verifyThat(tc.WarnMsg, ~matlab.unittest.constraints.ContainsSubstring('abc"def'));
-            tc.verifySubstring(tc.WarnMsg, 'http://evil/***');
-        end
-
-        function emptyConfigFileOptionUsesDefaultLocation(tc)
-            home = fullfile(tc.Dir, 'home');
-            tc.setHome(home);
-            copyfile(tc.ConfigFile, fullfile(home, '.brainsaw_webpreview.json'));
-            tc.callCapturing(@() webpreview.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, 'ConfigFile', '', ...
-                'StageRoot', tc.StageRoot, 'Poster', @tc.recordingPoster));
-            tc.verifyTrue(tc.Out.ok);
-            tc.verifyNumElements(tc.Calls, 1);
-        end
-
         function clearStageOptionOnlyTouchesTheManagedFolder(tc)
             tc.update();                                   % creates the managed folder
-            managed = webpreview.stageDirFor('site-1', tc.StageRoot);
-            sibling = webpreview.stageDirFor('other', tc.StageRoot);
+            managed = webpreview.stageDirFor('site-1', 'mic-1', tc.StageRoot);
+            sibling = webpreview.stageDirFor('other', 'mic-1', tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
@@ -336,7 +302,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function stageDirIsCharEvenForStringOptions(tc)
             tc.callCapturing(@() webpreview.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, 'ConfigFile', string(tc.ConfigFile), ...
+                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, ...
                 'StageRoot', string(tc.StageRoot), 'Poster', @tc.recordingPoster));
             tc.verifyClass(tc.Out.stageDir, 'char');
             tc.verifyTrue(tc.Out.ok);
@@ -349,11 +315,13 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyThat(res.post.message, ~matlab.unittest.constraints.ContainsSubstring(tc.Token));
         end
 
-        function malformedErrorIdentifierDoesNotThrow(tc)
-            % 'not an id' is not a valid MException identifier.
-            poster = @(~, ~) error('not an id', 'plain failure');
+        function errorWithoutIdentifierDoesNotThrow(tc)
+            % A plain error('text') has an empty identifier. MATLAB will not build an
+            % error with a malformed one, so this is the nearest case that can be tested.
+            % error() cannot output a value, so the poster must be a real function.
+            poster = @throwWithoutId;
             tc.callCapturing(@() webpreview.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, 'ConfigFile', tc.ConfigFile, ...
+                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, ...
                 'StageRoot', tc.StageRoot, 'Poster', poster));
             tc.verifyFalse(tc.Out.ok);
             tc.verifySubstring(tc.Out.post.message, 'plain failure');
@@ -362,12 +330,12 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         % ---- clearStage ----
         function clearStageRemovesOnlyTheManagedFolder(tc)
             tc.update();
-            managed = webpreview.stageDirFor('site-1', tc.StageRoot);
-            sibling = webpreview.stageDirFor('other', tc.StageRoot);
+            managed = webpreview.stageDirFor('site-1', 'mic-1', tc.StageRoot);
+            sibling = webpreview.stageDirFor('other', 'mic-1', tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
-            ok = webpreview.clearStage('ConfigFile', tc.ConfigFile, 'StageRoot', tc.StageRoot);
+            ok = webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot);
             tc.verifyTrue(ok);
             tc.verifyFalse(isfolder(managed));
             tc.verifyTrue(isfile(fullfile(sibling, 'keep.txt')));
@@ -376,48 +344,49 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function clearStageOnAbsentFolderIsOk(tc)
-            tc.verifyTrue(webpreview.clearStage('ConfigFile', tc.ConfigFile, ...
-                'StageRoot', tc.StageRoot));
+            tc.verifyTrue(webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot));
         end
 
-        function clearStageFailureWarnsAndReturnsFalse(tc)
-            tc.callCapturing(@() webpreview.clearStage( ...
-                'ConfigFile', fullfile(tc.Dir, 'absent.json'), 'StageRoot', tc.StageRoot));
-            tc.verifyFalse(tc.Out);
-            tc.verifyEqual(tc.WarnId, 'webpreview:clearStage:failed');
-            tc.verifySubstring(tc.WarnMsg, 'webpreview:configMissing');
+        function clearStageWithNonConfigWarnsAndReturnsFalse(tc)
+            for bad = {[], 'cfg.json', struct('siteID', 'site-1'), [tc.Cfg tc.Cfg]}
+                tc.callCapturing(@() webpreview.clearStage(bad{1}, 'StageRoot', tc.StageRoot));
+                tc.verifyFalse(tc.Out);
+                tc.verifyEqual(tc.WarnId, 'webpreview:clearStage:failed');
+                tc.verifySubstring(tc.WarnMsg, 'webpreview:clearStage:badConfig');
+            end
         end
 
         function clearStageNeverThrowsEvenForBadArguments(tc)
-            saved = warning('error', 'all');
-            restore = onCleanup(@() warning(saved));
-            ok = webpreview.clearStage('Bogus', 1);
-            tc.verifyFalse(ok);
-            delete(restore);
+            % warning('error','all') is not allowed in MATLAB, so name the ids.
+            tc.turnIntoErrors('webpreview:clearStage:failed');
+            tc.verifyFalse(webpreview.clearStage(tc.Cfg, 'Bogus', 1));
+            tc.verifyFalse(webpreview.clearStage([]));
         end
 
         function warningsAsErrorsDoNotMakeItThrow(tc)
-            saved = warning('error', 'all');
-            restore = onCleanup(@() warning(saved));
-            tc.ConfigFile = fullfile(tc.Dir, 'absent.json');
-            res = webpreview.updateSectionImage(uint8(magic(8)), tc.Recipe, tc.Log, ...
+            tc.turnIntoErrors('webpreview:updateSectionImage:failed');
+            res = webpreview.updateSectionImage(uint8(1), tc.Recipe, tc.Log, tc.Cfg, ...
                 tc.BaseArgs{:});
             tc.verifyFalse(res.ok);
-            delete(restore);
         end
 
         function defaultPosterOnUnreachableServerIsNonFatal(tc)
             % Port 9 on localhost refuses the connection; plain http is
             % accepted by webConfig for localhost only.
-            writeText(tc.ConfigFile, tc.configText('http://127.0.0.1:9/up.php'));
+            tc.Cfg = tc.makeCfg('http://127.0.0.1:9/up.php');
             tc.callCapturing(@() webpreview.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, ...
-                'ConfigFile', tc.ConfigFile, 'StageRoot', tc.StageRoot));
+                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, 'StageRoot', tc.StageRoot));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
             tc.verifyThat(tc.WarnMsg, ~matlab.unittest.constraints.ContainsSubstring(tc.Token));
         end
     end
+end
+
+
+function reply = throwWithoutId(~, ~)
+reply = [];
+error('plain failure');
 end
 
 

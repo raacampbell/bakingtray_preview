@@ -5,7 +5,7 @@ function result = postZip(zipPath, cfg)
     %
     % Purpose
     % Uploads the zip with a bearer token. cfg is a webpreview.webConfig object, which has
-    % already checked the url (https only), siteID and token when it was created. Its
+    % already checked the url (https only), siteID, micID and token when it was created. Its
     % connectTimeout, responseTimeout and dataTimeout properties (seconds; defaults 15, 60,
     % 60) set the timeouts. The token is sent with cfg.authHeader, so it is never read here.
     %
@@ -47,6 +47,7 @@ function result = postZip(zipPath, cfg)
         % Build and send the request
         body = matlab.net.http.io.MultipartFormProvider( ...
             'site_id', cfg.siteID, ...
+            'microscope_id', cfg.micID, ...
             'data', matlab.net.http.io.FileProvider(zipPath));
         req = matlab.net.http.RequestMessage('POST', cfg.authHeader, body);
 

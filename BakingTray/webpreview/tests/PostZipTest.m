@@ -70,6 +70,29 @@ classdef PostZipTest < matlab.unittest.TestCase
             end
         end
 
+        function requestCarriesSiteAndMicroscopeIDs(tc)
+            % A local socket that never answers captures the request: the operating system
+            % accepts the connection and buffers the small request until we accept() it
+            % after postZip has given up (short response timeout).
+            tc.assumeTrue(usejava('jvm'), 'needs the Java VM to open a local socket');
+            srv = java.net.ServerSocket(0);
+            tc.addTeardown(@() srv.close());
+            srv.setSoTimeout(5000);
+            cfg = tc.makeCfg('url', sprintf('http://127.0.0.1:%d/upload.php', srv.getLocalPort()), ...
+                             'responseTimeout', 2, 'dataTimeout', 2);
+            res = webpreview.postZip(tc.makeZip(), cfg);
+            tc.verifyFalse(res.ok);
+            conn = srv.accept();
+            tc.addTeardown(@() conn.close());
+            in = conn.getInputStream();
+            request = char(zeros(1, 0));
+            while in.available() > 0
+                request(end+1) = char(mod(in.read(), 256)); %#ok<AGROW> small request
+            end
+            tc.verifyNotEmpty(regexp(request, 'name="?site_id"?\s+site_a', 'once'));
+            tc.verifyNotEmpty(regexp(request, 'name="?microscope_id"?\s+mic_1', 'once'));
+        end
+
         function redirectStatusIsNotOkAndSaysSo(tc)
             r = webpreview.interpretResponse(302, '');
             tc.verifyFalse(r.ok);
@@ -148,7 +171,7 @@ classdef PostZipTest < matlab.unittest.TestCase
             % A webConfig for a refused localhost port. Name/value pairs override fields
             % of the config file, for example makeCfg('url', 'http://127.0.0.1:1/x').
             s = struct('url', 'http://127.0.0.1:1/upload.php', ...
-                       'siteID', 'site_a', 'token', PostZipTest.Token);
+                       'siteID', 'site_a', 'micID', 'mic_1', 'token', PostZipTest.Token);
             for ii = 1:2:numel(varargin)
                 s.(varargin{ii}) = varargin{ii+1};
             end
