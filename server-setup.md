@@ -125,7 +125,7 @@ cat > "$PRIV/brainsaw_settings.json" <<EOF
    "microscopes": {"test_mic": {"display_name": "Test microscope", "token": "$TOKEN"}}}}}
 EOF
 cat > "$PRIV/brainsaw_webpreview_test.json" <<EOF
-{"url": "https://brainsaw.org/testserver/upload.php", "siteID": "$SITE", "micID": "test_mic", "token": "$TOKEN"}
+{"url": "https://brainsaw.org/testserver/upload.php", "siteID": "$SITE", "token": "$TOKEN"}
 EOF
 printf 'site view:  https://brainsaw.org/testserver/%s\npanopticon: https://brainsaw.org/testserver/%s\n' "$SITE" "$PAN" > "$PRIV/view_urls.txt"
 )
@@ -285,7 +285,7 @@ a redirect as a failure. For a simulated acquisition against the test deployment
    `./stage_server.sh --dest brainsaw --settings-path /home/www/www/brainsaw_private/brainsaw_settings_live.json`
    (`--settings-path` is required for any destination other than `testserver`). Deploy with the
    commands it prints. Serving from the web root itself would need a small change to the script.
-3. Give each lab its view URL and each microscope its config (`siteID`, `micID`, token, the
+3. Give each lab its view URL and each microscope its config (`siteID`, token, the
    real `url`). Test each microscope against the test deployment first, and keep `/testserver`
    as a standing canary.
 

@@ -35,12 +35,12 @@ previous run's recipe and log can never be sent. This needs no image and
 uploads nothing (so it does not use up the server's rate limit):
 
 ```matlab
-ok = BakingTray.webpreview.clearStage(cfg);
+ok = BakingTray.webpreview.clearStage(cfg, micID);
 ```
 
 `clearStage` takes the option `StageRoot` like `updateSectionImage`, needs the
-config only for the site and microscope IDs, and removes just
-`<StageRoot>/brainsaw_webpreview/<siteID>/<micID>`, never sibling folders or anything
+config and the microscope ID (`SYSTEM.ID` from the recipe, see below), and removes just
+`<StageRoot>/brainsaw_webpreview/<siteID>/<micID>/acq`, never sibling folders or anything
 else under `StageRoot`. It never throws: on failure it warns
 `webpreview:clearStage:failed` and returns `false`. (`updateSectionImage` with
 `'ClearStage', true` does the same clearing before staging.)
@@ -51,7 +51,7 @@ and `cfg` are variables BakingTray already has at that point; the
 the `try` covers anything else):
 
 ```matlab
-% img: latest section image, recipePath: recipe file or folder,
+% img: latest section image, recipePath: recipe file,
 % logPath: acquisition log, cfg: the webupload.webConfig built at startup
 if ~isempty(which('BakingTray.webpreview.updateSectionImage'))
     try
@@ -72,7 +72,7 @@ the connect plus response timeouts (roughly 15 s + 60 s by default) when the
 server is dead or stalled.
 
 Arguments: `img` is the latest section image (gray HxW or RGB HxWx3);
-`recipePath` is the recipe file, or the folder holding it; `logPath` the
+`recipePath` is the recipe file; `logPath` the
 acquisition log; `cfg` is the `webupload.webConfig` object. Options:
 
 | option | meaning |
@@ -113,15 +113,21 @@ A zip of up to four files, named to match the server's globs in
 
 - `LastCompleteSection.jpg` from `img`
 - `montage.jpg` from `Montage`, only if given (a stale one is removed when not)
-- `recipe.yml` (or `recipe.yaml`, following the source), copied from the recipe
+- `recipe.yml`, copied from the recipe whatever its extension
 - `acqLog.txt`, copied from the log
 
 The form fields and the client-side upload limits are in `upload_core/README.md`.
 
-The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>/<micID>`, reused
+Uploads use source `acq`, and `status.json` (`{"finished": false}`) is added to
+the zip; see `upload_core/README.md` for `status.json`, `webupload.readRecipe`
+and the other fields. The microscope ID is `SYSTEM.ID` of the recipe passed in,
+not a config setting. If it cannot be read or is not a valid ID, nothing is
+staged or uploaded. A `Poster` is called as `poster(folder, cfg, micID, source)`.
+
+The stage folder is `<tempdir>/brainsaw_webpreview/<siteID>/<micID>/acq`, reused
 between calls so only the latest files exist; it is not deleted afterwards. Two
-MATLAB sessions using the same site and microscope ID share it and will
-overwrite each other's files; give each its own `micID`.
+MATLAB sessions using the same site, microscope ID and `StageRoot` share it and
+will overwrite each other's files.
 
 ## Images that are not uint8
 
