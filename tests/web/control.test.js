@@ -43,7 +43,7 @@ function makeEnv(els, responses) {
     reloads: 0,
     reload() { env.reloads += 1; },
     now: () => Date.parse('2026-01-01T00:10:00Z'),
-    storage: { get: (k) => (store.has(k) ? store.get(k) : null), set: (k, v) => store.set(k, v) },
+    storage: { available: true, get: (k) => (store.has(k) ? store.get(k) : null), set: (k, v) => store.set(k, v) },
     storageKey: 'k',
     warnings,
     warnOnce: A.makeWarnOnce((m) => warnings.push(m)),
@@ -106,7 +106,7 @@ test('refreshDisplay: updates ago and stale from the clock without any fetch', (
   assert.equal(never.ago.textContent, 'orig'); // never-uploaded text untouched
   assert.equal(never.classes.has('stale'), true);
 });
-test('updateDisplay: missing/invalid data-stale-after falls back to 900, warns once', () => {
+test('refreshDisplay: missing/invalid data-stale-after falls back to 900, warns once', () => {
   const missing = fakeEl({ url: 'a', uploadedAt: T0, staleAfter: null }); // 600 s old
   const bad = fakeEl({ url: 'b', uploadedAt: T0, staleAfter: 'abc' });
   const env = makeEnv([missing, bad], {});
@@ -116,14 +116,80 @@ test('updateDisplay: missing/invalid data-stale-after falls back to 900, warns o
   assert.equal(bad.classes.has('stale'), false);
   assert.equal(env.warnings.length, 1);
 });
-test('fetchUploadedAt: failure reasons reach onFail', async () => {
+test('fetchUploadedAt: failure kind reaches onFail', async () => {
   const reasons = [];
-  await A.fetchUploadedAt('u', async () => ({ ok: false, status: 404 }), 1, { onFail: (u, r) => reasons.push(r) });
-  assert.deepEqual(reasons, ['HTTP 404']);
+  await A.fetchUploadedAt('u', async () => ({ ok: false, status: 404 }), 1, { onFail: (u, kind) => reasons.push(kind) });
+  assert.deepEqual(reasons, ['http-404']);
 });
 test('safeStorage: swallows a throwing storage', () => {
   const boom = { getItem() { throw new Error('x'); }, setItem() { throw new Error('x'); } };
-  const s = A.safeStorage(boom);
+  const s = A.safeStorage(() => boom);
   s.set('k', 'v');
   assert.equal(s.get('k'), null);
+  assert.equal(s.available, true);
+});
+test('safeStorage: a throwing getter is survived and reported unavailable', () => {
+  const s = A.safeStorage(() => { throw new Error('SecurityError'); });
+  s.set('k', 'v');
+  assert.equal(s.get('k'), null);
+  assert.equal(s.available, false);
+});
+
+// --- per-URL loop guard ---
+test('poll: guard is per URL; alternating fetch failures give at most one reload per value', async () => {
+  const els = [fakeEl({ url: 'a', uploadedAt: T0 }), fakeEl({ url: 'b', uploadedAt: T0 })];
+  const failing = new Set();
+  const env = makeEnv(els, {});
+  env.fetchFn = async (url) => {
+    const base = url.split('?')[0];
+    if (failing.has(base)) throw new Error('net');
+    return { ok: true, json: async () => ({ uploaded_at: T1 }) };
+  };
+  await A.poll(env); // both changed -> reload
+  failing.add('a');
+  await A.poll(env); // only b visible, already reloaded for it
+  failing.delete('a'); failing.add('b');
+  await A.poll(env); // only a visible, already reloaded for it
+  failing.delete('b');
+  await A.poll(env);
+  assert.equal(env.reloads, 1);
+});
+test('poll: a different card changing later still reloads', async () => {
+  const els = [fakeEl({ url: 'a', uploadedAt: T0 }), fakeEl({ url: 'b', uploadedAt: T0 })];
+  const responses = { a: T1 };
+  const env = makeEnv(els, responses);
+  await A.poll(env);
+  responses.b = T1;
+  await A.poll(env);
+  assert.equal(env.reloads, 2);
+});
+test('poll: unavailable storage warns once that the guard is off', async () => {
+  const els = [fakeEl({ url: 'a', uploadedAt: T0 })];
+  const env = makeEnv(els, { a: T1 });
+  env.storage = { available: false, get: () => null, set: () => {} };
+  await A.poll(env);
+  await A.poll(env);
+  assert.equal(env.warnings.filter((w) => w.includes('guard is off')).length, 1);
+});
+
+// --- failure warning policy ---
+test('poll: 404 is silent', async () => {
+  const env = makeEnv([fakeEl({ url: 'a', uploadedAt: '' })], {}); // 404
+  await A.poll(env);
+  await A.poll(env);
+  assert.deepEqual(env.warnings, []);
+});
+test('poll: other failures warn once per URL and kind; a new kind warns again', async () => {
+  const env = makeEnv([fakeEl({ url: 'a', uploadedAt: T0 })], {});
+  const modes = [
+    async () => ({ ok: false, status: 500 }),
+    async () => ({ ok: false, status: 500 }),
+    async () => { throw new Error('net'); },
+    async () => ({ ok: true, json: async () => { throw new Error('bad'); } }),
+    (url, opts) => new Promise((_, rej) => opts.signal.addEventListener('abort', () => rej(new Error('aborted')))),
+    (url, opts) => new Promise((_, rej) => opts.signal.addEventListener('abort', () => rej(new Error('aborted')))),
+  ];
+  for (const m of modes) { env.fetchFn = m; await A.poll(env); }
+  assert.equal(env.warnings.length, 4); // http-500, network, bad-json, timeout
+  assert.ok(env.warnings[3].includes('timed out') || env.warnings[3].includes('aborted'));
 });

@@ -2,7 +2,6 @@
 // Run from the repo root: node --test tests/web/
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const A = require('../../brainsaw/js/autorefresh.js');
 const { humanAgo, isStale, hasChanged, fetchUploadedAt, clockOffset } = require('../../brainsaw/js/autorefresh.js');
 
 // Mirrors bs_human_ago() in lib.php branch by branch.
