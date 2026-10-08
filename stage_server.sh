@@ -122,5 +122,5 @@ echo "The settings file on the server will be read from: $SETTINGS_PATH"
 echo "(it is NOT staged; put it there separately: see server-setup.md)"
 echo
 echo "Next: send staging/$DEST/ to the server's public/$DEST/ (USER@HOST: your SSH login). Dry run first:"
-echo "  rsync -azn $FLAGS -e ssh staging/$DEST/ USER@HOST:${WEBROOT%/}/$DEST/"
-echo "  rsync -az $FLAGS -e ssh staging/$DEST/ USER@HOST:${WEBROOT%/}/$DEST/"
+echo "rsync -avzn $FLAGS -e ssh staging/$DEST/ brainsaw.org:${WEBROOT%/}/$DEST/"
+echo "rsync -avz $FLAGS -e ssh staging/$DEST/ brainsaw.org:${WEBROOT%/}/$DEST/"

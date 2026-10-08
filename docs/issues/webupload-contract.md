@@ -49,8 +49,6 @@ The agreed plan (PI, 2026-10-08) has two upload sources: `acq` (BakingTray) and 
 
 ## Open after review (merged for testing, 2026-10-08)
 Merged at the PI's request before these were fixed. Status stays `in review` until they are.
-- High: `readRecipe.m:66`: the block-style regexp overflows the stack on a recipe with ~50k lines in `SYSTEM:` and
-  kills MATLAB (exit 132). Cap the recipe size before parsing, or scan lines instead of regexp.
 - Medium: `stageFiles` still uploads the previous staged `recipe.yml` if copying the new one fails (warns `stale`).
   The recipe must never fall back; the log may.
 - Medium: undefined by the shared rule, so MATLAB and PHP may disagree: nested or multi-line flow maps, duplicate

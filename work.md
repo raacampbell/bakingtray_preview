@@ -93,3 +93,185 @@ We send not only the images but also the recipe file and the acquisition log fil
 4. For the above to work well, I think we need to send the recipe and acquisition log files as generic names always. So always have it land and be called "raw_recipe" and "raw_acqlog". That way they will just over-write whatever was there before. 
 If we do things this way, then even if StitchIt is pushing old acquisition files to the server they will never be displayed because the server will refuse to plot anything with a sample name that does not match. 
 
+5. Acquisition end: at the end of the acquisition BakingTray sends an indicator that it is done, in a small status JSON
+(other things can go in it too). From then on the tile says "finished". If the system starts again (e.g. a resume) the
+next upload is not finished, so the word goes away. The FINISHED file and the acq log are NOT used for this (a resume
+leaves "FINISHED AND COMPLETED ACQUISITION" in the log). Later, syncAndCrunch can make a similar final pass.
+
+
+# Agreed plan (PI and Claude, 2026-10-08)
+This section is the specification for the agents doing the work. Where it differs from the text above, this section
+wins. In particular: the source is a form field (not text added to the zip name), the server folders are `acq/` and
+`analysis/` (not `acquisition_pc`/`analysis_pc`), and the fixed file names are `recipe.yml` and `acqLog.txt` (not
+`raw_recipe`/`raw_acqlog`).
+
+## Who does what
+- **Rob, later:** all changes to the real BakingTray repo (`../bakingtray`): the call sites in `bake.m` and
+  `sliceSample.m`, and where and how the config file is loaded. Then moving the core into StitchIt, and StitchIt's own
+  uploads. Agents do not touch `../bakingtray` or `../StitchIt`.
+- **Agents, now:** the server (`brainsaw/`) and the MATLAB code in this repo. The core code must be ready for what is
+  coming (BakingTray's three calls now, StitchIt's uploads later) without any BakingTray or StitchIt change being needed
+  on the server afterwards.
+- The `BakingTray/` folder in this repo is not BakingTray. It holds code that Rob will later copy into BakingTray.
+
+## Decisions
+1. Sites and microscopes must both be listed in the settings file. An upload naming an unlisted site or microscope is
+   refused.
+2. One token per site, shared by every acquisition and analysis PC at that site. The microscope ID is not in the config
+   JSON: it comes from the recipe (`SYSTEM.ID`).
+3. Two sources: `acq` (BakingTray, the ground truth) and `analysis` (StitchIt, later). Each has its own folder.
+4. BakingTray sends the bare minimum: the first-depth section image, recipe, log and status. Never a montage. The
+   montage only ever comes from StitchIt.
+5. "Finished" is an explicit flag set by the caller. BakingTray sends `finished: true` on its end-of-acquisition upload
+   after any graceful stop (completed or stopped early; no distinction). Every other upload sends `finished: false`, so a
+   resume clears it. The FINISHED file and the acquisition log are not used for this.
+6. A microscope with no `acq/` folder (BakingTray not upgraded) is shown from `analysis/` alone.
+7. The start-of-acquisition upload uses a 5 s connect timeout and a 10 s response timeout.
+8. Where the config file lives and how BakingTray finds it is Rob's concern, decided later. Core functions take a
+   loaded `webConfig` object and do not care where it came from.
+9. StitchIt is out of scope until phase 3.
+
+## Upload contract (server and every client)
+- POST multipart fields: `site_id`, `microscope_id`, `source` (`acq` or `analysis`), `data` (the zip).
+  `Authorization: Bearer <site token>`.
+- Unknown site, unlisted microscope and wrong token: the same 403 and message as today (nothing reveals which exists).
+  A `source` outside the two values: 400.
+- Microscope ID normalisation, identical in MATLAB and PHP: take `SYSTEM.ID` from the recipe, trim, replace spaces with
+  `_`. The result must match the server ID rule (`^[A-Za-z][A-Za-z0-9_-]*$`), otherwise the client does not upload and
+  warns. The server checks that the normalised `SYSTEM.ID` in the uploaded `recipe.yml` equals `microscope_id`, and
+  refuses with 400 otherwise.
+- Zip contents: only these names are extracted, anything else is skipped:
+  `LastCompleteSection.jpg`, `montage.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
+  `recipe.yml` and `status.json` are required in every upload (400 if missing). The recipe is always sent as
+  `recipe.yml`, whatever the source file's extension.
+- `status.json`: `{"finished": true|false}`. Unknown keys are ignored, so more can be added later.
+
+## Server changes
+- Settings file shape:
+  `{"panopticon": "...", "sites": {"<site>": {"display_name": "...", "token": "...",
+  "microscopes": {"<mic>": {"display_name": "..."}}}}}`.
+  A `token` key inside a microscope is a validation error, so an old-format file is not half-accepted.
+- Data in `system_data/<site>/<mic>/<source>/`, each with its own `meta.json` (`uploaded_at`).
+- Rate limit per (site, microscope, source), 5 s as now.
+- New sample: when an upload's recipe has a sample ID different from the one stored in that source folder (or none is
+  stored), the folder is emptied before extracting. This applies to `acq/` and `analysis/` alike, so neither ever mixes
+  two samples.
+- Which data is shown, per microscope:
+  - `acq/` exists: it is the ground truth (image, recipe table, log chart, status, freshness). `analysis/` is shown in
+    addition only if its sample ID equals `acq/`'s.
+  - No `acq/`: `analysis/` alone.
+  - Microscope page with matching `analysis/` data: the StitchIt image is the large main image; below it, thumbnails of
+    the BakingTray image and the StitchIt montage, which enlarge on click. Without matching analysis data the page is
+    as today (BakingTray image, magnifier, no montage).
+  - Card thumbnail: the BakingTray image (the `analysis/` image when there is no `acq/`).
+- Finished: the status shown is the newest (by `uploaded_at`) among the displayed sources. When it is finished, the
+  card and the page say "finished" and the card is not drawn as stale.
+- Freshness and auto-refresh: staleness comes from the ground-truth source (`acq/`, or `analysis/` when it is shown
+  alone). The page auto-refreshes when either displayed source changes.
+- Assets (`?f=`): only files the display rule shows are served. A hidden `analysis/` image or montage gives the same
+  404 as any missing page. Recipe and log are never served (as now).
+- Remove what the fixed names make obsolete (the newest-file globs for the main image, recipe and log).
+- One-off on /testserver: delete the old flat `system_data/<site>/<mic>/` files and reshape the settings file (document
+  the steps for Rob).
+
+## MATLAB: split this repo's code into core and BakingTray-specific
+`BakingTray/webpreview/+webpreview` is split in two. All functions keep Rob's doc-string style and the
+`end % name` markers, and doc-string usage lines name the new package.
+
+**Core transfer code: `upload_core/+webupload/`** (package `webupload`, tests in `upload_core/tests/`). This is what
+Rob will later move into StitchIt unchanged, and what both BakingTray and StitchIt will call. It knows nothing about
+BakingTray. The names `upload_core` and `webupload` are provisional; renaming later is a find and replace.
+- Moves here: `webConfig`, `zipAndPost`, `postZip`, `zipFolder`, `selectUploadable`, `allowedExtensions`,
+  `serverLimits`, `interpretResponse`.
+- `webConfig`: drop `micID`. The constructor requires the path to the file; remove `defaultConfigPath` and the
+  default location (deciding where the file lives is BakingTray's job, see decision 8).
+- `zipAndPost(folder, cfg, micID, source, ...)` and `postZip(zipPath, cfg, micID, source, ...)`: send `microscope_id`
+  and `source` with `site_id`. Optional param/val `'ConnectTimeout'`, `'ResponseTimeout'` override the cfg values for
+  that call only (used for the start upload). `source` must be `acq` or `analysis`, and `micID` must pass the ID rule;
+  otherwise `ok = false`, no request.
+- `allowedExtensions` becomes the list of allowed file names (the contract list above), mirroring `lib.php`; the test
+  comparing them stays.
+- New, small: a recipe reader returning the normalised microscope ID and the sample ID from a recipe file, and the
+  definition of the contract file names (including `status.json`) and a way to write `status.json`. Both sources must
+  produce identical uploads, so these belong in the core.
+
+**BakingTray-specific: `BakingTray/+BakingTray/+webpreview/`** (called as `BakingTray.webpreview.*`, mirroring
+`code/+BakingTray/+webpreview` in the real BakingTray repo; tests in `BakingTray/tests/` or similar). Everything left
+after the move: `updateSectionImage`, `stageFiles`, `stageSpec`, `toUint8`, `stageDirFor`, `clearStage`,
+`clearStageDir`, and `globToRegexp` if it is still needed once the server uses fixed names (delete it if not).
+- `updateSectionImage(img, recipePath, logPath, cfg, ...)` is BakingTray's single entry point for all three calls:
+  - start: `img` is `[]`; no image is sent, and any previously staged image is deleted first, so an old sample's image
+    can never go up with a new recipe;
+  - each section: the first-depth image;
+  - end: `'Finished', true`. Only for this call, a 429 reply is retried once after waiting the rate-limit interval
+    plus 1 s, so the finished flag is not lost.
+  It always sends `source = 'acq'`, the micID from the recipe (core reader), `status.json` with the `Finished` value
+  (default false), and passes `'ConnectTimeout'`/`'ResponseTimeout'` through to the core.
+- Remove the `Montage` option and montage staging (decision 4).
+- Stage folder: `<StageRoot>/brainsaw_webpreview/<siteID>/<micID>/acq`, micID now from the recipe.
+- README: the three calls as Rob will write them in `bake.m` (start, with 5 s / 10 s timeouts; end, with
+  `'Finished', true`) and `sliceSample.m` (during the cut), each guarded with `which` and try/catch. These are examples
+  for Rob, not changes to BakingTray.
+
+**Also update:** the simulator (`BakingTray/simulate`): start, sections, end with finished, no montage, new paths.
+`add_to_path.m`: add `upload_core`, `BakingTray` (the folder containing `+BakingTray`) and `BakingTray/simulate`.
+Never add this repo's `BakingTray` folder on a rig that has the real BakingTray installed: the two `+BakingTray`
+packages would merge and could shadow each other (say so in the READMEs). Docs (`server-setup.md` settings shape,
+READMEs, `instructions.md`) and `tests/web/check_pages.sh` and `check_deployed.sh`, including `analysis` uploads made
+with curl, to test the match rule and the analysis-only fallback before StitchIt exists.
+
+## Phases
+1. **Now (agents):** everything above, tested locally (`php -S`, MATLAB suite, simulator end to end) and on /testserver.
+2. **Later (Rob):** the core goes into StitchIt, which does not use it yet; the BakingTray-specific package and the three
+   call sites go into BakingTray; install both on a rig and run against the new site.
+3. **Later still (Rob):** StitchIt uploads with `source = 'analysis'`, replacing its scp route. No server change needed.
+
+## How the edge cases resolve
+| Case | Outcome |
+| --- | --- |
+| Stopped at the microscope (gracefully), syncAndCrunch still sending | BakingTray sends finished. Same sample, so StitchIt images still shown. |
+| Stopped without the end upload (crash, power loss) | Goes stale after `stale_after_seconds`. |
+| New sample started while the old syncAndCrunch still sends | `acq/` emptied and holds the new sample; old StitchIt uploads do not match, so they are hidden. |
+| Resume in the same folder, same name | Same sample ID: everything keeps matching; the next upload is not finished, so "finished" goes away. |
+| Restart under a new folder and name | A new acquisition (as for a new sample). |
+| BakingTray's start upload fails (server down) | Server still has the old sample, so new StitchIt images are hidden until BakingTray's next upload succeeds. |
+| BakingTray not upgraded | No `acq/`: `analysis/` shown alone. |
+| Same sample name reused later in a new folder | Old StitchIt output would match. Rare; accepted. |
+
+## Background facts (checked in the code, 2026-10-08)
+- StitchIt's `buildSectionPreview` writes `LastCompleteSection.jpg` and `montage.jpg`, the same names BakingTray
+  stages, so separate source folders are required.
+- StitchIt already takes the microscope name from the recipe (`readMetaData2Stitchit` -> `System.ID`, spaces -> `_`).
+- Recipe: `SYSTEM: {ID: ...}` is the microscope name; `sample: {ID: ...}` the sample name, which always starts with
+  `<SYSTEM.ID>_` (recipe.m:356). An unconfigured rig has `SYSTEM.ID` = `SYSTEM_NAME` (refused: not listed).
+- `Acquisition.acqStartTime` is rewritten on every bake, including a resume (bake.m:136), so matching uses the sample
+  ID, not the start time.
+- The analysis PC already has the recipe and acqLog (syncAndCrunch rsyncs the sample folder), and StitchIt's web runner
+  is a separate background MATLAB process, so a blocking upload there costs the acquisition nothing.
+
+
+
+# Code notes
+
+## HOW YOU WILL WRITE THE CODE
+You will see I made changes to the code you wrote. I changed the comment style. 
+I merged some of the very small functions into others to make it less bitty. 
+I created a class to make life easier than the functional sprawl you created. 
+When you write new MATLAB code, carry on the same vibe. 
+
+For the web code, do as you were doing before. 
+
+
+## Note on your readRecipe.m
+You were making your own readRecipe.m FWIW BakingTray has: https://github.com/SWC-Advanced-Microscopy/BakingTray/blob/master/code/%2BBakingTray/%2Bsettings/readRecipe.m
+But that won't be present on a machine with only stitchit. So maybe we leave this as is 
+
+
+## Note on functions that are in BakingTray right now
+`clearStage.m` and `clearStageDir.m` in the `BakingTray.webpreview` module are maybe in the wrong place. 
+Staging files is also, surely, going to be needed by StitchIt. So perhaps these should be in `upload_core/+webupload/`. 
+I'm not certain, I'm just thinking out loud here. Thoughts? Same, I think, for `stageDirFor.m` and `stageSpec` and `stageFiles`. 
+Probably `toUnit8` also. 
+
+That leaves us with `updateSectionImage`. TBH, that also could go. If we allow the first input arg there (`img`) to optionally be a file name, then this is a general purpose function and also lives in the generic toolset. Thoughts?
+

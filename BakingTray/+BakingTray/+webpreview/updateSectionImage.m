@@ -73,6 +73,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     result = emptyResult;
     caught = [];
 
+
     % From here on cfg is [] unless it is a usable config; finalise relies on that
     if nargin<4 || ~(isa(cfg,'webupload.webConfig') && isscalar(cfg) && isvalid(cfg))
         cfg = [];
