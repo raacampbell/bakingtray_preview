@@ -7,11 +7,14 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % Purpose
     % The call BakingTray makes when a section completes. It stages img, the optional
     % 'Montage', the recipe and the acquisition log with BakingTray.webpreview.stageFiles, and
-    % uploads the stage folder with webupload.zipAndPost. The config is a
+    % writes status.json (finished = false), and uploads the stage folder with
+    % webupload.zipAndPost as source 'acq'. The microscope ID is SYSTEM.ID of the recipe
+    % passed in (webupload.readRecipe). If it cannot be read, or is not a valid ID,
+    % nothing is staged or uploaded and the call fails. The config is a
     % webupload.webConfig object that the caller builds once and passes in.
     % Image conversion and 'Range' are documented in BakingTray.webpreview.toUint8.
     %
-    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>, with StageRoot
+    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/acq, with StageRoot
     % defaulting to tempdir. It is reused between calls, so each section replaces the
     % previous files instead of accumulating them. If a new recipe or log cannot be
     % staged, the previous copy stays and is uploaded; this is reported (see
@@ -34,8 +37,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %
     % Inputs
     % img        - Numeric HxW or HxWx3 image of the section (see BakingTray.webpreview.toUint8).
-    % recipePath - Path to the recipe file or to a folder containing it (see
-    %              BakingTray.webpreview.stageFiles).
+    % recipePath - Path to the recipe file.
     % logPath    - Path to the acquisition log file.
     % cfg        - webupload.webConfig object.
     %
@@ -43,7 +45,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % 'Montage'    - Numeric montage image to stage as well. Default is [].
     % 'Range'      - Numeric [lo hi] used to scale the images. Default is [].
     % 'Poster'     - Function handle with the zipAndPost signature,
-    %                poster(folder,cfg) -> struct(ok,httpStatus,message) with char
+    %                poster(folder,cfg,micID,source) -> struct(ok,httpStatus,message) with char
     %                message, where cfg is a webupload.webConfig object. Default is
     %                @webupload.zipAndPost; tests inject a fake.
     % 'StageRoot'  - Non-empty text scalar. Folder holding the stage folders. Default is
@@ -101,10 +103,11 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % function result = BakingTray.webpreview.updateSectionImage>runPipeline(result,img,recipePath,logPath,cfg,opts)
     %
     % Purpose
-    % The part of updateSectionImage that runs inside its try/catch. Builds the stage folder
-    % path from cfg.siteID, cfg.micID and opts.StageRoot (both IDs are charset-checked by
-    % webConfig, so they are safe to use as folder names), empties it if opts.ClearStage is
-    % true, stages the files with BakingTray.webpreview.stageFiles and uploads the folder with
+    % The part of updateSectionImage that runs inside its try/catch. Reads the microscope ID
+    % from the recipe, builds the stage folder path from cfg.siteID, the ID and
+    % opts.StageRoot (BakingTray.webpreview.stageDirFor checks both IDs, so they are safe as
+    % folder names), empties it if opts.ClearStage is true, stages the files with
+    % BakingTray.webpreview.stageFiles, writes status.json and uploads the folder with
     % opts.Poster.
     %
     % Anything that goes wrong before staging has finished is thrown and caught by
@@ -115,7 +118,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % Inputs
     % result     - Structure from emptyResult, to be filled in.
     % img        - Numeric HxW or HxWx3 image of the section.
-    % recipePath - Path to the recipe file or to a folder containing it.
+    % recipePath - Path to the recipe file.
     % logPath    - Path to the acquisition log file.
     % cfg        - webupload.webConfig object.
     % opts       - Options structure from parseOptions.
@@ -125,7 +128,9 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     %          filled in. post and ok are set once the poster has returned. error is set if
     %          staging was incomplete or the poster threw.
 
-    stageDir = BakingTray.webpreview.stageDirFor(cfg,opts.StageRoot);
+    % Read from the source recipe, never from a copy left in the stage by an earlier call
+    micID = webupload.readRecipe(char(recipePath));
+    stageDir = BakingTray.webpreview.stageDirFor(cfg,micID,opts.StageRoot);
     if opts.ClearStage
         BakingTray.webpreview.clearStageDir(stageDir);
     end
@@ -146,7 +151,8 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     end
 
     try
-        result.post = callPoster(opts.Poster,stageDir,cfg);
+        webupload.writeStatus(stageDir,false);
+        result.post = callPoster(opts.Poster,stageDir,cfg,micID);
         result.ok = result.post.ok;
     catch err
         result.error = err;
@@ -199,10 +205,10 @@ end % parseOptions
 
 
 
-function post = callPoster(poster,stageDir,cfg)
+function post = callPoster(poster,stageDir,cfg,micID)
     % Call the poster and check that its reply has the expected form
     %
-    % function post = BakingTray.webpreview.updateSectionImage>callPoster(poster,stageDir,cfg)
+    % function post = BakingTray.webpreview.updateSectionImage>callPoster(poster,stageDir,cfg,micID)
     %
     % Purpose
     % A poster that throws propagates to the catch in updateSectionImage. Errors with
@@ -210,14 +216,15 @@ function post = callPoster(poster,stageDir,cfg)
     % the fields ok (logical scalar), httpStatus and message (char).
     %
     % Inputs
-    % poster   - Function handle, poster(stageDir,cfg), as for the 'Poster' option.
+    % poster   - Function handle, poster(stageDir,cfg,micID,'acq'), as for the 'Poster' option.
     % stageDir - Char path to the folder to upload.
     % cfg      - webupload.webConfig object.
+    % micID    - Microscope ID read from the staged recipe.
     %
     % Outputs
     % post - The poster's reply: structure with fields ok, httpStatus and message.
 
-    post = poster(stageDir,cfg);
+    post = poster(stageDir,cfg,micID,'acq');
     wellFormed = isstruct(post) && isscalar(post) ...
                  && all(isfield(post,{'ok','httpStatus','message'})) ...
                  && islogical(post.ok) && isscalar(post.ok) ...

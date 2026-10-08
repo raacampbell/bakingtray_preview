@@ -21,7 +21,6 @@ classdef (Sealed) webConfig < handle
     properties (SetAccess = private)
         url     % String defining the URL of the webserver
         siteID  % String defining the site (location) of the microscope
-        micID   % String defining the microscope name
 
         % The following are timeouts in seconds that have default values defined in a
         % hidden constant property. The defaults are used if the values are missing from
@@ -40,6 +39,10 @@ classdef (Sealed) webConfig < handle
 
     properties (Constant, Hidden)
         defaultTimeouts = {'connectTimeout', 15; 'responseTimeout', 60; 'dataTimeout', 60};
+
+        % True for a positive finite numeric scalar: the rule for a timeout in seconds.
+        % postZip uses it for its per-call timeouts too.
+        isSeconds = @(x) isnumeric(x) && isscalar(x) && isfinite(x) && x > 0;
     end % hidden constant properties
 
 
@@ -51,21 +54,24 @@ classdef (Sealed) webConfig < handle
             %
             % Purpose
             % Errors if the file is missing or malformed, a field is absent/empty/not
-            % text, siteID or micID have characters outside [A-Za-z0-9_-], url is not https
-            % (except localhost, for testing), or a timeout is not a positive finite
-            % number. Values are trimmed. Required fields: url, siteID, micID, token. See
-            % webpreview_config.example.json. The token is removed from any error raised.
+            % text, siteID has characters outside [A-Za-z0-9_-] or does not start with a
+            % letter, url is not https (except localhost, for testing), or a timeout is not
+            % a positive finite number. Values are trimmed. Required fields: url, siteID,
+            % token. See webpreview_config.example.json. The token is removed from any
+            % error raised.
+            %
+            % A file with a micID field is refused (webupload:configMicID): the microscope ID
+            % is not a config setting, it is read from the recipe and passed to
+            % postZip/zipAndPost.
             %
             % Inputs
-            % jsonFile - [optional] path to the JSON config file. If omitted, the
-            %        file at ~/.brainsaw_webpreview.json is used.
+            % jsonFile - path to the JSON config file. There is no default location: the
+            %        caller decides where the file lives.
             %
             % Outputs
             % cfgObj - returns an instance of the webConfig object
 
-            if nargin < 1
-                jsonFile = defaultConfigPath;
-            end
+            narginchk(1,1)
 
             try
                 obj.loadFromFile(jsonFile);
@@ -151,7 +157,13 @@ classdef (Sealed) webConfig < handle
                     'Config file %s must contain a single JSON object.', jsonFile);
             end
 
-            required = {'url', 'siteID', 'micID', 'token'};
+            if isfield(raw, 'micID')
+                error('webupload:configMicID', ...
+                    ['Config file %s has a "micID" field. The microscope ID is read from ', ...
+                    'the recipe (SYSTEM.ID), so remove "micID" from the config file.'], jsonFile);
+            end
+
+            required = {'url', 'siteID', 'token'};
             absent = required(~isfield(raw, required));
             if ~isempty(absent)
                 error('webupload:configIncomplete', ...
@@ -160,8 +172,8 @@ classdef (Sealed) webConfig < handle
 
 
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            % Text fields: each must be a non-empty JSON string once trimmed. The two IDs
-            % are used in folder names, so they are restricted to a safe character set.
+            % Text fields: each must be a non-empty JSON string once trimmed. siteID is
+            % used in folder names, so it is restricted to a safe character set.
             for ii = 1:numel(required)
                 name = required{ii};
                 value = raw.(name);
@@ -174,7 +186,7 @@ classdef (Sealed) webConfig < handle
                     error('webupload:configIncomplete', ...
                         'Config field "%s" in %s is empty.', name, jsonFile);
                 end
-                if ismember(name, {'siteID', 'micID'}) && isempty(regexp(value, '^[a-zA-Z][a-zA-Z0-9_-]*$', 'once'))
+                if strcmp(name, 'siteID') && isempty(regexp(value, webupload.serverLimits().idRegexp, 'once'))
                     error('webupload:configInvalid', ...
                         'Config field "%s" in %s must start with a letter and contain only letters, digits, "_" and "-".', ...
                         name, jsonFile);
@@ -192,7 +204,7 @@ classdef (Sealed) webConfig < handle
                 [name, value] = obj.defaultTimeouts{ii, :};
                 if isfield(raw, name)
                     value = raw.(name);
-                    if ~(isnumeric(value) && isscalar(value) && isfinite(value) && value > 0)
+                    if ~obj.isSeconds(value)
                         error('webupload:configWrongType', ...
                             'Config field "%s" in %s must be a positive finite number of seconds.', ...
                             name, jsonFile);
@@ -211,30 +223,6 @@ end % classdef
 
 % -----
 % Local functions follow
-
-function p = defaultConfigPath()
-    % Per-user config location, outside any repository
-    %
-    % function p = webupload.webConfig>defaultConfigPath()
-    %
-    % Outputs
-    % p - full path to .brainsaw_webpreview.json in the user's home directory. Errors with
-    %     webupload:noHome if the home directory cannot be determined.
-
-    % TODO -- will eventually change this so it looks in the BakingTray SETTINGS path
-    if ispc
-        home = getenv('USERPROFILE');
-    else
-        home = getenv('HOME');
-    end
-
-    if isempty(home)
-        error('webupload:noHome', 'Cannot determine the home directory.');
-    end
-
-    p = fullfile(home, '.brainsaw_webpreview.json');
-end % defaultConfigPath
-
 
 function checkUrl(url)
     % Require https, so the bearer token is never sent in clear text

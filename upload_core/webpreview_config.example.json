@@ -1,7 +1,6 @@
 {
-  "_note": "Copy to ~/.brainsaw_webpreview.json, or elsewhere named webpreview_config.json (git-ignored). Optional: connectTimeout, responseTimeout, dataTimeout in seconds.",
+  "_note": "Copy elsewhere (outside the repository) and fill in. Name it webpreview_config.json if it is inside a checkout (git-ignored). Optional: connectTimeout, responseTimeout, dataTimeout in seconds.",
   "url": "https://your-server.example/brainsaw/upload.php",
   "siteID": "YOUR_SITE_ID",
-  "micID": "YOUR_MICROSCOPE_ID",
   "token": "YOUR_SECRET_TOKEN"
 }

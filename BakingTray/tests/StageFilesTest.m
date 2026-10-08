@@ -224,10 +224,11 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyFalse(any(matchesGlob(tc.stagedNames(), tc.Globs.Montage)));
         end
 
-        function yamlRecipeKeepsYamlExtensionAndMatches(tc)
+        function yamlRecipeIsStagedAsRecipeYml(tc)
             r = fullfile(tc.Dir, 'my_recipe.yaml');
             writeText(r, 'x');
             tc.stage(uint8(ones(8)), r);
+            tc.verifyEqual(tc.stagedNames(), {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml'});
             tc.verifyEqual(sum(matchesGlob(tc.stagedNames(), tc.Globs.Recipe)), 1);
         end
 

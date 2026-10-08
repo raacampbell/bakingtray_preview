@@ -43,7 +43,7 @@ function s = simulationSpec()
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     % Never sent to a server: the https scheme only has to satisfy webupload.webConfig.
     s.DryRunConfig = struct('url', 'https://dry-run.invalid/upload.php', ...
-        'siteID', 'dryrun', 'micID', 'dryrun', 'token', 'DRYRUNTOKEN');
+        'siteID', 'dryrun', 'token', 'DRYRUNTOKEN');
     s.LogName = 'acqLog_simulated.txt';
 
 end %simulationSpec

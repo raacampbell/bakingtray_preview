@@ -11,7 +11,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         Recipe
         Log
         Token = 'SECRETTOKEN123'
-        Calls        % struct array: folder, cfg, names (files present at call time)
+        Calls        % struct array: folder, cfg, names (files present at call time), micID, source, status
         PosterReply  % what the fake poster returns
         PosterError  % if non-empty, the fake poster throws this message
         Out          % result of the function under test, stored by the closure
@@ -40,9 +40,9 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.Cfg = tc.makeCfg('https://x.example/up.php');
             tc.Recipe = fullfile(tc.Dir, 'recipe_A.yml');
             tc.Log = fullfile(tc.Dir, 'acqLog_A.txt');
-            writeText(tc.Recipe, 'sample: A');
+            writeText(tc.Recipe, sprintf('sample: {ID: A}\nSYSTEM:\n  ID: mic-1\n'));
             writeText(tc.Log, 'section 1');
-            tc.Calls = struct('folder', {}, 'cfg', {}, 'names', {});
+            tc.Calls = struct('folder', {}, 'cfg', {}, 'names', {}, 'micID', {}, 'source', {}, 'status', {});
             tc.PosterReply = struct('ok', true, 'httpStatus', 200, 'message', 'uploaded');
             tc.PosterError = '';
             tc.Out = [];
@@ -55,15 +55,16 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         function cfg = makeCfg(tc, url)
             f = fullfile(tc.Dir, 'config.json');
             writeText(f, sprintf( ...
-                '{"url":"%s","siteID":"site-1","micID":"mic-1","token":"%s"}', url, tc.Token));
+                '{"url":"%s","siteID":"site-1","token":"%s"}', url, tc.Token));
             cfg = webupload.webConfig(f);
         end
 
-        function reply = recordingPoster(tc, folder, cfg)
+        function reply = recordingPoster(tc, folder, cfg, micID, source)
             % Same signature as webupload.zipAndPost; records what it saw.
             d = dir(folder);
             tc.Calls(end+1) = struct('folder', folder, 'cfg', cfg, ...
-                'names', {sort({d(~[d.isdir]).name})});
+                'names', {sort({d(~[d.isdir]).name})}, 'micID', micID, 'source', source, ...
+                'status', jsondecode(fileread(fullfile(folder, 'status.json'))));
             if ~isempty(tc.PosterError)
                 error('fake:boom', '%s', tc.PosterError);
             end
@@ -96,7 +97,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % A config for a different site, whose stage folder must be left alone
             f = fullfile(tc.Dir, 'other.json');
             writeText(f, ['{"url":"https://x.example/up.php","siteID":"other",', ...
-                '"micID":"mic-1","token":"x"}']);
+                '"token":"x"}']);
             cfg = webupload.webConfig(f);
         end
 
@@ -128,9 +129,46 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyNumElements(tc.Calls, 1);
             tc.verifyEqual(tc.Calls.folder, res.stageDir);
             tc.verifyEqual(tc.Calls.names, ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml'});
+                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'status.json'});
             tc.verifyEqual(tc.Calls.cfg.siteID, 'site-1');
-            tc.verifyEqual(res.stageDir, fullfile(tc.StageRoot, 'brainsaw_webpreview', 'site-1', 'mic-1'));
+            tc.verifyEqual(res.stageDir, fullfile(tc.StageRoot, 'brainsaw_webpreview', 'site-1', 'mic-1', 'acq'));
+        end
+
+        function posterGetsTheRecipeMicroscopeIDSourceAcqAndUnfinishedStatus(tc)
+            writeText(tc.Recipe, sprintf('SYSTEM:\n  ID: Scope A\n'));
+            tc.update();
+            tc.verifyEqual(tc.Calls.micID, 'Scope_A');
+            tc.verifyEqual(tc.Calls.source, 'acq');
+            tc.verifyEqual(tc.Calls.status, struct('finished', false));
+        end
+
+        function missingRecipeFailsAndDoesNotReusePreviousOne(tc)
+            tc.update();
+            tc.Recipe = fullfile(tc.Dir, 'no_such_recipe.yml');
+            res = tc.update();
+            tc.verifyFalse(res.ok);
+            tc.verifyNumElements(tc.Calls, 1, 'nothing may be posted without a readable recipe');
+            tc.verifyFailedWarning();
+        end
+
+        function recipeWithoutAUsableMicroscopeIDStagesAndPostsNothing(tc)
+            for text = {sprintf('sample: {ID: A}\n'), sprintf('SYSTEM:\n  ID: ../x\n'), ...
+                        sprintf('SYSTEM:\n  ID: 2photon\n')}
+                writeText(tc.Recipe, text{1});
+                res = tc.update();
+                tc.verifyFalse(res.ok);
+                tc.verifyEqual(res.error.identifier, 'webpreview:badMicID');
+            end
+            tc.verifyEmpty(tc.Calls);
+            tc.verifyFalse(isfolder(tc.StageRoot), 'nothing may be created under the stage root');
+        end
+
+        function sourceRecipeExtensionDoesNotChangeTheStagedName(tc)
+            recipeB = fullfile(tc.Dir, 'recipe_B.yaml');
+            writeText(recipeB, sprintf('SYSTEM:\n  ID: mic-1\n'));
+            tc.Recipe = recipeB;
+            tc.update();
+            tc.verifyTrue(ismember('recipe.yml', tc.Calls.names));
         end
 
         function montageIsStaged(tc)
@@ -235,53 +273,46 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyEqual(res.error.identifier, 'webpreview:updateSectionImage:stageFailed');
         end
 
-        function missingRecipeAndLogAreReportedAsStale(tc)
+        function missingLogIsReportedAsStale(tc)
             tc.update();                                  % a good first section
-            tc.Recipe = fullfile(tc.Dir, 'no_such_recipe.yml');
-            res = tc.update();
-            tc.verifyTrue(res.ok);
-            tc.verifyFalse(res.recipeFresh);
-            tc.verifyTrue(res.logFresh);
-            tc.verifyTrue(res.stale);
-            tc.verifyEqual(tc.WarnId, 'webpreview:updateSectionImage:stale');
-            tc.verifySubstring(tc.WarnMsg, 'recipe');
-            tc.verifySubstring(tc.WarnMsg, 'previously staged copy');
-            tc.verifyTrue(ismember('recipe.yml', tc.Calls(2).names), ...
-                'previous recipe is what was uploaded');
-
             tc.Log = fullfile(tc.Dir, 'no_such_log.txt');
             res = tc.update();
+            tc.verifyTrue(res.ok);
+            tc.verifyTrue(res.recipeFresh);
             tc.verifyFalse(res.logFresh);
-            tc.verifySubstring(tc.WarnMsg, 'recipe and acq log');
+            tc.verifyTrue(res.stale);
+            tc.verifyEqual(tc.WarnId, 'webpreview:updateSectionImage:stale');
+            tc.verifySubstring(tc.WarnMsg, 'acq log');
+            tc.verifySubstring(tc.WarnMsg, 'previously staged copy');
+            tc.verifyTrue(ismember('acqLog.txt', tc.Calls(2).names), ...
+                'previous log is what was uploaded');
         end
 
         function staleAndFailureGiveOneFailedWarningNamingTheFile(tc)
-            tc.Recipe = fullfile(tc.Dir, 'no_such_recipe.yml');
+            tc.update();
+            tc.Log = fullfile(tc.Dir, 'no_such_log.txt');
             tc.PosterError = 'kaboom';
             tc.update();
             tc.verifyFailedWarning();
-            tc.verifySubstring(tc.WarnMsg, 'recipe not refreshed');
+            tc.verifySubstring(tc.WarnMsg, 'acq log not refreshed');
         end
 
-        function clearStageRemovesPreviousMetadata(tc)
+        function clearStageOptionRemovesPreviousMetadata(tc)
             tc.update();
-            tc.Recipe = fullfile(tc.Dir, 'no_such_recipe.yml');
+            tc.Log = fullfile(tc.Dir, 'no_such_log.txt');
             res = tc.update('ClearStage', true);
             tc.verifyTrue(res.ok);
-            tc.verifyFalse(ismember('recipe.yml', tc.Calls(2).names));
-            tc.verifyTrue(ismember('acqLog.txt', tc.Calls(2).names));
+            tc.verifyFalse(ismember('acqLog.txt', tc.Calls(2).names));
+            tc.verifyTrue(ismember('recipe.yml', tc.Calls(2).names));
         end
 
         function repeatedCallsReuseStageWithoutStaleFiles(tc)
             first = tc.update('Montage', uint8(magic(8)));
             tc.verifyTrue(ismember('montage.jpg', tc.Calls(1).names));
-            recipeB = fullfile(tc.Dir, 'recipe_B.yaml');
-            writeText(recipeB, 'sample: B');
-            tc.Recipe = recipeB;
-            second = tc.update();               % no montage, different recipe name
+            second = tc.update();               % no montage this time
             tc.verifyEqual(second.stageDir, first.stageDir);
             tc.verifyEqual(tc.Calls(2).names, ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yaml'});
+                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'status.json'});
         end
 
         function tokenNeverAppearsInMessages(tc)
@@ -303,8 +334,8 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function clearStageOptionOnlyTouchesTheManagedFolder(tc)
             tc.update();                                   % creates the managed folder
-            managed = BakingTray.webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
-            sibling = BakingTray.webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
+            managed = BakingTray.webpreview.stageDirFor(tc.Cfg, 'mic-1', tc.StageRoot);
+            sibling = BakingTray.webpreview.stageDirFor(tc.otherCfg(), 'mic-1', tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
@@ -343,12 +374,12 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         % ---- clearStage ----
         function clearStageRemovesOnlyTheManagedFolder(tc)
             tc.update();
-            managed = BakingTray.webpreview.stageDirFor(tc.Cfg, tc.StageRoot);
-            sibling = BakingTray.webpreview.stageDirFor(tc.otherCfg(), tc.StageRoot);
+            managed = BakingTray.webpreview.stageDirFor(tc.Cfg, 'mic-1', tc.StageRoot);
+            sibling = BakingTray.webpreview.stageDirFor(tc.otherCfg(), 'mic-1', tc.StageRoot);
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');
             writeText(fullfile(tc.StageRoot, 'keep.txt'), 'x');
-            ok = BakingTray.webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot);
+            ok = BakingTray.webpreview.clearStage(tc.Cfg, 'mic-1', 'StageRoot', tc.StageRoot);
             tc.verifyTrue(ok);
             tc.verifyFalse(isfolder(managed));
             tc.verifyTrue(isfile(fullfile(sibling, 'keep.txt')));
@@ -357,12 +388,12 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function clearStageOnAbsentFolderIsOk(tc)
-            tc.verifyTrue(BakingTray.webpreview.clearStage(tc.Cfg, 'StageRoot', tc.StageRoot));
+            tc.verifyTrue(BakingTray.webpreview.clearStage(tc.Cfg, 'mic-1', 'StageRoot', tc.StageRoot));
         end
 
         function clearStageWithNonConfigWarnsAndReturnsFalse(tc)
             for bad = {[], 'cfg.json', struct('siteID', 'site-1'), [tc.Cfg tc.Cfg], tc.deletedCfg()}
-                tc.callCapturing(@() BakingTray.webpreview.clearStage(bad{1}, 'StageRoot', tc.StageRoot));
+                tc.callCapturing(@() BakingTray.webpreview.clearStage(bad{1}, 'mic-1', 'StageRoot', tc.StageRoot));
                 tc.verifyFalse(tc.Out);
                 tc.verifyEqual(tc.WarnId, 'webpreview:clearStage:failed');
                 tc.verifySubstring(tc.WarnMsg, 'webpreview:clearStage:badConfig');
@@ -372,7 +403,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         function clearStageNeverThrowsEvenForBadArguments(tc)
             % warning('error','all') is not allowed in MATLAB, so name the ids.
             tc.turnIntoErrors('webpreview:clearStage:failed');
-            tc.verifyFalse(BakingTray.webpreview.clearStage(tc.Cfg, 'Bogus', 1));
+            tc.verifyFalse(BakingTray.webpreview.clearStage(tc.Cfg, 'mic-1', 'Bogus', 1));
         end
 
         function warningsAsErrorsDoNotMakeItThrow(tc)
@@ -396,7 +427,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 end
 
 
-function reply = throwWithoutId(~, ~)
+function reply = throwWithoutId(~, ~, ~, ~)
 reply = [];
 error('plain failure');
 end
