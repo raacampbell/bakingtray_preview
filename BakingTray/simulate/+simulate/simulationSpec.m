@@ -5,7 +5,7 @@ function s = simulationSpec()
     %
     % Purpose
     % The log text mirrors test_images/acqLog_*.txt (the format the server's
-    % bs_parse_acqlogs() parses).
+    % bs_parse_acqlog() parses). MinInterval is the server's upload rate limit.
     %
     % Outputs
     % s - Structure of simulation constants.

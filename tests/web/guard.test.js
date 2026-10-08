@@ -8,14 +8,14 @@ const T0 = '2026-01-01T00:00:00+00:00';
 const T1 = '2026-01-01T00:09:00+00:00';
 
 function fakeEl(url, uploadedAt) {
-  const attrs = { 'data-meta-url': url, 'data-uploaded-at': uploadedAt, 'data-stale-after': '900' };
+  const attrs = { 'data-meta-url': url, 'data-uploaded-at': uploadedAt, 'data-version': uploadedAt, 'data-stale-after': '900' };
   return {
     getAttribute: (k) => (k in attrs ? attrs[k] : null),
     classList: { toggle() {} },
     querySelector: () => null,
   };
 }
-const okFetch = (value) => async () => ({ ok: true, json: async () => ({ uploaded_at: value }) });
+const okFetch = (value) => async () => ({ ok: true, json: async () => ({ version: value }) });
 
 function makeEnv(storage, value = T1) {
   const warnings = [];
@@ -105,7 +105,7 @@ test('init: throwing sessionStorage getter produces the "guard is off" warning',
 test('init: a visibility event queued behind a poll that reloads does not poll again', async () => {
   let fetches = 0;
   let release;
-  const fetchFn = () => { fetches += 1; return new Promise((r) => { release = () => r({ ok: true, json: async () => ({ uploaded_at: T1 }) }); }); };
+  const fetchFn = () => { fetches += 1; return new Promise((r) => { release = () => r({ ok: true, json: async () => ({ version: T1 }) }); }); };
   const store = new Map();
   const win = makeWin(fetchFn, () => ({ getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) }));
   A.init(win);

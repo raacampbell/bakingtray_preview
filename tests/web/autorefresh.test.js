@@ -2,7 +2,7 @@
 // Run from the repo root: node --test tests/web/
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { humanAgo, isStale, hasChanged, fetchUploadedAt, clockOffset } = require('../../brainsaw/js/autorefresh.js');
+const { humanAgo, isStale, hasChanged, fetchVersion, clockOffset } = require('../../brainsaw/js/autorefresh.js');
 
 // Mirrors bs_human_ago() in lib.php branch by branch.
 test('humanAgo: seconds branch', () => {
@@ -53,24 +53,30 @@ test('hasChanged: none at render, 404 now is no change', () => {
   assert.equal(hasChanged('', null), false);
 });
 
-test('fetchUploadedAt: returns uploaded_at, adds cache buster, no-store', async () => {
+test('fetchVersion: returns the version, adds cache buster, no-store', async () => {
   let seen;
   const fakeFetch = async (url, opts) => {
     seen = { url, opts };
-    return { ok: true, json: async () => ({ uploaded_at: 'X' }) };
+    return { ok: true, json: async () => ({ version: 'X' }) };
   };
-  assert.equal(await fetchUploadedAt('system_data/a/meta.json', fakeFetch, 123), 'X');
-  assert.equal(seen.url, 'system_data/a/meta.json?t=123');
+  assert.equal(await fetchVersion('a/page?f=meta', fakeFetch, 123), 'X');
+  assert.equal(seen.url, 'a/page?f=meta&t=123');
   assert.equal(seen.opts.cache, 'no-store');
 });
-test('fetchUploadedAt: 404, network error, bad JSON, missing field all give null', async () => {
-  assert.equal(await fetchUploadedAt('u', async () => ({ ok: false }), 1), null);
-  assert.equal(await fetchUploadedAt('u', async () => { throw new Error('net'); }, 1), null);
-  assert.equal(await fetchUploadedAt('u', async () => ({ ok: true, json: async () => { throw new Error('bad'); } }), 1), null);
-  assert.equal(await fetchUploadedAt('u', async () => ({ ok: true, json: async () => ({}) }), 1), null);
+test('fetchVersion: 404, network error, bad JSON, missing field all give null', async () => {
+  assert.equal(await fetchVersion('u', async () => ({ ok: false }), 1), null);
+  assert.equal(await fetchVersion('u', async () => { throw new Error('net'); }, 1), null);
+  assert.equal(await fetchVersion('u', async () => ({ ok: true, json: async () => { throw new Error('bad'); } }), 1), null);
+  assert.equal(await fetchVersion('u', async () => ({ ok: true, json: async () => ({}) }), 1), null);
 });
-test('fetchUploadedAt: url that already has a query string uses &', async () => {
+test('fetchVersion: url that already has a query string uses &', async () => {
   let url;
-  await fetchUploadedAt('m.json?x=1', async (u) => { url = u; return { ok: false }; }, 9);
+  await fetchVersion('m.json?x=1', async (u) => { url = u; return { ok: false }; }, 9);
   assert.equal(url, 'm.json?x=1&t=9');
+});
+test('fetchVersion: reads "version", not "uploaded_at"', async () => {
+  const only = async () => ({ ok: true, json: async () => ({ uploaded_at: 'U' }) });
+  assert.equal(await fetchVersion('u', only, 1), null);
+  const both = async () => ({ ok: true, json: async () => ({ uploaded_at: 'U', version: 'acq=U;analysis=V' }) });
+  assert.equal(await fetchVersion('u', both, 1), 'acq=U;analysis=V');
 });

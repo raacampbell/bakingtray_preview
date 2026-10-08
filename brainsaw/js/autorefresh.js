@@ -2,8 +2,11 @@
 // deployment) and also require()-able from Node for unit tests.
 //
 // The server marks each watched element with:
-//   data-meta-url       URL of that site's meta.json (the JS never builds URLs)
-//   data-uploaded-at    uploaded_at the page was rendered with ('' if none)
+//   data-meta-url       URL of that microscope's version endpoint (the JS never builds URLs)
+//   data-version        the version the page was rendered with ('' if none): it covers every
+//                       source the page shows, so an upload to any of them changes it
+//   data-uploaded-at    uploaded_at of the ground-truth source, for "ago" and stale ('' if none)
+//   data-finished       '1' once the acquisition is finished: never drawn stale
 //   data-stale-after    stale_after_seconds from config
 // and, inside it, optionally an element with a data-ago attribute whose text is
 // the "X ago" string. The element itself gets/loses the class "stale".
@@ -24,8 +27,8 @@
     return Math.floor(seconds / 86400) + 'd ago';
   }
 
-  // Same rule as the server: never uploaded / unparsable is stale, otherwise
-  // stale when strictly older than the threshold. uploadedAtMs is epoch ms or null.
+  // Mirrors bs_freshness() in lib.php apart from finished (see updateDisplay): never
+  // uploaded / unparsable is stale, otherwise stale when strictly older than the threshold. uploadedAtMs is epoch ms or null.
   function isStale(uploadedAtMs, nowMs, staleAfterSeconds) {
     if (uploadedAtMs === null || Number.isNaN(uploadedAtMs)) return true;
     return Math.floor((nowMs - uploadedAtMs) / 1000) > staleAfterSeconds;
@@ -45,11 +48,11 @@
     return s * 1000 - clientNowMs;
   }
 
-  // Resolve to the current uploaded_at string, or null on any failure
+  // Resolve to the current version string, or null on any failure
   // (including a timeout). Failures are reported via opts.onFail(url, kind,
   // detail) but never thrown: the next tick simply tries again. kind is one of
   // 'http-404', 'http-<status>', 'timeout', 'network', 'bad-json', 'no-field'.
-  async function fetchUploadedAt(url, fetchFn, nowMs, opts) {
+  async function fetchVersion(url, fetchFn, nowMs, opts) {
     const o = opts || {};
     const timeoutMs = o.timeoutMs === undefined ? FETCH_TIMEOUT_MS : o.timeoutMs;
     const onFail = o.onFail || function () {};
@@ -72,8 +75,8 @@
         onFail(url, ctrl.signal.aborted ? 'timeout' : 'bad-json', ctrl.signal.aborted ? 'timed out' : String(e));
         return null;
       }
-      if (meta && meta.uploaded_at) return String(meta.uploaded_at);
-      onFail(url, 'no-field', 'no uploaded_at in response');
+      if (meta && meta.version) return String(meta.version);
+      onFail(url, 'no-field', 'no version in response');
       return null;
     } finally {
       clearTimeout(timer);
@@ -104,7 +107,7 @@
     };
   }
 
-  // Loop guard state: {metaUrl: last uploaded_at we reloaded for}, as JSON.
+  // Loop guard state: {metaUrl: last version we reloaded for}, as JSON.
   function readReloaded(env) {
     try {
       const m = JSON.parse(env.storage.get(env.storageKey) || '{}');
@@ -130,7 +133,7 @@
       warnOnce('stale-after', 'autorefresh: missing/invalid data-stale-after, using ' + DEFAULT_STALE_AFTER);
       staleAfter = DEFAULT_STALE_AFTER;
     }
-    el.classList.toggle('stale', isStale(ms, nowMs, staleAfter));
+    el.classList.toggle('stale', el.getAttribute('data-finished') !== '1' && isStale(ms, nowMs, staleAfter));
     const agoEl = el.querySelector('[data-ago]');
     if (agoEl && ms !== null && !Number.isNaN(ms)) {
       agoEl.textContent = humanAgo(Math.floor((nowMs - ms) / 1000));
@@ -142,14 +145,14 @@
     watched(env.doc).forEach(function (el) { updateDisplay(el, nowMs, env.warnOnce); });
   }
 
-  // Fetch every watched meta.json and return [{url, value}] for each one whose
-  // uploaded_at differs from what the page was rendered with.
+  // Fetch every watched version endpoint and return [{url, value}] for each one whose
+  // version differs from what the page was rendered with.
   async function findChanges(env) {
     const els = watched(env.doc);
     const nowMs = env.now();
     const fetched = await Promise.all(els.map(function (el) {
       const url = el.getAttribute('data-meta-url');
-      return fetchUploadedAt(url, env.fetchFn, nowMs, {
+      return fetchVersion(url, env.fetchFn, nowMs, {
         timeoutMs: env.timeoutMs,
         onFail: function (u, kind, detail) {
           if (kind === 'http-404') return; // expected for a site that has never uploaded
@@ -159,7 +162,7 @@
     }));
     const changes = [];
     els.forEach(function (el, i) {
-      if (hasChanged(el.getAttribute('data-uploaded-at') || '', fetched[i])) {
+      if (hasChanged(el.getAttribute('data-version') || '', fetched[i])) {
         changes.push({ url: el.getAttribute('data-meta-url'), value: fetched[i] });
       }
     });
@@ -177,7 +180,7 @@
     }
     const done = readReloaded(env);
     if (!changes.some(function (c) { return done[c.url] !== c.value; })) {
-      env.warnOnce('loop', 'autorefresh: page still differs from meta.json after reloading; not reloading again');
+      env.warnOnce('loop', 'autorefresh: page still differs from the server after reloading; not reloading again');
       return;
     }
     changes.forEach(function (c) { done[c.url] = c.value; });
@@ -221,7 +224,7 @@
   }
 
   const api = {
-    humanAgo, isStale, hasChanged, clockOffset, fetchUploadedAt,
+    humanAgo, isStale, hasChanged, clockOffset, fetchVersion,
     makeWarnOnce, safeStorage, updateDisplay, refreshDisplay, poll, init,
   };
   if (typeof module !== 'undefined' && module.exports) {
