@@ -4,10 +4,10 @@ function result = postZip(zipPath, cfg)
     % function result = BakingTray.webpreview.postZip(zipPath, cfg)
     %
     % Purpose
-    % Uploads the zip with a bearer token. cfg needs url, siteID and token (see
-    % webpreview.loadConfig); the url must be https (webpreview.checkUrl). Optional
-    % cfg.connectTimeout, responseTimeout and dataTimeout (seconds; defaults 15, 60, 60; see
-    % webpreview.timeouts).
+    % Uploads the zip with a bearer token. cfg is a webpreview.webConfig object, which has
+    % already checked the url (https only), siteID and token when it was created. Its
+    % connectTimeout, responseTimeout and dataTimeout properties (seconds; defaults 15, 60,
+    % 60) set the timeouts. The token is sent with cfg.authHeader, so it is never read here.
     %
     % Redirects are never followed: the request carries a bearer token, and a redirect could
     % send it to an http:// or other host. A 3xx answer returns ok = false.
@@ -19,30 +19,25 @@ function result = postZip(zipPath, cfg)
     %
     % Deliberate catch-all: this runs during an acquisition, and a flaky network or bad config
     % must never interrupt imaging. Every failure is reported as result.ok = false instead.
-    % The token is scrubbed from any message.
+    % The token is scrubbed from any message with cfg.scrub.
     %
     % Inputs
     % zipPath - path to the zip file to upload.
-    % cfg - upload configuration structure with fields url, siteID, token and optional
-    %       timeouts.
+    % cfg - webpreview.webConfig object. Anything else is reported as result.ok = false.
     %
     % Outputs
     % result - structure with fields ok, httpStatus and message. httpStatus is NaN if no
     %          response arrived.
 
     result = struct('ok', false, 'httpStatus', NaN, 'message', '');
-    token = webpreview.tokenOf(cfg);
+    cfgIsValid = isa(cfg, 'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg);
+
     try
-        mustHave = {'url', 'siteID', 'token'};
-        if ~isstruct(cfg) || ~isscalar(cfg) || ~all(isfield(cfg, mustHave))
-            error('webpreview:badConfig', ...
-                'cfg must be a struct with fields: %s', strjoin(mustHave, ', '));
+        if ~cfgIsValid
+            error('webpreview:badConfig', 'cfg must be a webpreview.webConfig object.');
         end
-        if ~ischar(cfg.siteID) || isempty(token)
-            error('webpreview:badConfig', 'cfg.siteID and cfg.token must be non-empty text.');
-        end
-        webpreview.checkUrl(cfg.url);
-        opts = makeOptions(webpreview.timeouts(cfg));
+
+        opts = makeOptions(cfg);
         if ~isfile(zipPath)
             error('webpreview:noZip', 'Zip file not found: %s', zipPath);
         end
@@ -53,8 +48,7 @@ function result = postZip(zipPath, cfg)
         body = matlab.net.http.io.MultipartFormProvider( ...
             'site_id', cfg.siteID, ...
             'data', matlab.net.http.io.FileProvider(zipPath));
-        auth = matlab.net.http.HeaderField('Authorization', ['Bearer ', token]);
-        req = matlab.net.http.RequestMessage('POST', auth, body);
+        req = matlab.net.http.RequestMessage('POST', cfg.authHeader, body);
 
         resp = req.send(cfg.url, opts);
         result = webpreview.interpretResponse(double(resp.StatusCode), resp.Body.Data);
@@ -62,14 +56,16 @@ function result = postZip(zipPath, cfg)
         result.message = err.message;
     end
 
-    result.message = webpreview.scrubToken(result.message, token);
+    if cfgIsValid
+        result.message = cfg.scrub(result.message);
+    end
 end % postZip
 
 
-function opts = makeOptions(t)
-    % Build HTTPOptions with no redirects and the given timeouts
+function opts = makeOptions(cfg)
+    % Build HTTPOptions with no redirects and the timeouts from the config
     %
-    % function opts = BakingTray.webpreview.postZip>makeOptions(t)
+    % function opts = BakingTray.webpreview.postZip>makeOptions(cfg)
     %
     % Purpose
     % MaxRedirects = 0 is set unconditionally because it protects the bearer token. The
@@ -78,18 +74,18 @@ function opts = makeOptions(t)
     % is not applied.
     %
     % Inputs
-    % t - Structure with fields connect, response and data (seconds), as returned by
-    %     webpreview.timeouts.
+    % cfg - webpreview.webConfig object. Its connectTimeout, responseTimeout and
+    %       dataTimeout properties are used.
     %
     % Outputs
     % opts - matlab.net.http.HTTPOptions object.
 
     opts = matlab.net.http.HTTPOptions();
     opts.MaxRedirects = 0; % security-relevant: set unconditionally
-    opts.ConnectTimeout = t.connect;
+    opts.ConnectTimeout = cfg.connectTimeout;
 
     % These two names vary by release; warn rather than fail if absent
-    optional = {'ResponseTimeout', t.response; 'DataTimeout', t.data};
+    optional = {'ResponseTimeout', cfg.responseTimeout; 'DataTimeout', cfg.dataTimeout};
     for ii = 1:size(optional, 1)
         if isprop(opts, optional{ii, 1})
             opts.(optional{ii, 1}) = optional{ii, 2};

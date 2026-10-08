@@ -28,9 +28,9 @@ function ok = clearStage(varargin)
         opts = parseOptions(varargin{:});
 
         if isempty(opts.ConfigFile)
-            cfg = webpreview.loadConfig();
+            cfg = webpreview.webConfig();
         else
-            cfg = webpreview.loadConfig(opts.ConfigFile);
+            cfg = webpreview.webConfig(opts.ConfigFile);
         end
 
         webpreview.clearStageDir(webpreview.stageDirFor(cfg.siteID,opts.StageRoot));

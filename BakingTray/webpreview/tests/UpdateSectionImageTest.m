@@ -289,8 +289,8 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function bestEffortScrubWhenConfigIsRejected(tc)
-            % checkUrl rejects this url and its error echoes it, token and
-            % all; loadConfig never returns, so only the raw-text scrub helps.
+            % The webConfig constructor rejects this url and its error echoes it, token
+            % and all; no config object comes back, so the constructor has to scrub it.
             writeText(tc.ConfigFile, tc.configText(['http://evil/' tc.Token]));
             res = tc.update();
             tc.verifyFailedWarning();
@@ -408,7 +408,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function defaultPosterOnUnreachableServerIsNonFatal(tc)
             % Port 9 on localhost refuses the connection; plain http is
-            % accepted by checkUrl for localhost only.
+            % accepted by webConfig for localhost only.
             writeText(tc.ConfigFile, tc.configText('http://127.0.0.1:9/up.php'));
             tc.callCapturing(@() webpreview.updateSectionImage( ...
                 uint8(magic(8)), tc.Recipe, tc.Log, ...

@@ -5,7 +5,7 @@ function d = stageDirFor(siteID,stageRoot)
     %
     % Purpose
     % The one place that decides where staged files live. siteID is re-checked against
-    % [A-Za-z0-9_-] (loadConfig already does this) because clearStage deletes the
+    % [A-Za-z0-9_-] (webpreview.webConfig already does this) because clearStage deletes the
     % returned folder recursively.
     %
     % Inputs

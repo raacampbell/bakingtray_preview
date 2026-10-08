@@ -1,9 +1,11 @@
 classdef PostZipTest < matlab.unittest.TestCase
-    % Tests for postZip, zipAndPost, interpretResponse and scrubToken.
-    % The real upload path needs a live server and is not covered here.
+    % Tests for postZip, zipAndPost and interpretResponse.
+    % The real upload path needs a live server and is not covered here. Validation of the
+    % config and scrubbing of the token are tested in WebConfigTest.
 
     properties
         Dir
+        CfgDir   % holds the config file, kept apart from Dir so it is never zipped
     end
 
     methods (TestClassSetup)
@@ -17,6 +19,8 @@ classdef PostZipTest < matlab.unittest.TestCase
         function makeDir(tc)
             fx = tc.applyFixture(matlab.unittest.fixtures.TemporaryFolderFixture);
             tc.Dir = fx.Folder;
+            fx = tc.applyFixture(matlab.unittest.fixtures.TemporaryFolderFixture);
+            tc.CfgDir = fx.Folder;
         end
     end
 
@@ -24,21 +28,21 @@ classdef PostZipTest < matlab.unittest.TestCase
         function unreachableUrlReturnsNotOkWithoutThrowing(tc)
             zipPath = tc.makeZip();
             % Port 1 on localhost: connection refused immediately.
-            res = webpreview.postZip(zipPath, PostZipTest.cfg());
+            res = webpreview.postZip(zipPath, tc.makeCfg());
             PostZipTest.verifyNetworkFailure(tc, res);
         end
 
         function zipAndPostFailureIsNonFatal(tc)
             fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
-            res = webpreview.zipAndPost(tc.Dir, PostZipTest.cfg());
+            res = webpreview.zipAndPost(tc.Dir, tc.makeCfg());
             PostZipTest.verifyNetworkFailure(tc, res);
         end
 
         function zipAndPostReportsFolderProblemsWithoutThrowing(tc)
-            res = webpreview.zipAndPost(tc.Dir, PostZipTest.cfg());   % no files
+            res = webpreview.zipAndPost(tc.Dir, tc.makeCfg());   % no files
             tc.verifyFalse(res.ok);
             tc.verifyNotEmpty(res.message);
-            res = webpreview.zipAndPost(fullfile(tc.Dir, 'nope'), PostZipTest.cfg());
+            res = webpreview.zipAndPost(fullfile(tc.Dir, 'nope'), tc.makeCfg());
             tc.verifyFalse(res.ok);
         end
 
@@ -53,41 +57,17 @@ classdef PostZipTest < matlab.unittest.TestCase
         end
 
         function tokenInUrlIsScrubbedFromResults(tc)
-            % checkUrl's error echoes the url, so the token reaches the
-            % message unless the wiring scrubs it.
+            % A refused connection may quote the url, so a url that contains the token
+            % must not let the token reach the message.
             fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
-            cfg = PostZipTest.cfg();
-            cfg.url = ['http://example.org/', cfg.token];
+            cfg = tc.makeCfg('url', ['http://127.0.0.1:1/', PostZipTest.Token]);
             res1 = webpreview.postZip(tc.makeZip(), cfg);
             res2 = webpreview.zipAndPost(tc.Dir, cfg);
             for res = {res1, res2}
                 tc.verifyFalse(res{1}.ok);
                 tc.verifyNotEmpty(res{1}.message);
-                tc.verifyEmpty(strfind(res{1}.message, cfg.token));
+                tc.verifyEmpty(strfind(res{1}.message, PostZipTest.Token));
             end
-        end
-
-        function charMatrixTokenDoesNotThrow(tc)
-            cfg = PostZipTest.cfg();
-            cfg.token = ['ab'; 'cd'];
-            tc.verifyEqual(webpreview.tokenOf(cfg), '');
-            tc.verifyFalse(webpreview.postZip(tc.makeZip(), cfg).ok);
-            tc.verifyFalse(webpreview.zipAndPost(tc.Dir, cfg).ok);
-        end
-
-        function timeoutsDefaultAndOverride(tc)
-            t = webpreview.timeouts(struct());
-            tc.verifyEqual([t.connect t.response t.data], [15 60 60]);
-            t = webpreview.timeouts(struct('responseTimeout', 300));
-            tc.verifyEqual(t.response, 300);
-            tc.verifyError(@() webpreview.timeouts(struct('dataTimeout', -1)), 'webpreview:badConfig');
-            tc.verifyError(@() webpreview.timeouts(struct('dataTimeout', 'x')), 'webpreview:badConfig');
-        end
-
-        function badTimeoutInCfgReturnsNotOk(tc)
-            cfg = PostZipTest.cfg();
-            cfg.dataTimeout = 0;
-            tc.verifyFalse(webpreview.postZip(tc.makeZip(), cfg).ok);
         end
 
         function redirectStatusIsNotOkAndSaysSo(tc)
@@ -96,25 +76,8 @@ classdef PostZipTest < matlab.unittest.TestCase
             tc.verifySubstring(r.message, 'redirect');
         end
 
-        function postZipRejectsHttpToRemoteHost(tc)
-            zipPath = tc.makeZip();
-            cfg = PostZipTest.cfg();
-            cfg.url = 'http://example.org/upload.php';
-            res = webpreview.postZip(zipPath, cfg);
-            tc.verifyFalse(res.ok);
-            tc.verifySubstring(res.message, 'https');
-        end
-
-        function postZipSurvivesNonCharToken(tc)
-            zipPath = tc.makeZip();
-            cfg = PostZipTest.cfg();
-            cfg.token = 12345;
-            res = webpreview.postZip(zipPath, cfg);
-            tc.verifyFalse(res.ok);
-        end
-
         function missingZipReturnsNotOk(tc)
-            res = webpreview.postZip(fullfile(tc.Dir, 'nope.zip'), PostZipTest.cfg());
+            res = webpreview.postZip(fullfile(tc.Dir, 'nope.zip'), tc.makeCfg());
             tc.verifyFalse(res.ok);
             tc.verifyNotEmpty(res.message);
         end
@@ -122,18 +85,7 @@ classdef PostZipTest < matlab.unittest.TestCase
         function badCfgReturnsNotOk(tc)
             res = webpreview.postZip('whatever.zip', struct('url', 'https://x'));
             tc.verifyFalse(res.ok);
-        end
-
-        function scrubTokenRemovesEveryOccurrence(tc)
-            msg = webpreview.scrubToken('bad Bearer SECRET and again SECRET end', 'SECRET');
-            tc.verifyEmpty(strfind(msg, 'SECRET'));
-            tc.verifySubstring(msg, '***');
-        end
-
-        function scrubTokenNeverThrows(tc)
-            tc.verifyEqual(webpreview.scrubToken('msg', ''), 'msg');
-            tc.verifyEqual(webpreview.scrubToken('msg', 5), 'msg');
-            tc.verifyEqual(webpreview.scrubToken(5, 'tok'), '');
+            tc.verifySubstring(res.message, 'webConfig');
         end
 
         function status200WithOkBodyIsOk(tc)
@@ -174,17 +126,16 @@ classdef PostZipTest < matlab.unittest.TestCase
         end
     end
 
-    methods (Static, Access = private)
-        function cfg = cfg()
-            cfg = struct('url', 'http://127.0.0.1:1/upload.php', ...
-                         'siteID', 'site_a', 'token', 'SECRET-TOKEN-XYZ');
-        end
+    properties (Constant, Access = private)
+        Token = 'SECRET-TOKEN-XYZ'
+    end
 
+    methods (Static, Access = private)
         function verifyNetworkFailure(tc, res)
             tc.verifyFalse(res.ok);
             tc.verifyTrue(isnan(res.httpStatus));
             tc.verifyNotEmpty(res.message);
-            tc.verifyEmpty(strfind(res.message, 'SECRET-TOKEN-XYZ'));
+            tc.verifyEmpty(strfind(res.message, PostZipTest.Token));
             % The failure must come from the connection, not from our own
             % argument checks or a coding error.
             tc.verifyEmpty(regexp(res.message, ...
@@ -193,6 +144,21 @@ classdef PostZipTest < matlab.unittest.TestCase
     end
 
     methods (Access = private)
+        function cfg = makeCfg(tc, varargin)
+            % A webConfig for a refused localhost port. Name/value pairs override fields
+            % of the config file, for example makeCfg('url', 'http://127.0.0.1:1/x').
+            s = struct('url', 'http://127.0.0.1:1/upload.php', ...
+                       'siteID', 'site_a', 'token', PostZipTest.Token);
+            for ii = 1:2:numel(varargin)
+                s.(varargin{ii}) = varargin{ii+1};
+            end
+            f = fullfile(tc.CfgDir, 'cfg.json');
+            fid = fopen(f, 'w');
+            fwrite(fid, jsonencode(s));
+            fclose(fid);
+            cfg = webpreview.webConfig(f);
+        end
+
         function zipPath = makeZip(tc)
             fid = fopen(fullfile(tc.Dir, 'a.txt'), 'w'); fwrite(fid, 'x'); fclose(fid);
             zipPath = fullfile(tc.Dir, 'x.zip');

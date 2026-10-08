@@ -5,7 +5,7 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
     %
     % Purpose
     % The call BakingTray makes when a section completes. It loads the config
-    % (webpreview.loadConfig; default location unless 'ConfigFile' is given), stages
+    % (webpreview.webConfig; default location unless 'ConfigFile' is given), stages
     % img, the optional 'Montage', the recipe and the acquisition log with
     % webpreview.stageFiles, and uploads the stage folder with webpreview.zipAndPost.
     % Image conversion and 'Range' are documented in webpreview.toUint8.
@@ -27,10 +27,11 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
     % too, but a path variable that does not exist in the CALLER is an error MATLAB
     % raises before this function runs, and cannot be caught here.
     %
-    % TOKEN: the token is scrubbed from result and warning messages once the config has
-    % been read, and, if the config cannot be parsed, by a best-effort regexp on the raw
-    % file text. Messages from a custom Poster are scrubbed only after the config was
-    % read; anything raised earlier is not guaranteed token-free.
+    % TOKEN: the config is held in a webpreview.webConfig object, which keeps the token
+    % private. An error raised while the config is being loaded is scrubbed of the token by
+    % webConfig itself. Once the config has been read, the token is also scrubbed from
+    % result and warning messages with webConfig.scrub. Messages from a custom Poster are
+    % scrubbed only after the config was read.
     %
     % Inputs
     % img        - Numeric HxW or HxWx3 image of the section (see webpreview.toUint8).
@@ -45,7 +46,8 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
     % 'Range'      - Numeric [lo hi] used to scale the images. Default is [].
     % 'Poster'     - Function handle with the zipAndPost signature,
     %                poster(folder,cfg) -> struct(ok,httpStatus,message) with char
-    %                message. Default is @webpreview.zipAndPost; tests inject a fake.
+    %                message, where cfg is a webpreview.webConfig object. Default is
+    %                @webpreview.zipAndPost; tests inject a fake.
     % 'StageRoot'  - Non-empty text scalar. Folder holding the stage folders. Default is
     %                tempdir.
     % 'ClearStage' - Logical scalar. If true, empty the stage folder first. Default is
@@ -69,8 +71,7 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
 
 
     result = emptyResult;
-    token = '';
-    opts = [];
+    cfg = [];
     caught = [];
 
     try
@@ -79,24 +80,19 @@ function result = updateSectionImage(img,recipePath,logPath,varargin)
 
 
         % Load the config file from the default location unless the user has supplied another
-        if isempty(file)
-            cfg = webpreview.loadConfig();
+        if isempty(opts.ConfigFile)
+            cfg = webpreview.webConfig();
         else
-            cfg = webpreview.loadConfig(char(opts.ConfigFile));
+            cfg = webpreview.webConfig(opts.ConfigFile);
         end
-
-        token = webpreview.tokenOf(cfg);
 
 
         result = runPipeline(result,img,recipePath,logPath,cfg,opts);
     catch err
         caught = err;
-        if isempty(token)
-            token = rawToken(opts);
-        end
     end %try
 
-    result = finalise(result,caught,token);
+    result = finalise(result,caught,cfg);
     notify(result)
 end % updateSectionImage
 
@@ -108,7 +104,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     %
     % Purpose
     % The part of updateSectionImage that runs inside its try/catch. Builds the stage folder
-    % path from cfg.siteID and opts.StageRoot (siteID is charset-checked by loadConfig, so
+    % path from cfg.siteID and opts.StageRoot (siteID is charset-checked by webConfig, so
     % it is safe to use as a folder name), empties it if opts.ClearStage is true, stages the
     % files with webpreview.stageFiles and uploads the folder with opts.Poster.
     %
@@ -122,7 +118,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % img        - Numeric HxW or HxWx3 image of the section.
     % recipePath - Path to the recipe file or to a folder containing it.
     % logPath    - Path to the acquisition log file.
-    % cfg        - Configuration structure from webpreview.loadConfig.
+    % cfg        - webpreview.webConfig object.
     % opts       - Options structure from parseOptions.
     %
     % Outputs
@@ -227,7 +223,7 @@ function post = callPoster(poster,stageDir,cfg)
     % Inputs
     % poster   - Function handle, poster(stageDir,cfg), as for the 'Poster' option.
     % stageDir - Char path to the folder to upload.
-    % cfg      - Configuration structure from webpreview.loadConfig.
+    % cfg      - webpreview.webConfig object.
     %
     % Outputs
     % post - The poster's reply: structure with fields ok, httpStatus and message.
@@ -245,53 +241,10 @@ function post = callPoster(poster,stageDir,cfg)
 end % callPoster
 
 
-function token = rawToken(opts)
-    % Best-effort read of the token straight from the raw config file. Never throws
-    %
-    % function token = BakingTray.webpreview.updateSectionImage>rawToken(opts)
-    %
-    % Purpose
-    % Used when the config could not be loaded, so that a parse error message which quotes
-    % the file can still have the token scrubbed from it. The token is found with a regexp
-    % on the file text rather than by parsing the JSON.
-    %
-    % Inputs
-    % opts - Options structure from parseOptions, or [] if the options could not be parsed.
-    %        The file read is opts.ConfigFile, or the default config location if that is
-    %        empty or opts is not a structure.
-    %
-    % Outputs
-    % token - Char row vector, or '' if no token could be found.
-
-    token = '';
-    try
-        if isstruct(opts) && ~isempty(opts.ConfigFile)
-            file = opts.ConfigFile;
-        else
-            file = webpreview.defaultConfigPath();
-        end
-
-        % The string may contain escaped quotes; decode it as JSON so the value matches
-        % what loadConfig would have produced.
-        tok = regexp(fileread(file),'"token"\s*:\s*"((?:[^"\\]|\\.)*)"','tokens','once');
-        if ~isempty(tok)
-            token = tok{1};
-            try
-                token = jsondecode(['"' tok{1} '"']);
-            catch
-                % Keep the undecoded text
-            end
-        end
-    catch
-        token = '';
-    end %try
-end % rawToken
-
-
-function result = finalise(result,caught,token)
+function result = finalise(result,caught,cfg)
     % Scrub the token from the message and fill result.error for every kind of failure
     %
-    % function result = BakingTray.webpreview.updateSectionImage>finalise(result,caught,token)
+    % function result = BakingTray.webpreview.updateSectionImage>finalise(result,caught,cfg)
     %
     % Purpose
     % The error reported is, in order of preference, the error caught by updateSectionImage,
@@ -303,12 +256,13 @@ function result = finalise(result,caught,token)
     % Inputs
     % result - Result structure as left by runPipeline (or emptyResult if it was not reached).
     % caught - MException caught by updateSectionImage, or [] if there was none.
-    % token  - Secret to scrub from messages; '' if unknown.
+    % cfg    - webpreview.webConfig object used to scrub the token from messages, or [] if
+    %          the config was not loaded.
     %
     % Outputs
     % result - The input with a scrubbed post.message, and error set if ok is false.
 
-    result.post.message = webpreview.scrubToken(result.post.message,token);
+    result.post.message = scrubMessage(result.post.message,cfg);
     if ~isempty(caught)
         err = caught;
     elseif ~result.ok && ~isempty(result.error)
@@ -319,9 +273,32 @@ function result = finalise(result,caught,token)
         return
     end
 
-    result.post.message = webpreview.scrubToken(err.message,token);
+    result.post.message = scrubMessage(err.message,cfg);
     result.error = scrubbedException(err.identifier,result.post.message);
 end % finalise
+
+
+function msg = scrubMessage(msg,cfg)
+    % Remove the token from a message, if there is a config object to say what it is
+    %
+    % function msg = BakingTray.webpreview.updateSectionImage>scrubMessage(msg,cfg)
+    %
+    % Purpose
+    % If the config could not be loaded no token is known. Errors from loading the config
+    % have already been scrubbed by webpreview.webConfig.
+    %
+    % Inputs
+    % msg - Message text.
+    % cfg - webpreview.webConfig object, or [] if the config was not loaded.
+    %
+    % Outputs
+    % msg - The message with the token replaced by '***' if cfg is a config object,
+    %       otherwise the input.
+
+    if isa(cfg,'webpreview.webConfig')
+        msg = cfg.scrub(msg);
+    end
+end % scrubMessage
 
 
 function ex = scrubbedException(id,message)

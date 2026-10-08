@@ -11,7 +11,8 @@ function result = zipAndPost(folder, cfg)
     %
     % Inputs
     % folder - path to the folder holding the preview files.
-    % cfg - upload configuration structure (see webpreview.loadConfig).
+    % cfg - webpreview.webConfig object holding the upload configuration. Anything else is
+    %       reported as a failure by postZip.
     %
     % Outputs
     % result - structure with fields ok, httpStatus and message.
@@ -24,7 +25,12 @@ function result = zipAndPost(folder, cfg)
     catch err
         result.message = err.message;
     end
-    result.message = webpreview.scrubToken(result.message, webpreview.tokenOf(cfg));
+
+    % If cfg is not a config object there is no token to scrub, and calling a method on it
+    % would throw
+    if isa(cfg, 'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg)
+        result.message = cfg.scrub(result.message);
+    end
 end % zipAndPost
 
 

@@ -36,7 +36,8 @@ filled-in copy.
 
 `url` must be `https://`; plain `http://` is accepted only for `localhost` /
 `127.0.0.1`, for testing against a local server. `siteID` may contain only
-letters, digits, `_` and `-`. Optional fields `connectTimeout`,
+letters, digits, `_` and `-`. An optional `micID` (the microscope name) takes
+the same characters. Optional fields `connectTimeout`,
 `responseTimeout`, `dataTimeout` (seconds; defaults 15, 60, 60) can be raised
 for slow uplinks. It is unverified whether ResponseTimeout/DataTimeout cover
 the transfer of the upload itself; a warning `webpreview:postZip:noTimeout`
@@ -97,7 +98,7 @@ acquisition log. Options:
 | `Range` | `[lo hi]` for non-uint8 images (see below) |
 | `ClearStage` | `true` empties the managed stage folder first; default `false` |
 | `StageRoot` | parent of the stage folder; default `tempdir`; text options may be strings, paths are returned as char |
-| `Poster` | function handle `poster(folder, cfg)` returning `struct(ok, httpStatus, message)`; default `@webpreview.zipAndPost`; for tests |
+| `Poster` | function handle `poster(folder, cfg)` returning `struct(ok, httpStatus, message)`, where `cfg` is a `webpreview.webConfig` object; default `@webpreview.zipAndPost`; for tests |
 
 Result fields: `ok`; `stage` (the `stageFiles` result); `post` (`ok`,
 `httpStatus`, `message`); `stageDir` (a char path built from `StageRoot`; `stage.files` are canonical,
@@ -118,10 +119,14 @@ notice per call, but `stageFiles` may warn first about the same cause. The
 warning call is guarded, so `warning('error', ...)` settings cannot make the
 function throw.
 
-Token: it is scrubbed from the result and warning messages once the config
-has been read, and, if the config cannot be parsed, by a best-effort regexp on
-the raw file text. Messages raised before that, and anything a custom
-`Poster` emits before the config was read, are not guaranteed token-free.
+Token: the config is held in a `webpreview.webConfig` object, which validates
+the file once and then keeps the token private. It cannot be read, displayed
+or saved from outside the object. Code that needs it calls `cfg.authHeader()`
+(the `Authorization` header) or `cfg.scrub(msg)` (removes the token from a
+message). An error raised while the config is being loaded is scrubbed by the
+constructor itself, using a regexp on the raw file text if the file cannot be
+parsed. Once the config has been read, result and warning messages are scrubbed
+with `cfg.scrub`. A custom `Poster` is scrubbed only after the config was read.
 
 ## What is sent
 
@@ -162,7 +167,8 @@ staging-failure warning, not an error.
 
 `zipAndPost(folder, cfg)` zips a folder, uploads and deletes the temp zip,
 returning `struct(ok, httpStatus, message)` and never throwing; `zipFolder`,
-`postZip`, `stageFiles` and `loadConfig` are also usable alone. The extension
+`postZip` and `stageFiles` are also usable alone, and `webpreview.webConfig(file)`
+loads and validates a config file. The extension
 whitelist (`allowedExtensions`) mirrors `BS_ZIP_ALLOWED_EXTENSIONS` in
 `brainsaw/lib.php`; a test compares them when `lib.php` is present. Dotfiles
 and names containing `*` or `?` are skipped (the latter are wildcards to
