@@ -629,22 +629,26 @@ const BS_PAGE_STYLE = <<<CSS
   .stale { border-color: #833; }
 CSS;
 
+// Keep equal to DEFAULT_STALE_AFTER in js/autorefresh.js.
+const BS_DEFAULT_STALE_AFTER_SECONDS = 900;
+
 /**
  * stale_after_seconds from config as a positive int. A missing key means the
- * 900 s default; a present but non-numeric or non-positive value is logged and
- * also replaced by 900, so a config typo degrades the page instead of breaking it.
+ * default; a present value that is non-numeric or below 1 after int conversion
+ * is logged and also replaced by the default, so a config typo degrades the
+ * page instead of breaking it.
  */
 function bs_stale_after_seconds(array $config): int
 {
     if (!array_key_exists('stale_after_seconds', $config)) {
-        return 900;
+        return BS_DEFAULT_STALE_AFTER_SECONDS;
     }
     $value = $config['stale_after_seconds'];
-    if (is_numeric($value) && $value > 0) {
+    if (is_numeric($value) && (int) $value >= 1) {
         return (int) $value;
     }
-    error_log('brainsaw: invalid stale_after_seconds in config (' . var_export($value, true) . '); using 900');
-    return 900;
+    error_log('brainsaw: invalid stale_after_seconds in config (' . var_export($value, true) . '); using ' . BS_DEFAULT_STALE_AFTER_SECONDS);
+    return BS_DEFAULT_STALE_AFTER_SECONDS;
 }
 
 /**

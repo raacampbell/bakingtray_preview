@@ -14,7 +14,7 @@
 
   const POLL_INTERVAL_MS = 5000; // fixed poll period
   const FETCH_TIMEOUT_MS = 4000; // shorter than the poll period so fetches never pile up
-  const DEFAULT_STALE_AFTER = 900;
+  const DEFAULT_STALE_AFTER = 900; // keep equal to BS_DEFAULT_STALE_AFTER_SECONDS in lib.php
 
   // Same wording and thresholds as bs_human_ago() in lib.php (parity-tested).
   function humanAgo(seconds) {
@@ -99,7 +99,8 @@
     return {
       available: storage !== null && storage !== undefined,
       get: function (k) { try { return storage.getItem(k); } catch (e) { return null; } },
-      set: function (k, v) { try { storage.setItem(k, v); } catch (e) { /* guard disabled */ } },
+      // false when the write failed, so the caller can report the guard as off
+      set: function (k, v) { try { storage.setItem(k, v); return true; } catch (e) { return false; } },
     };
   }
 
@@ -107,7 +108,8 @@
   function readReloaded(env) {
     try {
       const m = JSON.parse(env.storage.get(env.storageKey) || '{}');
-      return m && typeof m === 'object' ? m : {};
+      // Only a plain object is a valid map; null, arrays, strings, numbers start fresh.
+      return Object.prototype.toString.call(m) === '[object Object]' ? m : {};
     } catch (e) {
       return {};
     }
@@ -167,6 +169,7 @@
   // Reload once if any changed URL has a value we have not already reloaded
   // for (reload-loop guard: a page that still differs after reloading is left alone).
   async function poll(env) {
+    if (env.reloading) return;
     const changes = await findChanges(env);
     if (changes.length === 0) return;
     if (env.storage.available === false) {
@@ -178,7 +181,10 @@
       return;
     }
     changes.forEach(function (c) { done[c.url] = c.value; });
-    env.storage.set(env.storageKey, JSON.stringify(done));
+    if (env.storage.set(env.storageKey, JSON.stringify(done)) === false) {
+      env.warnOnce('no-guard', 'autorefresh: reload-loop guard disabled: storage not writable');
+    }
+    env.reloading = true; // no further polls once a reload is under way
     env.reload();
   }
 
@@ -199,10 +205,12 @@
     let pending = false;
     // fromVisibility: a poll requested while one is in flight runs right after it ends.
     function runPoll(fromVisibility) {
-      if (doc.hidden) return;
+      if (doc.hidden || env.reloading) return;
       if (busy) { if (fromVisibility) pending = true; return; }
       busy = true;
-      poll(env).then(function () {}, function () {}).then(function () {
+      poll(env).catch(function (e) {
+        console.error('autorefresh: poll failed; page keeps running', e);
+      }).then(function () {
         busy = false;
         if (pending) { pending = false; runPoll(false); }
       });

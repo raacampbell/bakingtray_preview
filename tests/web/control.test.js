@@ -41,7 +41,8 @@ function makeEnv(els, responses) {
       return r === undefined ? { ok: false, status: 404 } : { ok: true, json: async () => ({ uploaded_at: r }) };
     },
     reloads: 0,
-    reload() { env.reloads += 1; },
+    // A real reload gives a fresh page, so the reloading flag is cleared here.
+    reload() { env.reloads += 1; env.reloading = false; },
     now: () => Date.parse('2026-01-01T00:10:00Z'),
     storage: { available: true, get: (k) => (store.has(k) ? store.get(k) : null), set: (k, v) => store.set(k, v) },
     storageKey: 'k',
