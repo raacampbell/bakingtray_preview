@@ -27,7 +27,7 @@ brainsaw/
     autorefresh.js        polls meta, reloads on change, live "ago"/stale (inlined by lib.php)
     jquery-3.7.1.min.js   self-hosted, so no page makes a third-party request
     jquery.imageLens.js   magnifier lens
-  system_data/     <site_ID>/<mic_ID>/ per microscope, created by uploads; never served directly
+  system_data/     <site_ID>/<mic_ID>/<source>/ per microscope and source, created by uploads; never served directly
   logs/            upload.log, one line per request; never served directly
 ```
 
@@ -35,8 +35,8 @@ Automated tests live in `tests/web/` at the repo root, not in `brainsaw/`.
 
 ## 2. Sites, microscopes and the private settings file
 
-A **site** is a lab; each site has one or more **microscopes**. Each microscope has its own
-token. Everything private lives in one JSON settings file, outside the web root, named by
+A **site** is a lab; each site has one or more **microscopes**. The token belongs to the site:
+every microscope of the site uploads with it. Everything private lives in one JSON settings file, outside the web root, named by
 `settings_file` in `config.php` (locally: `brainsaw_settings.json` next to `brainsaw/`, i.e. at
 the repo root, git-ignored; on the server: the path `stage_server.sh` writes in):
 
@@ -46,9 +46,10 @@ the repo root, git-ignored; on the server: the path `stage_server.sh` writes in)
   "sites": {
     "SITE_ID": {
       "display_name": "Smith lab",
+      "token": "PASTE_64_HEX_CHARS_HERE",
       "microscopes": {
-        "MIC_ID":  { "display_name": "Scope A", "token": "PASTE_64_HEX_CHARS_HERE" },
-        "MIC_ID2": { "display_name": "Scope B", "token": "PASTE_64_HEX_CHARS_HERE" }
+        "MIC_ID":  { "display_name": "Scope A" },
+        "MIC_ID2": { "display_name": "Scope B" }
       }
     }
   }
@@ -56,7 +57,8 @@ the repo root, git-ignored; on the server: the path `stage_server.sh` writes in)
 ```
 
 - IDs and the panopticon word: a letter, then letters, digits, `_` and `-`. `display_name` is
-  optional. `panopticon` is optional (no all-sites view without it).
+  optional. Each site needs a non-empty `token`; a `token` inside a microscope is an error, so
+  a file in the old per-microscope format is refused whole rather than half-accepted. `panopticon` is optional (no all-sites view without it).
 - The file is re-read on every request: no restart needed after editing it.
 - It is validated on every load. The panopticon word and the site IDs must all differ, and
   none may equal a file or folder name in `brainsaw/`; microscope IDs within a site must
@@ -122,7 +124,8 @@ Requires PHP 8.1+ with the `zip` extension (`php -m | grep zip`). On macOS: `bre
 3. Open `http://localhost:8000/<SITE_ID>`: one card per microscope, reading "no image yet".
    To see a full page without a microscope, either run the simulator
    (`BakingTray/simulate/README.md`) or copy the four files from `test_images/` into
-   `brainsaw/system_data/<SITE_ID>/<MIC_ID>/` (git-ignored).
+   `brainsaw/system_data/<SITE_ID>/<MIC_ID>/acq/` (git-ignored). The views read only `acq/`
+   for now.
 
 For large real zips add `-d upload_max_filesize=250M -d post_max_size=250M` before `-S`:
 Homebrew's defaults (2M/8M) are below the app's limits, and PHP silently drops all form fields
@@ -136,8 +139,8 @@ Keep the token out of the command line: put the header in a file only you can re
 ( umask 077; printf 'Authorization: Bearer %s\n' "$(cat /path/to/token.txt)" > /tmp/auth.txt )
 U=http://localhost:8000/upload.php
 curl -X POST "$U" -H @/tmp/auth.txt -F site_id=SITE_ID -F microscope_id=MIC_ID \
-  -F "data=@test_images/all_data.zip;type=application/zip"
-# -> {"status":"ok","files":["LastCompleteSection_01.jpg", ...]}
+  -F source=acq -F "data=@upload.zip;type=application/zip"
+# -> {"status":"ok","files":["recipe.yml","status.json", ...]}
 rm /tmp/auth.txt
 ```
 
@@ -145,11 +148,13 @@ rm /tmp/auth.txt
 |---|---|
 | GET instead of POST | 405 |
 | no or malformed `Authorization: Bearer` header | 401 |
-| unknown site, unknown microscope, missing `microscope_id`, or wrong token | 403 `unknown site_id, microscope_id or token` (the same for all, so the endpoint reveals no IDs; `logs/upload.log` says which) |
-| same microscope again within `min_upload_interval_seconds` (5 s) | 429 |
+| unknown site, unlisted microscope, missing `microscope_id`, or wrong token (including an old per-microscope token) | 403 `unknown site_id, microscope_id or token` (the same for all, so the endpoint reveals no IDs; `logs/upload.log` says which) |
+| `source` missing or not `acq` / `analysis` (checked after the token) | 400 |
+| same site, microscope and source again within `min_upload_interval_seconds` (5 s) | 429 |
 | no `data` file field | 400 |
+| `recipe.yml` or `status.json` missing; `status.json` not an object with a boolean `finished`; `SYSTEM.ID` in the recipe not equal to `microscope_id` once normalised; no `sample.ID` in the recipe | 400 with the reason |
 | zip too large / too many entries / too large unpacked | 413 |
-| not a `.zip` / not a valid zip / no recognised files | 415 |
+| not a `.zip` / not a valid zip | 415 |
 
 ### Automated checks
 
@@ -162,19 +167,36 @@ tests/web/check_stage.sh        # stage_server.sh: only committed files, refusal
 ```
 
 `check_pages.sh` copies `brainsaw/` (tracked and new files only) into a temp folder, writes a
-settings file with random words, IDs and tokens (two sites, microscopes including one named
-`logs`, a panopticon word), serves it with `php -S ... router.php` under a sub-folder, and
+settings file with random words, IDs and tokens (two sites with one token each, microscopes
+including one named `logs`, a panopticon word), serves it with `php -S ... router.php` under a sub-folder, and
 checks the views, the identical 404s (status, headers and body, GET and HEAD), the asset
 route, direct-access refusals, the URL base, uploads, logging, rate limits, settings
 validation, headers and the auto-refresh wiring.
 
 ## 5. What gets uploaded
 
-A zip per section from the MATLAB client, fields `site_id`, `microscope_id` and `data`. The
-server unzips it into `system_data/<site_id>/<microscope_id>/`, keeping only base file names
-and dropping anything not on the extension whitelist (`jpg jpeg png txt yml yaml json csv log`),
-so a stray `.php` or `.htaccess` is never written. It then writes `meta.json` with
-`uploaded_at`. Files are found by glob, so names may carry timestamps:
+A zip from the MATLAB client (or, later, StitchIt), fields `site_id`, `microscope_id`,
+`source` (`acq` or `analysis`) and `data`, with the **site's** token. Each source has its own
+folder, `system_data/<site_id>/<microscope_id>/<source>/`.
+
+The server extracts the zip into a temporary folder, keeping only these exact base file names
+(flattened; everything else, such as a stray `.php` or `.htaccess`, is dropped):
+`LastCompleteSection.jpg`, `montage.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
+Then it checks, before the live folder is touched:
+
+- `recipe.yml` and `status.json` are present;
+- `status.json` is a JSON object whose `finished` is a boolean (other keys are ignored);
+- `SYSTEM.ID` in the recipe, trimmed and with spaces replaced by `_` (`Scope A` becomes
+  `Scope_A`), equals `microscope_id` (the MATLAB client normalises the same way);
+- the recipe has a `sample.ID`.
+
+A refused upload (400) leaves the stored data exactly as it was. An accepted one is moved into
+the source folder and `meta.json` is written there with `uploaded_at` and `sample_id`. If the
+sample ID differs from the stored one (or none is stored) the source folder is emptied first;
+the same sample merges, so files not in the upload stay. `acq/` and `analysis/` are independent:
+neither empties or rate-limits the other. `logs/upload.log` records `site/microscope/source`.
+
+The views currently read only `acq/`, finding files by glob:
 
 | What | Pattern (newest wins unless noted) | Used for |
 |---|---|---|
@@ -187,10 +209,12 @@ so a stray `.php` or `.htaccess` is never written. It then writes `meta.json` wi
 
 1. Pick IDs (§2): an unguessable site ID (it is that lab's view URL), e.g.
    `s$(openssl rand -hex 8)`, and a short microscope ID.
-2. Generate one token per microscope with `openssl rand -hex 32`. Never reuse a token.
-3. Add the entries to the settings file (§2). No restart needed.
+2. Generate one token per site with `openssl rand -hex 32`. Never reuse a token.
+3. Add the entries to the settings file (§2). No restart needed. A new microscope of an existing
+   site needs only a new entry under `microscopes`.
 4. Send the lab their view URL `<base>/<SITE_ID>`, and for each microscope its `siteID`, `micID`
-   and token for the MATLAB config, by a private channel.
+   and the site token for the MATLAB config, by a private channel. The `micID` must equal the
+   recipe's `SYSTEM.ID` with spaces replaced by `_`.
 
 Removing: delete the entry. Its data under `system_data/<site>/<mic>/` stays on disk until you
 delete it. To revoke a view without touching uploads, there is no separate switch: change the
@@ -205,7 +229,7 @@ site ID (and move its data folder) or remove the site. A new site ID also means 
 | `max_zip_size` | 200 MB | reject threshold for the raw upload |
 | `max_zip_uncompressed_size` | 500 MB | zip-bomb guard: sum of the entries' sizes |
 | `max_zip_entries` | 500 | zip-bomb guard: number of files |
-| `min_upload_interval_seconds` | 5 | per-microscope rate limit |
+| `min_upload_interval_seconds` | 5 | rate limit per site, microscope and source |
 | `stale_after_seconds` | 900 | a card or status turns red past this age |
 
 ## 8. The microscope page

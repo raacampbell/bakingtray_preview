@@ -121,8 +121,8 @@ PAN="p$(openssl rand -hex 8)"         # the panopticon word (IDs and words start
 printf '%s\n' "$TOKEN" > "$PRIV/test_mic_token.txt"
 cat > "$PRIV/brainsaw_settings.json" <<EOF
 {"panopticon": "$PAN",
- "sites": {"$SITE": {"display_name": "Test site",
-   "microscopes": {"test_mic": {"display_name": "Test microscope", "token": "$TOKEN"}}}}}
+ "sites": {"$SITE": {"display_name": "Test site", "token": "$TOKEN",
+   "microscopes": {"test_mic": {"display_name": "Test microscope"}}}}}
 EOF
 cat > "$PRIV/brainsaw_webpreview_test.json" <<EOF
 {"url": "https://brainsaw.org/testserver/upload.php", "siteID": "$SITE", "micID": "test_mic", "token": "$TOKEN"}
