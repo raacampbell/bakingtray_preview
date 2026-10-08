@@ -74,8 +74,7 @@ temp zip, returning `struct(ok, httpStatus, message)` and never throwing.
 Form fields sent: `site_id`, `microscope_id`, `data` (the zip). Only files the
 server keeps are zipped: the name whitelist (`allowedNames`) mirrors
 `BS_ZIP_ALLOWED_NAMES` in `brainsaw/lib.php`; a test compares them when
-`lib.php` is present. Any other name is skipped (so are dotfiles, and names with
-`*` or `?`, which are wildcards to `zip`). Client-side limits (`serverLimits`, from
+`lib.php` is present. Any other name is skipped. Client-side limits (`serverLimits`, from
 the server defaults): at most 500 files and a 200 MB zip. If the server's PHP
 `post_max_size` is smaller than the zip, the failure can appear as an HTTP 403
 rather than 413. `interpretResponse` turns the HTTP status and body into the

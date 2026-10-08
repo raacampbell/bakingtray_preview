@@ -5,9 +5,7 @@ function names = selectUploadable(dirPath)
     %
     % Purpose
     % Returns a cell row; empty when nothing matches. Only files whose name is exactly one of
-    % webupload.allowedNames are kept. Subfolders are skipped, and so is anything else, which
-    % also rules out dotfiles and names containing '*' or '?' (zip() treats those as wildcards
-    % and would match other files).
+    % webupload.allowedNames are kept; subfolders and every other name are skipped.
     %
     % Inputs
     % dirPath - path to the folder to scan.

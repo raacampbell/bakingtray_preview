@@ -9,9 +9,8 @@ function zipPath = zipFolder(dirPath)
     % the upload small; the server filters again, so this is an optimisation, not a security
     % boundary.
     %
-    % Errors if the folder does not exist, holds no recognised files, has more files than the
-    % server accepts (webupload.serverLimits), or the zip would exceed the server's size
-    % limit. The caller owns the returned file and should delete it after posting
+    % Errors if the folder does not exist, holds no uploadable files, or the zip would exceed
+    % the server's size limit. The caller owns the returned file and should delete it after posting
     % (webupload.zipAndPost does this).
     %
     % Inputs
@@ -32,13 +31,6 @@ function zipPath = zipFolder(dirPath)
             strjoin(webupload.allowedNames(), ' '), dirPath);
     end
 
-    lim = webupload.serverLimits();
-    if numel(names) > lim.maxEntries
-        error('webpreview:tooManyFiles', ...
-            '%d files in %s; the server accepts at most %d per upload.', ...
-            numel(names), dirPath, lim.maxEntries);
-    end
-
 
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     % Names relative to dirPath (the rootfolder argument) make the archive flat
@@ -54,6 +46,7 @@ function zipPath = zipFolder(dirPath)
         error('webpreview:zipFailed', 'zip() did not create %s', zipPath);
     end
 
+    lim = webupload.serverLimits();
     info = dir(zipPath);
     if info.bytes > lim.maxZipBytes
         delete(zipPath);

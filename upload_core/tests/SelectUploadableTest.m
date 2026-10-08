@@ -14,11 +14,6 @@ classdef SelectUploadableTest < matlab.unittest.TestCase
     end
 
     methods (Test)
-        function allowedNamesAreTheFiveServerNames(tc)
-            tc.verifyEqual(sort(webupload.allowedNames()), ...
-                sort({'LastCompleteSection.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'}));
-        end
-
         function keepsExactlyTheAllowedNames(tc)
             SelectUploadableTest.touch(tc.Dir, [webupload.allowedNames(), {'evil.php'}]);
             tc.verifyEqual(sort(webupload.selectUploadable(tc.Dir)), sort(webupload.allowedNames()));

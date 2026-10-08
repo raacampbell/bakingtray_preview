@@ -57,8 +57,8 @@ the repo root, git-ignored; on the server: the path `stage_server.sh` writes in)
 ```
 
 - IDs and the panopticon word: a letter, then letters, digits, `_` and `-`. `display_name` is
-  optional. Each site needs a non-empty `token`; a `token` inside a microscope is an error, so
-  a file in the old per-microscope format is refused whole rather than half-accepted. `panopticon` is optional (no all-sites view without it).
+  optional. Each site needs a `token` of at least 32 characters without white space; a `token`
+  inside a microscope is an error, so a file in the old per-microscope format is refused whole. `panopticon` is optional (no all-sites view without it).
 - The file is re-read on every request: no restart needed after editing it.
 - It is validated on every load. The panopticon word and the site IDs must all differ, and
   none may equal a file or folder name in `brainsaw/`; microscope IDs within a site must
@@ -124,8 +124,7 @@ Requires PHP 8.1+ with the `zip` extension (`php -m | grep zip`). On macOS: `bre
 3. Open `http://localhost:8000/<SITE_ID>`: one card per microscope, reading "no image yet".
    To see a full page without a microscope, either run the simulator
    (`BakingTray/simulate/README.md`) or copy the four files from `test_images/` into
-   `brainsaw/system_data/<SITE_ID>/<MIC_ID>/acq/` (git-ignored). The views read only `acq/`
-   for now.
+   `brainsaw/system_data/<SITE_ID>/<MIC_ID>/acq/` (git-ignored). The views read `acq/`.
 
 For large real zips add `-d upload_max_filesize=250M -d post_max_size=250M` before `-S`:
 Homebrew's defaults (2M/8M) are below the app's limits, and PHP silently drops all form fields
@@ -152,8 +151,8 @@ rm /tmp/auth.txt
 | `source` missing or not `acq` / `analysis` (checked after the token) | 400 |
 | same site, microscope and source again within `min_upload_interval_seconds` (5 s) | 429 |
 | no `data` file field | 400 |
-| `recipe.yml` or `status.json` missing; `status.json` not an object with a boolean `finished`; `SYSTEM.ID` in the recipe not equal to `microscope_id` once normalised; no `sample.ID` in the recipe | 400 with the reason |
-| zip too large / too many entries / too large unpacked | 413 |
+| `recipe.yml` or `status.json` missing; `status.json` not an object with a boolean `finished`; `SYSTEM.ID` in the recipe not equal to `microscope_id` once normalised; no sample ID in the recipe, or one that is not valid UTF-8; two entries with the same base name | 400 with the reason |
+| zip too large / too many entries / too large unpacked / `recipe.yml` or `status.json` over 1 MB | 413 |
 | not a `.zip` / not a valid zip | 415 |
 
 ### Automated checks
@@ -188,7 +187,7 @@ Then it checks, before the live folder is touched:
 - `status.json` is a JSON object whose `finished` is a boolean (other keys are ignored);
 - `SYSTEM.ID` in the recipe, trimmed and with spaces replaced by `_` (`Scope A` becomes
   `Scope_A`; the exact rule is pinned by `upload_core/tests/recipe_id_vectors.json`), equals `microscope_id`;
-- the recipe has a `sample.ID` (same rule, no space replacement) that is a valid ID.
+- the recipe has a non-empty `sample.ID` (same rule, no space replacement) in valid UTF-8.
 
 A refused upload (400) leaves the stored data exactly as it was. An accepted one is moved into
 the source folder and `meta.json` is written there with `uploaded_at` and `sample_id`. If the
@@ -196,7 +195,7 @@ sample ID differs from the stored one (or none is stored) the source folder is e
 the same sample merges, so files not in the upload stay. `acq/` and `analysis/` are independent:
 neither empties or rate-limits the other. `logs/upload.log` records `site/microscope/source`.
 
-The views currently read only `acq/`, finding files by glob:
+The views read `acq/`, finding files by glob:
 
 | What | Pattern (newest wins unless noted) | Used for |
 |---|---|---|

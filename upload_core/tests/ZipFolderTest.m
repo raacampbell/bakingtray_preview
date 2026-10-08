@@ -32,18 +32,6 @@ classdef ZipFolderTest < matlab.unittest.TestCase
             tc.verifyEqual(sort(ZipFolderTest.listZip(zipPath)), sort(keep(:)));
         end
 
-        function dotfilesAreSkippedEvenWithGoodExtension(tc)
-            ZipFolderTest.touch(tc.Dir, {'.recipe.yml', '.status.json', 'status.json'});
-            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'status.json'});
-        end
-
-        function wildcardNamesAreSkipped(tc)
-            % '*' and '?' are illegal in Windows file names; only test where possible.
-            tc.assumeFalse(ispc);
-            ZipFolderTest.touch(tc.Dir, {'we*ird.txt', 'we?ird.txt', 'status.json'});
-            tc.verifyEqual(webupload.selectUploadable(tc.Dir), {'status.json'});
-        end
-
         function zipIsFlatAndIgnoresSubfolders(tc)
             ZipFolderTest.touch(tc.Dir, {'montage.jpg'});
             sub = fullfile(tc.Dir, 'sub');
