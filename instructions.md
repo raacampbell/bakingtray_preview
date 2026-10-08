@@ -478,9 +478,13 @@ line; `<body data-server-now>` carries the server clock. `js/autorefresh.js`
 
 - polls those meta URLs every 5 s (each fetch aborted after 4 s) and reloads
   when any `uploaded_at` changed (including none to some). Errors and 404s
-  count as "no change". A per-URL `sessionStorage` guard stops a reload loop if the page still differs
-  after reloading for the same value (404s are silent; other failures warn
-  once per URL and kind).
+  count as "no change". A 404 is silent (it is the normal state of a site
+  that has never uploaded); any other failure logs one console warning per
+  URL and failure kind. A per-URL `sessionStorage` guard stops a reload loop
+  if the page still differs after reloading for the same value. If
+  `sessionStorage` is unreadable or not writable the guard is off, which is
+  reported by one console warning the first time a change would trigger a
+  reload.
 - recomputes the "X ago" text and the red stale styling every 5 s, using the
   same wording and threshold as `bs_human_ago()` and the server's stale
   rule, measured against the server clock so a wrong client clock does not

@@ -81,12 +81,14 @@ nothing changed.
 - Error policy: 404 is silent; other failures warn once per URL and failure kind.
 - Reload-loop guard: a per-meta-URL map in `sessionStorage` (key per page URL) of
   the last value reloaded for; no second reload for the same value. A
-  `sessionStorage` that throws on access disables the guard (one console warning)
-  without stopping polling.
+  `sessionStorage` that is unreadable (throws on access) or not writable turns the
+  guard off without stopping polling; one console warning is logged the first
+  time a change would trigger a reload (not at startup). Once a reload has been
+  requested, no further polls run on that page.
 - Missing or unreadable `js/autorefresh.js`: error logged, page gets an
   unconditional 60 s meta refresh and no `<script>`.
 - Pages send `Cache-Control: no-store`. `stale_after_seconds` is validated
-  (`bs_stale_after_seconds()`): a non-numeric or non-positive value is logged and
-  replaced by 900.
+  (`bs_stale_after_seconds()`): a value that is non-numeric or below 1 after int conversion is logged and
+  replaced by the default 900 (`BS_DEFAULT_STALE_AFTER_SECONDS`).
 - Known limitation: a newly added site appears on the landing page only after a
   manual reload.
