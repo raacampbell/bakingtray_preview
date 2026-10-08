@@ -1,5 +1,5 @@
 classdef StageFilesTest < matlab.unittest.TestCase
-    % Tests for webpreview.stageFiles, toUint8, globToRegexp and stageSpec.
+    % Tests for BakingTray.webpreview.stageFiles, toUint8, globToRegexp and stageSpec.
     % Run: runtests('StageFilesTest'). All inputs are synthetic temp files; the
     % package folder is put on the path by a fixture so tests run from anywhere.
 
@@ -29,7 +29,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.Log = fullfile(tc.Dir, 'acqLog_SAMPLE.txt');
             writeText(tc.Recipe, sprintf('sample:\n  ID: SAMPLE\n'));
             writeText(tc.Log, sprintf('section 1 done\n'));
-            spec = webpreview.stageSpec();
+            spec = BakingTray.webpreview.stageSpec();
             tc.Globs = spec.Globs;
         end
     end
@@ -37,9 +37,9 @@ classdef StageFilesTest < matlab.unittest.TestCase
     methods (Test)
         % ---- stageSpec vs the server ----
         function specGlobsMatchServerSource(tc)
-            % tests/ -> webpreview/ -> BakingTray/ -> repo root
+            % tests/ -> BakingTray/ -> repo root
             here = fileparts(mfilename('fullpath'));
-            repo = fileparts(fileparts(fileparts(here)));
+            repo = fileparts(fileparts(here));
             lib = fullfile(repo, 'brainsaw', 'lib.php');
             tc.verifyTrue(isfile(lib), ['server source not found at ' lib]);
             txt = fileread(lib);
@@ -53,116 +53,116 @@ classdef StageFilesTest < matlab.unittest.TestCase
 
         % ---- toUint8 (pure, no JPEG) ----
         function toUint8RoundsFloatHalfUp(tc)
-            tc.verifyEqual(webpreview.toUint8(0.5 * ones(2)), uint8(128 * ones(2)));
+            tc.verifyEqual(BakingTray.webpreview.toUint8(0.5 * ones(2)), uint8(128 * ones(2)));
         end
 
         function toUint8Uint8IsIdentity(tc)
             img = uint8([0 1 127 255; 3 4 5 6]);
-            tc.verifyEqual(webpreview.toUint8(img), img);
+            tc.verifyEqual(BakingTray.webpreview.toUint8(img), img);
         end
 
         function toUint8Uint16AutoscalesToMax(tc)
-            out = webpreview.toUint8(uint16([0 1000; 2000 2000]));
+            out = BakingTray.webpreview.toUint8(uint16([0 1000; 2000 2000]));
             tc.verifyEqual(out, uint8([0 128; 255 255]));
         end
 
         function toUint8Uint16AllZeroIsBlack(tc)
-            tc.verifyEqual(webpreview.toUint8(zeros(3, 3, 'uint16')), zeros(3, 3, 'uint8'));
+            tc.verifyEqual(BakingTray.webpreview.toUint8(zeros(3, 3, 'uint16')), zeros(3, 3, 'uint8'));
         end
 
         function toUint8Uint16ExplicitFullRangeKeepsAbsoluteScale(tc)
-            out = webpreview.toUint8(uint16([0 2047; 2047 2047]), [0 65535]);
+            out = BakingTray.webpreview.toUint8(uint16([0 2047; 2047 2047]), [0 65535]);
             tc.verifyLessThan(double(out(1,2)), 10);
         end
 
         function toUint8Int16ClampsNegativesAndAutoscales(tc)
-            out = webpreview.toUint8(int16([-5 0; 100 200]));
+            out = BakingTray.webpreview.toUint8(int16([-5 0; 100 200]));
             tc.verifyEqual(out, uint8([0 0; 128 255]));
         end
 
         function toUint8RangeScalesAndClamps(tc)
-            out = webpreview.toUint8([-1 5; 10 20], [0 10]);
+            out = BakingTray.webpreview.toUint8([-1 5; 10 20], [0 10]);
             tc.verifyEqual(out, uint8([0 128; 255 255]));
         end
 
         function toUint8IntegerClassRangeIsUsedAsDouble(tc)
-            out = webpreview.toUint8(uint16([0 2048; 4095 4095]), uint16([0 4095]));
+            out = BakingTray.webpreview.toUint8(uint16([0 2048; 4095 4095]), uint16([0 4095]));
             tc.verifyEqual(out, uint8([0 128; 255 255]));
         end
 
         function toUint8NegativeLoRange(tc)
-            out = webpreview.toUint8(int16([-100 0; 100 300]), int16([-100 300]));
+            out = BakingTray.webpreview.toUint8(int16([-100 0; 100 300]), int16([-100 300]));
             tc.verifyEqual(out, uint8([0 64; 128 255]));
         end
 
         function toUint8SingleAccepted(tc)
-            tc.verifyEqual(webpreview.toUint8(0.5 * ones(2, 'single')), uint8(128 * ones(2)));
+            tc.verifyEqual(BakingTray.webpreview.toUint8(0.5 * ones(2, 'single')), uint8(128 * ones(2)));
         end
 
         function toUint8BadRangeErrors(tc)
             img = uint8(ones(4));
-            tc.verifyError(@() webpreview.toUint8(img, [5 1]), 'webpreview:toUint8:badRange');
-            tc.verifyError(@() webpreview.toUint8(img, [1 NaN]), 'webpreview:toUint8:badRange');
-            tc.verifyError(@() webpreview.toUint8(img, [1 2 3]), 'webpreview:toUint8:badRange');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(img, [5 1]), 'webpreview:toUint8:badRange');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(img, [1 NaN]), 'webpreview:toUint8:badRange');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(img, [1 2 3]), 'webpreview:toUint8:badRange');
         end
 
         function toUint8FloatOutOfRangeErrorsWithoutRange(tc)
-            tc.verifyError(@() webpreview.toUint8(2 * ones(4)), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(2 * ones(4)), 'webpreview:toUint8:badImage');
         end
 
         function toUint8NanAndInfError(tc)
             bad = ones(4); bad(3) = NaN;
-            tc.verifyError(@() webpreview.toUint8(bad), 'webpreview:toUint8:badImage');
-            tc.verifyError(@() webpreview.toUint8(bad, [0 1]), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(bad), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(bad, [0 1]), 'webpreview:toUint8:badImage');
             bad(3) = Inf;
-            tc.verifyError(@() webpreview.toUint8(bad), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(bad), 'webpreview:toUint8:badImage');
         end
 
         function toUint8UnsupportedClassErrors(tc)
-            tc.verifyError(@() webpreview.toUint8(int32(ones(4))), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(int32(ones(4))), 'webpreview:toUint8:badImage');
         end
 
         function toUint8BadDimsError(tc)
-            tc.verifyError(@() webpreview.toUint8(uint8(ones(4,4,3,2))), 'webpreview:toUint8:badImage');
-            tc.verifyError(@() webpreview.toUint8(uint8(ones(4,4,2))), 'webpreview:toUint8:badImage');
-            tc.verifyError(@() webpreview.toUint8(uint8([])), 'webpreview:toUint8:badImage');
-            tc.verifyError(@() webpreview.toUint8(uint8(1:10)), 'webpreview:toUint8:badImage');
-            tc.verifyError(@() webpreview.toUint8(uint8((1:10)')), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(uint8(ones(4,4,3,2))), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(uint8(ones(4,4,2))), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(uint8([])), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(uint8(1:10)), 'webpreview:toUint8:badImage');
+            tc.verifyError(@() BakingTray.webpreview.toUint8(uint8((1:10)')), 'webpreview:toUint8:badImage');
         end
 
         % ---- globToRegexp ----
         function globEscapesDots(tc)
-            rx = webpreview.globToRegexp('*.jpg');
+            rx = BakingTray.webpreview.globToRegexp('*.jpg');
             tc.verifyTrue(globHit(rx, 'a.jpg'));
             tc.verifyFalse(globHit(rx, 'ajpg'));
         end
 
         function globBracketClass(tc)
-            rx = webpreview.globToRegexp('[Mm]ontage*');
+            rx = BakingTray.webpreview.globToRegexp('[Mm]ontage*');
             tc.verifyTrue(globHit(rx, 'montage1'));
             tc.verifyTrue(globHit(rx, 'Montage'));
             tc.verifyFalse(globHit(rx, 'xontage'));
         end
 
         function globIsCaseSensitive(tc)
-            tc.verifyFalse(globHit(webpreview.globToRegexp('*ecipe*'), 'RECIPE.yml'));
+            tc.verifyFalse(globHit(BakingTray.webpreview.globToRegexp('*ecipe*'), 'RECIPE.yml'));
         end
 
         function globQuestionMarkIsOneChar(tc)
-            rx = webpreview.globToRegexp('a?c');
+            rx = BakingTray.webpreview.globToRegexp('a?c');
             tc.verifyTrue(globHit(rx, 'abc'));
             tc.verifyFalse(globHit(rx, 'ac'));
             tc.verifyFalse(globHit(rx, 'abbc'));
         end
 
         function globWildcardDoesNotMatchLeadingDot(tc)
-            tc.verifyFalse(globHit(webpreview.globToRegexp('*ecipe*.yml'), '._recipe.yml'));
-            tc.verifyFalse(globHit(webpreview.globToRegexp('*'), '.hidden'));
-            tc.verifyTrue(globHit(webpreview.globToRegexp('a*'), 'a.b'));
+            tc.verifyFalse(globHit(BakingTray.webpreview.globToRegexp('*ecipe*.yml'), '._recipe.yml'));
+            tc.verifyFalse(globHit(BakingTray.webpreview.globToRegexp('*'), '.hidden'));
+            tc.verifyTrue(globHit(BakingTray.webpreview.globToRegexp('a*'), 'a.b'));
         end
 
         function globUnterminatedBracketErrors(tc)
-            tc.verifyError(@() webpreview.globToRegexp('a[bc'), 'webpreview:globToRegexp:unterminated');
+            tc.verifyError(@() BakingTray.webpreview.globToRegexp('a[bc'), 'webpreview:globToRegexp:unterminated');
         end
 
         % ---- stageFiles: image content ----
@@ -422,7 +422,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.assumeTrue(isfolder(fullfile(tc.Dir, 'stagecase')), 'file system is case-sensitive');
             live = fullfile(real, 'recipe_live.yml');
             writeText(live, 'live recipe');
-            tc.verifyWarning(@() webpreview.stageFiles(uint8(ones(8)), live, tc.Log, ...
+            tc.verifyWarning(@() BakingTray.webpreview.stageFiles(uint8(ones(8)), live, tc.Log, ...
                 fullfile(tc.Dir, 'stagecase')), 'webpreview:stageFiles:missingRecipe');
             tc.verifyEqual(fileread(live), 'live recipe');
         end
@@ -468,7 +468,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.assumeEqual(system(sprintf('ln -s "%s" "%s"', real, link)), 0);
             live = fullfile(real, 'recipe_live.yml');
             writeText(live, 'live recipe');
-            tc.verifyWarning(@() webpreview.stageFiles(uint8(ones(8)), live, tc.Log, link), ...
+            tc.verifyWarning(@() BakingTray.webpreview.stageFiles(uint8(ones(8)), live, tc.Log, link), ...
                 'webpreview:stageFiles:missingRecipe');
             tc.verifyEqual(fileread(live), 'live recipe');
         end
@@ -507,16 +507,16 @@ classdef StageFilesTest < matlab.unittest.TestCase
                 recipe = varargin{1};
                 varargin(1) = [];
             end
-            webpreview.stageFiles(img, recipe, tc.Log, tc.Stage, varargin{:});
+            BakingTray.webpreview.stageFiles(img, recipe, tc.Log, tc.Stage, varargin{:});
         end
 
         function r = stageOut(tc, img, recipe, log, varargin)
-            r = webpreview.stageFiles(img, recipe, log, tc.Stage, varargin{:});
+            r = BakingTray.webpreview.stageFiles(img, recipe, log, tc.Stage, varargin{:});
             tc.Last = r;
         end
 
         function stageTo(tc, stageDir, img)
-            tc.Last = webpreview.stageFiles(img, tc.Recipe, tc.Log, stageDir);
+            tc.Last = BakingTray.webpreview.stageFiles(img, tc.Recipe, tc.Log, stageDir);
         end
 
         function out = readMain(tc)
@@ -532,7 +532,7 @@ end
 
 function tf = matchesGlob(names, glob)
 % names: cellstr -> logical vector; char -> scalar.
-tf = ~cellfun(@isempty, regexp(cellstr(names), webpreview.globToRegexp(glob), 'once'));
+tf = ~cellfun(@isempty, regexp(cellstr(names), BakingTray.webpreview.globToRegexp(glob), 'once'));
 end
 
 function tf = globHit(rx, name)

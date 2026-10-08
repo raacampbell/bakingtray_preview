@@ -20,11 +20,13 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
 
     methods (TestClassSetup)
         function addPackageToPath(tc)
-            % simulate/ and the webpreview/ package it drives
+            % simulate/ and the BakingTray and webupload packages it drives
             simDir = fileparts(fileparts(mfilename('fullpath')));
-            webDir = fullfile(fileparts(simDir), 'webpreview');
+            bakingTrayDir = fileparts(simDir);
+            coreDir = fullfile(fileparts(bakingTrayDir), 'upload_core');
             tc.applyFixture(matlab.unittest.fixtures.PathFixture(simDir));
-            tc.applyFixture(matlab.unittest.fixtures.PathFixture(webDir));
+            tc.applyFixture(matlab.unittest.fixtures.PathFixture(bakingTrayDir));
+            tc.applyFixture(matlab.unittest.fixtures.PathFixture(coreDir));
         end
     end
 
@@ -166,8 +168,8 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             tc.verifySize(img, [spec.ImageSize 3]);
             tc.verifyClass(montage, 'uint8');
             tc.verifySize(montage, spec.MontageSize);
-            tc.verifyEqual(webpreview.toUint8(img), img);
-            tc.verifyEqual(webpreview.toUint8(montage), montage);
+            tc.verifyEqual(BakingTray.webpreview.toUint8(img), img);
+            tc.verifyEqual(BakingTray.webpreview.toUint8(montage), montage);
         end
 
         function imagesDifferBetweenSectionsAndAreRepeatable(tc)
@@ -201,7 +203,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
             logFile = fullfile(tc.Dir, 'acqLog_x.txt');
             writeText(logFile, 'x');
             stageDir = fullfile(tc.Dir, 'stage');
-            res = webpreview.stageFiles(img, tc.Recipe, logFile, stageDir, 'Montage', montage);
+            res = BakingTray.webpreview.stageFiles(img, tc.Recipe, logFile, stageDir, 'Montage', montage);
             tc.verifyTrue(res.stageOk);
             tc.verifyTrue(isfile(fullfile(stageDir, 'LastCompleteSection.jpg')));
             tc.verifyTrue(isfile(fullfile(stageDir, 'montage.jpg')));
@@ -384,7 +386,7 @@ classdef SimulateAcquisitionTest < matlab.unittest.TestCase
         end
 
         function realRunRefusesLocalhostLookAlikeUrls(tc)
-            % https look-alikes pass webpreview.webConfig, so the target check itself must refuse them.
+            % https look-alikes pass webupload.webConfig, so the target check itself must refuse them.
             urls = {'https://localhost@evil.example/upload.php', ...
                 'https://localhost.evil.com/upload.php', ...
                 'https://127.0.0.1.evil.com/upload.php', ...

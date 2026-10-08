@@ -1,11 +1,11 @@
 # simulate
 
 Fakes an acquisition and sends it to a Brainsaw web server, using the real
-BakingTray web preview code (`BakingTray/webpreview`). It is a test tool only
+BakingTray web preview code (`upload_core` and `BakingTray/+BakingTray/+webpreview`). It is a test tool only
 and is never part of the BakingTray install.
 
 For each section it builds a synthetic image and montage, appends to a fresh
-acquisition log, calls `webpreview.updateSectionImage`, prints one line, then
+acquisition log, calls `BakingTray.webpreview.updateSectionImage`, prints one line, then
 waits `Interval` seconds. Needs MATLAB R2019b or later, no toolboxes.
 
 `<repo>` is the folder you cloned (it contains `BakingTray/` and `brainsaw/`).
@@ -22,13 +22,17 @@ No server, config file or site is needed; nothing is sent.
 
 ```matlab
 repo = '<repo>';    % e.g. '/Users/you/code/brainsaw_web_preview' or 'C:\code\brainsaw_web_preview'
-addpath(fullfile(repo,'BakingTray','webpreview'), fullfile(repo,'BakingTray','simulate'))
+addpath(fullfile(repo,'upload_core'), fullfile(repo,'BakingTray'), fullfile(repo,'BakingTray','simulate'))
 which simulate.simulateAcquisition      % should print a path
 r = simulate.simulateAcquisition('DryRun', true, 'NumSections', 3, 'Interval', 0);
 ```
 
-Add those two folders, not the `+` folders inside them; do not `savepath`
-(it could shadow a real BakingTray install). Each section prints a line like:
+Add those three folders, not the `+` folders inside them; do not `savepath`,
+and never add this repo's `BakingTray` folder to the path on a rig that has the
+real BakingTray installed, because the two `+BakingTray` packages would merge
+and could shadow each other.
+
+Each section prints a line like:
 
 ```
 section 1/3: ok (dry run), HTTP 200: dry run: nothing sent
@@ -123,7 +127,7 @@ and edit the copy:
 ```matlab
 home = getenv('HOME');   % on Windows use getenv('USERPROFILE')
 cfg = fullfile(home, '.brainsaw_webpreview_sim.json');
-copyfile(fullfile(repo,'BakingTray','webpreview','webpreview_config.example.json'), cfg)
+copyfile(fullfile(repo,'upload_core','webpreview_config.example.json'), cfg)
 edit(cfg)
 ```
 
@@ -202,7 +206,7 @@ new microscope.
 
    ```matlab
    cfgRemote = fullfile(home, '.brainsaw_webpreview_sim_remote.json');
-   copyfile(fullfile(repo,'BakingTray','webpreview','webpreview_config.example.json'), cfgRemote)
+   copyfile(fullfile(repo,'upload_core','webpreview_config.example.json'), cfgRemote)
    edit(cfgRemote)
    ```
    with `url` = `https://<your-host>/testserver/upload.php`, the new `siteID`,

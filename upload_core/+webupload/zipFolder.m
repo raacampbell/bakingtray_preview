@@ -1,18 +1,18 @@
 function zipPath = zipFolder(dirPath)
     % Zip the recognised preview files in a folder into a temporary .zip
     %
-    % function zipPath = BakingTray.webpreview.zipFolder(dirPath)
+    % function zipPath = webupload.zipFolder(dirPath)
     %
     % Purpose
-    % Only files the server keeps (see webpreview.selectUploadable) are included, and the
+    % Only files the server keeps (see webupload.selectUploadable) are included, and the
     % archive is flat: subfolders are ignored and entries carry no path. Filtering here keeps
     % the upload small; the server filters again, so this is an optimisation, not a security
     % boundary.
     %
     % Errors if the folder does not exist, holds no recognised files, has more files than the
-    % server accepts (webpreview.serverLimits), or the zip would exceed the server's size
+    % server accepts (webupload.serverLimits), or the zip would exceed the server's size
     % limit. The caller owns the returned file and should delete it after posting
-    % (webpreview.zipAndPost does this).
+    % (webupload.zipAndPost does this).
     %
     % Inputs
     % dirPath - path to the folder to zip.
@@ -25,14 +25,14 @@ function zipPath = zipFolder(dirPath)
         error('webpreview:noSuchFolder', 'Folder not found: %s', dirPath);
     end
 
-    names = webpreview.selectUploadable(dirPath);
+    names = webupload.selectUploadable(dirPath);
     if isempty(names)
         error('webpreview:noFiles', ...
             'No files with a recognised extension (%s) in %s', ...
-            strjoin(webpreview.allowedExtensions(), ' '), dirPath);
+            strjoin(webupload.allowedExtensions(), ' '), dirPath);
     end
 
-    lim = webpreview.serverLimits();
+    lim = webupload.serverLimits();
     if numel(names) > lim.maxEntries
         error('webpreview:tooManyFiles', ...
             '%d files in %s; the server accepts at most %d per upload.', ...
@@ -67,7 +67,7 @@ end % zipFolder
 function deleteQuietly(path)
     % Delete a file if it exists
     %
-    % function BakingTray.webpreview.zipFolder>deleteQuietly(path)
+    % function webupload.zipFolder>deleteQuietly(path)
     %
     % Purpose
     % Used to remove a partial zip left behind if zip() fails. Does nothing if the file is

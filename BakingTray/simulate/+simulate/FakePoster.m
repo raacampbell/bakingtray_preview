@@ -4,7 +4,7 @@ classdef FakePoster < handle
     % simulate.FakePoster
     %
     % Purpose
-    % Same contract as webpreview.zipAndPost: post(folder,cfg) returns
+    % Same contract as webupload.zipAndPost: post(folder,cfg) returns
     % struct(ok, httpStatus, message). Calls is a struct array with fields
     % folder, names (sorted file names), bytes (matching sizes) and logText
     % (contents of the staged acqLog.txt, '' if absent), captured at call time
@@ -12,10 +12,10 @@ classdef FakePoster < handle
     %
     % Example
     % p = simulate.FakePoster();
-    % webpreview.updateSectionImage(..., 'Poster', @p.post)
+    % BakingTray.webpreview.updateSectionImage(..., 'Poster', @p.post)
     % p.Calls(end).names     % files in the stage folder at the last call
     %
-    % See also webpreview.zipAndPost, webpreview.updateSectionImage
+    % See also webupload.zipAndPost, BakingTray.webpreview.updateSectionImage
 
     properties (SetAccess = private)
         Calls = struct('folder', {}, 'names', {}, 'bytes', {}, 'logText', {})
@@ -31,7 +31,7 @@ classdef FakePoster < handle
             d = d(~[d.isdir]);
             [names,order] = sort({d.name});
 
-            logFile = fullfile(folder, webpreview.stageSpec().Names.Log);
+            logFile = fullfile(folder, BakingTray.webpreview.stageSpec().Names.Log);
             logText = '';
             if isfile(logFile)
                 logText = fileread(logFile);

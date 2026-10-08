@@ -13,7 +13,7 @@ function ok = clearStage(cfg,varargin)
     % StageRoot is not guarded against, so StageRoot should be a per-user folder.
     %
     % Inputs
-    % cfg - webpreview.webConfig object.
+    % cfg - webupload.webConfig object.
     %
     % Inputs (optional param/val pairs)
     % 'StageRoot'  - Non-empty text scalar. Folder holding the stage folders. Default is
@@ -22,26 +22,26 @@ function ok = clearStage(cfg,varargin)
     % Outputs
     % ok - true when the folder is gone (or never existed), false otherwise.
     %
-    % See also: webpreview.updateSectionImage, webpreview.clearStageDir
+    % See also: BakingTray.webpreview.updateSectionImage, BakingTray.webpreview.clearStageDir
 
 
     ok = false;
 
     try
-        if ~(isa(cfg,'webpreview.webConfig') && isscalar(cfg) && isvalid(cfg))
-            error('webpreview:clearStage:badConfig','cfg must be a webpreview.webConfig object.')
+        if ~(isa(cfg,'webupload.webConfig') && isscalar(cfg) && isvalid(cfg))
+            error('webpreview:clearStage:badConfig','cfg must be a webupload.webConfig object.')
         end
 
         isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) ...
                               && strlength(x)>0;
         params = inputParser;
-        params.FunctionName = 'webpreview.clearStage';
+        params.FunctionName = 'BakingTray.webpreview.clearStage';
         params.CaseSensitive = false;
         params.addParameter('StageRoot', tempdir, isNonEmptyText)
         params.parse(varargin{:});
 
-        stageDir = webpreview.stageDirFor(cfg,params.Results.StageRoot);
-        webpreview.clearStageDir(stageDir);
+        stageDir = BakingTray.webpreview.stageDirFor(cfg,params.Results.StageRoot);
+        BakingTray.webpreview.clearStageDir(stageDir);
         ok = true;
     catch err
         try

@@ -4,7 +4,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % function result = BakingTray.webpreview.stageFiles(img,recipePath,logPath,stageDir,'Param1',val1,...)
     %
     % Purpose
-    % Files written (names from webpreview.stageSpec, chosen to match the server's
+    % Files written (names from BakingTray.webpreview.stageSpec, chosen to match the server's
     % globs in brainsaw/lib.php):
     %   LastCompleteSection.jpg   from img
     %   montage.jpg               from the 'Montage' image, if given
@@ -15,7 +15,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % server's recipe glob (*ecipe*.y*ml) is used.
     %
     % Image conversion (classes, autoscaling, 'Range') is documented in
-    % webpreview.toUint8. Invalid images or Range throw, before stageDir is touched.
+    % BakingTray.webpreview.toUint8. Invalid images or Range throw, before stageDir is touched.
     %
     % FAILURE POLICY: a preview must never abort an acquisition, so
     %  - a recipe or log that is missing, not a path, or fails to copy only WARNS; the
@@ -42,7 +42,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % (locked, read-only) also sets stageOk false, since the server would pick it up.
     %
     % Inputs
-    % img        - Numeric HxW or HxWx3 image of the section (see webpreview.toUint8).
+    % img        - Numeric HxW or HxWx3 image of the section (see BakingTray.webpreview.toUint8).
     % recipePath - Path to the recipe file or to a folder containing it.
     % logPath    - Path to the acquisition log file.
     % stageDir   - Non-empty text scalar. Folder to assemble the files in. Created if
@@ -51,7 +51,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % Inputs (optional param/val pairs)
     % 'Montage' - Numeric montage image to stage as montage.jpg. Default is [] (none).
     % 'Range'   - Numeric [lo hi] used to scale both images. Default is [] (see
-    %             webpreview.toUint8).
+    %             BakingTray.webpreview.toUint8).
     %
     % Outputs
     % result - Structure with fields:
@@ -62,7 +62,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %   recipeSource  - path of the recipe used, or ''.
     %   stageOk       - logical.
     %
-    % See also: webpreview.toUint8, webpreview.stageSpec, webpreview.updateSectionImage
+    % See also: BakingTray.webpreview.toUint8, BakingTray.webpreview.stageSpec, BakingTray.webpreview.updateSectionImage
 
 
     narginchk(4,Inf)
@@ -75,7 +75,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     stageDir = char(stageDir);
 
     params = inputParser;
-    params.FunctionName = 'webpreview.stageFiles';
+    params.FunctionName = 'BakingTray.webpreview.stageFiles';
     params.CaseSensitive = false;
     params.addParameter('Montage', [], @isnumeric)
     params.addParameter('Range', [], @isnumeric)
@@ -85,10 +85,10 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
 
 
     % Pure conversion first: programming errors throw here, before any I/O.
-    mainImg = webpreview.toUint8(img,range);
+    mainImg = BakingTray.webpreview.toUint8(img,range);
     montageImg = [];
     if ~isempty(montage)
-        montageImg = webpreview.toUint8(montage,range);
+        montageImg = BakingTray.webpreview.toUint8(montage,range);
     end
 
     result = struct('files', {{}}, 'montageStaged', false, 'recipeStaged', false, ...
@@ -137,7 +137,7 @@ function result = stageOnDisk(result,mainImg,montageImg,recipePath,logPath,stage
     % result - The input with files, montageStaged, recipeStaged, logStaged and
     %          recipeSource filled in, and stageOk set to false if anything failed.
 
-    spec = webpreview.stageSpec;
+    spec = BakingTray.webpreview.stageSpec;
     hasMontage = ~isempty(montageImg);
 
     ensureFolder(stageDir)
@@ -444,7 +444,7 @@ function names = listMatching(folder,glob)
     %
     % Inputs
     % folder - Folder to list.
-    % glob   - Server glob pattern, translated with webpreview.globToRegexp.
+    % glob   - Server glob pattern, translated with BakingTray.webpreview.globToRegexp.
     %
     % Outputs
     % names - Cell row of file names (not paths). Subfolders are not included. Empty if
@@ -453,7 +453,7 @@ function names = listMatching(folder,glob)
     d = dir(folder);
     d = d(~[d.isdir]);
     names = {d.name};
-    names = names(~cellfun(@isempty, regexp(names,webpreview.globToRegexp(glob),'once')));
+    names = names(~cellfun(@isempty, regexp(names,BakingTray.webpreview.globToRegexp(glob),'once')));
 end % listMatching
 
 
@@ -563,7 +563,7 @@ function p = writeImagePart(img8,kind,finalName,glob,stageAbs,spec)
     % finalName - Name the file will have once renamed into place.
     % glob      - Server glob matching stale versions of this file.
     % stageAbs  - Canonical path of the stage folder.
-    % spec      - Structure from webpreview.stageSpec.
+    % spec      - Structure from BakingTray.webpreview.stageSpec.
     %
     % Outputs
     % p - Structure with fields kind, final, part (full path written) and glob, as used
@@ -596,7 +596,7 @@ function p = copyPart(src,kind,finalName,glob,stageAbs,spec)
     % finalName - Name the file will have once renamed into place.
     % glob      - Server glob matching stale versions of this file.
     % stageAbs  - Canonical path of the stage folder.
-    % spec      - Structure from webpreview.stageSpec.
+    % spec      - Structure from BakingTray.webpreview.stageSpec.
     %
     % Outputs
     % p - Structure with fields kind, final, part (full path written) and glob, as used

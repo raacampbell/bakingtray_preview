@@ -1,5 +1,5 @@
 classdef WebConfigTest < matlab.unittest.TestCase
-    % Tests for webpreview.webConfig (loading, validation and token protection) and the
+    % Tests for webupload.webConfig (loading, validation and token protection) and the
     % extension whitelist.
 
     properties
@@ -23,7 +23,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
     methods (Test)
         % ---- loading and validation ----
         function validFileReturnsFields(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             tc.verifyEqual(cfg.url, 'https://example.org/upload.php');
             tc.verifyEqual(cfg.siteID, 'site_a-1');
             tc.verifyEqual(cfg.micID, 'mic_1');
@@ -33,13 +33,13 @@ classdef WebConfigTest < matlab.unittest.TestCase
             s = WebConfigTest.good();
             s.token = sprintf('  tok123\n');
             s.siteID = sprintf(' site_a-1 ');
-            cfg = webpreview.webConfig(tc.writeJson(s));
+            cfg = webupload.webConfig(tc.writeJson(s));
             tc.verifyEqual(cfg.siteID, 'site_a-1');
             tc.verifyEqual(cfg.scrub('a tok123 b'), 'a *** b');
         end
 
         function missingFileErrors(tc)
-            tc.verifyError(@() webpreview.webConfig(fullfile(tc.Dir, 'absent.json')), ...
+            tc.verifyError(@() webupload.webConfig(fullfile(tc.Dir, 'absent.json')), ...
                 'webpreview:configMissing');
         end
 
@@ -47,7 +47,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
             for field = {'token', 'micID', 'siteID', 'url'}
                 f = tc.writeJson(rmfield(WebConfigTest.good(), field{1}));
                 try
-                    webpreview.webConfig(f);
+                    webupload.webConfig(f);
                     tc.verifyFail('expected the constructor to error');
                 catch err
                     tc.verifyEqual(err.identifier, 'webpreview:configIncomplete');
@@ -59,7 +59,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
         function emptyOrBlankFieldErrors(tc)
             for blank = {'', '   '}
                 s = WebConfigTest.good(); s.token = blank{1};
-                tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configIncomplete');
+                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configIncomplete');
             end
         end
 
@@ -67,54 +67,54 @@ classdef WebConfigTest < matlab.unittest.TestCase
             for field = {'siteID', 'micID', 'token', 'url'}
                 for bad = {42, ['ab'; 'cd']}
                     s = WebConfigTest.good(); s.(field{1}) = bad{1};
-                    tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
+                    tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
                 end
             end
         end
 
         function malformedJsonErrors(tc)
             f = tc.writeJson('{not json');
-            tc.verifyError(@() webpreview.webConfig(f), 'webpreview:configInvalid');
+            tc.verifyError(@() webupload.webConfig(f), 'webpreview:configInvalid');
         end
 
         function jsonArrayRootErrors(tc)
             f = tc.writeJson([WebConfigTest.good(), WebConfigTest.good()]);
-            tc.verifyError(@() webpreview.webConfig(f), 'webpreview:configInvalid');
+            tc.verifyError(@() webupload.webConfig(f), 'webpreview:configInvalid');
         end
 
         function badIDsError(tc)
             for field = {'siteID', 'micID'}
                 for bad = {'has space', 'a/b', '../x', 'a.b', '2photon', '_x', '-x'}
                     s = WebConfigTest.good(); s.(field{1}) = bad{1};
-                    tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configInvalid');
+                    tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configInvalid');
                 end
             end
         end
 
         function timeoutsDefaultAndOverride(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             tc.verifyEqual([cfg.connectTimeout cfg.responseTimeout cfg.dataTimeout], [15 60 60]);
             s = WebConfigTest.good(); s.responseTimeout = 300;
-            cfg = webpreview.webConfig(tc.writeJson(s));
+            cfg = webupload.webConfig(tc.writeJson(s));
             tc.verifyEqual([cfg.connectTimeout cfg.responseTimeout cfg.dataTimeout], [15 300 60]);
         end
 
         function badTimeoutsError(tc)
             for bad = {-1, 0, 'soon', Inf, [1 2]}
                 s = WebConfigTest.good(); s.dataTimeout = bad{1};
-                tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
+                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:configWrongType');
             end
         end
 
         function httpUrlIsRejected(tc)
             s = WebConfigTest.good(); s.url = 'http://example.org/upload.php';
-            tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:insecureUrl');
+            tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:insecureUrl');
         end
 
         function localhostHttpIsAllowed(tc)
             for u = {'http://localhost/u.php', 'http://localhost:8080/u.php', 'http://127.0.0.1:8000/upload.php'}
                 s = WebConfigTest.good(); s.url = u{1};
-                cfg = webpreview.webConfig(tc.writeJson(s));
+                cfg = webupload.webConfig(tc.writeJson(s));
                 tc.verifyEqual(cfg.url, u{1});
             end
         end
@@ -122,7 +122,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
         function lookalikeLocalhostHostIsRejected(tc)
             for u = {'http://localhost.evil.com/u', 'http://127.0.0.1.evil.com/u'}
                 s = WebConfigTest.good(); s.url = u{1};
-                tc.verifyError(@() webpreview.webConfig(tc.writeJson(s)), 'webpreview:insecureUrl');
+                tc.verifyError(@() webupload.webConfig(tc.writeJson(s)), 'webpreview:insecureUrl');
             end
         end
 
@@ -130,16 +130,16 @@ classdef WebConfigTest < matlab.unittest.TestCase
             tc.setHome(tc.Dir);
             s = WebConfigTest.good();
             tc.writeJson(s, '.brainsaw_webpreview.json');
-            tc.verifyEqual(webpreview.webConfig().siteID, s.siteID);
+            tc.verifyEqual(webupload.webConfig().siteID, s.siteID);
         end
 
         function noArgErrorsWithoutHome(tc)
             tc.setHome('');
-            tc.verifyError(@() webpreview.webConfig(), 'webpreview:noHome');
+            tc.verifyError(@() webupload.webConfig(), 'webpreview:noHome');
         end
 
         function propertiesCannotBeChangedAfterConstruction(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             tc.verifyError(@() WebConfigTest.setUrl(cfg, 'http://evil.example/'), ...
                 'MATLAB:class:SetProhibited');
             tc.verifyEqual(cfg.url, 'https://example.org/upload.php');
@@ -147,12 +147,12 @@ classdef WebConfigTest < matlab.unittest.TestCase
 
         % ---- token protection ----
         function tokenCannotBeRead(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             tc.verifyError(@() cfg.token, 'MATLAB:class:GetProhibited');
         end
 
         function tokenDoesNotAppearInDisplay(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             txt = evalc('disp(cfg)');
             tc.verifyThat(txt, ~matlab.unittest.constraints.ContainsSubstring('tok123'));
             txt = evalc('cfg');
@@ -160,7 +160,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
         end
 
         function authHeaderCarriesTheToken(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             h = cfg.authHeader();
             tc.verifyClass(h, 'matlab.net.http.HeaderField');
             tc.verifyEqual(char(h.Name), 'Authorization');
@@ -168,14 +168,14 @@ classdef WebConfigTest < matlab.unittest.TestCase
         end
 
         function scrubRemovesEveryOccurrence(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             msg = cfg.scrub('bad Bearer tok123 and again tok123 end');
             tc.verifyEmpty(strfind(msg, 'tok123'));
             tc.verifyEqual(msg, 'bad Bearer *** and again *** end');
         end
 
         function scrubNeverThrows(tc)
-            cfg = webpreview.webConfig(tc.writeJson(WebConfigTest.good()));
+            cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             tc.verifyEqual(cfg.scrub('msg'), 'msg');
             tc.verifyEqual(cfg.scrub(''), '');
             tc.verifyEqual(cfg.scrub(5), '');
@@ -187,7 +187,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
             s = WebConfigTest.good(); s.url = ['http://evil.example/' s.token];
             f = tc.writeJson(s);
             try
-                webpreview.webConfig(f);
+                webupload.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
             catch err
                 tc.verifyEqual(err.identifier, 'webpreview:insecureUrl');
@@ -200,7 +200,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
             % The JSON token abc"def is written abc\"def in the file.
             f = tc.writeJson('{"url":"http://evil/abc\"def","siteID":"site-1","micID":"m","token":"abc\"def"}');
             try
-                webpreview.webConfig(f);
+                webupload.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
             catch err
                 tc.verifyThat(err.message, ~matlab.unittest.constraints.ContainsSubstring('abc"def'));
@@ -213,7 +213,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
             % from the error message if the file cannot be parsed.
             f = tc.writeJson('{"url":"https://x.example/tok123", "token":"tok123" "oops"}');
             try
-                webpreview.webConfig(f);
+                webupload.webConfig(f);
                 tc.verifyFail('expected the constructor to error');
             catch err
                 tc.verifyEqual(err.identifier, 'webpreview:configInvalid');
@@ -223,14 +223,14 @@ classdef WebConfigTest < matlab.unittest.TestCase
 
         % ---- not config ----
         function extensionWhitelistMatchesServer(tc)
-            libFile = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..', 'brainsaw', 'lib.php');
+            libFile = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'brainsaw', 'lib.php');
             tc.assumeTrue(isfile(libFile), 'brainsaw/lib.php not present');
             txt = fileread(libFile);
             list = regexp(txt, 'BS_ZIP_ALLOWED_EXTENSIONS\s*=\s*\[([^\]]*)\]', 'tokens', 'once');
             tc.assertNotEmpty(list, 'BS_ZIP_ALLOWED_EXTENSIONS not found in lib.php');
             serverExts = regexp(list{1}, '''([^'']+)''', 'tokens');
             serverExts = cellfun(@(c) c{1}, serverExts, 'UniformOutput', false);
-            tc.verifyEqual(sort(webpreview.allowedExtensions()), sort(serverExts));
+            tc.verifyEqual(sort(webupload.allowedExtensions()), sort(serverExts));
         end
     end
 

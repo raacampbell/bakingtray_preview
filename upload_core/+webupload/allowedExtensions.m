@@ -1,7 +1,7 @@
 function exts = allowedExtensions()
     % Extensions (no dot, lower case) the brainsaw server keeps
     %
-    % function exts = BakingTray.webpreview.allowedExtensions()
+    % function exts = webupload.allowedExtensions()
     %
     % Purpose
     % Mirrors BS_ZIP_ALLOWED_EXTENSIONS in brainsaw/lib.php; a test checks the two stay in step.

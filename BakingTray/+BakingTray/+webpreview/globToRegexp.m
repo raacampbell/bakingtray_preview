@@ -12,7 +12,7 @@ function rx = globToRegexp(glob)
     % Known divergences from PHP glob(): '[!x]' negation, '[[:alpha:]]' classes and
     % backslash escapes are not translated (they pass through as regexp syntax or
     % literals); an empty '[]' is not supported. The server's globs (see
-    % webpreview.stageSpec) use none of these.
+    % BakingTray.webpreview.stageSpec) use none of these.
     %
     % Inputs
     % glob - Char row vector containing the glob pattern.
@@ -23,7 +23,7 @@ function rx = globToRegexp(glob)
     % Errors
     % 'webpreview:globToRegexp:unterminated' if a '[' has no closing ']'.
     %
-    % See also: webpreview.stageSpec
+    % See also: BakingTray.webpreview.stageSpec
 
 
     rx = '^';
