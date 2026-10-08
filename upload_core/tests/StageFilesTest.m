@@ -110,6 +110,27 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyFalse(isfolder(tc.Stage));
         end
 
+        function onlyALiteralEmptyArrayMeansNoImage(tc)
+            for bad = {zeros(0, 0, 'uint16'), zeros(0, 3), ones(0, 'single')}
+                tc.verifyError(@() tc.stage(bad{1}), 'webupload:toUint8:badImage');
+                tc.verifyError(@() tc.stage(uint8(ones(8)), 'Montage', bad{1}), 'webupload:toUint8:badImage');
+            end
+            tc.verifyFalse(isfolder(tc.Stage));
+        end
+
+        function badImageDoesNotClearTheStage(tc)
+            tc.stage(uint8(ones(8)));
+            tc.verifyError(@() tc.stage(2*ones(8), 'ClearStage', true), 'webupload:toUint8:badImage');
+            tc.verifyTrue(isfile(fullfile(tc.Stage, 'recipe.yml')));
+        end
+
+        function clearStageOptionRemovesEverythingElseInTheStage(tc)
+            tc.stage(uint8(ones(8)));
+            writeText(fullfile(tc.Stage, 'other.txt'), 'x');
+            tc.stage(uint8(ones(8)), 'ClearStage', true);
+            tc.verifyEqual(tc.stagedNames(), {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml'});
+        end
+
         function emptyImageStagesNoImage(tc)
             r = tc.stageOut([], tc.Recipe, tc.Log);
             tc.verifyFalse(r.mainStaged);
@@ -173,6 +194,32 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyWarning(@() tc.stageOut(uint8(ones(8)), tc.Recipe, ...
                 fullfile(tc.Dir, 'typo.txt')), 'webupload:stageFiles:missingLog');
             tc.verifyEqual(fileread(fullfile(tc.Stage, 'acqLog.txt')), sprintf('section 1 done\n'));
+        end
+
+        function missingLogFallsBackOnlyForTheSameSample(tc)
+            tc.stage(uint8(ones(8)));
+            other = fullfile(tc.Dir, 'recipe_OTHER.yml');
+            writeText(other, sprintf('sample:\n  ID: OTHER\n'));
+            tc.verifyWarning(@() tc.stageOut(uint8(ones(8)), other, fullfile(tc.Dir, 'nope.txt')), ...
+                'webupload:stageFiles:missingLog');
+            tc.verifyFalse(isfile(fullfile(tc.Stage, 'acqLog.txt')), 'another sample must not get the old log');
+            tc.verifyFalse(tc.Last.logKept);
+        end
+
+        function missingLogIsKeptForTheSameSampleAndReported(tc)
+            tc.stage(uint8(ones(8)));
+            tc.verifyWarning(@() tc.stageOut(uint8(ones(8)), tc.Recipe, fullfile(tc.Dir, 'nope.txt')), ...
+                'webupload:stageFiles:missingLog');
+            tc.verifyTrue(tc.Last.logKept);
+        end
+
+        function missingLogIsDroppedWhenTheSampleCannotBeCompared(tc)
+            noSample = fullfile(tc.Dir, 'recipe_none.yml');
+            writeText(noSample, sprintf('SYSTEM:\n  ID: m\n'));
+            tc.stage(uint8(ones(8)), noSample);
+            tc.verifyWarning(@() tc.stageOut(uint8(ones(8)), noSample, fullfile(tc.Dir, 'nope.txt')), ...
+                'webupload:stageFiles:missingLog');
+            tc.verifyFalse(isfile(fullfile(tc.Stage, 'acqLog.txt')));
         end
 
         function missingRecipeWarnsButStagesImage(tc)
@@ -302,7 +349,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
         function stage(tc, img, varargin)
             % Stage with the fixture recipe/log unless a recipe path is given first.
             recipe = tc.Recipe;
-            if ~isempty(varargin) && ischar(varargin{1}) && ~any(strcmp(varargin{1}, {'Montage', 'Range'}))
+            if ~isempty(varargin) && ischar(varargin{1}) && ~any(strcmp(varargin{1}, {'Montage', 'Range', 'ClearStage'}))
                 recipe = varargin{1};
                 varargin(1) = [];
             end

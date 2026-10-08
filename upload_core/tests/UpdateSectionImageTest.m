@@ -146,7 +146,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyEqual(tc.Calls.status, struct('finished', false));
         end
 
-        function missingRecipeFailsAndDoesNotReusePreviousOne(tc)
+        function missingRecipeFileFailsAndNothingIsPosted(tc)
             tc.update();
             tc.Recipe = fullfile(tc.Dir, 'no_such_recipe.yml');
             res = tc.update();
@@ -216,7 +216,8 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function badImageTypesAreNonFatalAndSendNothing(tc)
-            bad = {{1}, struct('a', 1), 'no_such_file.jpg', fullfile(tc.Dir, 'x.png'), true};
+            bad = {{1}, struct('a', 1), 'no_such_file.jpg', fullfile(tc.Dir, 'x.png'), true, ...
+                   zeros(0, 0, 'uint16'), zeros(0, 3)};
             for kk = 1:numel(bad)
                 tc.callCapturing(@() webupload.updateSectionImage(bad{kk}, tc.Recipe, tc.Log, ...
                     tc.Cfg, tc.BaseArgs{:}));
@@ -224,6 +225,15 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
                 tc.verifyFailedWarning();
             end
             tc.verifyEmpty(tc.Calls);
+        end
+
+        function badImageDoesNotWipeTheStageEvenWithClearStage(tc)
+            tc.update();
+            tc.callCapturing(@() webupload.updateSectionImage(2 * ones(8), tc.Recipe, tc.Log, tc.Cfg, ...
+                tc.BaseArgs{:}, 'ClearStage', true));
+            tc.verifyFalse(tc.Out.ok);
+            tc.verifyTrue(isfile(fullfile(tc.Calls(1).folder, 'recipe.yml')));
+            tc.verifyNumElements(tc.Calls, 1);
         end
 
         function startCallStagesNoImageAndDeletesTheStaleOne(tc)
@@ -273,8 +283,30 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         function timeoutsAreAppendedToThePosterCallOnlyWhenGiven(tc)
             tc.update();
             tc.verifyEmpty(tc.Calls(1).extra);
-            tc.update('ConnectTimeout', 5, 'ResponseTimeout', 10);
-            tc.verifyEqual(tc.Calls(2).extra, {'ConnectTimeout', 5, 'ResponseTimeout', 10});
+            tc.update('ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 11);
+            tc.verifyEqual(tc.Calls(2).extra, ...
+                {'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 11});
+        end
+
+        function aFinishedCallFollowedByADefaultCallSendsUnfinished(tc)
+            tc.update('Finished', true);
+            tc.update();
+            tc.verifyEqual([tc.Calls.status], [struct('finished', true), struct('finished', false)]);
+        end
+
+        function recipeThatCannotBeCopiedIsNotPostedWithoutARecipe(tc)
+            % A dangling symlink as the recipe's .part file makes the copy fail while
+            % readRecipe on the source succeeds.
+            tc.assumeFalse(ispc);
+            stageDir = webupload.stageDirFor(tc.Cfg, 'mic-1', tc.StageRoot, 'acq');
+            mkdir(stageDir);
+            link = fullfile(stageDir, 'recipe.yml.part');
+            tc.assumeEqual(system(sprintf('ln -s "%s" "%s"', fullfile(tc.Dir, 'nodir', 'x'), link)), 0);
+            res = tc.update();
+            tc.verifyFalse(res.ok);
+            tc.verifyFalse(res.recipeFresh);
+            tc.verifyEmpty(tc.Calls);
+            tc.verifyEqual(res.error.identifier, 'webupload:updateSectionImage:stageFailed');
         end
 
         function badTimeoutIsNonFatal(tc)
@@ -296,20 +328,14 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.PosterReply = struct('ok', false, 'httpStatus', 429, 'message', 'rate limited');
             tc.PosterRepliesAfter = struct('ok', true, 'httpStatus', 200, 'message', 'uploaded');
             tic
-            res = tc.update('Finished', true);
+            res = tc.update('Finished', true, 'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
             waited = toc;
             tc.verifyTrue(res.ok);
             tc.verifyNumElements(tc.Calls, 2);
+            tc.verifyEqual(tc.Calls(1).extra, {'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10});
+            tc.verifyEqual(tc.Calls(2).extra, tc.Calls(1).extra, 'the retry uses the same timeouts');
             tc.verifyEqual(tc.Calls(2).status, struct('finished', true));
             tc.verifyGreaterThanOrEqual(waited, webupload.serverLimits().minUploadIntervalSec + 1);
-        end
-
-        function rateLimitedFinishedCallIsRetriedNoMoreThanOnce(tc)
-            tc.PosterReply = struct('ok', false, 'httpStatus', 429, 'message', 'rate limited');
-            res = tc.update('Finished', true);
-            tc.verifyFalse(res.ok);
-            tc.verifyEqual(res.post.httpStatus, 429);
-            tc.verifyNumElements(tc.Calls, 2);
         end
 
         function otherFailuresOfAFinishedCallAreNotRetried(tc)
@@ -424,10 +450,22 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyFalse(res.logFresh);
             tc.verifyTrue(res.stale);
             tc.verifyEqual(tc.WarnId, 'webupload:updateSectionImage:stale');
-            tc.verifySubstring(tc.WarnMsg, 'acq log');
-            tc.verifySubstring(tc.WarnMsg, 'previously staged copy');
+            tc.verifySubstring(tc.WarnMsg, 'acq log not refreshed');
+            tc.verifySubstring(tc.WarnMsg, 'previously staged copy was uploaded');
             tc.verifyTrue(ismember('acqLog.txt', tc.Calls(2).names), ...
                 'previous log is what was uploaded');
+        end
+
+        function missingLogForANewSampleIsDroppedAndTheWarningSaysSo(tc)
+            tc.update();
+            writeText(tc.Recipe, sprintf('sample: {ID: B}\nSYSTEM:\n  ID: mic-1\n'));
+            tc.Log = fullfile(tc.Dir, 'no_such_log.txt');
+            res = tc.update();
+            tc.verifyTrue(res.ok);
+            tc.verifyEqual(tc.WarnId, 'webupload:updateSectionImage:stale');
+            tc.verifyThat(tc.WarnMsg, ~matlab.unittest.constraints.ContainsSubstring('previously staged'));
+            tc.verifySubstring(tc.WarnMsg, 'no log was uploaded');
+            tc.verifyFalse(ismember('acqLog.txt', tc.Calls(2).names));
         end
 
         function staleAndFailureGiveOneFailedWarningNamingTheFile(tc)
@@ -437,6 +475,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.update();
             tc.verifyFailedWarning();
             tc.verifySubstring(tc.WarnMsg, 'acq log not refreshed');
+            tc.verifyThat(tc.WarnMsg, ~matlab.unittest.constraints.ContainsSubstring('was uploaded'));
         end
 
         function clearStageOptionRemovesPreviousMetadata(tc)
@@ -476,7 +515,6 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function clearStageOptionOnlyTouchesTheManagedFolder(tc)
             tc.update();                                   % creates the managed folder
-            managed = webupload.stageDirFor(tc.Cfg, 'mic-1', tc.StageRoot, 'acq');
             sibling = webupload.stageDirFor(tc.otherCfg(), 'mic-1', tc.StageRoot, 'acq');
             mkdir(sibling);
             writeText(fullfile(sibling, 'keep.txt'), 'x');

@@ -27,14 +27,20 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % StageRoot defaulting to tempdir. It is reused between calls, so each call replaces
     % the previous files instead of accumulating them. The recipe is always staged afresh
     % from recipePath. If a new log cannot be staged, the previous copy stays and is
-    % uploaded; this is reported (see result.stale). 'ClearStage',true empties the
-    % managed stage folder first; to do that without uploading anything, use
-    % webupload.clearStage.
+    % uploaded only if the previously staged recipe has the same sample ID as the new
+    % one; otherwise no log is uploaded. Either way this is reported (see result.stale).
+    % 'ClearStage',true empties the managed stage folder first, once the arguments have
+    % been checked; to do that without uploading anything, use webupload.clearStage. On a
+    % machine where tempdir is shared between users (Linux /tmp) pass a private folder
+    % as 'StageRoot'.
     %
     % 'Finished',true marks the run as ended in status.json. The server answers HTTP 429
     % to an upload that follows another from the same site, microscope and source within
     % its minimum interval. A Finished call must not be lost, so it waits that interval
-    % plus one second and tries once more; other calls are not retried.
+    % plus one second and tries once more; other calls are not retried. The interval is
+    % this client's copy of the server setting (webupload.serverLimits); a site that
+    % raises it will answer the retry with another 429, and the Finished flag is lost
+    % (ok is false, with the usual warning).
     %
     % Deliberate catch-all: a section completing must never be interrupted by the
     % preview, so every failure inside the call (config, image or option problems,
@@ -62,8 +68,9 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %                'analysis'. Default is [].
     % 'Range'      - Numeric [lo hi] used to scale numeric images. Default is [].
     % 'Finished'   - Logical scalar written to status.json. Default is false.
-    % 'ConnectTimeout', 'ResponseTimeout' - Seconds. Passed to the upload for this call
-    %                only (see webupload.postZip). Default is the config values.
+    % 'ConnectTimeout', 'ResponseTimeout', 'DataTimeout' - Seconds. Passed to the upload
+    %                for this call only, and again to the retry (see webupload.postZip).
+    %                Default is the config values.
     % 'Poster'     - Function handle with the zipAndPost signature,
     %                poster(folder,cfg,micID,source,...) -> struct(ok,httpStatus,message) with
     %                char message, where cfg is a webupload.webConfig object. Default is
@@ -79,7 +86,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %   stage       - stageFiles result; [] if not reached.
     %   post        - struct with ok, httpStatus and message.
     %   stageDir    - '' if not reached; a char path built from StageRoot.
-    %   recipeFresh - this call staged a new recipe.
+    %   recipeFresh - this call staged a new recipe. If not, nothing is uploaded.
     %   logFresh    - this call staged a new log.
     %   stale       - either of the above is false after staging. A notice
     %                 'webupload:updateSectionImage:stale' names the file when the
@@ -89,7 +96,10 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % See also: webupload.clearStage, webupload.stageFiles, webupload.zipAndPost
 
 
-    result = emptyResult;
+    result = struct('ok', false, 'stage', [], ...
+        'post', struct('ok',false,'httpStatus',NaN,'message',''), ...
+        'stageDir', '', 'recipeFresh', false, 'logFresh', false, 'stale', false, ...
+        'error', []);
     caught = [];
 
     % From here on cfg is [] unless it is a usable config; finalise relies on that
@@ -125,9 +135,10 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % The part of updateSectionImage that runs inside its try/catch. Refuses a montage
     % for source 'acq'. Reads the microscope ID from the recipe, builds the stage folder
     % path from cfg.siteID, the ID, opts.StageRoot and opts.Source (webupload.stageDirFor
-    % checks the IDs, so they are safe as folder names), empties it if opts.ClearStage is
-    % true, stages the files with webupload.stageFiles, writes status.json and uploads the
-    % folder with opts.Poster, once more after a 429 if opts.Finished.
+    % checks the IDs, so they are safe as folder names), stages the files with
+    % webupload.stageFiles (which empties the folder first if opts.ClearStage is true, but
+    % only after checking the images), writes status.json and uploads the folder with
+    % opts.Poster, once more after a 429 if opts.Finished.
     %
     % Anything that goes wrong before staging has finished is thrown and caught by
     % updateSectionImage. After that, failures are written to result.error instead, so the
@@ -135,7 +146,8 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % or left no recipe (the server refuses an upload without one), nothing is uploaded.
     %
     % Inputs
-    % result     - Structure from emptyResult, to be filled in.
+    % result     - Result structure of updateSectionImage as it stands before anything
+    %              has been done, to be filled in.
     % img        - [], a numeric image or the path of a jpg.
     % recipePath - Path to the recipe file.
     % logPath    - Path to the acquisition log file.
@@ -155,12 +167,9 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % Read from the source recipe, never from a copy left in the stage by an earlier call
     micID = webupload.readRecipe(char(recipePath));
     stageDir = webupload.stageDirFor(cfg,micID,opts.StageRoot,opts.Source);
-    if opts.ClearStage
-        webupload.clearStageDir(stageDir);
-    end
 
     result.stage = webupload.stageFiles(img,recipePath,logPath,stageDir, ...
-                        'Montage',opts.Montage,'Range',opts.Range);
+                        'Montage',opts.Montage,'Range',opts.Range,'ClearStage',opts.ClearStage);
     result.stageDir = stageDir;
     result.recipeFresh = result.stage.recipeStaged;
     result.logFresh = result.stage.logStaged;
@@ -226,6 +235,7 @@ function opts = parseOptions(varargin)
     params.addParameter('Finished', false, isLogicalScalar)
     params.addParameter('ConnectTimeout', [], isTimeout)
     params.addParameter('ResponseTimeout', [], isTimeout)
+    params.addParameter('DataTimeout', [], isTimeout)
     params.addParameter('Poster', @webupload.zipAndPost, ...
                         @(x) isa(x,'function_handle') && isscalar(x))
     params.addParameter('StageRoot', tempdir, isNonEmptyText)
@@ -240,7 +250,7 @@ function opts = parseOptions(varargin)
     opts.ClearStage = logical(opts.ClearStage);
 
     opts.PosterArgs = {};
-    for name = {'ConnectTimeout','ResponseTimeout'}
+    for name = {'ConnectTimeout','ResponseTimeout','DataTimeout'}
         if ~isempty(opts.(name{1}))
             opts.PosterArgs = [opts.PosterArgs, name, {opts.(name{1})}];
         end
@@ -295,7 +305,7 @@ function result = finalise(result,caught,cfg)
     % result.post.message.
     %
     % Inputs
-    % result - Result structure as left by runPipeline (or emptyResult if it was not reached).
+    % result - Result structure as left by runPipeline (or its initial state if runPipeline was not reached).
     % caught - MException caught by updateSectionImage, or [] if there was none.
     % cfg    - webupload.webConfig used to scrub the token from messages, or [] if the
     %          caller did not supply a usable one.
@@ -354,9 +364,22 @@ function notify(result)
             id = 'webupload:updateSectionImage:stale';
             text = 'Web preview uploaded with stale metadata';
         end
-        text = sprintf(['%s; %s not refreshed for this section ', ...
-                        '(the previously staged copy, if any, was used)'], ...
-                text, staleNames(result));
+        names = {};
+        if ~result.recipeFresh
+            names{end+1} = 'recipe';
+        end
+        if ~result.logFresh
+            names{end+1} = 'acq log';
+        end
+        text = sprintf('%s; %s not refreshed for this section', text, strjoin(names,' and '));
+        % The recipe is never kept, so only the log has a fallback to describe
+        if result.ok
+            if result.stage.logKept
+                text = [text ' (the previously staged copy was uploaded)'];
+            else
+                text = [text ' (no log was uploaded)'];
+            end
+        end
     end
 
     if isempty(id)
@@ -369,43 +392,3 @@ function notify(result)
         % Deliberately ignored, see above
     end
 end % notify
-
-
-function names = staleNames(result)
-    % Describe which of the recipe and log were not refreshed
-    %
-    % function names = webupload.updateSectionImage>staleNames(result)
-    %
-    % Inputs
-    % result - Result structure with the logical fields recipeFresh and logFresh.
-    %
-    % Outputs
-    % names - 'recipe', 'acq log' or 'recipe and acq log'. '' if both are fresh.
-
-    parts = {};
-    if ~result.recipeFresh
-        parts{end+1} = 'recipe';
-    end
-    if ~result.logFresh
-        parts{end+1} = 'acq log';
-    end
-    names = strjoin(parts,' and ');
-end % staleNames
-
-
-function result = emptyResult
-    % The result structure as it stands before anything has been done
-    %
-    % function result = webupload.updateSectionImage>emptyResult
-    %
-    % Outputs
-    % result - Structure with the fields documented in updateSectionImage, set to their
-    %          "nothing happened" values: ok false, stage [], post.ok false with
-    %          post.httpStatus NaN and an empty post.message, stageDir '', recipeFresh,
-    %          logFresh and stale false, and error [].
-
-    result = struct('ok', false, 'stage', [], ...
-        'post', struct('ok',false,'httpStatus',NaN,'message',''), ...
-        'stageDir', '', 'recipeFresh', false, 'logFresh', false, 'stale', false, ...
-        'error', []);
-end % emptyResult

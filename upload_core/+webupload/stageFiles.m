@@ -12,15 +12,18 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %   acqLog.txt                copy of the log
     % status.json is written separately, by webupload.writeStatus.
     %
-    % An image (img or 'Montage') is one of: [] (none; a previously staged one is deleted
-    % so it can never go up with a new recipe), a numeric array (converted with
+    % An image (img or 'Montage') is one of: the literal [] (none; a previously staged one
+    % is deleted so it can never go up with a new recipe), a numeric array (converted with
     % webupload.toUint8 and written as a jpg) or the path of a jpg file (copied as is).
-    % Anything else, a path that is not an existing .jpg/.jpeg file, and an invalid
-    % 'Range' throw before stageDir is touched.
+    % Any other empty array is an error, as is anything else, a path that is not an
+    % existing .jpg/.jpeg file, and an invalid 'Range'. All of these throw before
+    % stageDir is touched, 'ClearStage' included.
     %
     % FAILURE POLICY: a preview must never abort an acquisition, so
-    %  - a log that is missing, not a path, or fails to copy only WARNS and the previously
-    %    staged log (if any) is kept;
+    %  - a log that is missing, not a path, or fails to copy only WARNS. The previously
+    %    staged log is kept (result.logKept) only if the previously staged recipe has the
+    %    same, non-empty sample ID as the new one; otherwise it is deleted, so an old
+    %    sample's log is never uploaded with a new recipe;
     %  - a recipe that is missing, not a path, or fails to copy WARNS and the previously
     %    staged recipe is deleted, because a recipe left over from another sample must
     %    never be uploaded with new files;
@@ -32,9 +35,11 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % name) and then renamed into place, so a zip taken meanwhile does not see a
     % half-written file. The four names <staged name>.part (for example
     % LastCompleteSection.jpg.part) are reserved for this and are deleted when the call
-    % ends; other files are left alone, as the server ignores them. Sources are only read.
-    % Staged files whose source was not given or not obtained are deleted once the files
-    % that were obtained are in place.
+    % ends; other files are left alone, as the server ignores them. Staged files whose
+    % source was not given or not obtained are deleted once the files that were obtained
+    % are in place, by their fixed names. So the sources must not live in the stage
+    % folder: a source with a staged name there can be overwritten or deleted.
+    % Sources outside it are only read.
     %
     % Inputs
     % img        - [], a numeric HxW or HxWx3 image, or the path of a jpg file.
@@ -47,6 +52,8 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % 'Montage' - As img, staged as montage.jpg. Default is [] (none).
     % 'Range'   - Numeric [lo hi] used to scale numeric images. Default is [] (see
     %             webupload.toUint8).
+    % 'ClearStage' - Logical scalar. If true, delete stageDir and everything in it, after
+    %             the arguments have been checked. Default is false.
     %
     % Outputs
     % result - Structure with fields:
@@ -55,6 +62,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %   montageStaged - logical.
     %   recipeStaged  - logical.
     %   logStaged     - logical.
+    %   logKept       - logical. No new log was staged and the previous one was kept.
     %   recipeSource  - path of the recipe used, or ''.
     %   stageOk       - logical.
     %
@@ -75,6 +83,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     params.CaseSensitive = false;
     params.addParameter('Montage', [], @(x) true)
     params.addParameter('Range', [], @isnumeric)
+    params.addParameter('ClearStage', false, @(x) islogical(x) && isscalar(x))
     params.parse(varargin{:});
 
     % Pure conversion first: programming errors throw here, before any I/O.
@@ -82,9 +91,12 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     montageSrc = imageSource(params.Results.Montage,params.Results.Range);
 
     result = struct('files', {{}}, 'mainStaged', false, 'montageStaged', false, ...
-                    'recipeStaged', false, 'logStaged', false, 'recipeSource', '', ...
-                    'stageOk', true);
+                    'recipeStaged', false, 'logStaged', false, 'logKept', false, ...
+                    'recipeSource', '', 'stageOk', true);
     try
+        if params.Results.ClearStage
+            webupload.clearStageDir(stageDir);
+        end
         result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stageDir);
     catch ME
         % Only failures raised by our own file-system wrappers are tolerated
@@ -104,7 +116,7 @@ function src = imageSource(img,range)
     % function src = webupload.stageFiles>imageSource(img,range)
     %
     % Inputs
-    % img   - [], a numeric image or the path of a jpg file.
+    % img   - The literal [], a numeric image or the path of a jpg file.
     % range - Numeric [lo hi] or [], passed to webupload.toUint8.
     %
     % Outputs
@@ -114,11 +126,12 @@ function src = imageSource(img,range)
     % 'webupload:stageFiles:badImage' if img is none of the above, or a path that is not
     % an existing .jpg/.jpeg file. Errors from webupload.toUint8 are passed on.
 
-    if isnumeric(img)
+    if isa(img,'double') && isequal(size(img),[0 0])
         src = [];
-        if ~isempty(img)
-            src = webupload.toUint8(img,range);
-        end
+        return
+    end
+    if isnumeric(img)
+        src = webupload.toUint8(img,range);
         return
     end
 
@@ -162,7 +175,7 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
     if ~isfolder(stageDir)
         [ok,msg] = mkdir(stageDir);
         if ~ok
-            throwIo('create folder "%s": %s', stageDir, msg)
+            error('webupload:stageFiles:ioFailure','create folder "%s": %s', stageDir, msg)
         end
     end
 
@@ -179,7 +192,10 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
 
     % Delete only the in-progress files this call can create
     partPaths = fullfile(stageDir,strcat(struct2cell(spec.Names),spec.PartSuffix));
-    cleanup = onCleanup(@() deleteFiles(partPaths)); %#ok<NASGU>
+    cleanup = onCleanup(@() deleteFiles(partPaths));
+
+    % Decided before the recipe is replaced
+    keepLog = sameSample(fullfile(stageDir,spec.Names.Recipe),recipeFile);
 
     parts = [imagePart(mainSrc,'Main',stageDir,spec), ...
              imagePart(montageSrc,'Montage',stageDir,spec), ...
@@ -198,10 +214,13 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
         end
     end %for
 
-    % The log may fall back to the previous one, the others may not
+    % The log may fall back to the previous one, for the same sample only; the others may not
     staged = result.files;
-    for kind = {'Main','Montage','Recipe'}
+    for kind = fieldnames(spec.Names)'
         final = fullfile(stageDir,spec.Names.(kind{1}));
+        if strcmp(kind{1},'Log') && keepLog
+            continue
+        end
         if ~ismember(final,staged) && isfile(final)
             delete(final)
             if isfile(final)
@@ -214,6 +233,7 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
     result.montageStaged = ismember(fullfile(stageDir,spec.Names.Montage),staged);
     result.recipeStaged = ismember(fullfile(stageDir,spec.Names.Recipe),staged);
     result.logStaged = ismember(fullfile(stageDir,spec.Names.Log),staged);
+    result.logKept = ~result.logStaged && isfile(fullfile(stageDir,spec.Names.Log));
     if result.recipeStaged
         result.recipeSource = recipeFile;
     end
@@ -224,6 +244,27 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
             'Staging in "%s" incomplete: %s', stageDir, strjoin(failures,'; '))
     end
 end % stageOnDisk
+
+
+function tf = sameSample(stagedRecipe,newRecipe)
+    % True if two recipe files name the same, non-empty sample ID
+    %
+    % function tf = webupload.stageFiles>sameSample(stagedRecipe,newRecipe)
+    %
+    % Inputs
+    % stagedRecipe - Path of the recipe staged by an earlier call; may not exist.
+    % newRecipe    - Path of the new recipe, or '' if there is none.
+    %
+    % Outputs
+    % tf - false if either file is missing or either has no sample ID.
+
+    tf = false;
+    if ~isempty(newRecipe) && isfile(stagedRecipe)
+        [~,oldSample] = webupload.readRecipe(stagedRecipe);
+        [~,newSample] = webupload.readRecipe(newRecipe);
+        tf = ~isempty(oldSample) && strcmp(oldSample,newSample);
+    end
+end % sameSample
 
 
 function [file,problem] = resolveFile(p,label)
@@ -275,7 +316,8 @@ function p = imagePart(src,kind,stageDir,spec)
     %
     % Purpose
     % The file is renamed to its final name later. Errors with
-    % 'webupload:stageFiles:ioFailure' (see throwIo) if the write or copy fails.
+    % 'webupload:stageFiles:ioFailure' (which stageFiles turns into a warning) if the write
+    % or copy fails.
     %
     % Inputs
     % src      - [] (nothing to do), a uint8 image to write, or the path of a jpg to copy.
@@ -304,7 +346,7 @@ function p = imagePart(src,kind,stageDir,spec)
             imwrite(src,part,'jpg','Quality',spec.JpegQuality);
         end
     catch ME
-        throwIo('write "%s": %s', part, ME.message)
+        error('webupload:stageFiles:ioFailure','write "%s": %s', part, ME.message)
     end
     p = struct('kind', kind, 'part', part);
 end % imagePart
@@ -348,20 +390,3 @@ function p = copyPart(src,kind,stageDir,spec)
     end
     p = struct('kind', kind, 'part', part);
 end % copyPart
-
-
-function throwIo(fmt,varargin)
-    % Raise the error that stageFiles treats as a tolerated file-system failure
-    %
-    % function webupload.stageFiles>throwIo(fmt,varargin)
-    %
-    % Purpose
-    % Always errors with 'webupload:stageFiles:ioFailure'. stageFiles catches this one
-    % identifier and turns it into a warning; any other error is rethrown.
-    %
-    % Inputs
-    % fmt      - Format string for the message, as for sprintf.
-    % varargin - Values for fmt.
-
-    error('webupload:stageFiles:ioFailure',fmt,varargin{:})
-end % throwIo

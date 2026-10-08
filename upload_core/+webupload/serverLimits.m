@@ -6,9 +6,11 @@ function lim = serverLimits()
     % Purpose
     % Defaults of max_zip_entries and max_zip_size in brainsaw/lib.php. The server config may
     % set them lower, in which case the server's 413 still reports the problem. idRegexp is
-    % the rule the server applies to site and microscope IDs. minUploadIntervalSec is the
-    % default of min_upload_interval_seconds: the shortest gap between two uploads from
-    % one site, microscope and source, which the server enforces with HTTP 429.
+    % the rule the server applies to site and microscope IDs. minUploadIntervalSec is this
+    % client's copy of min_upload_interval_seconds in brainsaw/config.php (lib.php itself
+    % falls back to 0 if unset; a test keeps the copy equal to config.php): the shortest
+    % gap between two uploads from one site, microscope and source, which the server
+    % enforces with HTTP 429. A site that raises it makes the client's copy too short.
     %
     % Outputs
     % lim - structure with fields maxEntries (files per zip), maxZipBytes (zip size),
