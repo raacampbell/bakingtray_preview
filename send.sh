@@ -21,4 +21,4 @@ done
 rsync $arg --delete --chmod=D755,F644 \
   --filter='P /system_data/*/' \
   --filter='P /logs/*.log' \
-  -e ssh staging/livefeed/ raacampbell@mouse.vision:/home/raacampbell/public_html/livefeed/
+  -e ssh staging/livefeed/ raacampbell@mouse.vision:/home/raacampbell/brainsaw/livefeed/
