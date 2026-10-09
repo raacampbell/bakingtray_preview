@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Serves a throwaway copy of brainsaw/ with `php -S ... router.php` and a temp settings file
-# (two sites with one token each, thirteen microscopes in all, a panopticon word; every name and
+# (two sites with one token each, fourteen microscopes in all, a panopticon word; every name and
 # token random) and
 # checks the views, the 404 page, the asset route, uploads, settings validation and the
 # auto-refresh wiring. The copy sits in a sub-folder of the server's document root, so the
@@ -63,7 +63,7 @@ for f in "$SRC"/*.php; do check "php -l $(basename "$f")" lint_ok "$f"; done
 # --- random settings: nothing here may look like anything in the repo ---
 r() { openssl rand -hex "$1"; }
 PAN="p$(r 6)"; SA="a$(r 5)"; SB="b$(r 5)"
-MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"   # one microscope per display-rule case
+MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"   # one microscope per display-rule case
 MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"; MSPACE="Scope_$(r 3)"   # MSPACE: its recipe says "Scope <hex>"
 TKA="$(r 32)"; TKB="$(r 32)"; TOLD="$(r 32)"   # one token per site; TOLD stands for a per-microscope token of the old format
 SETTINGS="$TMP/www/brainsaw_settings.json"   # config.php default: next to brainsaw/
@@ -75,7 +75,7 @@ write_settings() { # panopticon word, site A id
      "$MA1": {"display_name": "Scope A1 $MA1"},
      "$MA2": {"display_name": "Scope A2 $MA2"},
      "$MSPACE": {"display_name": "Scope with a space"},
-     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}}},
+     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}}},
   "$SB": {"display_name": "Lab B $SB", "token": "$TKB", "microscopes": {
      "$MB": {"display_name": "Scope B $MB"},
      "logs": {}}}}}
@@ -628,6 +628,33 @@ backdate "$(src_dir "$MD8" analysis)"
 dz u2an "$MD8" THETA true STITCH; up analysis "$MD8" u2an
 card "$MD8"
 check "analysis only, then finished: finished" body_has "$CARD" '<span class="finished">finished</span>'
+
+# acq/ exists but has no image: the card shows the placeholder, not the matching analysis image.
+dz n1acq "$MD9" IOTA false ACQ; rm "$TMP/z/n1acq/LastCompleteSection.jpg"; zip_dir n1acq; up acq "$MD9" n1acq
+dz n1an  "$MD9" IOTA false STITCH; up analysis "$MD9" n1an
+card "$MD9"; page "$MD9"
+check "acq without an image: card shows the placeholder" body_has "$CARD" 'no image yet'
+check "  ... not an image" body_lacks "$CARD" '<img'
+check "  ... the page's main image is still the analysis image" asset_is "$MD9" main n1an
+
+# An acq/ folder with no upload in it (empty, or left by a failed first install) is still the
+# ground truth: a valid analysis/ beside it stays hidden until an acq upload succeeds.
+clear_blocker() { rm -rf "$APP/system_data/$SB/logs/acq/montage.jpg"; }
+good_zip logs logs S1
+upload "$TKB" "$SB" logs analysis "$TMP/z/logs.zip"
+check "analysis upload beside a failed acq install: 200" test "$STATUS" = 200
+fetch "$B/$SB/logs"
+check "acq/ left by a failed install: nothing is shown from analysis (no image)" body_lacks "$BODY" 'id="main-image"'
+check "  ... no thumbnails" body_lacks "$BODY" 'id="thumb-'
+check "  ... the analysis montage is a 404" same_404 "$B/$SB/logs?f=montage"
+check "  ... and its main image" same_404 "$B/$SB/logs?f=main"
+clear_blocker
+check "empty acq/ folder: analysis montage still a 404" same_404 "$B/$SB/logs?f=montage"
+check "  ... no version from analysis" bash -c '! curl -s "$1" | grep -q analysis' _ "$B/$SB/logs?f=meta"
+upload "$TKB" "$SB" logs acq "$TMP/z/logs.zip"
+check "the acq upload then succeeds: 200" test "$STATUS" = 200
+fetch "$B/$SB/logs?f=montage"
+check "  ... and the matching analysis appears (montage served)" test "$STATUS" = 200
 
 # Assets: only what the display rule shows; the recipe and log never; no traversal.
 for kind in recipe log acqLog acqlog recipe.yml acqLog.txt status status.json meta.json LastCompleteSection.jpg "../analysis/montage.jpg" "..%2Fanalysis%2Fmontage.jpg" "bakingtray/../montage"; do

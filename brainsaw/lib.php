@@ -604,12 +604,6 @@ function bs_read_json_file(string $path): ?array
     return $data;
 }
 
-/** A folder's meta.json as an array, or null if it has none (or an unreadable one, which is logged). */
-function bs_read_meta(string $dir): ?array
-{
-    return bs_read_json_file($dir . '/meta.json');
-}
-
 /** A non-empty string field of a decoded meta.json, or null. */
 function bs_meta_string(array $meta, string $field): ?string
 {
@@ -619,7 +613,7 @@ function bs_meta_string(array $meta, string $field): ?string
 /** A string field of a folder's meta.json, or null if there is none. */
 function bs_read_meta_field(string $dir, string $field): ?string
 {
-    return bs_meta_string(bs_read_meta($dir) ?? [], $field);
+    return bs_meta_string(bs_read_json_file($dir . '/meta.json') ?? [], $field);
 }
 
 // Mirrored by humanAgo() in js/autorefresh.js; tests/web/parity.test.js keeps them identical.
@@ -759,7 +753,7 @@ function bs_displayed_sources(array $config, string $siteId, string $micId): arr
 {
     $source = function (string $name) use ($config, $siteId, $micId): ?array {
         $dir = bs_source_dir($config, $siteId, $micId, $name);
-        return is_dir($dir) ? ['dir' => $dir, 'meta' => bs_read_meta($dir) ?? []] : null;
+        return is_dir($dir) ? ['dir' => $dir, 'meta' => bs_read_json_file($dir . '/meta.json') ?? []] : null;
     };
     $acq = $source('acq');
     $analysis = $source('analysis');
@@ -845,7 +839,8 @@ function bs_load_mic_data(array $config, string $siteId, string $micId, string $
             'bakingtray' => ($paths['bakingtray'] ?? null) !== ($paths['main'] ?? null) ? $url('bakingtray') : null,
             'montage' => $url('montage'),
         ]),
-        'card_image_url' => $url('bakingtray') ?? $url('main'),
+        // The BakingTray image whenever acq/ is shown (a placeholder if it has none); the analysis image only without acq/.
+        'card_image_url' => isset($sources['acq']) ? $url('bakingtray') : $url('main'),
         'meta_url' => $micUrl . '?f=meta',
         'recipe' => $truth !== null ? bs_parse_recipe($truth['dir'] . '/recipe.yml') : [],
         'acquisition' => bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : ''),
