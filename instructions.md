@@ -204,12 +204,17 @@ neither empties or rate-limits the other. `logs/upload.log` records `site/micros
 ### Which sources a view shows
 
 - The `acq/` folder exists: it is the ground truth for the image, recipe table, log chart,
-  status and freshness. It stays the ground truth even while its `meta.json` is being
-  rewritten, missing or unreadable (then the problem is logged and `analysis/` is hidden).
-  `analysis/` is shown in addition only if both folders store the same non-empty `sample_id`;
-  otherwise it is hidden, and so are its files.
+  status and freshness, whatever it holds. A new sample deletes `acq/meta.json` before the
+  files are replaced, and a failed first install can leave `acq/` empty; a missing
+  `meta.json` or an empty folder therefore still counts as `acq/` (nothing is shown from it,
+  and `analysis/` stays hidden until an `acq` upload succeeds). A `meta.json` that exists but
+  cannot be read is logged on every request until the next upload, and also leaves `analysis/`
+  hidden. `analysis/` is shown in addition only if both folders store the same non-empty
+  `sample_id`; otherwise it is hidden, and so are its files.
 - No `acq/` folder: `analysis/`, once it holds an upload (`meta.json` with `uploaded_at`), is
-  shown alone as the ground truth (a BakingTray that does not upload yet).
+  shown alone as the ground truth (a BakingTray that is not upgraded).
+- The card shows the BakingTray image whenever `acq/` exists, a placeholder if it has none;
+  the `analysis/` image only when there is no `acq/`.
 
 Files are found by their fixed names:
 

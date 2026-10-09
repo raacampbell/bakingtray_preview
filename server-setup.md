@@ -231,6 +231,8 @@ Copy the URL from `$PRIV/view_urls.txt` into a private browser window:
 - Leave the microscope page open and upload again (> 5 s later): it should refresh itself
   within about 5 s.
 - The browser's developer tools (Network tab) should show no request to any other host.
+- A corrupt `meta.json` or `status.json` under `system_data/` is written to the PHP error log
+  on every request that reads it, until the next upload replaces it.
 
 ## 8. Test from MATLAB (the real client)
 
