@@ -173,25 +173,6 @@ function bs_atomic_write(string $finalPath, string $tmpPath, string $contents): 
     return $ok;
 }
 
-/** Newest file matching a glob pattern inside $dir, or null. */
-function bs_find_latest(string $dir, string $pattern): ?string
-{
-    $matches = glob(rtrim($dir, '/') . '/' . $pattern, GLOB_NOSORT) ?: [];
-    if (!$matches) {
-        return null;
-    }
-    usort($matches, fn($a, $b) => filemtime($b) <=> filemtime($a));
-    return $matches[0];
-}
-
-/** All files matching a glob pattern inside $dir, sorted by name. */
-function bs_find_all(string $dir, string $pattern): array
-{
-    $matches = glob(rtrim($dir, '/') . '/' . $pattern, GLOB_NOSORT) ?: [];
-    sort($matches);
-    return $matches;
-}
-
 /** Where an upload comes from: BakingTray's acquisition data, or the analysis run on it. Each has its own folder. */
 const BS_SOURCES = ['acq', 'analysis'];
 
@@ -609,11 +590,30 @@ function bs_install_upload(string $tmpDir, string $dir, array $names, string $sa
     return true;
 }
 
+/** A JSON file's top-level object, or null if there is no such file. A file that exists but is not a JSON object is logged. */
+function bs_read_json_file(string $path): ?array
+{
+    if (!is_file($path)) {
+        return null;
+    }
+    $data = json_decode((string) @file_get_contents($path), true);
+    if (!is_array($data)) {
+        error_log('brainsaw: ' . $path . ' is not a JSON object');
+        return null;
+    }
+    return $data;
+}
+
+/** A non-empty string field of a decoded meta.json, or null. */
+function bs_meta_string(array $meta, string $field): ?string
+{
+    return is_string($meta[$field] ?? null) && $meta[$field] !== '' ? $meta[$field] : null;
+}
+
 /** A string field of a folder's meta.json, or null if there is none. */
 function bs_read_meta_field(string $dir, string $field): ?string
 {
-    $meta = json_decode((string) @file_get_contents($dir . '/meta.json'), true);
-    return is_array($meta) && is_string($meta[$field] ?? null) && $meta[$field] !== '' ? $meta[$field] : null;
+    return bs_meta_string(bs_read_json_file($dir . '/meta.json') ?? [], $field);
 }
 
 // Mirrored by humanAgo() in js/autorefresh.js; tests/web/parity.test.js keeps them identical.
@@ -686,54 +686,47 @@ function bs_parse_recipe(string $path): array
 }
 
 /**
- * Parse one or more BakingTray acquisition log files into per-section
- * timing data. Merges all matching logs (a site may upload more than one
- * over time) and returns sections sorted by section number.
+ * Parse the text of a BakingTray acquisition log into per-section timing data. Empty text
+ * gives an empty result.
  *
- * Returns: ['sections' => [{n, timestamp, duration_seconds}, ...],
+ * Returns: ['sections' => [{n, timestamp, duration_seconds}, ...] sorted by section number,
  *           'current_section' => int|null, 'total_sections' => int|null,
  *           'last_event_at' => string|null]
  */
-function bs_parse_acqlogs(array $paths): array
+function bs_parse_acqlog(string $text): array
 {
     $sections = []; // n => {n, timestamp, duration_seconds}
     $currentSection = null;
     $totalSections = null;
     $lastEventAt = null;
 
-    foreach ($paths as $path) {
-        $text = @file_get_contents($path);
-        if ($text === false) {
-            continue;
-        }
-        foreach (preg_split('/\r?\n/', $text) as $line) {
-            if (preg_match(
-                '/^(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) -- FINISHED section number (\d+), section completed in (\d+) mins? (\d+) secs?/',
-                $line,
-                $m
-            )) {
-                $n = (int) $m[2];
-                $durationSeconds = ((int) $m[3]) * 60 + (int) $m[4];
-                $ts = strtotime($m[1]);
-                $sections[$n] = [
-                    'n' => $n,
-                    'timestamp' => $ts !== false ? gmdate('c', $ts) : null,
-                    'duration_seconds' => $durationSeconds,
-                ];
-                if ($lastEventAt === null || ($ts !== false && $ts > strtotime($lastEventAt))) {
-                    $lastEventAt = $ts !== false ? gmdate('c', $ts) : $lastEventAt;
-                }
-            } elseif (preg_match(
-                '/^(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) -- STARTING section number (\d+) \((\d+) of (\d+)\)/',
-                $line,
-                $m
-            )) {
-                $currentSection = (int) $m[2];
-                $totalSections = (int) $m[4];
-                $ts = strtotime($m[1]);
-                if ($lastEventAt === null || ($ts !== false && $ts > strtotime($lastEventAt))) {
-                    $lastEventAt = $ts !== false ? gmdate('c', $ts) : $lastEventAt;
-                }
+    foreach (preg_split('/\r?\n/', $text) as $line) {
+        if (preg_match(
+            '/^(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) -- FINISHED section number (\d+), section completed in (\d+) mins? (\d+) secs?/',
+            $line,
+            $m
+        )) {
+            $n = (int) $m[2];
+            $durationSeconds = ((int) $m[3]) * 60 + (int) $m[4];
+            $ts = strtotime($m[1]);
+            $sections[$n] = [
+                'n' => $n,
+                'timestamp' => $ts !== false ? gmdate('c', $ts) : null,
+                'duration_seconds' => $durationSeconds,
+            ];
+            if ($lastEventAt === null || ($ts !== false && $ts > strtotime($lastEventAt))) {
+                $lastEventAt = $ts !== false ? gmdate('c', $ts) : $lastEventAt;
+            }
+        } elseif (preg_match(
+            '/^(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) -- STARTING section number (\d+) \((\d+) of (\d+)\)/',
+            $line,
+            $m
+        )) {
+            $currentSection = (int) $m[2];
+            $totalSections = (int) $m[4];
+            $ts = strtotime($m[1]);
+            if ($lastEventAt === null || ($ts !== false && $ts > strtotime($lastEventAt))) {
+                $lastEventAt = $ts !== false ? gmdate('c', $ts) : $lastEventAt;
             }
         }
     }
@@ -749,29 +742,111 @@ function bs_parse_acqlogs(array $paths): array
 }
 
 /**
- * The only files a view serves from a microscope folder, by the name used in ?f=, with
- * their Content-Type. Recipes and logs are never served: a recipe can hold pasted secrets
- * (e.g. a Slack webhook URL); they are only parsed server-side.
+ * The sources a view shows for one microscope, ground truth first. Each maps to
+ * ['dir' => folder, 'meta' => its meta.json as an array, read once]. acq/ is the ground truth
+ * as soon as its folder exists (an install in progress or a damaged meta.json must not let
+ * analysis/ take its place); analysis/ is added only when both folders store the same
+ * non-empty sample_id, and shown alone when there is no acq/ folder and it holds an upload
+ * (a meta.json with uploaded_at). An empty array means nothing to show.
  */
-const BS_ASSETS = [
-    'main' => ['LastCompleteSection*.jp*g', 'image/jpeg'],
-    'montage' => ['*[Mm]ontage*.jp*g', 'image/jpeg'],
-    'meta' => ['meta.json', 'application/json'],
-];
-
-/** Collect everything renderable about one microscope folder; asset URLs hang off $micUrl. */
-function bs_load_mic_data(string $micDir, string $micUrl): array
+function bs_displayed_sources(array $config, string $siteId, string $micId): array
 {
-    $url = fn(string $kind) => bs_find_latest($micDir, BS_ASSETS[$kind][0]) !== null ? $micUrl . '?f=' . $kind : null;
-    $recipePath = bs_find_latest($micDir, '*ecipe*.y*ml');
+    $source = function (string $name) use ($config, $siteId, $micId): ?array {
+        $dir = bs_source_dir($config, $siteId, $micId, $name);
+        return is_dir($dir) ? ['dir' => $dir, 'meta' => bs_read_json_file($dir . '/meta.json') ?? []] : null;
+    };
+    $acq = $source('acq');
+    $analysis = $source('analysis');
+    if ($analysis !== null && bs_meta_string($analysis['meta'], 'uploaded_at') === null) {
+        $analysis = null; // a folder that holds no upload yet
+    }
+    if ($acq === null) {
+        return $analysis !== null ? ['analysis' => $analysis] : [];
+    }
+    $sample = bs_meta_string($acq['meta'], 'sample_id');
+    if ($analysis !== null && $sample !== null && $sample === bs_meta_string($analysis['meta'], 'sample_id')) {
+        return ['acq' => $acq, 'analysis' => $analysis];
+    }
+    return ['acq' => $acq];
+}
+
+/**
+ * The files a view serves, by the name used in ?f=, for the sources from bs_displayed_sources().
+ * Only existing files appear: 'main' (the StitchIt image if there is one, else the BakingTray
+ * image), 'bakingtray' (the BakingTray image) and 'montage' (the StitchIt montage). Recipes and
+ * logs are never served: a recipe can hold pasted secrets (e.g. a Slack webhook URL); they are
+ * only parsed server-side.
+ */
+function bs_asset_paths(array $sources): array
+{
+    $file = fn(string $name, string $fileName) => isset($sources[$name]) && is_file($sources[$name]['dir'] . '/' . $fileName)
+        ? $sources[$name]['dir'] . '/' . $fileName : null;
+    $bakingtray = $file('acq', 'LastCompleteSection.jpg');
+    return array_filter([
+        'main' => $file('analysis', 'LastCompleteSection.jpg') ?? $bakingtray,
+        'bakingtray' => $bakingtray,
+        'montage' => $file('analysis', 'montage.jpg'),
+    ]);
+}
+
+/**
+ * True if the ground-truth source's status.json says the acquisition is finished (the first
+ * source: acq, or analysis when it is shown alone). The other source never sets or clears it,
+ * so a later analysis upload changes the images but not this state; only a new acq upload with
+ * finished false (a resume) clears it. A missing status.json counts as not finished; one that
+ * exists but is not a JSON object with a boolean "finished" is logged.
+ */
+function bs_is_finished(array $sources): bool
+{
+    if (!$sources) {
+        return false;
+    }
+    $dir = reset($sources)['dir'];
+    $status = bs_read_json_file($dir . '/status.json');
+    if ($status !== null && !is_bool($status['finished'] ?? null)) {
+        error_log('brainsaw: ' . $dir . '/status.json has no boolean "finished"');
+    }
+    return ($status['finished'] ?? null) === true;
+}
+
+/** A string that changes whenever a displayed source is uploaded to, or the set of sources changes. */
+function bs_version(array $sources): string
+{
+    $parts = [];
+    foreach ($sources as $name => $source) {
+        $parts[] = $name . '=' . bs_meta_string($source['meta'], 'uploaded_at');
+    }
+    return implode(';', $parts);
+}
+
+/**
+ * Collect everything renderable about one microscope; asset URLs hang off $micUrl. The sources'
+ * meta.json files (written last on install) are read first and the version taken from them, so
+ * the content read afterwards is at least as new as the version it is labelled with.
+ */
+function bs_load_mic_data(array $config, string $siteId, string $micId, string $micUrl): array
+{
+    $sources = bs_displayed_sources($config, $siteId, $micId);
+    $version = bs_version($sources);
+    $truth = $sources ? reset($sources) : null; // recipe, log and freshness come from the ground truth
+    $paths = bs_asset_paths($sources);
+    $url = fn(string $kind) => isset($paths[$kind]) ? $micUrl . '?f=' . $kind : null;
 
     return [
         'main_image_url' => $url('main'),
-        'montage_image_url' => $url('montage'),
+        // Thumbnails below the main image; the BakingTray image only when the main image is another one.
+        'thumb_urls' => array_filter([
+            'bakingtray' => ($paths['bakingtray'] ?? null) !== ($paths['main'] ?? null) ? $url('bakingtray') : null,
+            'montage' => $url('montage'),
+        ]),
+        // The BakingTray image whenever acq/ is shown (a placeholder if it has none); the analysis image only without acq/.
+        'card_image_url' => isset($sources['acq']) ? $url('bakingtray') : $url('main'),
         'meta_url' => $micUrl . '?f=meta',
-        'recipe' => $recipePath !== null ? bs_parse_recipe($recipePath) : [],
-        'acquisition' => bs_parse_acqlogs(bs_find_all($micDir, '*cqLog*.txt')),
-        'uploaded_at' => bs_read_meta_field($micDir, 'uploaded_at'),
+        'recipe' => $truth !== null ? bs_parse_recipe($truth['dir'] . '/recipe.yml') : [],
+        'acquisition' => bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : ''),
+        'uploaded_at' => $truth !== null ? bs_meta_string($truth['meta'], 'uploaded_at') : null,
+        'version' => $version,
+        'finished' => bs_is_finished($sources),
     ];
 }
 
@@ -931,15 +1006,18 @@ function bs_stale_after_seconds(array $config): int
 
 /**
  * data-* attributes that tell js/autorefresh.js what to watch for one microscope:
- * its meta URL (built here, so the JS never builds paths), the uploaded_at this
- * page was rendered with, and the stale threshold.
+ * its meta URL (built here, so the JS never builds paths), the version this page was
+ * rendered with (reload when it changes), the ground truth's uploaded_at (for "ago" and
+ * stale), whether the acquisition is finished (never drawn stale) and the stale threshold.
  */
 function bs_watch_attrs(array $data, int $staleAfter): string
 {
     return sprintf(
-        'data-meta-url="%s" data-uploaded-at="%s" data-stale-after="%d"',
+        'data-meta-url="%s" data-version="%s" data-uploaded-at="%s" data-finished="%d" data-stale-after="%d"',
         htmlspecialchars($data['meta_url']),
+        htmlspecialchars($data['version']),
         htmlspecialchars((string) ($data['uploaded_at'] ?? '')),
+        $data['finished'] ? 1 : 0,
         $staleAfter
     );
 }
@@ -1054,8 +1132,9 @@ function bs_not_found(): never
 
 /**
  * Entry point for every request path that is not an existing file (see .htaccess and
- * router.php): a card grid, a microscope page, one of its BS_ASSETS (?f=main|montage|meta),
- * or the 404 page. The headers keep view URLs out of Referer headers and search engines.
+ * router.php): a card grid, a microscope page, one of its assets (?f=main|bakingtray|montage,
+ * see bs_asset_paths(); ?f=meta is the version the auto-refresh polls), or the 404 page.
+ * The headers keep view URLs out of Referer headers and search engines.
  */
 function bs_handle_view(array $config): never
 {
@@ -1078,25 +1157,27 @@ function bs_handle_view(array $config): never
         bs_render_grid($config, $view, $base);
         exit;
     }
-    $micDir = bs_source_dir($config, $view['site'], $view['mic'], 'acq');
     if ($kind === null) {
-        bs_render_mic_page($config, $view, $base, $micDir);
+        bs_render_mic_page($config, $view, $base);
         exit;
     }
-    if (!is_string($kind) || !isset(BS_ASSETS[$kind])) {
-        bs_not_found();
+    $sources = bs_displayed_sources($config, $view['site'], $view['mic']);
+    if ($kind === 'meta' && $sources) {
+        header('Cache-Control: no-store');
+        bs_send_json(200, ['version' => bs_version($sources)]);
     }
-    bs_serve_asset(bs_find_latest($micDir, BS_ASSETS[$kind][0]), BS_ASSETS[$kind][1]);
+    // Any other kind (including the recipe and log) has no entry, so it gets the 404 page.
+    bs_serve_asset(is_string($kind) ? (bs_asset_paths($sources)[$kind] ?? null) : null);
 }
 
-/** Send one file, or the 404 page if it is missing. One open handle, so size and bytes always match. */
-function bs_serve_asset(?string $path, string $contentType): never
+/** Send one JPEG, or the 404 page if it is missing. One open handle, so size and bytes always match. */
+function bs_serve_asset(?string $path): never
 {
     $fh = $path !== null ? @fopen($path, 'rb') : false;
     if ($fh === false) {
         bs_not_found();
     }
-    header('Content-Type: ' . $contentType);
+    header('Content-Type: image/jpeg');
     header('Cache-Control: no-store');
     header('X-Content-Type-Options: nosniff');
     header('Content-Length: ' . fstat($fh)['size']);
@@ -1104,14 +1185,14 @@ function bs_serve_asset(?string $path, string $contentType): never
     exit;
 }
 
-/** ["Xs ago" or null, stale?] for an uploaded_at value; never uploaded counts as stale. */
-function bs_freshness(?string $uploadedAt, int $staleAfter): array
+/** ["Xs ago" or null, stale?] for an uploaded_at value; never uploaded counts as stale, a finished acquisition never does. */
+function bs_freshness(?string $uploadedAt, int $staleAfter, bool $finished): array
 {
     $ts = $uploadedAt !== null ? strtotime($uploadedAt) : false;
     if ($ts === false) {
-        return [null, true];
+        return [null, !$finished];
     }
-    return [bs_human_ago(time() - $ts), (time() - $ts) > $staleAfter];
+    return [bs_human_ago(time() - $ts), !$finished && (time() - $ts) > $staleAfter];
 }
 
 /** <head> lines shared by every view page. */
@@ -1146,21 +1227,21 @@ function bs_render_grid(array $config, array $view, string $base): void
 <div class="grid">
 <?php foreach ($site['microscopes'] as $micId => $mic):
     $micUrl = bs_mic_url($base, $view, $siteId, $micId);
-    $data = bs_load_mic_data(bs_source_dir($config, $siteId, $micId, 'acq'), $micUrl);
-    [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter);
+    $data = bs_load_mic_data($config, $siteId, $micId, $micUrl);
+    [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter, $data['finished']);
     $name = bs_name($mic, $micId);
     $sampleId = $data['recipe']['sample_id'] ?? '';
     ?>
   <a class="card<?= $isStale ? ' stale' : '' ?>" href="<?= htmlspecialchars($micUrl) ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
-    <?php if ($data['main_image_url'] !== null): ?>
-      <img src="<?= htmlspecialchars($data['main_image_url'] . '&t=' . time()) ?>" alt="<?= htmlspecialchars($name) ?>">
+    <?php if ($data['card_image_url'] !== null): ?>
+      <img src="<?= htmlspecialchars($data['card_image_url'] . '&t=' . time()) ?>" alt="<?= htmlspecialchars($name) ?>">
     <?php else: ?>
       <div class="placeholder">no image yet</div>
     <?php endif; ?>
     <div class="meta">
       <div class="name"><?= htmlspecialchars($name) ?></div>
       <?php if ($sampleId !== ''): ?><div class="sample">Sample: <?= htmlspecialchars($sampleId) ?></div><?php endif; ?>
-      <div class="updated"><?php if ($ago !== null): ?><span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>never uploaded<?php endif; ?></div>
+      <div class="updated"><?php if ($data['finished']): ?><span class="finished">finished</span> &middot; <?php endif; ?><?php if ($ago !== null): ?><span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>never uploaded<?php endif; ?></div>
     </div>
   </a>
 <?php endforeach; ?>
@@ -1173,25 +1254,27 @@ function bs_render_grid(array $config, array $view, string $base): void
 }
 
 /**
- * Render one microscope's page: full-size main image with a magnifier lens, a link to the
- * montage image, a metadata table parsed from the recipe file, and a per-section
- * acquisition-time chart parsed from the acquisition log(s).
+ * Render one microscope's page: the main image with a magnifier lens, below it (when there is
+ * one) thumbnails of the BakingTray image and the StitchIt montage that open full size, a
+ * metadata table parsed from the recipe file, and a per-section acquisition-time chart parsed
+ * from the acquisition log.
  */
-function bs_render_mic_page(array $config, array $view, string $base, string $micDir): void
+function bs_render_mic_page(array $config, array $view, string $base): void
 {
     $site = $view['sites'][$view['site']];
     $micName = bs_name($site['microscopes'][$view['mic']], $view['mic']);
     $title = $micName . ' — ' . bs_name($site, $view['site']);
     $staleAfter = bs_stale_after_seconds($config);
-    $data = bs_load_mic_data($micDir, bs_mic_url($base, $view, $view['site'], $view['mic']));
+    $data = bs_load_mic_data($config, $view['site'], $view['mic'], bs_mic_url($base, $view, $view['site'], $view['mic']));
     $recipe = $data['recipe'];
     $acq = $data['acquisition'];
-    [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter);
+    [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter, $data['finished']);
+    $thumbCaptions = ['bakingtray' => 'BakingTray: last section', 'montage' => 'StitchIt: montage (all optical planes, single channel)'];
 
     // Rough ETA estimate from the average per-section duration seen so far —
     // labeled "estimated" since there's no dedicated ETA file yet.
     $etaText = null;
-    if ($acq['current_section'] !== null && $acq['total_sections'] !== null && count($acq['sections']) > 0) {
+    if (!$data['finished'] && $acq['current_section'] !== null && $acq['total_sections'] !== null && count($acq['sections']) > 0) {
         $avgSeconds = array_sum(array_column($acq['sections'], 'duration_seconds')) / count($acq['sections']);
         $remaining = max($acq['total_sections'] - $acq['current_section'], 0);
         $etaSeconds = (int) round($remaining * $avgSeconds);
@@ -1224,7 +1307,9 @@ function bs_render_mic_page(array $config, array $view, string $base, string $mi
   .chart-box { background: #161616; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; margin-top: 20px; }
   .chart-title { font-size: 0.95rem; margin-bottom: 8px; color: #ccc; }
   .chart-empty { color: #666; font-size: 0.9rem; }
-  .montage-link { display: inline-block; margin: 10px 0; }
+  .thumbs { display: flex; gap: 16px; flex-wrap: wrap; margin: 12px 0; }
+  .thumbs a { flex: 1 1 240px; max-width: 360px; color: #ccc; text-decoration: none; font-size: 0.85rem; }
+  .thumbs img { width: 100%; height: auto; display: block; border: 1px solid #333; background: #000; }
   .placeholder { height: 320px; }
 </style>
 </head>
@@ -1235,6 +1320,7 @@ function bs_render_mic_page(array $config, array $view, string $base, string $mi
 <div class="layout">
   <div class="main-col">
     <div class="status<?= $isStale ? ' stale' : '' ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
+      <?php if ($data['finished']): ?><strong class="finished">Finished</strong> &mdash; <?php endif; ?>
       <?php if ($ago !== null): ?>Last updated <span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>No image uploaded yet<?php endif; ?>
       <?php if ($acq['current_section'] !== null && $acq['total_sections'] !== null): ?>
         &mdash; section <?= (int) $acq['current_section'] ?> of <?= (int) $acq['total_sections'] ?>
@@ -1252,11 +1338,14 @@ function bs_render_mic_page(array $config, array $view, string $base, string $mi
       <div class="placeholder">no image yet</div>
     <?php endif; ?>
 
-    <?php if ($data['montage_image_url'] !== null): ?>
-      <div class="montage-link">
-        <a href="<?= htmlspecialchars($data['montage_image_url'] . '&t=' . time()) ?>" target="_blank" rel="noopener noreferrer">
-          View montage (all optical planes, single channel) &rarr;
+    <?php if ($data['thumb_urls']): ?>
+      <div class="thumbs">
+      <?php foreach ($data['thumb_urls'] as $kind => $thumbUrl): ?>
+        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumbUrl . '&t=' . time()) ?>" target="_blank" rel="noopener noreferrer">
+          <img src="<?= htmlspecialchars($thumbUrl . '&t=' . time()) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
+          <span><?= htmlspecialchars($thumbCaptions[$kind]) ?></span>
         </a>
+      <?php endforeach; ?>
       </div>
     <?php endif; ?>
 

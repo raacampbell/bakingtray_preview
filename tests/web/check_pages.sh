@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Serves a throwaway copy of brainsaw/ with `php -S ... router.php` and a temp settings file
-# (two sites with one token each, five microscopes in all, a panopticon word; every name and
+# (two sites with one token each, fourteen microscopes in all, a panopticon word; every name and
 # token random) and
 # checks the views, the 404 page, the asset route, uploads, settings validation and the
 # auto-refresh wiring. The copy sits in a sub-folder of the server's document root, so the
@@ -63,6 +63,7 @@ for f in "$SRC"/*.php; do check "php -l $(basename "$f")" lint_ok "$f"; done
 # --- random settings: nothing here may look like anything in the repo ---
 r() { openssl rand -hex "$1"; }
 PAN="p$(r 6)"; SA="a$(r 5)"; SB="b$(r 5)"
+MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"   # one microscope per display-rule case
 MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"; MSPACE="Scope_$(r 3)"   # MSPACE: its recipe says "Scope <hex>"
 TKA="$(r 32)"; TKB="$(r 32)"; TOLD="$(r 32)"   # one token per site; TOLD stands for a per-microscope token of the old format
 SETTINGS="$TMP/www/brainsaw_settings.json"   # config.php default: next to brainsaw/
@@ -73,7 +74,8 @@ write_settings() { # panopticon word, site A id
   "$2": {"display_name": "Lab A $SA", "token": "$TKA", "microscopes": {
      "$MA1": {"display_name": "Scope A1 $MA1"},
      "$MA2": {"display_name": "Scope A2 $MA2"},
-     "$MSPACE": {"display_name": "Scope with a space"}}},
+     "$MSPACE": {"display_name": "Scope with a space"},
+     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}}},
   "$SB": {"display_name": "Lab B $SB", "token": "$TKB", "microscopes": {
      "$MB": {"display_name": "Scope B $MB"},
      "logs": {}}}}}
@@ -84,10 +86,13 @@ write_settings "$PAN" "$SA"
 # Microscope A1 has the four test files and a meta.json in its acq folder; A2 and B have never uploaded.
 D="$APP/system_data/$SA/$MA1/acq"
 mkdir -p "$D"
-cp "$IMAGES"/LastCompleteSection_01.jpg "$IMAGES"/montage.jpg "$IMAGES"/recipe_*.yml "$IMAGES"/acqLog_*.txt "$D/"
+cp "$IMAGES/LastCompleteSection_01.jpg" "$D/LastCompleteSection.jpg"
+cp "$IMAGES/montage.jpg" "$D/montage.jpg"
+cp "$IMAGES"/recipe_*.yml "$D/recipe.yml"
+cp "$IMAGES"/acqLog_*.txt "$D/acqLog.txt"
 UPLOADED_AT="$(php -r 'echo gmdate("c", time() - 3600);')"   # old enough not to rate-limit A1
 printf '{"uploaded_at":"%s"}' "$UPLOADED_AT" > "$D/meta.json"
-RECIPE="$(basename "$D"/recipe_*.yml)"; ACQLOG="$(basename "$D"/acqLog_*.txt)"
+RECIPE=recipe.yml; ACQLOG=acqLog.txt
 STALE_AFTER="$(php -r '$c = require $argv[1]; echo (int) $c["stale_after_seconds"];' "$APP/config.php")"
 
 if curl -s -o /dev/null "http://localhost:$PORT/"; then
@@ -148,21 +153,21 @@ for view in "$SA/$MA1" "$PAN/$SA/$MA1"; do
   check "/$view: 200" test "$STATUS" = 200
   check "/$view: main image" body_has "$page" 'id="main-image"'
   check "/$view: image through PHP" test "$(attr_of src "$(grep 'id="main-image"' <<<"$page")" | html_unescape | sed 's/&t=.*//')" = "/brainsaw/$view?f=main"
-  check "/$view: montage link"      body_has "$page" "href=\"/brainsaw/$view?f=montage"
+  check "/$view: acq only, no thumbnails or montage" body_lacks "$page" 'id="thumb-'
   check "/$view: meta url attribute" body_has "$page" "data-meta-url=\"/brainsaw/$view?f=meta\""
   check "/$view: self-hosted jQuery" body_has "$page" 'src="/brainsaw/js/jquery-3.7.1.min.js"'
   check "/$view: magnifier script"   body_has "$page" 'src="/brainsaw/js/jquery.imageLens.js"'
   check "/$view: section metadata"   body_has "$page" "Acquisition time per section"
-  for f in main montage; do
+  for f in main bakingtray; do
     fetch "$B/$view?f=$f&t=1"
     check "/$view?f=$f: 200 image/jpeg" test "$STATUS $(header_of Content-Type)" = "200 image/jpeg"
+    check "/$view?f=$f: the uploaded bytes" cmp -s "$TMP/b" "$D/LastCompleteSection.jpg"
   done
-  fetch "$B/$view?f=main"
-  check "/$view?f=main: the uploaded bytes" cmp -s "$TMP/b" "$D/LastCompleteSection_01.jpg"
+  check "/$view?f=montage: the acq montage is not shown, so 404" same_404 "$B/$view?f=montage"
   fetch "$B/$view?f=meta&t=123"
   check "/$view?f=meta: 200 application/json" test "$STATUS $(header_of Content-Type)" = "200 application/json"
   check "/$view?f=meta: no-store" test "$(header_of Cache-Control)" = "no-store"
-  check "/$view?f=meta: the meta.json" test "$BODY" = "$(cat "$D/meta.json")"
+  check "/$view?f=meta: only the version" test "$BODY" = "{\"version\":\"acq=$UPLOADED_AT\"}"
 done
 fetch "$B/$SA/$MA2"
 check "never-uploaded microscope: says no image yet" body_has "$BODY" 'No image uploaded yet'
@@ -188,12 +193,14 @@ for pair in "grid:$grid" "microscope:$micpage"; do
   check "$name: inlined script present"        body_has  "$html" 'function humanAgo'
   check "$name: no src= to autorefresh.js"     body_lacks "$html" 'autorefresh.js"'
   check "$name: uploaded-at equals meta.json"  body_has  "$html" "data-uploaded-at=\"$UPLOADED_AT\""
+  check "$name: version names the displayed source" body_has "$html" "data-version=\"acq=$UPLOADED_AT\""
+  check "$name: not finished"                  body_has  "$html" 'data-finished="0"'
   check "$name: stale-after equals config"     body_has  "$html" "data-stale-after=\"$STALE_AFTER\""
   check "$name: server-now on body"            body_has  "$html" '<body data-server-now="'
   check "$name: noscript meta refresh"         body_has  "$html" '<noscript><meta http-equiv="refresh" content="60"></noscript>'
   check "$name: no unconditional meta refresh" no_bare_meta_refresh "$html"
   url="$(attr_of data-meta-url "$html" | html_unescape)"
-  fetch "http://localhost:$PORT${url}&t=1"     # what fetchUploadedAt() requests
+  fetch "http://localhost:$PORT${url}&t=1"     # what fetchVersion() requests
   check "$name: embedded meta URL returns 200" test "$STATUS" = 200
 done
 fetch "$B/$SA"
@@ -221,7 +228,7 @@ mv "$APP/js/autorefresh.js.off" "$APP/js/autorefresh.js"
 
 # --- nothing private is served directly ---
 not_200() { fetch "$1" --path-as-is; [ "$STATUS" != 200 ]; }   # keep ../ as sent
-for p in "system_data/" "system_data/$SA/$MA1/acq/meta.json" "system_data/$SA/$MA1/acq/LastCompleteSection_01.jpg" \
+for p in "system_data/" "system_data/$SA/$MA1/acq/meta.json" "system_data/$SA/$MA1/acq/LastCompleteSection.jpg" \
          "system_data/$SA/$MA1/acq/montage.jpg" "system_data/$SA/$MA1/acq/$RECIPE" "system_data/$SA/$MA1/acq/$ACQLOG" \
          "System_Data/$SA/$MA1/acq/meta.json" "js/../system_data/$SA/$MA1/acq/meta.json" "/system_data/$SA/$MA1/acq/meta.json" \
          "logs/" ".htaccess" "lib.php" "config.php" "router.php" "x.json" "js/x.php"; do
@@ -258,8 +265,8 @@ zip_dir() { rm -f "$TMP/z/$1.zip"; (cd "$TMP/z/$1" && zip -q -r -X "../$1.zip" .
 good_zip() { new_dir "$1" "$2" "$3"; zip_dir "$1"; }   # NAME SYSTEM_ID SAMPLE_ID
 # Content fingerprint of a folder (names and bytes), to show a refused upload changed nothing.
 snapshot() { (cd "$1" && find . -type f -exec cksum {} + | sort); }
-# Make the last upload to FOLDER look old, so the 5 s rate limit lets the next one in.
-backdate() { php -r '$f = $argv[1] . "/meta.json"; $m = json_decode(file_get_contents($f), true); $m["uploaded_at"] = gmdate("c", time() - 3600); file_put_contents($f, json_encode($m));' "$1"; }
+# Make the last upload to FOLDER look SECONDS old (default 3600), so the 5 s rate limit lets the next one in.
+backdate() { php -r '$f = $argv[1] . "/meta.json"; $m = json_decode(file_get_contents($f), true); $m["uploaded_at"] = gmdate("c", time() - (int) $argv[2]); file_put_contents($f, json_encode($m));' "$1" "${2:-3600}"; }
 meta_of() { php -r '$m = json_decode(file_get_contents($argv[1] . "/meta.json"), true); echo $m[$argv[2]] ?? "";' "$1" "$2"; }
 
 good_zip main "$MB" S1
@@ -444,6 +451,216 @@ conc 1 & P1=$!; conc 2 & P2=$!; wait "$P1" "$P2"
 check "concurrent uploads of one source: one 200, one 429" test "$(sort "$TMP/conc.1" "$TMP/conc.2" | tr '\n' ' ')" = "200 429 "
 fetch "$B/$PAN/$SA/$MA2?f=main"
 check "microscope A2 through the panopticon: image served" test "$STATUS" = 200
+
+# --- the display rule: which sources a view shows, finished, staleness, assets ---
+# One microscope per case, all in site A. Every upload carries images tagged with its source, so
+# a served asset can be told apart by its bytes.
+# dz NAME SYSTEM_ID SAMPLE FINISHED TAG: the zip $TMP/z/NAME.zip, its folder kept to compare bytes with.
+dz() {
+  new_dir "$1" "$2" "$3"; printf '{"finished": %s}' "$4" > "$TMP/z/$1/status.json"
+  printf '%s' "$5" >> "$TMP/z/$1/LastCompleteSection.jpg"; printf '%s' "$5" >> "$TMP/z/$1/montage.jpg"
+  zip_dir "$1"
+}
+# up SOURCE MIC NAME: upload $TMP/z/NAME.zip as SOURCE for MIC of site A, which must succeed.
+up() { upload "$TKA" "$SA" "$2" "$1" "$TMP/z/$3.zip"; [ "$STATUS" = 200 ] || echo "FAIL  setup upload $1 $3 gave $STATUS $BODY" >&2; }
+src_dir() { echo "$APP/system_data/$SA/$1/$2"; }   # MIC SOURCE
+page() { fetch "$B/$SA/$1"; PAGE="$BODY"; }
+# card MIC: the grid card of a microscope in site A.
+card() { fetch "$B/$SA"; CARD="$(awk -v h="href=\"/brainsaw/$SA/$1\"" 'index($0, h) { p = 1 } p { print } p && /<\/a>/ { exit }' <<<"$BODY")"; }
+# asset_is MIC KIND DIR: ?f=KIND is served with the bytes of DIR/LastCompleteSection.jpg (or montage.jpg for KIND montage).
+asset_is() {
+  local file=LastCompleteSection.jpg; [ "$2" = montage ] && file=montage.jpg
+  fetch "$B/$SA/$1?f=$2"; [ "$STATUS" = 200 ] && cmp -s "$TMP/b" "$TMP/z/$3/$file"
+}
+is_stale_card() { grep -q 'class="card stale"' <<<"$CARD"; }
+is_stale_page() { grep -q 'class="status stale"' <<<"$PAGE"; }
+img_src_has() { grep -o 'src="[^"]*"' <<<"$1" | grep -qF -- "$2"; }
+
+# acq alone: BakingTray image, magnifier, no montage; the card shows that image.
+dz d1acq "$MD1" ALPHA false ACQ;  up acq "$MD1" d1acq
+page "$MD1"; card "$MD1"
+check "acq only: main image is the acq image" asset_is "$MD1" main d1acq
+check "acq only: magnifier on the main image" body_has "$PAGE" "imageLens({ lensSize"
+check "acq only: no thumbnails" body_lacks "$PAGE" 'id="thumb-'
+check "acq only: recipe table from acq" body_has "$PAGE" ">ALPHA<"
+check "acq only: the acq montage is not served" same_404 "$B/$SA/$MD1?f=montage"
+check "acq only: card image is the BakingTray image" img_src_has "$CARD" "f=bakingtray"
+check "acq only: not finished" body_lacks "$CARD$PAGE" 'class="finished"'
+backdate "$(src_dir "$MD1" acq)" 7200
+page "$MD1"; card "$MD1"
+check "an old unfinished acquisition: card is stale" is_stale_card
+check "an old unfinished acquisition: page is stale" is_stale_page
+
+# acq + analysis of the same sample: the StitchIt image is the main image, thumbnails below.
+dz d2acq "$MD2" BETA false ACQ;  up acq "$MD2" d2acq
+dz d2an  "$MD2" BETA false STITCH; up analysis "$MD2" d2an
+page "$MD2"; card "$MD2"
+check "acq + same-sample analysis: main image is the StitchIt image" asset_is "$MD2" main d2an
+check "  ... the page's main image is ?f=main" img_src_has "$(grep 'id="main-image"' <<<"$PAGE")" "f=main"
+check "  ... with the magnifier" body_has "$PAGE" "imageLens({ lensSize"
+check "  ... BakingTray thumbnail present, enlarges on click" body_has "$PAGE" '<a id="thumb-bakingtray" href="/brainsaw/'"$SA/$MD2"'?f=bakingtray'
+check "  ... montage thumbnail present, enlarges on click" body_has "$PAGE" '<a id="thumb-montage" href="/brainsaw/'"$SA/$MD2"'?f=montage'
+check "  ... the BakingTray asset is the acq image" asset_is "$MD2" bakingtray d2acq
+check "  ... the montage asset is the StitchIt montage" asset_is "$MD2" montage d2an
+check "  ... the card image is the BakingTray image" img_src_has "$CARD" "f=bakingtray"
+check "  ... the version covers both sources" body_has "$CARD" 'data-version="acq='
+check "  ... and the analysis" body_has "$CARD" ';analysis='
+fetch "$B/$SA/$MD2?f=meta"
+check "  ... the meta endpoint's version covers both" bash -c 'grep -q "\"version\":\"acq=.*;analysis=" <<<"$1"' _ "$BODY"
+check "  ... the recipe table is the ground truth's" body_has "$PAGE" ">BETA<"
+
+# acq + analysis of another sample: analysis is hidden, and so are its files.
+dz d3acq "$MD3" GAMMA false ACQ;  up acq "$MD3" d3acq
+dz d3an  "$MD3" OTHER false STITCH; up analysis "$MD3" d3an
+page "$MD3"; card "$MD3"
+check "non-matching analysis: main image is the acq image" asset_is "$MD3" main d3acq
+check "  ... no thumbnails" body_lacks "$PAGE" 'id="thumb-'
+check "  ... the analysis montage gives the usual 404" same_404 "$B/$SA/$MD3?f=montage"
+check "  ... the version names only acq" bash -c '! grep -q "analysis=" <<<"$1"' _ "$CARD"
+check "  ... the card shows the acq sample" body_has "$CARD" "Sample: GAMMA"
+# It appears when its sample matches, and is hidden again when acq starts a new sample.
+backdate "$(src_dir "$MD3" analysis)"
+dz d3an2 "$MD3" GAMMA false STITCH2; up analysis "$MD3" d3an2
+page "$MD3"
+check "analysis of the same sample appears" asset_is "$MD3" montage d3an2
+check "  ... as the main image" asset_is "$MD3" main d3an2
+backdate "$(src_dir "$MD3" acq)"
+dz d3acq3 "$MD3" DELTA false ACQ3; up acq "$MD3" d3acq3
+page "$MD3"
+check "acq starts a new sample: the old analysis is hidden again" same_404 "$B/$SA/$MD3?f=montage"
+check "  ... and the acq image is the main image" asset_is "$MD3" main d3acq3
+
+# No acq/: analysis alone (a BakingTray that is not upgraded).
+dz d4an "$MD4" EPSILON false STITCH; up analysis "$MD4" d4an
+page "$MD4"; card "$MD4"
+check "analysis only: main image is the analysis image" asset_is "$MD4" main d4an
+check "  ... the card image is the analysis image" img_src_has "$CARD" "f=main"
+check "  ... no BakingTray thumbnail" body_lacks "$PAGE" 'id="thumb-bakingtray"'
+check "  ... the BakingTray asset is a 404" same_404 "$B/$SA/$MD4?f=bakingtray"
+check "  ... the recipe table comes from analysis" body_has "$PAGE" ">EPSILON<"
+check "  ... freshness is the analysis upload's" body_has "$CARD" "data-uploaded-at=\"$(meta_of "$(src_dir "$MD4" analysis)" uploaded_at)\""
+check "  ... the version names the analysis" body_has "$CARD" 'data-version="analysis='
+dz d4acq "$MD4" EPSILON false ACQ;  up acq "$MD4" d4acq
+page "$MD4"
+check "  ... a matching acq upload then becomes the ground truth: BakingTray thumbnail" body_has "$PAGE" 'id="thumb-bakingtray"'
+
+# Finished comes from the ground truth (acq) only; stale is not drawn when finished.
+dz f1acq "$MD5" ZETA false ACQ;  up acq "$MD5" f1acq
+dz f1an  "$MD5" ZETA false STITCH; up analysis "$MD5" f1an
+page "$MD5"; card "$MD5"
+check "both unfinished: not finished" body_lacks "$CARD$PAGE" 'class="finished"'
+check "  ... data-finished is 0" body_has "$CARD" 'data-finished="0"'
+ACQ5="$(src_dir "$MD5" acq)"; AN5="$(src_dir "$MD5" analysis)"
+backdate "$ACQ5" 7200; backdate "$AN5" 10800
+dz f2acq "$MD5" ZETA true ACQ;  up acq "$MD5" f2acq     # BakingTray's end upload
+backdate "$ACQ5" 7200
+page "$MD5"; card "$MD5"
+check "acq finished: card says finished" body_has "$CARD" '<span class="finished">finished</span>'
+check "  ... page says Finished" body_has "$PAGE" '<strong class="finished">Finished</strong>'
+check "  ... data-finished is 1" body_has "$CARD" 'data-finished="1"'
+check "  ... the 2 h old card is not drawn stale" bash -c '! grep -q "card stale" <<<"$1"' _ "$CARD"
+check "  ... the 2 h old page is not drawn stale" bash -c '! grep -q "status stale" <<<"$1"' _ "$PAGE"
+check "  ... \"ago\" is still shown" body_has "$CARD" '<span data-ago>2h ago</span>'
+# A later analysis upload with finished false: still finished, still not stale (staleness is acq's).
+dz f3an "$MD5" ZETA false STITCH; up analysis "$MD5" f3an
+page "$MD5"; card "$MD5"
+check "later unfinished analysis upload: still finished" body_has "$CARD" '<span class="finished">finished</span>'
+check "  ... the page too" body_has "$PAGE" '<strong class="finished">Finished</strong>'
+check "  ... freshness is acq's, 2 h old" body_has "$CARD" "data-uploaded-at=\"$(meta_of "$ACQ5" uploaded_at)\""
+check "  ... and a still-sending analysis does not make the card stale" bash -c '! grep -q "card stale" <<<"$1"' _ "$CARD"
+# Resume: an acq upload with finished false clears it.
+dz f4acq "$MD5" ZETA false ACQ;  up acq "$MD5" f4acq
+page "$MD5"; card "$MD5"
+check "acq resume (finished false): finished cleared" body_lacks "$CARD$PAGE" 'class="finished"'
+check "  ... and the fresh card is not stale" bash -c '! grep -q "card stale" <<<"$1"' _ "$CARD"
+# An analysis upload with finished true cannot set it.
+backdate "$AN5" 3600
+dz f5an "$MD5" ZETA true STITCH; up analysis "$MD5" f5an
+page "$MD5"; card "$MD5"
+check "acq unfinished, later analysis finished: not finished" body_lacks "$CARD$PAGE" 'class="finished"'
+
+# The estimated completion is shown while acquiring, not once finished.
+page "$MD2"
+check "unfinished page shows the estimated completion" body_has "$PAGE" 'Estimated completion'
+backdate "$(src_dir "$MD5" acq)" 7200
+dz f6acq "$MD5" ZETA true ACQ; up acq "$MD5" f6acq
+page "$MD5"
+check "finished page has no estimated completion" body_lacks "$PAGE" 'Estimated completion'
+
+# A hidden source never contributes: an unfinished acq with a non-matching, finished analysis.
+dz h1acq "$MD6" SAMPA false ACQ;  up acq "$MD6" h1acq
+dz h1an  "$MD6" SAMPB true STITCH; up analysis "$MD6" h1an
+page "$MD6"; card "$MD6"
+check "hidden analysis says finished: not finished" body_lacks "$CARD$PAGE" 'class="finished"'
+fetch "$B/$SA/$MD6?f=meta"
+check "  ... ?f=meta version excludes the hidden analysis" bash -c '! grep -q "analysis" <<<"$1" && grep -q "acq=" <<<"$1"' _ "$BODY"
+# While acq/meta.json is missing (an install in progress) or unreadable, acq is still the ground truth.
+ACQ6="$(src_dir "$MD6" acq)"; cp "$ACQ6/meta.json" "$TMP/meta6.json"; rm "$ACQ6/meta.json"
+page "$MD6"; card "$MD6"
+check "acq/meta.json missing: analysis stays hidden (montage 404)" same_404 "$B/$SA/$MD6?f=montage"
+check "  ... the main image is still the acq image" asset_is "$MD6" main h1acq
+check "  ... finished is not taken from the hidden analysis" body_lacks "$CARD$PAGE" 'class="finished"'
+check "  ... the page and card still render" test "$STATUS" = 200
+echo '{garbage' > "$ACQ6/meta.json"
+page "$MD6"; card "$MD6"
+check "acq/meta.json corrupt: page renders, analysis hidden" bash -c '[ "$1" = 200 ] && ! grep -q "thumb-montage" <<<"$2"' _ "$STATUS" "$PAGE"
+check "  ... the corrupt file is logged" grep -q "meta.json is not a JSON object" "$TMP/server.log"
+check "  ... assets of the hidden analysis are 404" same_404 "$B/$SA/$MD6?f=montage"
+cp "$TMP/meta6.json" "$ACQ6/meta.json"
+echo 'not json' > "$ACQ6/status.json"
+page "$MD6"
+check "unusable status.json: page renders, not finished" bash -c '[ "$1" = 200 ] && ! grep -q "class=\"finished\"" <<<"$2"' _ "$STATUS" "$PAGE"
+check "  ... and the file is logged" grep -q "status.json is not a JSON object" "$TMP/server.log"
+
+# analysis alone can be finished.
+dz g1an "$MD7" ETA true STITCH; up analysis "$MD7" g1an
+page "$MD7"; card "$MD7"
+check "analysis only, finished: card says finished" body_has "$CARD" '<span class="finished">finished</span>'
+backdate "$(src_dir "$MD7" analysis)" 7200
+card "$MD7"
+check "  ... still not drawn stale at 2 h" bash -c '! grep -q "card stale" <<<"$1"' _ "$CARD"
+
+# analysis alone: its own status.json decides.
+dz u1an "$MD8" THETA false STITCH; up analysis "$MD8" u1an
+card "$MD8"
+check "analysis only, unfinished: not finished" body_lacks "$CARD" 'class="finished"'
+backdate "$(src_dir "$MD8" analysis)"
+dz u2an "$MD8" THETA true STITCH; up analysis "$MD8" u2an
+card "$MD8"
+check "analysis only, then finished: finished" body_has "$CARD" '<span class="finished">finished</span>'
+
+# acq/ exists but has no image: the card shows the placeholder, not the matching analysis image.
+dz n1acq "$MD9" IOTA false ACQ; rm "$TMP/z/n1acq/LastCompleteSection.jpg"; zip_dir n1acq; up acq "$MD9" n1acq
+dz n1an  "$MD9" IOTA false STITCH; up analysis "$MD9" n1an
+card "$MD9"; page "$MD9"
+check "acq without an image: card shows the placeholder" body_has "$CARD" 'no image yet'
+check "  ... not an image" body_lacks "$CARD" '<img'
+check "  ... the page's main image is still the analysis image" asset_is "$MD9" main n1an
+
+# An acq/ folder with no upload in it (empty, or left by a failed first install) is still the
+# ground truth: a valid analysis/ beside it stays hidden until an acq upload succeeds.
+clear_blocker() { rm -rf "$APP/system_data/$SB/logs/acq/montage.jpg"; }
+good_zip logs logs S1
+upload "$TKB" "$SB" logs analysis "$TMP/z/logs.zip"
+check "analysis upload beside a failed acq install: 200" test "$STATUS" = 200
+fetch "$B/$SB/logs"
+check "acq/ left by a failed install: nothing is shown from analysis (no image)" body_lacks "$BODY" 'id="main-image"'
+check "  ... no thumbnails" body_lacks "$BODY" 'id="thumb-'
+check "  ... the analysis montage is a 404" same_404 "$B/$SB/logs?f=montage"
+check "  ... and its main image" same_404 "$B/$SB/logs?f=main"
+clear_blocker
+check "empty acq/ folder: analysis montage still a 404" same_404 "$B/$SB/logs?f=montage"
+check "  ... no version from analysis" bash -c '! curl -s "$1" | grep -q analysis' _ "$B/$SB/logs?f=meta"
+upload "$TKB" "$SB" logs acq "$TMP/z/logs.zip"
+check "the acq upload then succeeds: 200" test "$STATUS" = 200
+fetch "$B/$SB/logs?f=montage"
+check "  ... and the matching analysis appears (montage served)" test "$STATUS" = 200
+
+# Assets: only what the display rule shows; the recipe and log never; no traversal.
+for kind in recipe log acqLog acqlog recipe.yml acqLog.txt status status.json meta.json LastCompleteSection.jpg "../analysis/montage.jpg" "..%2Fanalysis%2Fmontage.jpg" "bakingtray/../montage"; do
+  check "?f=$kind is the usual 404 (matching analysis shown)" same_404 "$B/$SA/$MD5?f=$kind"
+done
+check "?f[]=main (an array) is the usual 404" same_404 "$B/$SA/$MD5?f%5B%5D=main"
 
 # --- recipe IDs: the shared vectors pin the parsing rule (the MATLAB side runs them from upload_core/tests) ---
 VECTORS="$ROOT/upload_core/tests/recipe_id_vectors.json"

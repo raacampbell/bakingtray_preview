@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const A = require('../../brainsaw/js/autorefresh.js');
 
 function fakeEl(url, uploadedAt, staleAfter = '900') {
-  const attrs = { 'data-meta-url': url, 'data-uploaded-at': uploadedAt, 'data-stale-after': staleAfter };
+  const attrs = { 'data-meta-url': url, 'data-uploaded-at': uploadedAt, 'data-version': uploadedAt, 'data-stale-after': staleAfter };
   const classes = new Set();
   const ago = { textContent: 'orig' };
   return {
@@ -45,7 +45,7 @@ function makeWin(opts) {
 const settle = () => new Promise((r) => setImmediate(r));
 const T0 = '2026-01-01T00:00:00+00:00';
 const T1 = '2026-01-01T00:09:00+00:00';
-const okFetch = (value) => async () => ({ ok: true, json: async () => ({ uploaded_at: value }) });
+const okFetch = (value) => async () => ({ ok: true, json: async () => ({ version: value }) });
 
 test('init: schedules a 5 s interval', () => {
   const win = makeWin({ els: [], fetchFn: okFetch(T0) });
@@ -70,7 +70,7 @@ test('init: busy gate stops overlapping polls but display keeps refreshing', asy
   const el = fakeEl('m', T0);
   let fetches = 0;
   let release;
-  const fetchFn = () => { fetches += 1; return new Promise((r) => { release = () => r({ ok: true, json: async () => ({ uploaded_at: T0 }) }); }); };
+  const fetchFn = () => { fetches += 1; return new Promise((r) => { release = () => r({ ok: true, json: async () => ({ version: T0 }) }); }); };
   const win = makeWin({ els: [el], fetchFn });
   A.init(win);
   win.tick();
@@ -90,7 +90,7 @@ test('init: busy gate stops overlapping polls but display keeps refreshing', asy
 test('init: hidden pauses polling; becoming visible polls at once', async () => {
   const el = fakeEl('m', T0);
   let fetches = 0;
-  const win = makeWin({ els: [el], fetchFn: async () => { fetches += 1; return { ok: true, json: async () => ({ uploaded_at: T0 }) }; } });
+  const win = makeWin({ els: [el], fetchFn: async () => { fetches += 1; return { ok: true, json: async () => ({ version: T0 }) }; } });
   A.init(win);
   win.document.hidden = true;
   win.tick();
@@ -107,7 +107,7 @@ test('init: becoming visible during an in-flight poll queues exactly one poll af
   const el = fakeEl('m', T0);
   let fetches = 0;
   const releases = [];
-  const fetchFn = () => { fetches += 1; return new Promise((r) => releases.push(() => r({ ok: true, json: async () => ({ uploaded_at: T0 }) }))); };
+  const fetchFn = () => { fetches += 1; return new Promise((r) => releases.push(() => r({ ok: true, json: async () => ({ version: T0 }) }))); };
   const win = makeWin({ els: [el], fetchFn });
   A.init(win);
   win.tick();

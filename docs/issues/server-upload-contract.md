@@ -1,7 +1,7 @@
 ---
 type: infrastructure
 complexity: complex
-status: in review
+status: done
 ---
 
 <!-- status: todo | in progress | in review | done | blocked |
@@ -68,7 +68,7 @@ Status stays `in review` until they are, and the fixes have not had a re-review.
 - `instructions.md` still states the ID rule inline (point to `upload_core/tests/recipe_id_vectors.json`), and still has
   history/future wording (old format, "for now", "later", "currently").
 - Check no remaining test is named for extensions.
-- `serverLimits.maxEntries` may now be unused.
+- `serverLimits.maxEntries` was unused: removed in MATLAB (server-display-rule); the PHP `max_zip_entries` stays because the zip-bomb guard uses it.
 - History not rewritten: the status commit is not last and some commits were not green on their own.
 - Display rule (analysis, finished, assets) is the next item, `server-display-rule`. Until then views read `acq/` only.
 - `check_deployed.sh` and the /testserver migration still assume the old contract (item `docs-and-deployed-check`).

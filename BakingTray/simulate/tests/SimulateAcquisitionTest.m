@@ -545,7 +545,7 @@ end
 
 
 function [startRe, finishRe] = serverRegexes()
-% Copies of the patterns bs_parse_acqlogs() uses in brainsaw/lib.php (PCRE \/
+% Copies of the patterns bs_parse_acqlog() uses in brainsaw/lib.php (PCRE \/
 % and \d are valid MATLAB regexp as is). serverRegexCopyMatchesLibPhp checks
 % them against the server source.
 startRe = '^(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) -- STARTING section number (\d+) \((\d+) of (\d+)\)';

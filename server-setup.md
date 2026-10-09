@@ -225,11 +225,14 @@ Copy the URL from `$PRIV/view_urls.txt` into a private browser window:
 
 ### 7.3 In a browser
 
-- The site view and a microscope page: image, hover magnifier, montage link, metadata table,
-  acquisition-time chart.
+- The site view and a microscope page: image, hover magnifier, metadata table,
+  acquisition-time chart; with a matching `analysis` upload also the StitchIt image as the
+  main image and the BakingTray and montage thumbnails below it.
 - Leave the microscope page open and upload again (> 5 s later): it should refresh itself
   within about 5 s.
 - The browser's developer tools (Network tab) should show no request to any other host.
+- A corrupt `meta.json` or `status.json` under `system_data/` is written to the PHP error log
+  on every request that reads it, until the next upload replaces it.
 
 ## 8. Test from MATLAB (the real client)
 

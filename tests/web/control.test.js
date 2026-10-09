@@ -17,8 +17,9 @@ test('clockOffset: missing or invalid server time gives 0', () => {
   assert.equal(A.clockOffset('abc', 5), 0);
 });
 
-function fakeEl({ url, uploadedAt, staleAfter = '900' }) {
-  const attrs = { 'data-meta-url': url, 'data-uploaded-at': uploadedAt };
+// version defaults to uploadedAt; finished '1' marks a finished acquisition.
+function fakeEl({ url, uploadedAt, version = uploadedAt, staleAfter = '900', finished = '0' }) {
+  const attrs = { 'data-meta-url': url, 'data-uploaded-at': uploadedAt, 'data-version': version, 'data-finished': finished };
   if (staleAfter !== null) attrs['data-stale-after'] = staleAfter;
   const classes = new Set();
   const ago = { textContent: 'orig' };
@@ -30,7 +31,7 @@ function fakeEl({ url, uploadedAt, staleAfter = '900' }) {
   };
 }
 
-// responses[url] is an uploaded_at string; a missing url behaves as a 404.
+// responses[url] is a version string; a missing url behaves as a 404.
 function makeEnv(els, responses) {
   const store = new Map();
   const warnings = [];
@@ -38,7 +39,7 @@ function makeEnv(els, responses) {
     doc: { querySelectorAll: () => els },
     fetchFn: async (url) => {
       const r = responses[url.split('?')[0]];
-      return r === undefined ? { ok: false, status: 404 } : { ok: true, json: async () => ({ uploaded_at: r }) };
+      return r === undefined ? { ok: false, status: 404 } : { ok: true, json: async () => ({ version: r }) };
     },
     reloads: 0,
     // A real reload gives a fresh page, so the reloading flag is cleared here.
@@ -117,9 +118,9 @@ test('refreshDisplay: missing/invalid data-stale-after falls back to 900, warns 
   assert.equal(bad.classes.has('stale'), false);
   assert.equal(env.warnings.length, 1);
 });
-test('fetchUploadedAt: failure kind reaches onFail', async () => {
+test('fetchVersion: failure kind reaches onFail', async () => {
   const reasons = [];
-  await A.fetchUploadedAt('u', async () => ({ ok: false, status: 404 }), 1, { onFail: (u, kind) => reasons.push(kind) });
+  await A.fetchVersion('u', async () => ({ ok: false, status: 404 }), 1, { onFail: (u, kind) => reasons.push(kind) });
   assert.deepEqual(reasons, ['http-404']);
 });
 test('safeStorage: swallows a throwing storage', () => {
@@ -144,7 +145,7 @@ test('poll: guard is per URL; alternating fetch failures give at most one reload
   env.fetchFn = async (url) => {
     const base = url.split('?')[0];
     if (failing.has(base)) throw new Error('net');
-    return { ok: true, json: async () => ({ uploaded_at: T1 }) };
+    return { ok: true, json: async () => ({ version: T1 }) };
   };
   await A.poll(env); // both changed -> reload
   failing.add('a');
@@ -193,4 +194,31 @@ test('poll: other failures warn once per URL and kind; a new kind warns again', 
   for (const m of modes) { env.fetchFn = m; await A.poll(env); }
   assert.equal(env.warnings.length, 4); // http-500, network, bad-json, timeout
   assert.ok(env.warnings[3].includes('timed out') || env.warnings[3].includes('aborted'));
+});
+
+// --- several sources behind one page ---
+test('poll: a new version reloads even though the ground-truth uploaded_at is unchanged', async () => {
+  const el = fakeEl({ url: 'a', uploadedAt: T0, version: 'acq=' + T0 + ';analysis=' + T0 });
+  const env = makeEnv([el], { a: 'acq=' + T0 + ';analysis=' + T1 });
+  await A.poll(env);
+  assert.equal(env.reloads, 1);
+});
+test('poll: an unchanged version does not reload', async () => {
+  const el = fakeEl({ url: 'a', uploadedAt: T0, version: 'acq=' + T0 });
+  const env = makeEnv([el], { a: 'acq=' + T0 });
+  await A.poll(env);
+  assert.equal(env.reloads, 0);
+});
+
+// --- finished ---
+test('refreshDisplay: a finished acquisition is never stale, however old; "ago" still updates', () => {
+  const done = fakeEl({ url: 'a', uploadedAt: T0, staleAfter: '300', finished: '1' }); // 600 s old
+  A.refreshDisplay(makeEnv([done], {}));
+  assert.equal(done.classes.has('stale'), false);
+  assert.equal(done.ago.textContent, '10m ago');
+});
+test('refreshDisplay: an unfinished old acquisition is stale', () => {
+  const old = fakeEl({ url: 'a', uploadedAt: T0, staleAfter: '300' });
+  A.refreshDisplay(makeEnv([old], {}));
+  assert.equal(old.classes.has('stale'), true);
 });
