@@ -28,3 +28,7 @@ The server accepts uploads from two sources, `acq` (BakingTray, ground truth) an
 - The full MATLAB suite passes from the worktree root. Baseline 175 passed, 0 failed, 2 incomplete.
 - `instructions.md` (what the page shows) and any server doc affected are updated. Comments describe the present, not history.
 - Out of scope: `check_deployed.sh`, the /testserver migration, MATLAB upload code, and the known recipe-reader parser edge cases (`readRecipe.m` and the recipe parsing in `lib.php` are unchanged).
+
+## Remaining
+Items A-G of the last review round are all done: A rebase onto main (1104171), B card image without analysis fallback when acq/ exists, C and D instructions.md wording, E empty and failed acq/ folder tests and docs, F bs_read_meta folded into its callers, G server-setup.md note on corrupt-file logging.
+Nothing from that round remains. Known and not part of this item: `tests/web/check_stage.sh` has 4 failing deploy-command checks that also fail on main (stage_server.sh prints `rsync -avz`, the check expects `rsync -az --delete`).
