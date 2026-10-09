@@ -27,7 +27,7 @@ function d = stageDirFor(cfg,micID,stageRoot,source)
             'The recipe has no usable microscope ID (SYSTEM.ID): "%s"', char(micID(:)'));
     end
     if ~(ischar(source) && ismember(source,{'acq','analysis'}))
-        error('webupload:badSource', 'source must be ''acq'' or ''analysis''.');
+        error('webupload:badSource', 'source must be ''acq'' or ''analysis'', not a %s.', class(source));
     end
     d = fullfile(char(stageRoot),'brainsaw_webpreview',cfg.siteID,micID,source);
 end % stageDirFor

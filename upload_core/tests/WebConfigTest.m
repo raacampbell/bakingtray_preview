@@ -26,7 +26,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
             cfg = webupload.webConfig(tc.writeJson(WebConfigTest.good()));
             tc.verifyEqual(cfg.url, 'https://example.org/upload.php');
             tc.verifyEqual(cfg.siteID, 'site_a-1');
-            tc.verifyError(@() cfg.micID, ?MException);
+            tc.verifyFalse(isprop(cfg, 'micID'));
         end
 
         function valuesAreTrimmed(tc)
@@ -137,7 +137,7 @@ classdef WebConfigTest < matlab.unittest.TestCase
         end
 
         function pathIsRequired(tc)
-            tc.verifyError(@() webupload.webConfig(), ?MException);
+            tc.verifyError(@() webupload.webConfig(), 'MATLAB:narginchk:notEnoughInputs');
         end
 
         function propertiesCannotBeChangedAfterConstruction(tc)

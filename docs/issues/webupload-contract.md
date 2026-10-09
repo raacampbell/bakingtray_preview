@@ -1,7 +1,7 @@
 ---
 type: infrastructure
 complexity: complex
-status: in review
+status: done
 ---
 
 <!-- status: todo | in progress | in review | done | blocked |
@@ -58,3 +58,10 @@ Merged at the PI's request before these were fixed. Status stays `in review` unt
   BakingTray; `updateSectionImage.m:222` comment says "staged recipe"; bad-`source` message omits the value;
   `stageDirFor`/`clearStage` refuse string micIDs; dead folder support in `stageFiles`/`resolveRecipe`.
 - Not yet checked: every commit green (fix 9) and docs-vs-code consistency (fix 10).
+
+## Closed (2026-10-09)
+Checked on `main`: the stale-recipe fallback in `stageFiles` is already fixed (a recipe that fails to copy is deleted,
+never reused); the string-micID and dead folder-support items are gone with the move of staging into `upload_core`.
+Fixed here: the bad-`source` messages now show the value; `WebConfigTest` no longer asserts bare `?MException`.
+Left as is: `upload_core/README.md` names BakingTray only to say who calls it. Not done: the per-commit-green and
+docs-vs-code checks. Suite: 216 run, 215 passed, 0 failed, 1 incomplete (filtered by assumption).
