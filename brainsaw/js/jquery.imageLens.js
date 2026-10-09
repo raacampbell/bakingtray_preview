@@ -16,9 +16,7 @@
             + ";background-repeat: no-repeat;position: absolute;";
 
         return this.each(function () {
-            obj = $(this);
-
-            var offset = $(this).offset();
+            var obj = $(this);
 
             // Creating lens
             var target = $("<div style='" + lensStyle + "' class='" + options.lensCss + "'>&nbsp;</div>").appendTo($(this).parent());
@@ -42,6 +40,9 @@
 
             function setPosition(e) {
 
+                // Read on every move, not once at start-up: the image can move after the
+                // page loads (fonts, other images, auto-refresh)
+                var offset = obj.offset();
                 var leftPos = parseInt(e.pageX - offset.left);
                 var topPos = parseInt(e.pageY - offset.top);
 
@@ -55,8 +56,16 @@
                     topPos = String(((e.pageY - offset.top) * heightRatio - target.height() / 2) * (-1));
                     target.css({ backgroundPosition: leftPos + 'px ' + topPos + 'px' });
 
-                    leftPos = String(e.pageX - target.width() / 2);
-                    topPos = String(e.pageY - target.height() / 2);
+                    // The lens is position:absolute, so left/top are measured from its
+                    // containing block (a position:relative wrapper, say), not from the page
+                    // as e.pageX/e.pageY are. Convert, then centre the lens, border included,
+                    // on the mouse.
+                    var parent = target.offsetParent();
+                    var origin = parent.offset();
+                    origin.left += parseFloat(parent.css('borderLeftWidth')) || 0;
+                    origin.top += parseFloat(parent.css('borderTopWidth')) || 0;
+                    leftPos = String(e.pageX - origin.left - target.outerWidth() / 2);
+                    topPos = String(e.pageY - origin.top - target.outerHeight() / 2);
                     target.css({ left: leftPos + 'px', top: topPos + 'px' });
                 }
             }
