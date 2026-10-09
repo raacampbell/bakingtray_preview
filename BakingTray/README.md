@@ -3,12 +3,7 @@
 The staging and upload code is not BakingTray-specific: it is the
 `webupload` package in `upload_core/` (see `upload_core/README.md` for the
 config file, the token, `webupload.updateSectionImage` and its options). This
-folder holds only what is on the BakingTray side:
-
-- `simulate/`, a fake acquisition for testing the pipeline and the server
-  (`simulate/README.md`);
-- `tests/`, tests that use the simulator's sample recipe;
-- the example call sites below.
+folder holds only what is on the BakingTray side: the example call sites below.
 
 Nothing here is installed into BakingTray, and these examples do not change it.
 The real BakingTray needs `upload_core` on its MATLAB path (the folder
@@ -88,4 +83,4 @@ if the caller wants it.
 
 The command that runs every test (including `upload_core/tests`) is in
 `upload_core/README.md`, under Tests; use your own MATLAB path in it.
-`add_to_path` puts `upload_core` and `BakingTray/simulate` on the path.
+`add_to_path` puts `upload_core` on the path.

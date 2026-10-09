@@ -199,14 +199,12 @@ staging-failure warning (`webupload:stageFiles:stageFailed`), not an error.
 From the repo root:
 
 ```
-/Applications/MATLAB_R2023b.app/bin/matlab -batch "add_to_path; r=[runtests('upload_core/tests'), runtests('BakingTray/tests'), runtests('BakingTray/simulate/tests')]; disp(table(r))"
+/Applications/MATLAB_R2023b.app/bin/matlab -batch "add_to_path; r=runtests('upload_core/tests'); disp(table(r))"
 ```
 
-(use your own MATLAB path; `runtests('upload_core/tests')` alone runs just
-this package's tests). The tests add the packages to the path themselves. They
-need no real server (one test posts to a refused `127.0.0.1` port). Three tests
-wait about 6 s each: the two 429 retry tests of a Finished call, and the simulator's
-rate-limit run.
+(use your own MATLAB path). The tests add the packages to the path themselves. They
+need no real server (one test posts to a refused `127.0.0.1` port). Two tests
+wait about 6 s each: the two 429 retry tests of a Finished call.
 
 Nothing in this module has been run against a live brainsaw server. Treat the
 first real acquisition as the test, on a spare site ID.

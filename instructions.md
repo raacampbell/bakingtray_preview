@@ -125,8 +125,7 @@ Requires PHP 8.1+ with the `zip` extension (`php -m | grep zip`). On macOS: `bre
    recipe and log files from `system_data/` and no view URL would work. Keep `localhost` in
    the command (never `0.0.0.0` or a LAN address).
 3. Open `http://localhost:8000/<SITE_ID>`: one card per microscope, reading "no image yet".
-   To see a full page without a microscope, either run the simulator
-   (`BakingTray/simulate/README.md`), or upload one of the zips described in §5. The data
+   To see a full page without a microscope, upload one of the zips described in §5. The data
    lands in `brainsaw/system_data/<SITE_ID>/<MIC_ID>/<source>/` (git-ignored).
 
 For large real zips add `-d upload_max_filesize=250M -d post_max_size=250M` before `-S`:

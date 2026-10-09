@@ -257,9 +257,7 @@ disp(res.ok), disp(res.post)
 ```
 
 Expect `res.ok` true and `res.post.httpStatus` 200. Use the exact `https` URL: the client treats
-a redirect as a failure. For a simulated acquisition against the test deployment see
-`BakingTray/simulate/README.md`. Its safety rule accepts only localhost or URLs with `testserver` as a
-path segment, so it never writes fake data to `livefeed` unless told to (`'AllowProduction', true`).
+a redirect as a failure.
 
 ## 9. Troubleshooting
 
@@ -305,8 +303,7 @@ above; with the `.htaccess` rewrite rule a real zip upload authenticates; the `.
 blocked.
 
 **Verified locally only (PHP built-in server with `router.php`):** everything in
-`tests/web/check_pages.sh` and `tests/web/check_stage.sh`; a simulated acquisition uploaded
-from MATLAB; and a copy of `check_deployed.sh` with only its https requirement removed, run
+`tests/web/check_pages.sh` and `tests/web/check_stage.sh`; and a copy of `check_deployed.sh` with only its https requirement removed, run
 against a local server, which passed every check except the http-to-https redirect (the
 built-in server has no https). The script itself has not yet been run against IONOS.
 

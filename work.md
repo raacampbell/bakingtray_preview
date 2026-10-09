@@ -215,15 +215,14 @@ after the move: `updateSectionImage`, `stageFiles`, `stageSpec`, `toUint8`, `sta
   `'Finished', true`) and `sliceSample.m` (during the cut), each guarded with `which` and try/catch. These are examples
   for Rob, not changes to BakingTray.
 
-**Also update:** the simulator (`BakingTray/simulate`): start, sections, end with finished, no montage, new paths.
-`add_to_path.m`: add `upload_core`, `BakingTray` (the folder containing `+BakingTray`) and `BakingTray/simulate`.
+**Also update:** `add_to_path.m`: add `upload_core` and `BakingTray` (the folder containing `+BakingTray`).
 Never add this repo's `BakingTray` folder on a rig that has the real BakingTray installed: the two `+BakingTray`
 packages would merge and could shadow each other (say so in the READMEs). Docs (`server-setup.md` settings shape,
 READMEs, `instructions.md`) and `tests/web/check_pages.sh` and `check_deployed.sh`, including `analysis` uploads made
 with curl, to test the match rule and the analysis-only fallback before StitchIt exists.
 
 ## Phases
-1. **Now (agents):** everything above, tested locally (`php -S`, MATLAB suite, simulator end to end) and on the server (/testserver, renamed /livefeed on 2026-10-09).
+1. **Now (agents):** everything above, tested locally (`php -S`, MATLAB suite) and on the server (/testserver, renamed /livefeed on 2026-10-09).
 2. **Later (Rob):** the core goes into StitchIt, which does not use it yet; the BakingTray-specific package and the three
    call sites go into BakingTray; install both on a rig and run against the new site.
 3. **Later still (Rob):** StitchIt uploads with `source = 'analysis'`, replacing its scp route. No server change needed.
