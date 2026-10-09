@@ -31,11 +31,11 @@ G init -q
 G add -A
 G commit -qm snapshot
 B="$REPO/brainsaw"
-OUT="$REPO/staging/testserver"
+OUT="$REPO/staging/livefeed"
 
 # --- an untracked secret is never staged ---
 openssl rand -hex 32 > "$B/.env"
-check "stage (default testserver) succeeds with an untracked secret present" stage
+check "stage (default livefeed) succeeds with an untracked secret present" stage
 check "untracked secret not staged" test ! -e "$OUT/.env"
 staged="$(cd "$OUT" && find . -type f | sed 's#^\./##' | sort)"
 tracked="$(git -C "$REPO" ls-files brainsaw | sed 's#^brainsaw/##' | grep -vx 'router\.php' | sort)"
@@ -55,7 +55,7 @@ check "--help prints the options" bash -c 'cd "$1" && ./stage_server.sh --help |
 for d in ./ ../x . .. a/b "" "x y" /abs 'a$b' '-x'; do
   check "--dest '$d' refused" refused --dest "$d"
 done
-check "--dest other than testserver needs --settings-path" refused --dest live
+check "--dest other than livefeed needs --settings-path" refused --dest live
 check "--settings-path must be absolute"                   refused --dest live --settings-path rel/settings.json
 check "--settings-path with odd characters refused"        refused --dest live --settings-path "/a b/settings.json"
 check "--settings-path inside the web root refused"        refused --dest live --settings-path /home/raacampbell/public_html/s.json
@@ -66,7 +66,7 @@ check "live config points at the given path" grep -q "'settings_file' *=> '/srv/
 
 # --- the deploy command: --delete removes old endpoints, protect filters keep server data ---
 stage
-SERVER="$TMP/server/public/testserver"
+SERVER="$TMP/server/public/livefeed"
 mkdir -p "$SERVER/system_data/site1/mic1" "$SERVER/logs" "$SERVER/test-upload"
 echo '{"uploaded_at": "y"}' > "$SERVER/system_data/site1/mic1/meta.json"
 echo 'server log' > "$SERVER/logs/upload.log"

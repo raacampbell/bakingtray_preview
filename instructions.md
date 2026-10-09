@@ -8,7 +8,7 @@ IONOS is in `server-setup.md`. The upload client is the MATLAB package `webuploa
 (`upload_core/README.md`).
 
 `<base>` below is wherever `brainsaw/` is deployed: `http://localhost:8000` locally,
-`https://brainsaw.org/testserver` on the test deployment.
+`https://mouse.vision/livefeed` on the live deployment (later `https://brainsaw.org/livefeed`).
 
 ## 1. What's in `brainsaw/`
 

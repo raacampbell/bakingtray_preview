@@ -1075,7 +1075,7 @@ function bs_autorefresh_script(?string $js): string
 }
 
 /**
- * The deployment's base URL path ('' at the web root, '/testserver' in a sub-folder): where
+ * The deployment's base URL path ('' at the web root, '/livefeed' in a sub-folder): where
  * this folder sits below DOCUMENT_ROOT. Not taken from SCRIPT_NAME, whose value after a
  * rewrite varies between servers; a wrong base would shift every path segment by one. Null
  * (and a log line) if this folder is not under DOCUMENT_ROOT, so the caller fails closed.

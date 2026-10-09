@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Checks a deployed Brainsaw server (server-setup.md section 7).
 # Usage: check_deployed.sh BASE_URL TOKEN_FILE SITE_ID MIC_ID ZIP [--big]
-#   BASE_URL   https base of the deployment, e.g. https://brainsaw.org/testserver
+#   BASE_URL   https base of the deployment, e.g. https://mouse.vision/livefeed
 #   TOKEN_FILE file holding that microscope's token. It is copied into a private temp header
 #              file that curl reads (-H @file), so it is never printed or on a command line.
 #   SITE_ID    a site in the server's settings file (its view is BASE_URL/SITE_ID)

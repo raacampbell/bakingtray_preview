@@ -21,9 +21,9 @@
 #
 # Options
 #   --dest NAME            folder under public/ to deploy into, letters, digits, _ and -
-#                          only (default: testserver)
+#                          only (default: livefeed)
 #   --settings-path PATH   absolute path of the settings file ON THE SERVER; required
-#                          unless --dest is testserver (default for testserver, on the
+#                          unless --dest is livefeed (default for livefeed, on the
 #                          GoDaddy host: /home/raacampbell/config/brainsaw_settings.json)
 #   --webroot PATH         the server's web root (default: /home/raacampbell/public_html); the
 #                          settings path must not be inside it
@@ -32,7 +32,7 @@
 # Re-running is safe: ./staging/<dest>/ is rebuilt from scratch.
 set -euo pipefail
 
-DEST="testserver"
+DEST="livefeed"
 SETTINGS_PATH=""
 WEBROOT="/home/raacampbell/public_html"
 
@@ -59,7 +59,7 @@ git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1 || fail "$ROOT is not a git c
 # The name ends up in rm -rf and rsync --delete paths, so only a plain folder name is allowed.
 [[ "$DEST" =~ ^[A-Za-z0-9_-]+$ ]] || fail "--dest must be letters, digits, _ or - only (got '$DEST')"
 if [ -z "$SETTINGS_PATH" ]; then
-  [ "$DEST" = testserver ] || fail "--settings-path is required for --dest $DEST (each deployment has its own settings file)"
+  [ "$DEST" = livefeed ] || fail "--settings-path is required for --dest $DEST (each deployment has its own settings file)"
   SETTINGS_PATH="/home/raacampbell/config/brainsaw_settings.json"
 fi
 # Plain characters only, so the paths need no quoting in sed or PHP.

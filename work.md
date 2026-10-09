@@ -173,7 +173,7 @@ wins. In particular: the source is a form field (not text added to the zip name)
 - Assets (`?f=`): only files the display rule shows are served. A hidden `analysis/` image or montage gives the same
   404 as any missing page. Recipe and log are never served (as now).
 - Remove what the fixed names make obsolete (the newest-file globs for the main image, recipe and log).
-- One-off on /testserver: delete the old flat `system_data/<site>/<mic>/` files and reshape the settings file (document
+- One-off on /testserver (now /livefeed): delete the old flat `system_data/<site>/<mic>/` files and reshape the settings file (document
   the steps for Rob).
 
 ## MATLAB: split this repo's code into core and BakingTray-specific
@@ -223,7 +223,7 @@ READMEs, `instructions.md`) and `tests/web/check_pages.sh` and `check_deployed.s
 with curl, to test the match rule and the analysis-only fallback before StitchIt exists.
 
 ## Phases
-1. **Now (agents):** everything above, tested locally (`php -S`, MATLAB suite, simulator end to end) and on /testserver.
+1. **Now (agents):** everything above, tested locally (`php -S`, MATLAB suite, simulator end to end) and on the server (/testserver, renamed /livefeed on 2026-10-09).
 2. **Later (Rob):** the core goes into StitchIt, which does not use it yet; the BakingTray-specific package and the three
    call sites go into BakingTray; install both on a rig and run against the new site.
 3. **Later still (Rob):** StitchIt uploads with `source = 'analysis'`, replacing its scp route. No server change needed.

@@ -1,23 +1,28 @@
-# Server setup: deploying Brainsaw to IONOS (test deployment at brainsaw.org/testserver)
+# Server setup: deploying Brainsaw (deployment at <host>/livefeed)
 
-Step-by-step for putting `brainsaw/` on the IONOS Web Hosting plan behind brainsaw.org, as the
-test deployment at `https://brainsaw.org/testserver/` and later at the real address. What the
-server does is in `instructions.md`; this file is only about getting it running on IONOS.
+Step-by-step for putting `brainsaw/` on a shared host, deployed at `https://<host>/livefeed/`
+(today the GoDaddy host behind mouse.vision; `./send.sh` uploads `staging/livefeed/` there).
+What the server does is in `instructions.md`; this file is only about getting it running.
+
+**Out of date:** the paths, diagnostics and host facts below were written for IONOS
+(`/home/www/...`). On the GoDaddy host the web root is `/home/raacampbell/public_html` and the
+settings file is `/home/raacampbell/config/brainsaw_settings.json`; PHP must be 8.1 or newer
+with the zip extension, and the site needs a real (not self-signed) certificate.
 
 ## What you are building
 
 ```
-https://brainsaw.org/testserver/                  neutral landing page, lists nothing
-https://brainsaw.org/testserver/upload.php        the url in each microscope's MATLAB config
-https://brainsaw.org/testserver/<SITE_ID>         one lab's microscopes (private: the ID is the secret)
-https://brainsaw.org/testserver/<PANOPTICON_WORD> every microscope of every site (private)
+https://brainsaw.org/livefeed/                  neutral landing page, lists nothing
+https://brainsaw.org/livefeed/upload.php        the url in each microscope's MATLAB config
+https://brainsaw.org/livefeed/<SITE_ID>         one lab's microscopes (private: the ID is the secret)
+https://brainsaw.org/livefeed/<PANOPTICON_WORD> every microscope of every site (private)
 ```
 
 On the server:
 
 ```
 /home/www/public/                  web root of brainsaw.org (what https://brainsaw.org/ shows)
-/home/www/public/testserver/       the staged app (staging/testserver/ from your computer)
+/home/www/public/livefeed/       the staged app (staging/livefeed/ from your computer)
 /home/www/www/brainsaw_private/    the settings file, outside the web root
 ```
 
@@ -80,8 +85,8 @@ if (function_exists('apache_request_headers')) {
 }
 ```
 
-1. Upload it to `public/testserver/diag.php`.
-2. From a terminal: `curl -s -H "Authorization: Bearer test123" "https://brainsaw.org/testserver/diag.php?k=<your string>"`
+1. Upload it to `public/livefeed/diag.php`.
+2. From a terminal: `curl -s -H "Authorization: Bearer test123" "https://brainsaw.org/livefeed/diag.php?k=<your string>"`
 3. Needed: `ZipArchive: yes`; both size limits at least ~32M (§6); at least one of the three
    Authorization lines `present` (lib.php reads all three); `Folder above it` readable.
 4. **Delete `diag.php` from the server** as soon as you have the answers.
@@ -96,7 +101,7 @@ From the project root (`brainsaw_web_preview/`):
 ./stage_server.sh
 ```
 
-This fills `staging/testserver/` with `brainsaw/` **as committed in HEAD** (`git archive`), so
+This fills `staging/livefeed/` with `brainsaw/` **as committed in HEAD** (`git archive`), so
 an untracked or ignored file, such as a local settings file, log, upload or editor swap file,
 can never be staged. It refuses to run while a tracked file under `brainsaw/` has uncommitted
 changes: commit first. It leaves out the local-only `router.php`, points the staged
@@ -125,9 +130,9 @@ cat > "$PRIV/brainsaw_settings.json" <<EOF
    "microscopes": {"test_mic": {"display_name": "Test microscope"}}}}}
 EOF
 cat > "$PRIV/brainsaw_webpreview_test.json" <<EOF
-{"url": "https://brainsaw.org/testserver/upload.php", "siteID": "$SITE", "token": "$TOKEN"}
+{"url": "https://brainsaw.org/livefeed/upload.php", "siteID": "$SITE", "token": "$TOKEN"}
 EOF
-printf 'site view:  https://brainsaw.org/testserver/%s\npanopticon: https://brainsaw.org/testserver/%s\n' "$SITE" "$PAN" > "$PRIV/view_urls.txt"
+printf 'site view:  https://brainsaw.org/livefeed/%s\npanopticon: https://brainsaw.org/livefeed/%s\n' "$SITE" "$PAN" > "$PRIV/view_urls.txt"
 )
 ```
 
@@ -153,8 +158,8 @@ the folder and upload the file to the same absolute path.
 `stage_server.sh` prints the exact commands for the folder it staged. For the test deployment:
 
 ```bash
-rsync -azn --delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/testserver/ USER@HOST:/home/www/public/testserver/
-rsync -az  --delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/testserver/ USER@HOST:/home/www/public/testserver/
+rsync -azn --delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/livefeed/ USER@HOST:/home/www/public/livefeed/
+rsync -az  --delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/livefeed/ USER@HOST:/home/www/public/livefeed/
 ```
 
 The first is a dry run (`-n`): read its list before running the second.
@@ -164,9 +169,9 @@ The first is a dry run (`-n`): read its list before running the second.
   `system_data/<site>/` and `logs/*.log`. (`tests/web/check_stage.sh` checks this on a local copy.)
 - This replaces any hand-made `.htaccess` with the staged one. That is intended.
 
-**Without SSH** (SFTP program only): upload the contents of `staging/testserver/` into
-`public/testserver/`, then delete by hand every file and folder there that is not in
-`staging/testserver/`, except `system_data/<site>/` folders and `logs/*.log`.
+**Without SSH** (SFTP program only): upload the contents of `staging/livefeed/` into
+`public/livefeed/`, then delete by hand every file and folder there that is not in
+`staging/livefeed/`, except `system_data/<site>/` folders and `logs/*.log`.
 
 Permissions: directories 755 and files 644, set by `--chmod` on **every** deploy, so a mode
 changed by hand on the server does not survive the next deploy. `system_data/` and `logs/` must
@@ -192,7 +197,7 @@ From the repo root, once §4 and §5 are done:
 ```bash
 PRIV="$HOME/brainsaw_private_local"
 SITE="$(php -r 'echo json_decode(file_get_contents($argv[1]))->siteID;' "$PRIV/brainsaw_webpreview_test.json")"
-tests/web/check_deployed.sh https://brainsaw.org/testserver "$PRIV/test_mic_token.txt" "$SITE" test_mic test_images/all_data.zip
+tests/web/check_deployed.sh https://brainsaw.org/livefeed "$PRIV/test_mic_token.txt" "$SITE" test_mic test_images/all_data.zip
 ```
 
 Add `--big` to also upload a 30 MB zip (checks the PHP size limits). The token is read from the
@@ -221,7 +226,7 @@ Copy the URL from `$PRIV/view_urls.txt` into a private browser window:
 
 - it shows a heading per site with a card for every microscope;
 - with one letter of the word changed, the page is the same "Not found" page as for any
-  made-up path such as `https://brainsaw.org/testserver/no/such/page`.
+  made-up path such as `https://brainsaw.org/livefeed/no/such/page`.
 
 ### 7.3 In a browser
 
@@ -253,7 +258,8 @@ disp(res.ok), disp(res.post)
 
 Expect `res.ok` true and `res.post.httpStatus` 200. Use the exact `https` URL: the client treats
 a redirect as a failure. For a simulated acquisition against the test deployment see
-`BakingTray/simulate/README.md` (its safety rule accepts URLs with `testserver` as a path segment).
+`BakingTray/simulate/README.md`. Its safety rule accepts only localhost or URLs with `testserver` as a
+path segment, so it never writes fake data to `livefeed` unless told to (`'AllowProduction', true`).
 
 ## 9. Troubleshooting
 
@@ -286,11 +292,10 @@ a redirect as a failure. For a simulated acquisition against the test deployment
    `/home/www/www/brainsaw_private/brainsaw_settings_live.json`.
 2. Stage for the real folder, e.g. `public/brainsaw/`:
    `./stage_server.sh --dest brainsaw --settings-path /home/www/www/brainsaw_private/brainsaw_settings_live.json`
-   (`--settings-path` is required for any destination other than `testserver`). Deploy with the
+   (`--settings-path` is required for any destination other than `livefeed`). Deploy with the
    commands it prints. Serving from the web root itself would need a small change to the script.
 3. Give each lab its view URL and each microscope its config (`siteID`, token, the
-   real `url`). Test each microscope against the test deployment first, and keep `/testserver`
-   as a standing canary.
+   real `url`).
 
 ## 12. What has and has not been verified
 

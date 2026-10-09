@@ -191,11 +191,17 @@ Files land in `<repo>/brainsaw/system_data/sim_local/brainsaw/`; the server log
 is `<repo>/brainsaw/logs/upload.log` (tab separated: time, site/microscope,
 status, IP, message). MATLAB-side files are in `r.workDir`.
 
-## Part B. The test deployment (brainsaw.org/testserver)
+## Part B. A test deployment on the server (<your-host>/testserver)
 
-Only after Part A works. Deploying the server is in `server-setup.md`; this
-part only adds a simulator microscope to the deployment at
-`https://<your-host>/testserver/`, which holds no real data.
+Only after Part A works. The real deployment is `https://<your-host>/livefeed/`,
+and the simulator refuses to send fake data there (see the safety rule below).
+To simulate on the server, deploy a separate test copy with its own settings
+file, which holds no real data: `./stage_server.sh --dest testserver
+--settings-path <path of the test settings file on the server>`, then upload
+`staging/testserver/` to `<web root>/testserver/` with the same rsync command as
+`send.sh` (its protect filters included). Deploying is in `server-setup.md`;
+this part only adds a simulator microscope to that test copy at
+`https://<your-host>/testserver/`.
 
 ### B1. Add a simulator microscope to the server's settings file
 
