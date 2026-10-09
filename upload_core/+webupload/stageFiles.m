@@ -7,6 +7,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % Files written, under the names the server keeps (webupload.stageSpec,
     % webupload.allowedNames):
     %   LastCompleteSection.jpg   from img, if given
+    %   tile_thumbnail.jpg        made from img, if given (see THUMBNAIL below)
     %   montage.jpg               from the 'Montage' image, if given
     %   recipe.yml                copy of the recipe, whatever the source extension
     %   acqLog.txt                copy of the log
@@ -19,6 +20,15 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % Any other empty array is an error, as is anything else, a path that is not an
     % existing .jpg/.jpeg file, and an invalid 'Range'. All of these throw before
     % stageDir is touched, 'ClearStage' included.
+    %
+    % THUMBNAIL: the server shows tile_thumbnail.jpg on the cards instead of the full image.
+    % It is the main image shrunk to stageSpec's ThumbnailWidth (500 px) wide, aspect ratio
+    % kept, by averaging pixel blocks and then interpolating, so no toolbox is needed. An
+    % image that is already narrower is not enlarged. A jpg path is read with imread. It is
+    % only ever staged together with the image it was made from: when img is [], or the
+    % thumbnail cannot be made (warning 'webupload:stageFiles:thumbnailFailed', not a stage
+    % failure), or the image is not renamed into place, any staged thumbnail is deleted.
+    % The server then shows the full image on the card.
     %
     % FAILURE POLICY: a preview must never abort an acquisition, so any error in reading
     % a recipe to compare sample IDs counts as "not the same sample", and
@@ -35,7 +45,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %
     % FILE HANDLING: new files are written under '.part' names (matched by no server
     % name) and then renamed into place, so a zip taken meanwhile does not see a
-    % half-written file. The four names <staged name>.part (for example
+    % half-written file. The names <staged name>.part (for example
     % LastCompleteSection.jpg.part) are reserved for this and are deleted when the call
     % ends; other files are left alone, as the server ignores them. Staged files whose
     % source was not given or not obtained are deleted once the files that were obtained
@@ -61,6 +71,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % result - Structure with fields:
     %   files         - full paths renamed into place.
     %   mainStaged    - logical.
+    %   thumbnailStaged - logical.
     %   montageStaged - logical.
     %   recipeStaged  - logical.
     %   logStaged     - logical.
@@ -92,7 +103,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     mainSrc = imageSource(img,params.Results.Range);
     montageSrc = imageSource(params.Results.Montage,params.Results.Range);
 
-    result = struct('files', {{}}, 'mainStaged', false, 'montageStaged', false, ...
+    result = struct('files', {{}}, 'mainStaged', false, 'thumbnailStaged', false, 'montageStaged', false, ...
                     'recipeStaged', false, 'logStaged', false, 'logKept', false, ...
                     'recipeSource', '', 'stageOk', true);
     try
@@ -208,6 +219,7 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
     cleanup = onCleanup(@() cellfun(@(f) delete(f), partPaths(cellfun(@isfile,partPaths))));
 
     parts = [imagePart(mainSrc,'Main',stageDir,spec), ...
+             thumbnailPart(mainSrc,stageDir,spec), ...
              imagePart(montageSrc,'Montage',stageDir,spec), ...
              copyPart(recipeFile,'Recipe',stageDir,spec), ...
              copyPart(logFile,'Log',stageDir,spec)];
@@ -224,14 +236,17 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
         end
     end %for
 
-    % The log may fall back to the previous one, for the same sample only; the others may not
+    % The log may fall back to the previous one, for the same sample only; the others may
+    % not. A thumbnail is only kept beside the image it was made from.
     staged = result.files;
+    mainStaged = ismember(fullfile(stageDir,spec.Names.Main),staged);
     for kind = fieldnames(spec.Names)'
         final = fullfile(stageDir,spec.Names.(kind{1}));
         if strcmp(kind{1},'Log') && keepLog
             continue
         end
-        if ~ismember(final,staged) && isfile(final)
+        stale = ~ismember(final,staged) || (strcmp(kind{1},'Thumbnail') && ~mainStaged);
+        if stale && isfile(final)
             delete(final)
             if isfile(final)
                 failures{end+1} = sprintf('could not delete stale file %s', final); %#ok<AGROW>
@@ -239,7 +254,8 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
         end
     end %for
 
-    result.mainStaged = ismember(fullfile(stageDir,spec.Names.Main),staged);
+    result.mainStaged = mainStaged;
+    result.thumbnailStaged = mainStaged && isfile(fullfile(stageDir,spec.Names.Thumbnail));
     result.montageStaged = ismember(fullfile(stageDir,spec.Names.Montage),staged);
     result.recipeStaged = ismember(fullfile(stageDir,spec.Names.Recipe),staged);
     result.logStaged = ismember(fullfile(stageDir,spec.Names.Log),staged);
@@ -348,6 +364,92 @@ function p = imagePart(src,kind,stageDir,spec)
     end %try
     p = struct('kind', kind, 'part', part);
 end % imagePart
+
+
+function p = thumbnailPart(src,stageDir,spec)
+    % Write the card thumbnail of the main image to its '.part' name
+    %
+    % function p = webupload.stageFiles>thumbnailPart(src,stageDir,spec)
+    %
+    % Purpose
+    % The thumbnail is a convenience: if it cannot be made (an unreadable jpg, a failed
+    % write) this warns 'webupload:stageFiles:thumbnailFailed' and returns [], so the
+    % caller deletes any old thumbnail and the server shows the full image instead.
+    %
+    % Inputs
+    % src      - [] (nothing to do), the uint8 main image, or the path of the main jpg.
+    % stageDir - Char path to the stage folder.
+    % spec     - Structure from webupload.stageSpec.
+    %
+    % Outputs
+    % p - Structure with fields kind and part (full path written), as used by
+    %     stageOnDisk. [] if src was empty or the thumbnail could not be made.
+
+    p = [];
+    if isempty(src)
+        return
+    end
+
+    part = fullfile(stageDir,[spec.Names.Thumbnail spec.PartSuffix]);
+    try
+        if ischar(src)
+            src = imread(src);
+        end
+        if ~isa(src,'uint8')
+            src = webupload.toUint8(src,[]);
+        end
+        imwrite(shrinkToWidth(src,spec.ThumbnailWidth),part,'jpg','Quality',spec.JpegQuality);
+    catch ME
+        warning('webupload:stageFiles:thumbnailFailed', ...
+            'Card thumbnail not staged (%s); the server will show the full image.', ME.message)
+        return
+    end %try
+    p = struct('kind', 'Thumbnail', 'part', part);
+end % thumbnailPart
+
+
+function out = shrinkToWidth(img,width)
+    % Shrink an image to a given width, keeping its aspect ratio. Needs no toolbox
+    %
+    % function out = webupload.stageFiles>shrinkToWidth(img,width)
+    %
+    % Purpose
+    % Averages k-by-k blocks of pixels first, with k the largest whole factor that keeps
+    % the image at least width wide, which removes the detail that plain interpolation
+    % would alias. Then interpolates (interp2, linear) the remaining factor, which is less
+    % than 2, to exactly width. An image that is width or narrower is returned unchanged.
+    %
+    % Inputs
+    % img   - uint8 HxW or HxWxC image.
+    % width - Positive integer, the width wanted in pixels.
+    %
+    % Outputs
+    % out - uint8 image, width pixels wide (or img if it was not wider).
+
+    [h,w,c] = size(img);
+    if w <= width
+        out = img;
+        return
+    end
+
+    k = min(floor(w/width), h); % a block may not be taller than the image
+    hk = floor(h/k);
+    wk = floor(w/k);
+    x = double(img(1:hk*k, 1:wk*k, :));
+    x = reshape(mean(reshape(x, k, hk, wk*k, c), 1), hk, wk*k, c);  % average down the rows
+    x = reshape(mean(reshape(x, hk, k, wk, c), 2), hk, wk, c);      % then along the columns
+
+    newH = max(1, round(hk * width / wk));
+    [xq,yq] = meshgrid(linspace(1, wk, width), linspace(1, hk, newH));
+    out = zeros(newH, width, c, 'uint8');
+    for ch = 1:c
+        if hk == 1
+            out(:,:,ch) = uint8(round(interp1(1:wk, x(1,:,ch), xq(1,:))));  % interp2 needs two rows
+        else
+            out(:,:,ch) = uint8(round(interp2(x(:,:,ch), xq, yq, 'linear')));
+        end
+    end %for
+end % shrinkToWidth
 
 
 function p = copyPart(src,kind,stageDir,spec)

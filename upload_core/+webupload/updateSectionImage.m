@@ -7,7 +7,8 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % Purpose
     % The call that instrument and analysis code make to update the web preview: BakingTray
     % when it starts, after each section and when it finishes (source 'acq'), StitchIt for
-    % its analysis (source 'analysis'). It stages the image, the optional 'Montage', the
+    % its analysis (source 'analysis'). It stages the image (with its card thumbnail,
+    % tile_thumbnail.jpg, see webupload.stageFiles), the optional 'Montage', the
     % recipe and the acquisition log with webupload.stageFiles, writes status.json, and
     % uploads the stage folder with webupload.zipAndPost. The microscope ID is SYSTEM.ID of
     % the recipe passed in (webupload.readRecipe). If it cannot be read, or is not a valid

@@ -43,7 +43,7 @@ finish: ok (dry run), HTTP 200: dry run: nothing sent
 
 Files go to a new folder under `tempname`, returned in `r.workDir`.
 `r.dryRunCalls(end).names` lists what would have been zipped
-(`LastCompleteSection.jpg`, `acqLog.txt`, `recipe.yml`, `status.json`; the
+(`LastCompleteSection.jpg`, `acqLog.txt`, `recipe.yml`, `status.json`, `tile_thumbnail.jpg`; the
 start call has no image).
 
 ## Part A. Localhost (do this first)

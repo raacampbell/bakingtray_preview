@@ -9,13 +9,17 @@ function s = stageSpec
     % stageFiles and by the tests.
     %
     % Outputs
-    % s - Structure with fields Names (Main, Montage, Recipe, Log), JpegQuality and
-    %     PartSuffix. PartSuffix marks in-progress files, which the server does not keep.
+    % s - Structure with fields Names (Main, Thumbnail, Montage, Recipe, Log), JpegQuality,
+    %     ThumbnailWidth and PartSuffix. Thumbnail is the small copy of the Main image that
+    %     the server shows on the cards, ThumbnailWidth pixels wide. PartSuffix marks
+    %     in-progress files, which the server does not keep.
 
     s.Names.Main = 'LastCompleteSection.jpg';
+    s.Names.Thumbnail = 'tile_thumbnail.jpg';
     s.Names.Montage = 'montage.jpg';
     s.Names.Recipe = 'recipe.yml';
     s.Names.Log = 'acqLog.txt';
     s.JpegQuality = 85;
+    s.ThumbnailWidth = 500;
     s.PartSuffix = '.part';
 end % stageSpec

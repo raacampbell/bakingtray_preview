@@ -88,6 +88,12 @@ about 6 s and posts again, so it can block for about twice those timeouts plus
 | numeric array (gray HxW or RGB HxWx3) | converted to a jpg (see below) |
 | path of a `.jpg` file | copied in as `LastCompleteSection.jpg` |
 
+Whenever an image is staged, a card thumbnail `tile_thumbnail.jpg` (500 px wide,
+aspect ratio kept, made without any toolbox) is staged beside it; the server shows
+it on the cards instead of the full image. With `[]`, or if the thumbnail cannot
+be made (warning `webupload:stageFiles:thumbnailFailed`), no thumbnail is sent and
+the card shows the full image.
+
 Anything else makes the call fail. `recipePath` is the recipe file and
 `logPath` the acquisition log. The microscope ID is `SYSTEM.ID` of the recipe
 (`readRecipe`); if it is missing or invalid nothing is staged or sent.
@@ -126,7 +132,7 @@ the stage folder: it holds fixed file names that are overwritten or deleted. Two
 uploading anything; it never throws (warning `webupload:clearStage:failed`).
 
 `webupload.stageFiles(img, recipePath, logPath, stageDir)` is usable alone. It
-writes `LastCompleteSection.jpg`, `montage.jpg` (if given), `recipe.yml` and
+writes `LastCompleteSection.jpg` and its thumbnail `tile_thumbnail.jpg`, `montage.jpg` (if given), `recipe.yml` and
 `acqLog.txt` under temporary `.part` names and renames them into place, so a
 zip taken meanwhile never sees a half-written file. Files in the stage with
 other names are left alone: the server ignores them.

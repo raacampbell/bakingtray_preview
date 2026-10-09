@@ -133,7 +133,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyNumElements(tc.Calls, 1);
             tc.verifyEqual(tc.Calls.folder, res.stageDir);
             tc.verifyEqual(tc.Calls.names, ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'status.json'});
+                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'status.json', 'tile_thumbnail.jpg'});
             tc.verifyEqual(tc.Calls.cfg.siteID, 'site-1');
             tc.verifyEqual(res.stageDir, fullfile(tc.StageRoot, 'brainsaw_webpreview', 'site-1', 'mic-1', 'acq'));
         end
@@ -509,7 +509,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             second = tc.update('Source', 'analysis');   % no montage this time
             tc.verifyEqual(second.stageDir, first.stageDir);
             tc.verifyEqual(tc.Calls(2).names, ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'status.json'});
+                {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'status.json', 'tile_thumbnail.jpg'});
         end
 
         function tokenNeverAppearsInMessages(tc)

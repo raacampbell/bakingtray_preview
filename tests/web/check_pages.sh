@@ -63,7 +63,7 @@ for f in "$SRC"/*.php; do check "php -l $(basename "$f")" lint_ok "$f"; done
 # --- random settings: nothing here may look like anything in the repo ---
 r() { openssl rand -hex "$1"; }
 PAN="p$(r 6)"; SA="a$(r 5)"; SB="b$(r 5)"
-MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"   # one microscope per display-rule case
+MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"; MT="t$(r 4)"; MTA="u$(r 4)"   # one microscope per display-rule case; MT, MTA: thumbnails
 MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"; MSPACE="Scope_$(r 3)"   # MSPACE: its recipe says "Scope <hex>"
 TKA="$(r 32)"; TKB="$(r 32)"; TOLD="$(r 32)"   # one token per site; TOLD stands for a per-microscope token of the old format
 SETTINGS="$TMP/www/brainsaw_settings.json"   # config.php default: next to brainsaw/
@@ -75,7 +75,7 @@ write_settings() { # panopticon word, site A id
      "$MA1": {"display_name": "Scope A1 $MA1"},
      "$MA2": {"display_name": "Scope A2 $MA2"},
      "$MSPACE": {"display_name": "Scope with a space"},
-     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}}},
+     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}, "$MT": {}, "$MTA": {}}},
   "$SB": {"display_name": "Lab B $SB", "token": "$TKB", "microscopes": {
      "$MB": {"display_name": "Scope B $MB"},
      "logs": {}}}}}
@@ -687,6 +687,47 @@ for kind in recipe log acqLog acqlog recipe.yml acqLog.txt status status.json me
   check "?f=$kind is the usual 404 (matching analysis shown)" same_404 "$B/$SA/$MD5?f=$kind"
 done
 check "?f[]=main (an array) is the usual 404" same_404 "$B/$SA/$MD5?f%5B%5D=main"
+
+# --- card thumbnails: the client's tile_thumbnail.jpg, from the card image's folder and only beside it ---
+# tz NAME SAMPLE TAG: like dz (not finished) plus a thumbnail tagged with TAG, so its bytes can be told apart.
+tz() { dz "$1" "$MT" "$2" false "$3"; cp "$IMAGES/tile_thumbnail.jpeg" "$TMP/z/$1/tile_thumbnail.jpg"; printf '%s' "$3" >> "$TMP/z/$1/tile_thumbnail.jpg"; zip_dir "$1"; }
+tile_is() { fetch "$B/$SA/$MT?f=tile"; [ "$STATUS" = 200 ] && cmp -s "$TMP/b" "$TMP/z/$1/tile_thumbnail.jpg"; }
+tz t1 THETA T1; up acq "$MT" t1
+page "$MT"; card "$MT"
+check "thumbnail: the card shows it" img_src_has "$CARD" "f=tile"
+check "  ... served with the uploaded bytes" tile_is t1
+TSRC="$(attr_of src "$(grep '<img' <<<"$CARD")" | html_unescape)"; fetch "http://localhost:$PORT$TSRC"
+check "  ... versioned and cacheable" test "$(header_of Cache-Control)" = "private, max-age=31536000, immutable"
+check "  ... the card still links the microscope page" body_has "$CARD" "href=\"/brainsaw/$SA/$MT\""
+check "  ... the page's main image is still the full image" asset_is "$MT" main t1
+check "  ... acq alone: no thumbnail strip" body_lacks "$PAGE" 'id="thumb-'
+# A matching analysis upload moves the BakingTray image into the strip: it shows the thumbnail and opens the full image.
+backdate "$(src_dir "$MT" acq)"; tz t2an THETA STITCH; up analysis "$MT" t2an
+page "$MT"; card "$MT"
+check "  ... strip: the BakingTray link opens the full image" body_has "$PAGE" '<a id="thumb-bakingtray" href="/brainsaw/'"$SA/$MT"'?f=bakingtray'
+check "  ... strip: the BakingTray image is the thumbnail" img_src_has "$(grep -A1 'id="thumb-bakingtray"' <<<"$PAGE")" "f=tile"
+check "  ... the card thumbnail is still acq's, not analysis's" tile_is t1
+# A new section image without a thumbnail: the old thumbnail is removed and the card shows the full image.
+backdate "$(src_dir "$MT" acq)"; dz t3 "$MT" THETA false T3; up acq "$MT" t3
+card "$MT"
+check "new image without a thumbnail: old thumbnail removed" test ! -e "$(src_dir "$MT" acq)/tile_thumbnail.jpg"
+check "  ... the card shows the full BakingTray image" img_src_has "$CARD" "f=bakingtray"
+check "  ... ?f=tile is the usual 404" same_404 "$B/$SA/$MT?f=tile"
+# An upload without an image (the start upload) keeps the thumbnail that sits beside its image.
+backdate "$(src_dir "$MT" acq)"; tz t4 THETA T4; up acq "$MT" t4
+backdate "$(src_dir "$MT" acq)"; new_dir t5 "$MT" THETA; rm "$TMP/z/t5/LastCompleteSection.jpg" "$TMP/z/t5/montage.jpg"; zip_dir t5; up acq "$MT" t5
+check "upload without an image keeps the thumbnail" tile_is t4
+# A thumbnail is never shown without its image: a new sample with no image empties the folder.
+backdate "$(src_dir "$MT" acq)"; new_dir t6 "$MT" IOTA; rm "$TMP/z/t6/LastCompleteSection.jpg" "$TMP/z/t6/montage.jpg"; zip_dir t6; up acq "$MT" t6
+card "$MT"
+check "new sample without an image: no thumbnail, placeholder card" test "$(img_src_has "$CARD" "f=" && echo img || echo none)" = none
+check "  ... ?f=tile is the usual 404" same_404 "$B/$SA/$MT?f=tile"
+# No acq/: the card shows the analysis image, so the analysis thumbnail.
+dz ta "$MTA" KAPPA false STITCH; cp "$IMAGES/tile_thumbnail.jpeg" "$TMP/z/ta/tile_thumbnail.jpg"; printf TA >> "$TMP/z/ta/tile_thumbnail.jpg"; zip_dir ta
+up analysis "$MTA" ta; card "$MTA"
+check "analysis only: the card shows the analysis thumbnail" img_src_has "$CARD" "f=tile"
+fetch "$B/$SA/$MTA?f=tile"
+check "  ... with its bytes" cmp -s "$TMP/b" "$TMP/z/ta/tile_thumbnail.jpg"
 
 # --- recipe IDs: the shared vectors pin the parsing rule (the MATLAB side runs them from upload_core/tests) ---
 VECTORS="$ROOT/upload_core/tests/recipe_id_vectors.json"

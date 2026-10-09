@@ -7,7 +7,7 @@ function names = allowedNames()
     % Mirrors BS_ZIP_ALLOWED_NAMES in brainsaw/lib.php; a test checks the two stay in step.
     %
     % Outputs
-    % names - cell row of the five file names the server extracts from an upload.
+    % names - cell row of the six file names the server extracts from an upload.
 
-    names = {'LastCompleteSection.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'};
+    names = {'LastCompleteSection.jpg', 'tile_thumbnail.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'};
 end % allowedNames

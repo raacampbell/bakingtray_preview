@@ -256,7 +256,7 @@ function bs_rate_limited(string $sourceDir, int $minInterval): bool
  * whitelist is what keeps executable files off disk. The MATLAB client mirrors it
  * (webupload.allowedNames); a test keeps the two in step.
  */
-const BS_ZIP_ALLOWED_NAMES = ['LastCompleteSection.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'];
+const BS_ZIP_ALLOWED_NAMES = ['LastCompleteSection.jpg', 'tile_thumbnail.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'];
 
 /** Names every upload must contain. They are parsed in memory, so they are size-capped (BS_ZIP_MAX_TEXT_BYTES). */
 const BS_ZIP_REQUIRED_NAMES = ['recipe.yml', 'status.json'];
@@ -573,6 +573,11 @@ function bs_install_upload(string $tmpDir, string $dir, array $names, string $sa
             }
         }
     }
+    // A new section image without a thumbnail leaves the old thumbnail stale: remove it, so the
+    // card falls back to the full image rather than showing an older section.
+    if (in_array('LastCompleteSection.jpg', $names, true) && !in_array('tile_thumbnail.jpg', $names, true)) {
+        @unlink($dir . '/tile_thumbnail.jpg');
+    }
     $moved = [];
     foreach ($names as $name) {
         if (!rename($tmpDir . '/' . $name, $dir . '/' . $name)) {
@@ -773,7 +778,8 @@ function bs_displayed_sources(array $config, string $siteId, string $micId): arr
 /**
  * The files a view serves, by the name used in ?f=, for the sources from bs_displayed_sources().
  * Only existing files appear: 'main' (the StitchIt image if there is one, else the BakingTray
- * image), 'bakingtray' (the BakingTray image) and 'montage' (the StitchIt montage). Recipes and
+ * image), 'bakingtray' (the BakingTray image), 'montage' (the StitchIt montage) and 'tile' (the
+ * client-made thumbnail of the card image, from the same folder and only beside it). Recipes and
  * logs are never served: a recipe can hold pasted secrets (e.g. a Slack webhook URL); they are
  * only parsed server-side.
  */
@@ -782,10 +788,12 @@ function bs_asset_paths(array $sources): array
     $file = fn(string $name, string $fileName) => isset($sources[$name]) && is_file($sources[$name]['dir'] . '/' . $fileName)
         ? $sources[$name]['dir'] . '/' . $fileName : null;
     $bakingtray = $file('acq', 'LastCompleteSection.jpg');
+    $cardSource = isset($sources['acq']) ? 'acq' : 'analysis'; // the card shows this folder's image
     return array_filter([
         'main' => $file('analysis', 'LastCompleteSection.jpg') ?? $bakingtray,
         'bakingtray' => $bakingtray,
         'montage' => $file('analysis', 'montage.jpg'),
+        'tile' => $file($cardSource, 'LastCompleteSection.jpg') !== null ? $file($cardSource, 'tile_thumbnail.jpg') : null,
     ]);
 }
 
@@ -854,7 +862,9 @@ function bs_load_mic_data(array $config, string $siteId, string $micId, string $
             'montage' => $url('montage'),
         ]),
         // The BakingTray image whenever acq/ is shown (a placeholder if it has none); the analysis image only without acq/.
-        'card_image_url' => isset($sources['acq']) ? $url('bakingtray') : $url('main'),
+        // Its thumbnail when the client sent one, else the full image.
+        'card_image_url' => $url('tile') ?? (isset($sources['acq']) ? $url('bakingtray') : $url('main')),
+        'tile_url' => $url('tile'),
         'meta_url' => $micUrl . '?f=meta',
         'recipe' => $truth !== null ? bs_parse_recipe($truth['dir'] . '/recipe.yml') : [],
         'acquisition' => bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : ''),
@@ -1146,7 +1156,7 @@ function bs_not_found(): never
 
 /**
  * Entry point for every request path that is not an existing file (see .htaccess and
- * router.php): a card grid, a microscope page, one of its assets (?f=main|bakingtray|montage,
+ * router.php): a card grid, a microscope page, one of its assets (?f=main|bakingtray|montage|tile,
  * see bs_asset_paths(); ?f=meta is the version the auto-refresh polls), or the 404 page.
  * The headers keep view URLs out of Referer headers and search engines.
  */
@@ -1369,7 +1379,7 @@ function bs_render_mic_page(array $config, array $view, string $base): void
       <div class="thumbs">
       <?php foreach ($data['thumb_urls'] as $kind => $thumbUrl): ?>
         <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumbUrl) ?>" target="_blank" rel="noopener noreferrer">
-          <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
+          <img src="<?= htmlspecialchars($kind === 'bakingtray' && $data['tile_url'] !== null ? $data['tile_url'] : $thumbUrl) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
           <span><?= htmlspecialchars($thumbCaptions[$kind]) ?></span>
         </a>
       <?php endforeach; ?>

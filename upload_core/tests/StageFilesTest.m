@@ -128,7 +128,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.stage(uint8(ones(8)));
             writeText(fullfile(tc.Stage, 'other.txt'), 'x');
             tc.stage(uint8(ones(8)), 'ClearStage', true);
-            tc.verifyEqual(tc.stagedNames(), {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml'});
+            tc.verifyEqual(tc.stagedNames(), {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'tile_thumbnail.jpg'});
         end
 
         function emptyImageStagesNoImage(tc)
@@ -150,13 +150,77 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyFalse(isfile(fullfile(tc.Stage, 'montage.jpg')));
         end
 
+        % ---- stageFiles: card thumbnail ----
+        function thumbnailIs500WideAndKeepsTheAspectRatio(tc)
+            for sz = {[1000 2003], [1000 1700], [4135 4557]}
+                [h, w] = deal(sz{1}(1), sz{1}(2));
+                tc.stage(uint8(randi(255, h, w)));
+                info = imfinfo(fullfile(tc.Stage, 'tile_thumbnail.jpg'));
+                tc.verifyEqual(info.Width, 500);
+                tc.verifyEqual(info.Height, round(h * 500 / w), 'AbsTol', 1);
+                tc.verifyTrue(tc.Last.thumbnailStaged);
+            end
+        end
+
+        function thumbnailShowsWhatTheImageShows(tc)
+            img = zeros(400, 2000, 3, 'uint8');
+            img(:, 1001:end, :) = 255;   % left half black, right half white
+            img(:, :, 2) = 0;            % no green: magenta on the right
+            tc.stage(img);
+            t = imread(fullfile(tc.Stage, 'tile_thumbnail.jpg'));
+            tc.verifySize(t, [100 500 3]);
+            tc.verifyLessThan(double(t(50, 100, 1)), 20);
+            tc.verifyGreaterThan(double(t(50, 400, 1)), 235);
+            tc.verifyLessThan(double(t(50, 400, 2)), 40);
+        end
+
+        function narrowImageIsNotEnlarged(tc)
+            tc.stage(uint8(ones(100, 300)));
+            info = imfinfo(fullfile(tc.Stage, 'tile_thumbnail.jpg'));
+            tc.verifyEqual([info.Width info.Height], [300 100]);
+        end
+
+        function wideOneRowImageStillGivesAThumbnail(tc)
+            tc.stage(uint8(randi(255, 2, 3000)));
+            info = imfinfo(fullfile(tc.Stage, 'tile_thumbnail.jpg'));
+            tc.verifyEqual([info.Width info.Height], [500 1]);
+        end
+
+        function thumbnailIsMadeFromAJpgPath(tc)
+            src = fullfile(tc.Dir, 'big.jpg');
+            imwrite(uint8(randi(255, 1200, 1500)), src, 'jpg');
+            tc.stage(src);
+            info = imfinfo(fullfile(tc.Stage, 'tile_thumbnail.jpg'));
+            tc.verifyEqual([info.Width info.Height], [500 400]);
+        end
+
+        function noImageMeansNoThumbnail(tc)
+            tc.stage(uint8(ones(10, 1000)));
+            tc.verifyTrue(isfile(fullfile(tc.Stage, 'tile_thumbnail.jpg')));
+            tc.stage([]);
+            tc.verifyFalse(tc.Last.thumbnailStaged);
+            tc.verifyFalse(isfile(fullfile(tc.Stage, 'tile_thumbnail.jpg')));
+        end
+
+        function unreadableJpgWarnsAndDropsTheOldThumbnail(tc)
+            tc.stage(uint8(ones(10, 1000)));
+            bad = fullfile(tc.Dir, 'bad.jpg');
+            writeText(bad, 'not a jpeg');
+            tc.verifyWarning(@() tc.stage(bad), 'webupload:stageFiles:thumbnailFailed');
+            tc.verifyTrue(tc.Last.mainStaged, 'the image itself is still staged');
+            tc.verifyTrue(tc.Last.stageOk, 'a missing thumbnail is not a stage failure');
+            tc.verifyFalse(tc.Last.thumbnailStaged);
+            tc.verifyFalse(isfile(fullfile(tc.Stage, 'tile_thumbnail.jpg')), ...
+                'an old thumbnail must never go up beside a new image');
+        end
+
         % ---- stageFiles: file naming ----
         function filesHaveTheNamesTheServerKeeps(tc)
             r = tc.stageOut(uint8(ones(8)), tc.Recipe, tc.Log, 'Montage', uint8(ones(8)));
             tc.verifyEqual(tc.stagedNames(), ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'montage.jpg', 'recipe.yml'});
-            tc.verifyTrue(r.mainStaged && r.montageStaged && r.recipeStaged && r.logStaged && r.stageOk);
-            tc.verifyNumElements(r.files, 4);
+                {'LastCompleteSection.jpg', 'acqLog.txt', 'montage.jpg', 'recipe.yml', 'tile_thumbnail.jpg'});
+            tc.verifyTrue(r.mainStaged && r.thumbnailStaged && r.montageStaged && r.recipeStaged && r.logStaged && r.stageOk);
+            tc.verifyNumElements(r.files, 5);
             tc.verifyTrue(all(cellfun(@isfile, r.files)));
         end
 
@@ -164,7 +228,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
             r = fullfile(tc.Dir, 'my_recipe.yaml');
             writeText(r, 'x');
             tc.stage(uint8(ones(8)), r);
-            tc.verifyEqual(tc.stagedNames(), {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml'});
+            tc.verifyEqual(tc.stagedNames(), {'LastCompleteSection.jpg', 'acqLog.txt', 'recipe.yml', 'tile_thumbnail.jpg'});
         end
 
         function otherFilesInTheStageAreLeftAlone(tc)

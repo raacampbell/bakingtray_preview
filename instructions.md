@@ -186,7 +186,10 @@ folder, `system_data/<site_id>/<microscope_id>/<source>/`.
 
 The server extracts the zip into a temporary folder, keeping only these exact base file names
 (flattened; everything else, such as a stray `.php` or `.htaccess`, is dropped):
-`LastCompleteSection.jpg`, `montage.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
+`LastCompleteSection.jpg`, `tile_thumbnail.jpg`, `montage.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
+`tile_thumbnail.jpg` is an optional small copy of the section image, made by the client, which
+the cards show instead of the full image (an upload with a new section image but no thumbnail
+removes the old thumbnail, so a card never shows an older section).
 Then it checks, before the live folder is touched:
 
 - `recipe.yml` and `status.json` are present;
