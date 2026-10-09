@@ -121,6 +121,8 @@ classdef PostZipTest < matlab.unittest.TestCase
             tc.verifySubstring(res.message, 'No microscope ID');
             res = webupload.postZip(zipPath, cfg, '2photon', 'acq');
             tc.verifySubstring(res.message, '"2photon" is invalid');
+            res = webupload.postZip(zipPath, cfg, 'mic_1', 'other');
+            tc.verifySubstring(res.message, '"other"');
             res = webupload.zipAndPost(tc.Dir, cfg, 'Scope A', 'acq');
             tc.verifyFalse(res.ok);
             tc.verifyFalse(PostZipTest.connectionArrives(srv), 'a request was sent for bad input');

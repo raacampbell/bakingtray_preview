@@ -80,7 +80,11 @@ function result = postZip(zipPath, cfg, micID, source, varargin)
                 'a letter and contain only letters, digits, "_" and "-".'], micID);
         end
         if ~(ischar(source) && ismember(source, {'acq', 'analysis'}))
-            error('webupload:badSource', 'source must be ''acq'' or ''analysis''.');
+            shown = ['a value of class ' class(source)];
+            if ischar(source)
+                shown = ['"' source '"'];
+            end
+            error('webupload:badSource', 'source must be ''acq'' or ''analysis'', not %s.', shown);
         end
 
         params = inputParser;
