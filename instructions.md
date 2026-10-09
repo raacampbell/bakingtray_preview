@@ -226,7 +226,7 @@ Files are found by their fixed names:
 | `LastCompleteSection.jpg` | `acq/` | the BakingTray image: main image when there is no StitchIt image, otherwise a thumbnail; the card thumbnail |
 | `LastCompleteSection.jpg` | `analysis/` | the StitchIt image: the large main image (the card thumbnail when there is no `acq/`) |
 | `montage.jpg` | `analysis/` | the montage thumbnail. A `montage.jpg` in `acq/` is stored but not shown |
-| `recipe.yml` | ground truth | sample, objective, laser power, resolution, ... |
+| `recipe.yml` | ground truth | sample, laser power, voxel size, ... |
 | `acqLog.txt` | ground truth | timing chart, progress, ETA estimate |
 | `status.json` | ground truth | finished flag |
 
@@ -275,7 +275,10 @@ site ID (and move its data folder) or remove the site. A new site ID also means 
 - **Metadata table**: parsed from the recipe by `bs_parse_recipe()` (targeted regexes, no YAML
   extension needed; extend the list there for new fields).
 - **Estimated completion**: mean section duration so far × sections remaining, labelled
-  "(estimated)".
+  "(estimated)". The server sends it as a UTC instant (`<time datetime=...Z>`) and a small
+  inline script shows it in the viewer's own time zone ("Fri 9 Oct, 15:03 BST"); without
+  JavaScript the page keeps the UTC text. "Acquisition started" is shown as the recipe
+  records it: the microscope's clock, with no time zone, so it cannot be converted.
 - **Acquisition-time chart**: inline SVG (no JS library) of minutes per section from
   `acqLog.txt`; the dashed line is the mean.
 

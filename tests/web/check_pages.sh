@@ -608,6 +608,15 @@ check "acq unfinished, later analysis finished: not finished" body_lacks "$CARD$
 # The estimated completion is shown while acquiring, not once finished.
 page "$MD2"
 check "unfinished page shows the estimated completion" body_has "$PAGE" 'Estimated completion'
+check "  ... as a machine-readable UTC instant the browser can localise" grep -qE '<time id="eta" datetime="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z">[0-9-]+ [0-9:]+ UTC</time> \(estimated\)' <<<"$PAGE"
+check "  ... with the script that shows it in the viewer's own time zone" body_has "$PAGE" "toLocaleString(undefined"
+# The metadata table: voxel size as 1 x 1 x 0 decimals, no objective, no planned-sections row.
+check "metadata: voxel size row" body_has "$PAGE" 'Voxel size X / Y / Z (&micro;m)'
+check "  ... formatted 1 x 1 x 0 decimals" body_has "$PAGE" '<td>2.2 x 2.2 x 6</td>'
+check "  ... no longer called resolution" body_lacks "$PAGE" 'Resolution'
+check "metadata: no objective row" bash -c '! grep -q "Objective\|nikon" <<<"$1"' _ "$PAGE"
+check "metadata: no total-sections row" body_lacks "$PAGE" 'Total sections planned'
+check "metadata: sample, laser power and optical planes remain" bash -c 'grep -q "<td>Sample</td>" <<<"$1" && grep -q "Laser power" <<<"$1" && grep -q "Optical planes" <<<"$1"' _ "$PAGE"
 backdate "$(src_dir "$MD5" acq)" 7200
 dz f6acq "$MD5" ZETA true ACQ; up acq "$MD5" f6acq
 page "$MD5"

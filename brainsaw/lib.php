@@ -640,8 +640,8 @@ function bs_human_ago(int $seconds): string
  * Best-effort extraction of known fields from a BakingTray/ScanImage recipe
  * YAML file. Not a general YAML parser — these recipe files are dumped in a
  * consistent style, so targeted regexes are more robust on shared hosting
- * (no guaranteed yaml extension) than a hand-rolled parser. The sample ID and
- * objective come from bs_recipe_value(), which reads block and flow style alike.
+ * (no guaranteed yaml extension) than a hand-rolled parser. The sample ID comes from
+ * bs_recipe_value(), which reads block and flow style alike.
  * Add more patterns here as new fields become useful; unmatched fields are
  * simply omitted rather than causing an error.
  */
@@ -654,11 +654,9 @@ function bs_parse_recipe(string $path): array
 
     $out = [];
 
-    foreach (['sample_id' => 'ID', 'objective' => 'objectiveName'] as $field => $key) {
-        $value = bs_recipe_value($text, 'sample', $key);
-        if ($value !== '') {
-            $out[$field] = $value;
-        }
+    $sampleId = bs_recipe_value($text, 'sample', 'ID');
+    if ($sampleId !== '') {
+        $out['sample_id'] = $sampleId;
     }
     if (preg_match('/^\s*numSections:\s*([\d.]+)/m', $text, $m)) {
         $out['num_sections'] = (int) round((float) $m[1]);
@@ -1310,12 +1308,12 @@ function bs_render_mic_page(array $config, array $view, string $base): void
 
     // Rough ETA estimate from the average per-section duration seen so far —
     // labeled "estimated" since there's no dedicated ETA file yet.
-    $etaText = null;
+    $etaAt = null; // the finish time as an instant (Unix seconds); the browser shows it in its own time zone
     if (!$data['finished'] && $acq['current_section'] !== null && $acq['total_sections'] !== null && count($acq['sections']) > 0) {
         $avgSeconds = array_sum(array_column($acq['sections'], 'duration_seconds')) / count($acq['sections']);
         $remaining = max($acq['total_sections'] - $acq['current_section'], 0);
         $etaSeconds = (int) round($remaining * $avgSeconds);
-        $etaText = gmdate('Y-m-d H:i', time() + $etaSeconds) . ' UTC (estimated)';
+        $etaAt = time() + $etaSeconds;
     }
 
     header('Content-Type: text/html; charset=utf-8');
@@ -1395,18 +1393,30 @@ function bs_render_mic_page(array $config, array $view, string $base): void
   <div class="side-col">
     <table class="meta-table">
       <?php if (($recipe['sample_id'] ?? '') !== ''): ?><tr><td>Sample</td><td><?= htmlspecialchars($recipe['sample_id']) ?></td></tr><?php endif; ?>
-      <?php if (!empty($recipe['objective'])): ?><tr><td>Objective</td><td><?= htmlspecialchars($recipe['objective']) ?></td></tr><?php endif; ?>
       <?php if (isset($recipe['laser_power_percent'])): ?><tr><td>Laser power</td><td><?= htmlspecialchars((string) $recipe['laser_power_percent']) ?>%</td></tr><?php endif; ?>
       <?php if (!empty($recipe['voxel_size_um'])): ?>
-        <tr><td>Resolution X / Y / Z (&micro;m)</td>
-            <td><?= htmlspecialchars(sprintf('%.3f / %.3f / %.3f', $recipe['voxel_size_um']['x'], $recipe['voxel_size_um']['y'], $recipe['voxel_size_um']['z'])) ?></td></tr>
+        <tr><td>Voxel size X / Y / Z (&micro;m)</td>
+            <td><?= htmlspecialchars(sprintf('%.1f x %.1f x %.0f', $recipe['voxel_size_um']['x'], $recipe['voxel_size_um']['y'], $recipe['voxel_size_um']['z'])) ?></td></tr>
       <?php endif; ?>
       <?php if (isset($recipe['num_optical_planes'])): ?><tr><td>Optical planes / section</td><td><?= (int) $recipe['num_optical_planes'] ?></td></tr><?php endif; ?>
       <?php if (isset($recipe['frames_averaged'])): ?><tr><td>Frames averaged</td><td><?= (int) $recipe['frames_averaged'] ?></td></tr><?php endif; ?>
-      <?php if (isset($recipe['num_sections'])): ?><tr><td>Total sections planned</td><td><?= (int) $recipe['num_sections'] ?></td></tr><?php endif; ?>
       <?php if (!empty($recipe['acq_start_time'])): ?><tr><td>Acquisition started</td><td><?= htmlspecialchars($recipe['acq_start_time']) ?></td></tr><?php endif; ?>
-      <?php if ($etaText !== null): ?><tr><td>Estimated completion</td><td><?= htmlspecialchars($etaText) ?></td></tr><?php endif; ?>
+      <?php if ($etaAt !== null): ?><tr><td>Estimated completion</td><td><time id="eta" datetime="<?= gmdate('Y-m-d\TH:i:s\Z', $etaAt) ?>"><?= gmdate('Y-m-d H:i', $etaAt) ?> UTC</time> (estimated)</td></tr><?php endif; ?>
     </table>
+    <?php if ($etaAt !== null): ?>
+    <script>
+      // Show the finish time in the viewer's own time zone. The UTC text above stays if this cannot run.
+      (function () {
+        var el = document.getElementById('eta');
+        var d = new Date(el.getAttribute('datetime'));
+        if (isNaN(d.getTime())) return;
+        try {
+          el.textContent = d.toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short',
+            hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+        } catch (e) { /* keep the UTC text */ }
+      })();
+    </script>
+    <?php endif; ?>
   </div>
 </div>
 <?= bs_autorefresh_script($autorefreshJs) ?>
