@@ -41,7 +41,7 @@ staged="$(cd "$OUT" && find . -type f | sed 's#^\./##' | sort)"
 tracked="$(git -C "$REPO" ls-files brainsaw | sed 's#^brainsaw/##' | grep -vx 'router\.php' | sort)"
 check "staged files are exactly the committed app files minus router.php" test "$staged" = "$tracked"
 check "config points at the default server settings path" \
-  grep -q "'settings_file' *=> '/home/www/www/brainsaw_private/brainsaw_settings.json'," "$OUT/config.php"
+  grep -q "'settings_file' *=> '/home/raacampbell/config/brainsaw_settings.json'," "$OUT/config.php"
 rm "$B/.env"
 
 # --- uncommitted edits to tracked files stop staging ---
@@ -58,7 +58,7 @@ done
 check "--dest other than testserver needs --settings-path" refused --dest live
 check "--settings-path must be absolute"                   refused --dest live --settings-path rel/settings.json
 check "--settings-path with odd characters refused"        refused --dest live --settings-path "/a b/settings.json"
-check "--settings-path inside the web root refused"        refused --dest live --settings-path /home/www/public/s.json
+check "--settings-path inside the web root refused"        refused --dest live --settings-path /home/raacampbell/public_html/s.json
 check "  ... also with another --webroot"                  refused --dest live --settings-path /srv/web/x/s.json --webroot /srv/web
 check "unknown option refused"                             refused --tokens-path /x/tokens.json
 check "--dest live with --settings-path succeeds"          stage --dest live --settings-path /srv/private/live_settings.json
@@ -72,16 +72,16 @@ echo '{"uploaded_at": "y"}' > "$SERVER/system_data/site1/mic1/meta.json"
 echo 'server log' > "$SERVER/logs/upload.log"
 echo '<?php' > "$SERVER/site.php"
 echo '<?php' > "$SERVER/test-upload/upload.php"
-cmd="$(grep -m1 -E '^  rsync -az --delete' "$TMP/out" || true)"
+cmd="$(grep -m1 -E '^ *rsync -av?z --delete' "$TMP/out" || true)"
 check "a deploy command is printed" test -n "$cmd"
 cmd="${cmd/-e ssh /}"
-cmd="${cmd/USER@HOST:\/home\/www\/public\//$TMP/server/public/}"
+cmd="$(sed -E "s#[^ ]+:/home/raacampbell/public_html/#$TMP/server/public/#" <<<"$cmd")"   # the remote target, made local
 (cd "$REPO" && eval "$cmd")
 check "deploy: removed endpoint deleted"      test ! -e "$SERVER/site.php" -a ! -e "$SERVER/test-upload"
 check "deploy: uploaded data kept"            test -f "$SERVER/system_data/site1/mic1/meta.json"
 check "deploy: server log kept"               test -f "$SERVER/logs/upload.log"
 check "deploy: app files arrived"             test -f "$SERVER/view.php" -a -f "$SERVER/system_data/.htaccess"
-check "deploy: dry-run variant printed"       grep -qE '^  rsync -azn --delete' "$TMP/out"
+check "deploy: dry-run variant printed"       grep -qE '^ *rsync -av?zn --delete' "$TMP/out"
 
 # --- the safety net: a token-like string in a committed file stops staging ---
 openssl rand -hex 32 > "$B/js/oops.txt"

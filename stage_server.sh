@@ -23,9 +23,9 @@
 #   --dest NAME            folder under public/ to deploy into, letters, digits, _ and -
 #                          only (default: testserver)
 #   --settings-path PATH   absolute path of the settings file ON THE SERVER; required
-#                          unless --dest is testserver (default for testserver:
-#                          /home/www/www/brainsaw_private/brainsaw_settings.json)
-#   --webroot PATH         the server's web root (default: /home/www/public); the
+#                          unless --dest is testserver (default for testserver, on the
+#                          GoDaddy host: /home/raacampbell/config/brainsaw_settings.json)
+#   --webroot PATH         the server's web root (default: /home/raacampbell/public_html); the
 #                          settings path must not be inside it
 #   -h, --help             show this text
 #
@@ -34,7 +34,7 @@ set -euo pipefail
 
 DEST="testserver"
 SETTINGS_PATH=""
-WEBROOT="/home/www/public"
+WEBROOT="/home/raacampbell/public_html"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -60,7 +60,7 @@ git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1 || fail "$ROOT is not a git c
 [[ "$DEST" =~ ^[A-Za-z0-9_-]+$ ]] || fail "--dest must be letters, digits, _ or - only (got '$DEST')"
 if [ -z "$SETTINGS_PATH" ]; then
   [ "$DEST" = testserver ] || fail "--settings-path is required for --dest $DEST (each deployment has its own settings file)"
-  SETTINGS_PATH="/home/www/www/brainsaw_private/brainsaw_settings.json"
+  SETTINGS_PATH="/home/raacampbell/config/brainsaw_settings.json"
 fi
 # Plain characters only, so the paths need no quoting in sed or PHP.
 [[ "$SETTINGS_PATH" =~ ^/[A-Za-z0-9_./-]+$ ]] || fail "--settings-path must be an absolute path of letters, digits, _ . / - (got '$SETTINGS_PATH')"
@@ -122,5 +122,5 @@ echo "The settings file on the server will be read from: $SETTINGS_PATH"
 echo "(it is NOT staged; put it there separately: see server-setup.md)"
 echo
 echo "Next: send staging/$DEST/ to the server's public/$DEST/ (USER@HOST: your SSH login). Dry run first:"
-echo "rsync -avzn $FLAGS -e ssh staging/$DEST/ brainsaw.org:${WEBROOT%/}/$DEST/"
-echo "rsync -avz $FLAGS -e ssh staging/$DEST/ brainsaw.org:${WEBROOT%/}/$DEST/"
+echo "rsync -avzn $FLAGS -e ssh staging/$DEST/ USER@mouse.vision:${WEBROOT%/}/$DEST/"
+echo "rsync -avz $FLAGS -e ssh staging/$DEST/ USER@mouse.vision:${WEBROOT%/}/$DEST/"

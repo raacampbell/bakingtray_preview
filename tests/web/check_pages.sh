@@ -152,7 +152,7 @@ for view in "$SA/$MA1" "$PAN/$SA/$MA1"; do
   fetch "$B/$view"; page="$BODY"
   check "/$view: 200" test "$STATUS" = 200
   check "/$view: main image" body_has "$page" 'id="main-image"'
-  check "/$view: image through PHP" test "$(attr_of src "$(grep 'id="main-image"' <<<"$page")" | html_unescape | sed 's/&t=.*//')" = "/brainsaw/$view?f=main"
+  check "/$view: image through PHP" test "$(attr_of src "$(grep 'id="main-image"' <<<"$page")" | html_unescape | sed 's/&v=.*//')" = "/brainsaw/$view?f=main"
   check "/$view: acq only, no thumbnails or montage" body_lacks "$page" 'id="thumb-'
   check "/$view: meta url attribute" body_has "$page" "data-meta-url=\"/brainsaw/$view?f=meta\""
   check "/$view: self-hosted jQuery" body_has "$page" 'src="/brainsaw/js/jquery-3.7.1.min.js"'
@@ -169,6 +169,32 @@ for view in "$SA/$MA1" "$PAN/$SA/$MA1"; do
   check "/$view?f=meta: no-store" test "$(header_of Cache-Control)" = "no-store"
   check "/$view?f=meta: only the version" test "$BODY" = "{\"version\":\"acq=$UPLOADED_AT\"}"
 done
+
+# --- image caching: a versioned URL may be cached for good; a new upload gives a new URL ---
+main_src() { fetch "$B/$SA/$MA1"; attr_of src "$(grep 'id="main-image"' <<<"$BODY")" | html_unescape; }
+SRC1="$(main_src)"
+check "caching: image URL carries a version" grep -qE '\?f=main&v=[0-9a-f]{16}$' <<<"$SRC1"
+fetch "http://localhost:$PORT$SRC1"
+check "caching: versioned image is cacheable" test "$(header_of Cache-Control)" = "private, max-age=31536000, immutable"
+ETAG="$(header_of ETag)"
+check "caching: ETag is the version" test "$ETAG" = "\"${SRC1##*&v=}\""
+fetch "$B/$SA/$MA1?f=main&v=0123456789abcdef"
+check "caching: wrong version must be revalidated" test "$(header_of Cache-Control)" = "private, no-cache"
+check "caching: wrong version still gets the image" cmp -s "$TMP/b" "$D/LastCompleteSection.jpg"
+fetch "$B/$SA/$MA1?f=main"
+check "caching: unversioned must be revalidated" test "$(header_of Cache-Control)" = "private, no-cache"
+: > "$TMP/b"   # curl leaves the file untouched when the body is empty
+fetch "http://localhost:$PORT$SRC1" -H "If-None-Match: $ETAG"
+check "caching: If-None-Match with the version gives 304, no body" test "$STATUS:${#BODY}" = "304:0"
+cp "$D/LastCompleteSection.jpg" "$TMP/orig.jpg"
+cp "$IMAGES/montage.jpg" "$D/LastCompleteSection.jpg"   # stands for a new upload
+SRC2="$(main_src)"
+check "caching: a new image gives a new URL" test "$SRC2" != "$SRC1"
+fetch "http://localhost:$PORT$SRC1" -H "If-None-Match: $ETAG"
+check "caching: the old ETag no longer gives 304" test "$STATUS" = 200
+check "caching: ... and the new bytes are sent" cmp -s "$TMP/b" "$IMAGES/montage.jpg"
+check "caching: ... under an old URL, revalidated" test "$(header_of Cache-Control)" = "private, no-cache"
+cp "$TMP/orig.jpg" "$D/LastCompleteSection.jpg"
 fetch "$B/$SA/$MA2"
 check "never-uploaded microscope: says no image yet" body_has "$BODY" 'No image uploaded yet'
 check "never-uploaded microscope: empty uploaded-at" body_has "$BODY" 'data-uploaded-at=""'

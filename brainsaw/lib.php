@@ -809,6 +809,17 @@ function bs_is_finished(array $sources): bool
     return ($status['finished'] ?? null) === true;
 }
 
+/**
+ * Version tag of one served file: changes whenever the file is replaced (an upload renames a new
+ * file into place, so its mtime changes) or the kind now resolves to another file. Used as the
+ * ?v= of image URLs and as the ETag, so a browser may cache an image forever under its versioned
+ * URL and still sees a new one at once: a new upload gives the page a new URL.
+ */
+function bs_file_version(string $path, array $stat): string
+{
+    return substr(md5($path . '|' . $stat['mtime'] . '|' . $stat['size']), 0, 16);
+}
+
 /** A string that changes whenever a displayed source is uploaded to, or the set of sources changes. */
 function bs_version(array $sources): string
 {
@@ -830,7 +841,10 @@ function bs_load_mic_data(array $config, string $siteId, string $micId, string $
     $version = bs_version($sources);
     $truth = $sources ? reset($sources) : null; // recipe, log and freshness come from the ground truth
     $paths = bs_asset_paths($sources);
-    $url = fn(string $kind) => isset($paths[$kind]) ? $micUrl . '?f=' . $kind : null;
+    $url = function (string $kind) use ($paths, $micUrl): ?string {
+        $stat = isset($paths[$kind]) ? @stat($paths[$kind]) : false;
+        return $stat !== false ? $micUrl . '?f=' . $kind . '&v=' . bs_file_version($paths[$kind], $stat) : null;
+    };
 
     return [
         'main_image_url' => $url('main'),
@@ -1170,17 +1184,30 @@ function bs_handle_view(array $config): never
     bs_serve_asset(is_string($kind) ? (bs_asset_paths($sources)[$kind] ?? null) : null);
 }
 
-/** Send one JPEG, or the 404 page if it is missing. One open handle, so size and bytes always match. */
+/**
+ * Send one JPEG, or the 404 page if it is missing. One open handle, so size, version and bytes
+ * always match. Requested with the file's current ?v= (as the pages link it), it may be cached
+ * for a year: a new upload changes the version and so the URL. Any other request (no or an old
+ * ?v=) must be revalidated each time. Either way a request whose If-None-Match holds the current
+ * version gets a 304 with no body. "private" keeps it out of shared caches.
+ */
 function bs_serve_asset(?string $path): never
 {
     $fh = $path !== null ? @fopen($path, 'rb') : false;
     if ($fh === false) {
         bs_not_found();
     }
+    $stat = fstat($fh);
+    $version = bs_file_version($path, $stat);
     header('Content-Type: image/jpeg');
-    header('Cache-Control: no-store');
+    header('Cache-Control: ' . (($_GET['v'] ?? null) === $version ? 'private, max-age=31536000, immutable' : 'private, no-cache'));
+    header('ETag: "' . $version . '"');
     header('X-Content-Type-Options: nosniff');
-    header('Content-Length: ' . fstat($fh)['size']);
+    if (str_contains((string) ($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''), '"' . $version . '"')) {
+        http_response_code(304);
+        exit;
+    }
+    header('Content-Length: ' . $stat['size']);
     fpassthru($fh);
     exit;
 }
@@ -1234,7 +1261,7 @@ function bs_render_grid(array $config, array $view, string $base): void
     ?>
   <a class="card<?= $isStale ? ' stale' : '' ?>" href="<?= htmlspecialchars($micUrl) ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
     <?php if ($data['card_image_url'] !== null): ?>
-      <img src="<?= htmlspecialchars($data['card_image_url'] . '&t=' . time()) ?>" alt="<?= htmlspecialchars($name) ?>">
+      <img src="<?= htmlspecialchars($data['card_image_url']) ?>" alt="<?= htmlspecialchars($name) ?>">
     <?php else: ?>
       <div class="placeholder">no image yet</div>
     <?php endif; ?>
@@ -1329,7 +1356,7 @@ function bs_render_mic_page(array $config, array $view, string $base): void
 
     <?php if ($data['main_image_url'] !== null): ?>
       <div class="image-wrap">
-        <img id="main-image" src="<?= htmlspecialchars($data['main_image_url'] . '&t=' . time()) ?>" alt="Last completed section">
+        <img id="main-image" src="<?= htmlspecialchars($data['main_image_url']) ?>" alt="Last completed section">
       </div>
       <script>
         $(function () { $('#main-image').imageLens({ lensSize: 220 }); });
@@ -1341,8 +1368,8 @@ function bs_render_mic_page(array $config, array $view, string $base): void
     <?php if ($data['thumb_urls']): ?>
       <div class="thumbs">
       <?php foreach ($data['thumb_urls'] as $kind => $thumbUrl): ?>
-        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumbUrl . '&t=' . time()) ?>" target="_blank" rel="noopener noreferrer">
-          <img src="<?= htmlspecialchars($thumbUrl . '&t=' . time()) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
+        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumbUrl) ?>" target="_blank" rel="noopener noreferrer">
+          <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
           <span><?= htmlspecialchars($thumbCaptions[$kind]) ?></span>
         </a>
       <?php endforeach; ?>
