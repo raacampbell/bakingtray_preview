@@ -247,7 +247,7 @@ chmod 600 ~/.brainsaw_webpreview_test.json
 ```
 
 ```matlab
-addpath('<repo>/upload_core')    % the folder CONTAINING +webupload
+addpath('<StitchIt>/<client folder>')    % the folder CONTAINING +webupload (the client now lives in StitchIt)
 cfg = webupload.webConfig(fullfile(getenv('HOME'),'.brainsaw_webpreview_test.json'));
 img = imread('<repo>/test_images/LastCompleteSection_01.jpg');
 res = webupload.updateSectionImage(img, ...

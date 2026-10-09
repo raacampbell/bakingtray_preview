@@ -4,8 +4,8 @@ The Brainsaw server receives a zip from each microscope after every section and 
 latest image, montage, recipe metadata and per-section timing on private web pages. Code lives
 in `brainsaw/`. This document covers: what the files are, the private settings file, view URLs,
 running it locally, uploads, adding sites and microscopes, and the auto-refresh. Deploying to
-IONOS is in `server-setup.md`. The upload client is the MATLAB package `webupload`
-(`upload_core/README.md`).
+IONOS is in `server-setup.md`. The upload client is the MATLAB package `webupload`, which
+lives in the StitchIt repo; what the two must agree on is in section 10.
 
 `<base>` below is wherever `brainsaw/` is deployed: `http://localhost:8000` locally,
 `https://mouse.vision/livefeed` on the live deployment (later `https://brainsaw.org/livefeed`).
@@ -193,9 +193,9 @@ Then it checks, before the live folder is touched:
 
 - `recipe.yml` and `status.json` are present;
 - `status.json` is a JSON object whose `finished` is a boolean (other keys are ignored);
-- `SYSTEM.ID` in the recipe, trimmed and with spaces replaced by `_` (`Scope A` becomes
-  `Scope_A`; the exact rule is pinned by `upload_core/tests/recipe_id_vectors.json`), equals `microscope_id`;
-- the recipe has a non-empty `sample.ID` (same rule, no space replacement) in valid UTF-8.
+- `SYSTEM.ID` in the recipe, read by the rule in section 10 (the micID), equals `microscope_id`;
+- the recipe has a non-empty `sample.ID` (read by the same rule, without the space replacement)
+  in valid UTF-8.
 
 A refused upload (400) leaves the stored data exactly as it was. An accepted one is moved into
 the source folder and `meta.json` is written there with `uploaded_at` and `sample_id`. If the
@@ -311,3 +311,25 @@ grid only after a manual reload.
 - No login: access is by unguessable URL only. Anyone given a view URL can pass it on.
 - No history: only the latest snapshot per microscope is kept; a new zip overwrites same-named
   files.
+
+## 10. The shared contract with the client
+
+`tests/web/upload_contract.json` holds what the server and the MATLAB client must agree on: the
+recipe ID rule (its `rule` text) with its test cases, the six file names, the zip size limit
+and the minimum upload interval. The server owns it. The client keeps a copy in its tests folder
+(`upload_core/tests/upload_contract.json` here; in StitchIt once the package moves).
+
+`tests/web/check_pages.sh` checks that `lib.php` and `config.php` match the contract, and that
+the contract is still the version recorded in `tests/web/upload_contract.sha256`. The client's
+`ContractPinTest` checks its copy against the hash pinned in that test.
+
+To change the contract:
+
+1. Edit `tests/web/upload_contract.json`, and the server code and `config.php` to match.
+2. Copy it over the client's copy.
+3. Update the pinned hash in the client's `ContractPinTest.m`, and the record here:
+   `(cd tests/web && shasum -a 256 upload_contract.json > upload_contract.sha256)`.
+4. Run `tests/web/check_pages.sh` and the client's suite. Both must pass.
+
+Until the client moves, `check_pages.sh` also checks that `upload_core/tests/upload_contract.json`
+equals the contract; delete that line when the package moves.

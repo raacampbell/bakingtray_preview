@@ -23,7 +23,7 @@ folder.
 
 ## Config file
 
-Copy `webpreview_config.example.json` to a location outside any repository
+Copy `private/webpreview_config.example.json` to a location outside any repository
 (the file holds the secret token) and fill it in. There is no default
 location: the calling code decides where the file lives and passes its path to
 `webupload.webConfig`. A copy inside a checkout must be named

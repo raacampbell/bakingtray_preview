@@ -1,5 +1,5 @@
 classdef ReadRecipeTest < matlab.unittest.TestCase
-    % Tests for webupload.readRecipe against recipe_id_vectors.json, the cases shared with
+    % Tests for webupload.readRecipe against the cases in upload_contract.json, shared with
     % the server's tests so both sides read the same IDs from the same recipe.
 
     properties
@@ -23,7 +23,7 @@ classdef ReadRecipeTest < matlab.unittest.TestCase
     methods (Test)
         function everySharedVectorIsRead(tc)
             vectors = jsondecode(fileread(fullfile(fileparts(mfilename('fullpath')), ...
-                'recipe_id_vectors.json')));
+                'upload_contract.json')));
             for ii = 1:numel(vectors.cases)
                 c = vectors.cases(ii);
                 [micID, sampleID] = webupload.readRecipe(tc.writeRecipe(c.recipe));

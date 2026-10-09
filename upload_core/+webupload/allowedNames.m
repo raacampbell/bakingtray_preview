@@ -4,7 +4,8 @@ function names = allowedNames()
     % function names = webupload.allowedNames()
     %
     % Purpose
-    % Mirrors BS_ZIP_ALLOWED_NAMES in brainsaw/lib.php; a test checks the two stay in step.
+    % Copy of allowedNames in the shared contract (upload_core/tests/upload_contract.json); the
+    % server's BS_ZIP_ALLOWED_NAMES must match it, and a test checks this copy against it.
     %
     % Outputs
     % names - cell row of the six file names the server extracts from an upload.

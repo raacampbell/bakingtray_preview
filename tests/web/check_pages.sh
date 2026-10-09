@@ -738,14 +738,32 @@ check "analysis only: the card shows the analysis thumbnail" img_src_has "$CARD"
 fetch "$B/$SA/$MTA?f=tile"
 check "  ... with its bytes" cmp -s "$TMP/b" "$TMP/z/ta/tile_thumbnail.jpg"
 
-# --- recipe IDs: the shared vectors pin the parsing rule (the MATLAB side runs them from upload_core/tests) ---
-VECTORS="$ROOT/upload_core/tests/recipe_id_vectors.json"
+# --- shared contract (tests/web/upload_contract.json, see instructions.md): recipe IDs, names, limits ---
+CONTRACT="$ROOT/tests/web/upload_contract.json"
+# The recipe IDs: the cases pin the parsing rule (the MATLAB client runs the same cases from its copy).
+VECTORS="$CONTRACT"
 vector_results() { php -r 'require $argv[1]; foreach (json_decode(file_get_contents($argv[2]), true)["cases"] as $c) {
   $r = bs_recipe_ids($c["recipe"]);
   echo ($r["micID"] === $c["micID"] && $r["sampleID"] === $c["sampleID"] ? "ok" : "bad"), "\t", $c["name"], "\n"; }' "$APP/lib.php" "$VECTORS"; }
 vec="$(vector_results)"
 check "recipe ID vectors: every case in the file was run" test "$(wc -l <<<"$vec")" -eq "$(grep -c '"name"' "$VECTORS")"
 while IFS=$'\t' read -r verdict name; do check "recipe ID vector: $name" test "$verdict" = ok; done <<<"$vec"
+# The server's own names, zip limit and upload interval must equal the contract's.
+contract_differs="$(php -r '$c = json_decode(file_get_contents($argv[1]), true); $cfg = require $argv[2]; require $argv[3];
+  $bad = [];
+  if (BS_ZIP_ALLOWED_NAMES !== $c["allowedNames"]) $bad[] = "allowedNames (lib.php)";
+  if ($cfg["max_zip_size"] !== $c["maxZipBytes"]) $bad[] = "maxZipBytes (config.php)";
+  if ($cfg["min_upload_interval_seconds"] !== $c["minUploadIntervalSec"]) $bad[] = "minUploadIntervalSec (config.php)";
+  echo implode(", ", $bad);' "$CONTRACT" "$SRC/config.php" "$APP/lib.php")"
+if [ -z "$contract_differs" ]; then echo "PASS  server matches the shared contract (names, zip limit, upload interval)"
+else echo "FAIL  server matches the shared contract: differs: $contract_differs"; fail=1; fi
+# The contract must be the version recorded as synced to the StitchIt copy. Changing it means
+# syncing that copy and updating the record (instructions.md, the shared contract section).
+recorded="$(cut -d' ' -f1 "$ROOT/tests/web/upload_contract.sha256")"
+actual="$(php -r 'echo hash_file("sha256", $argv[1]);' "$CONTRACT")"
+check "contract unchanged since its recorded sync (tests/web/upload_contract.sha256)" test "$recorded" = "$actual"
+# TEMPORARY, until upload_core moves to StitchIt: the client's copy must equal the contract.
+check "upload_core copy equals the contract (delete this line when upload_core moves)" cmp -s "$CONTRACT" "$ROOT/upload_core/tests/upload_contract.json"
 
 # --- the Authorization header is found under every name a host may use ---
 auth_of() { php -r 'require $argv[1]; echo bs_authorization_header(json_decode($argv[2], true));' "$APP/lib.php" "$1"; }

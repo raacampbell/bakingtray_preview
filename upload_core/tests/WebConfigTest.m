@@ -223,24 +223,20 @@ classdef WebConfigTest < matlab.unittest.TestCase
             end
         end
 
-        % ---- not config ----
-        function minUploadIntervalMatchesServerConfig(tc)
-            cfgFile = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'brainsaw', 'config.php');
-            tc.assumeTrue(isfile(cfgFile), 'brainsaw/config.php not present');
-            tok = regexp(fileread(cfgFile), '''min_upload_interval_seconds''\s*=>\s*(\d+)', 'tokens', 'once');
-            tc.assertNotEmpty(tok, 'min_upload_interval_seconds not found in config.php');
-            tc.verifyEqual(webupload.serverLimits().minUploadIntervalSec, str2double(tok{1}));
+        % ---- not config: the shared contract (upload_contract.json, a copy of tests/web/) ----
+        function minUploadIntervalMatchesContract(tc)
+            c = jsondecode(fileread(fullfile(fileparts(mfilename('fullpath')), 'upload_contract.json')));
+            tc.verifyEqual(webupload.serverLimits().minUploadIntervalSec, c.minUploadIntervalSec);
         end
 
-        function nameWhitelistMatchesServer(tc)
-            libFile = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'brainsaw', 'lib.php');
-            tc.assumeTrue(isfile(libFile), 'brainsaw/lib.php not present');
-            txt = fileread(libFile);
-            list = regexp(txt, 'BS_ZIP_ALLOWED_NAMES\s*=\s*\[([^\]]*)\]', 'tokens', 'once');
-            tc.assertNotEmpty(list, 'BS_ZIP_ALLOWED_NAMES not found in lib.php');
-            serverNames = regexp(list{1}, '''([^'']+)''', 'tokens');
-            serverNames = cellfun(@(c) c{1}, serverNames, 'UniformOutput', false);
-            tc.verifyEqual(sort(webupload.allowedNames()), sort(serverNames));
+        function maxZipMatchesContract(tc)
+            c = jsondecode(fileread(fullfile(fileparts(mfilename('fullpath')), 'upload_contract.json')));
+            tc.verifyEqual(webupload.serverLimits().maxZipBytes, c.maxZipBytes);
+        end
+
+        function nameWhitelistMatchesContract(tc)
+            c = jsondecode(fileread(fullfile(fileparts(mfilename('fullpath')), 'upload_contract.json')));
+            tc.verifyEqual(sort(webupload.allowedNames()), sort(c.allowedNames(:)'));
         end
     end
 

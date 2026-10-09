@@ -4,11 +4,12 @@ function lim = serverLimits()
     % function lim = webupload.serverLimits()
     %
     % Purpose
-    % Default of max_zip_size in brainsaw/lib.php. The server config may set it lower, in
-    % which case the server's 413 still reports the problem. idRegexp is the rule the server
-    % applies to site and microscope IDs. minUploadIntervalSec is this client's copy of
-    % min_upload_interval_seconds in brainsaw/config.php (lib.php itself falls back to 0 if
-    % unset; a test keeps the copy equal to config.php): the shortest gap between two
+    % maxZipBytes is max_zip_size from the shared contract (tests/web/upload_contract.json, copied
+    % here as upload_core/tests/upload_contract.json; the server's config.php must match it). The
+    % server config may set it lower, in which case the server's 413 still reports the problem.
+    % idRegexp is the rule the server applies to site and microscope IDs. minUploadIntervalSec is
+    % min_upload_interval_seconds from the same contract (lib.php falls back to 0 if unset):
+    % the shortest gap between two
     % uploads from one site, microscope and source, which the server enforces with HTTP 429.
     % A site that raises it makes the client's copy too short.
     %

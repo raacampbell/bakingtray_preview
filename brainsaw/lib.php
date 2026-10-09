@@ -253,8 +253,8 @@ function bs_rate_limited(string $sourceDir, int $minInterval): bool
 /**
  * The exact base names the zip extractor will write to disk. Everything else in the archive
  * is silently skipped. No .php/.htaccess/etc: system_data/ is never served directly, but this
- * whitelist is what keeps executable files off disk. The MATLAB client mirrors it
- * (webupload.allowedNames); a test keeps the two in step.
+ * whitelist is what keeps executable files off disk. It must equal allowedNames in the shared
+ * contract (tests/web/upload_contract.json); check_pages.sh checks that.
  */
 const BS_ZIP_ALLOWED_NAMES = ['LastCompleteSection.jpg', 'tile_thumbnail.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'];
 
@@ -446,8 +446,8 @@ function bs_check_upload(string $dir, string $micId): string|array
 
 /**
  * The IDs a recipe declares, as ['micID' => ..., 'sampleID' => ...] ('' when not found). The
- * rule, shared with the MATLAB client, is the "rule" in upload_core/tests/recipe_id_vectors.json,
- * which check_pages.sh runs against this function.
+ * rule is the "rule" in tests/web/upload_contract.json, and its cases are run against this
+ * function by check_pages.sh.
  */
 function bs_recipe_ids(string $text): array
 {
