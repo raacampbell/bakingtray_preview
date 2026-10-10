@@ -50,7 +50,7 @@ This keeps going. Even if syncAndCrunch is never started the above continues.
 Then the acquisition finishes, BakingTray sends that information and it's marked as finished online. 
 
 If the user then also syncAndCrunch, when they navigate to the microscope page they now see a larger pretty image that is RGB. That is from syncAndCrunch. Beneath it are largish thumbnails of the last BakingTray image and the last montage image. Clicking on them enlarges them. 
-The thumbnail image on the tile can remain that from BakingTray for now. 
+The thumbnail image on the tile is the StitchIt image when there is one (BakingTray's when StitchIt lags or is absent).
 
 
 ## Implementing that
@@ -166,7 +166,10 @@ wins. In particular: the source is a form field (not text added to the zip name)
   - Microscope page with matching `analysis/` data: the StitchIt image is the large main image; below it, thumbnails of
     the BakingTray image and the StitchIt montage, which enlarge on click. Without matching analysis data the page is
     as today (BakingTray image, magnifier, no montage).
-  - Card thumbnail: the BakingTray image (the `analysis/` image when there is no `acq/`).
+  - Card thumbnail: the StitchIt image (its `tile_thumbnail.jpg` if sent) when `analysis/` is shown, else the BakingTray
+    image. If StitchIt lags acq by more than 2 finished sections (the largest section in `acq/acqLog.txt` minus the
+    largest in `analysis/acqLog.txt`), the card and the page's main image use the BakingTray image instead, and the
+    StitchIt image goes into the strip below.
 - Finished: the status shown is the newest (by `uploaded_at`) among the displayed sources. When it is finished, the
   card and the page say "finished" and the card is not drawn as stale.
 - Freshness and auto-refresh: staleness comes from the ground-truth source (`acq/`, or `analysis/` when it is shown
