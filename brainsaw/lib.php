@@ -1375,24 +1375,6 @@ function bs_render_grid(array $config, array $view, string $base): void
 <?php endforeach; ?>
 </div>
 <?php endforeach; ?>
-<div id="overlay" role="dialog" aria-label="Full-size image"><button id="overlay-close" type="button" aria-label="Close">&times;</button><img alt=""></div>
-<script>
-  // A thumbnail marked data-overlay opens its full image over the page; without JS the link opens it as usual.
-  (function () {
-    var overlay = document.getElementById('overlay');
-    var img = overlay.querySelector('img');
-    function close() { overlay.classList.remove('open'); img.removeAttribute('src'); }
-    document.querySelectorAll('a[data-overlay]').forEach(function (a) {
-      a.addEventListener('click', function (e) {
-        e.preventDefault();
-        img.src = a.href;
-        overlay.classList.add('open');
-      });
-    });
-    overlay.addEventListener('click', function (e) { if (e.target !== img) close(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-  })();
-</script>
 <?= bs_autorefresh_script($autorefreshJs) ?>
 </body>
 </html>
@@ -1541,6 +1523,24 @@ function bs_render_mic_page(array $config, array $view, string $base): void
     <?php endif; ?>
   </div>
 </div>
+<div id="overlay" role="dialog" aria-label="Full-size image"><button id="overlay-close" type="button" aria-label="Close">&times;</button><img alt=""></div>
+<script>
+  // A thumbnail marked data-overlay opens its full image over the page; without JS the link opens it as usual.
+  (function () {
+    var overlay = document.getElementById('overlay');
+    var img = overlay.querySelector('img');
+    function close() { overlay.classList.remove('open'); img.removeAttribute('src'); }
+    document.querySelectorAll('a[data-overlay]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        img.src = a.href;
+        overlay.classList.add('open');
+      });
+    });
+    overlay.addEventListener('click', function (e) { if (e.target !== img) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+</script>
 <?= bs_autorefresh_script($autorefreshJs) ?>
 </body>
 </html>

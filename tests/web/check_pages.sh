@@ -529,6 +529,7 @@ check "  ... montage thumbnail present, enlarges on click" body_has "$PAGE" '<a 
 check "  ... the BakingTray asset is the acq image" asset_is "$MD2" bakingtray d2acq
 check "  ... the montage asset is the StitchIt montage" asset_is "$MD2" montage d2an
 check "  ... montage link opens the overlay, and no thumbnail yet: the strip shows the full montage" body_has "$PAGE" 'data-overlay'
+check "  ... the page has the overlay and its close button" body_has "$PAGE" 'id="overlay-close"'
 check "  ... ?f=montage_tile is the usual 404" same_404 "$B/$SA/$MD2?f=montage_tile"
 backdate "$(src_dir "$MD2" analysis)"; dz d2mt "$MD2" BETA false STITCH; cp "$IMAGES/tile_thumbnail.jpeg" "$TMP/z/d2mt/montage_thumbnail.jpg"; zip_dir d2mt; up analysis "$MD2" d2mt
 page "$MD2"
