@@ -518,7 +518,7 @@ check "acq only: magnifier on the main image" body_has "$PAGE" "imageLens({ lens
 check "acq only: no thumbnails" body_lacks "$PAGE" 'id="thumb-'
 check "acq only: recipe table from acq" body_has "$PAGE" ">ALPHA<"
 check "acq only: the acq montage is not served" same_404 "$B/$SA/$MD1?f=montage"
-check "acq only: card image is the BakingTray image" img_src_has "$CARD" "f=bakingtray"
+check "acq only: the card shows the acq image" card_bytes_are d1acq
 check "acq only: not finished" body_lacks "$CARD$PAGE" 'class="finished"'
 backdate "$(src_dir "$MD1" acq)" 7200
 page "$MD1"; card "$MD1"
