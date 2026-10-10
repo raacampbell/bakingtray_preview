@@ -13,8 +13,8 @@ function cfgPath = getConfigFilePath(verbose)
 
     configFileFname = 'brainsaw_webpreview.json';
 
-    if iscell(which(configFileFname,'-all'))
-        fprintf('WARRNING: Found %d %s files choosing the first one\n', ...
+    if numel(which(configFileFname,'-all'))>1
+        fprintf('WARNING: Found %d %s files choosing the first one\n', ...
             length(which(configFileFname,'-all')), configFileFname);
     end
 
