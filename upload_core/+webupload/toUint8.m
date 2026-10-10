@@ -16,15 +16,14 @@ function out = toUint8(img)
     %
     % CAVEAT: autoscaling is per image. One hot pixel darkens a whole frame, a
     % uniformly dim frame is stretched to white, and brightness therefore varies
-    % between frames. For comparable brightness across a series pass a fixed range,
-    % e.g. [0 4095] for 12-bit data.
+    % between frames. For comparable brightness across a series, scale the images to
+    % uint8 (or [0,1]) before calling, with one fixed range such as [0 4095] for 12-bit data.
     %
     % Inputs
     % img   - Numeric HxW or HxWx3 image.
     %
     % Outputs
     % out - uint8 image the same size as img.
-    %
     %
     % See also: webupload.stageFiles
 

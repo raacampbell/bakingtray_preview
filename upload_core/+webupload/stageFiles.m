@@ -401,7 +401,7 @@ function p = thumbnailPart(src,kind,stageDir,spec)
             src = imread(src);
         end
         if ~isa(src,'uint8')
-            src = webupload.toUint8(src,[]);
+            src = webupload.toUint8(src);
         end
         if size(src,2) > spec.ThumbnailWidth   % never enlarge
             src = imresize(src,[NaN spec.ThumbnailWidth]);
