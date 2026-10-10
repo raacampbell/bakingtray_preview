@@ -1,40 +1,59 @@
 function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % Stage and upload the web preview for one section or run. Never throws
     %
-    % function result = webupload.updateSectionImage(img,recipePath,logPath,cfg, ...
-    %                                                 'Param1',val1,...)
+    % function result = webupload.updateSectionImage(img,'Param1',val1,...)
     %
     % Purpose
-    % The call that instrument and analysis code make to update the web preview: BakingTray
-    % when it starts, after each section and when it finishes (source 'acq'), StitchIt for
-    % its analysis (source 'analysis'). It stages the image (with its card thumbnail,
-    % tile_thumbnail.jpg, see webupload.stageFiles), the optional 'Montage', the
-    % recipe and the acquisition log with webupload.stageFiles, writes status.json, and
-    % uploads the stage folder with webupload.zipAndPost. The microscope ID is SYSTEM.ID of
-    % the recipe passed in (webupload.readRecipe). If it cannot be read, or is not a valid
-    % ID, nothing is staged or uploaded and the call fails. The config is a
-    % webupload.webConfig object that the caller builds once and passes in.
+    % Sends to the web the last completed section image, or indicates the start or end
+    % of acquisition on the web site.
     %
-    % img is [], a numeric array or the path of a jpg:
-    %   []             - no image. Any image staged by an earlier call is deleted (after
-    %                    the new files are in place, before the upload), so an old
-    %                    sample's image can never go up with a new recipe. Use it for the
-    %                    call at the start of a run, so the page shows the new recipe.
-    %   numeric array  - converted with webupload.toUint8 (see 'Range').
+    % This function is integrated into StitchIt, but can be called from BakingTray if
+    % StitchIt is co-installed on the acquisition machine to allow BakingTray to also
+    % send progress updates.
+    %
+    % Configuration and token file
+    % For most users, the configuration file with the upload location, site ID, and
+    % secret token should be in a file called "brainsaw_webpreview.json" somewhere in the
+    % MATLAB path. It should appear in just one location.
+    %
+    %
+    % Inputs (required)
+    % img - a numeric array or the path of a jpg.
+    %   numeric array  - converted with webupload.toUint8
     %   path of a jpg  - copied in as LastCompleteSection.jpg.
-    % Anything else fails the call. 'Montage' takes the same kinds of value, but only with
-    % Source 'analysis': with 'acq' the call fails and nothing is staged or sent.
+    % img - can also be empty [] (no image). If empty any image staged by an earlier call
+    % is deleted (after the new files are in place, before the upload), so an old sample's
+    % image can never go up with a new recipe. Use this call at the start of a run, so
+    % the page shows the new recipe.
     %
-    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/<source>, with
-    % StageRoot defaulting to tempdir. It is reused between calls, so each call replaces
-    % the previous files instead of accumulating them. The recipe is always staged afresh
-    % from recipePath. If a new log cannot be staged, the previous copy stays and is
-    % uploaded only if the previously staged recipe has the same sample ID as the new
-    % one; otherwise no log is uploaded. Either way this is reported (see result.stale).
-    % 'ClearStage',true empties the managed stage folder first, once the arguments have
-    % been checked; to do that without uploading anything, use webupload.clearStage. On a
-    % machine where tempdir is shared between users (Linux /tmp) pass a private folder
-    % as 'StageRoot'.
+    %
+    % Inputs (optional param/val pairs: config and meta-data files)
+    % If webupload.updateSectionImage is called from a section directory, it looks for the
+    % local recipe file and acquisition log files. This should cover most use cases. These
+    % files can optionally be specified here. Similarly, the webupload config file containing
+    % the token will be found automatically from the path. But it can be defined here if
+    % required.
+    %
+    % 'recipePath' - Path to the recipe file.
+    % 'logPath'    - Path to the acquisition log file.
+    % 'cfg'        - webupload.webConfig object. If not supplied, the function looks for a
+    %             file called "brainsaw_webpreview.json" and builds the object from that.
+    %
+    %
+    % Inputs (optional param/val pairs: data source)
+    % 'Source' (string)
+    % This is an important setting. It tells the server if the data have from from the
+    % acquisition or analysis PC. If BakingTray is sending the data, then this is treated
+    % as the "ground truth". So if BakingTray reports that the acquisition is finished,
+    % the analysis PC can't revert that. The default for this setting is 'analysis',
+    % because it's more likely people are setting this up for syncAndCrunch and because
+    % we want want to opt into the ground truth state.
+    % Source 'analysis' by default. : with 'acq' the call fails and nothing is staged or sent.
+    %
+    %
+    % Inputs (optional param/val pairs: others)
+    %'Montage' is the all-depths-one-channel image that syndAndCrunch makes. Only the
+    %    analysis PC may send this. If empty it's just not sent. Empty by default.
     %
     % 'Finished',true marks the run as ended in status.json. The server answers HTTP 429
     % to an upload that follows another from the same site, microscope and source within
@@ -44,31 +63,15 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % raises it will answer the retry with another 429, and the Finished flag is lost
     % (ok is false, with the usual warning).
     %
-    % Deliberate catch-all: a section completing must never be interrupted by the
-    % preview, so every failure inside the call (config, image or option problems,
-    % staging, network, a throwing poster) is turned into a warning
-    % 'webupload:updateSectionImage:failed' ("id: message") and result.ok = false. The
-    % warning call itself is guarded, so warning('error',...) settings cannot make this
-    % function throw. Errors in the arguments img, recipePath, logPath and cfg (which must
-    % be a scalar, valid webConfig; a missing cfg is a failure too) are caught too, but a
-    % path variable that does not exist in the CALLER is an error MATLAB raises before this
-    % function runs, and cannot be caught here.
     %
-    % TOKEN: webConfig keeps the token private. It is scrubbed from result and warning
-    % messages, including those from a custom Poster, with webConfig.scrub.
-    %
-    % Inputs
-    % img        - [], a numeric HxW or HxWx3 image of the section (see
-    %              webupload.toUint8) or the path of a jpg.
-    % recipePath - Path to the recipe file.
-    % logPath    - Path to the acquisition log file.
-    % cfg        - webupload.webConfig object.
-    %
+    % SUMMARY OF OPTIONAL ARGS
     % Inputs (optional param/val pairs)
-    % 'Source'     - 'acq' (default) or 'analysis'.
+    % 'recipePath' -  Path to recipe file
+    % 'logPath'    -  Path to acquisition log file
+    % 'cfg'        -  Config object
+    % 'Source'     - 'analysis' (default) or 'acq'.
     % 'Montage'    - Image to stage as montage.jpg, as for img. Only with Source
     %                'analysis'. Default is [].
-    % 'Range'      - Numeric [lo hi] used to scale numeric images. Default is [].
     % 'Finished'   - Logical scalar written to status.json. Default is false.
     % 'ConnectTimeout', 'ResponseTimeout', 'DataTimeout' - Seconds. Passed to the upload
     %                for this call only, and again to the retry (see webupload.postZip).
@@ -77,8 +80,6 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %                poster(folder,cfg,micID,source,...) -> struct(ok,httpStatus,message) with
     %                char message, where cfg is a webupload.webConfig object. Default is
     %                @webupload.zipAndPost; tests inject a fake.
-    % 'StageRoot'  - Non-empty text scalar. Folder holding the stage folders. Default is
-    %                tempdir.
     % 'ClearStage' - Logical scalar. If true, empty the stage folder first. Default is
     %                false.
     %
@@ -95,34 +96,145 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %                 upload otherwise succeeded.
     %   error       - scrubbed MException; [] on success.
     %
+    %
+    % NOTE
+    % Deliberate catch-all: The acquisition process must never be interrupted by the
+    % preview image upload. Every failure inside the call (config, image or option problems,
+    % staging, network, a throwing poster) is turned into a warning
+    % 'webupload:updateSectionImage:failed' ("id: message") and result.ok = false. The
+    % warning call itself is guarded, so warning('error',...) settings cannot make this
+    % function throw. Errors in the arguments img, recipePath, logPath and cfg (which must
+    % be a scalar, valid webConfig; a missing cfg is a failure too) are caught too, but a
+    % path variable that does not exist in the CALLER is an error MATLAB raises before this
+    % function runs, and cannot be caught here.
+    %
     % See also: webupload.clearStage, webupload.stageFiles, webupload.zipAndPost
 
 
+    % ---
+    % pre-define the output structure
     result = struct('ok', false, 'stage', [], ...
         'post', struct('ok',false,'httpStatus',NaN,'message',''), ...
         'stageDir', '', 'recipeFresh', false, 'logFresh', false, 'stale', false, ...
         'error', []);
     caught = [];
 
-    % From here on cfg is [] unless it is a usable config; finalise relies on that
-    if nargin<4 || ~(isa(cfg,'webupload.webConfig') && isscalar(cfg) && isvalid(cfg))
-        cfg = [];
-    end
+    % ---
+    % Parse the input arguments
+
+    % Define anonymous functions for testing input args
+    % true if x is a char row vector or string scalar with at least one character.
+    isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
+
+    % true if x is a logical scalar or a real, non-NaN numeric scalar.
+    isLogicalScalar = @(x) isscalar(x) && (islogical(x) || (isnumeric(x) && isreal(x) && ~isnan(x)));
+
+    % true if x is [] (not given) or a positive finite scalar number.
+    isTimeout = @(x) isnumeric(x) && (isempty(x) || (isscalar(x) && isreal(x) && isfinite(x) && x>0));
+
+
+    params = inputParser;
+    params.FunctionName = 'webupload.updateSectionImage';
+    params.CaseSensitive = false;
+
+
+    params.addParameter('cfg', [], @(x) isempty(x) || isa(cfg,'webupload.webConfig'))
+    params.addParameter('recipePath', [], @(x) isempty(x) || ischar(x))
+    params.addParameter('logPath', [], @(x) isempty(x) || isChar(x))
+
+    params.addParameter('Source', 'analysis', @(x) isNonEmptyText(x) && ismember(char(x),{'acq','analysis'}))
+
+    params.addParameter('Montage', [], @(x) isnumeric(x) || ischar(x) || isstring(x))
+    params.addParameter('Finished', false, isLogicalScalar)
+    params.addParameter('ConnectTimeout', [], isTimeout)
+    params.addParameter('ResponseTimeout', [], isTimeout)
+    params.addParameter('DataTimeout', [], isTimeout)
+    params.addParameter('Poster', @webupload.zipAndPost, ...
+                        @(x) isa(x,'function_handle') && isscalar(x))
+    params.addParameter('ClearStage', false, isLogicalScalar)
 
     try
-        if isempty(cfg)
-            error('webupload:updateSectionImage:badConfig', ...
-                'cfg must be a webupload.webConfig object.')
+        params.parse(varargin{:});
+    catch err
+        caught = err;
+        result = finalise(result,caught,cfg);
+        notify(result)
+        return
+    end
+
+    % Further processing of the inputs
+    opts = params.Results;
+
+    % Handle config or meta-data files
+    if isempty(opts.recipePath)
+        recipePath = getRecipeFileName;
+    end
+    if isempty(recipePath)
+        fprintf('No recipe found by webupload.%s\n',fname)
+        result = finalise(result,[],cfg);
+        return
+    end
+
+    if isempty(opts.logPath)
+        d = dir('acqLog_*.txt');
+        if length(d) == 1
+            logPath = d.name;
         end
+    end
+    if isempty(logPath)
+        fprintf('No logPath found by webupload.%s\n',fname)
+        result = finalise(result,[],cfg);
+        return
+    end
 
-        % Parse the optional param/val pairs with the local function parseOptions
-        opts = parseOptions(varargin{:});
+    if isempty(opts.cfg)
+        cfgPath = webupload.getConfigFilePath;
+        if isempty(cfgPath)
+            fprintf('No config file found by webupload.%s\n',fname)
+            result = finalise(result,[],cfg);
+            return
+        end
+        cfg = webupload.webConfig(cfgPath);
+    end
 
+
+    % hard-code StageRoot
+    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/<source>, with
+    % StageRoot defaulting to tempdir. It is reused between calls, so each call replaces
+    % the previous files instead of accumulating them. The recipe is always staged afresh
+    % from recipePath. If a new log cannot be staged, the previous copy stays and is
+    % uploaded only if the previously staged recipe has the same sample ID as the new
+    % one; otherwise no log is uploaded. Either way this is reported (see result.stale).
+    % 'ClearStage',true empties the managed stage folder first, once the arguments have
+    % been checked; to do that without uploading anything, use webupload.clearStage. On a
+    % machine where tempdir is shared between users (Linux /tmp) pass a private folder
+    % as 'StageRoot'.
+    opts.StageRoot = tempdir;
+
+
+    % Build the remaining options structure
+    opts.Source = char(opts.Source);
+    opts.Finished = logical(opts.Finished);
+    opts.ClearStage = logical(opts.ClearStage);
+
+    opts.PosterArgs = {};
+    for name = {'ConnectTimeout','ResponseTimeout','DataTimeout'}
+        if ~isempty(opts.(name{1}))
+            opts.PosterArgs = [opts.PosterArgs, name, {opts.(name{1})}];
+        end
+    end
+
+
+    % ---
+    % Run the stage and upload operation
+    try
         result = runPipeline(result,img,recipePath,logPath,cfg,opts);
     catch err
         caught = err;
     end %try
 
+
+    % report the results
     result = finalise(result,caught,cfg);
     notify(result)
 end % updateSectionImage
@@ -172,7 +284,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     stageDir = webupload.stageDirFor(cfg,micID,opts.StageRoot,opts.Source);
 
     result.stage = webupload.stageFiles(img,recipePath,logPath,stageDir, ...
-                        'Montage',opts.Montage,'Range',opts.Range,'ClearStage',opts.ClearStage);
+                        'Montage',opts.Montage,'ClearStage',opts.ClearStage);
     result.stageDir = stageDir;
     result.recipeFresh = result.stage.recipeStaged;
     result.logFresh = result.stage.logStaged;
@@ -199,66 +311,6 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     end %try
 end % runPipeline
 
-
-function opts = parseOptions(varargin)
-    % Parse and validate the param/val options of updateSectionImage
-    %
-    % function opts = webupload.updateSectionImage>parseOptions(varargin)
-    %
-    % Purpose
-    % Uses inputParser, so unknown names and values of the wrong type throw. Text options
-    % may arrive as strings; they are converted to char because everything downstream uses
-    % char paths. Montage is checked further by webupload.stageFiles.
-    %
-    % Inputs
-    % varargin - The 'Param1',val1,... pairs documented in updateSectionImage.
-    %
-    % Outputs
-    % opts - Structure with fields Source and StageRoot (char), Montage, Range, Finished
-    %        and ClearStage (logical), Poster, and the timeouts given as PosterArgs: a
-    %        cell row of 'Name',value pairs to append to the poster call.
-
-    % True if x is a char row vector or string scalar with at least one character.
-    isNonEmptyText = @(x) ((ischar(x) && isrow(x)) || (isstring(x) && isscalar(x))) && strlength(x)>0;
-
-    % true if x is a logical scalar or a real, non-NaN numeric scalar.
-    isLogicalScalar = @(x) isscalar(x) && (islogical(x) || (isnumeric(x) && isreal(x) && ~isnan(x)));
-
-    % true if x is [] (not given) or a positive finite scalar number.
-    isTimeout = @(x) isnumeric(x) && (isempty(x) || (isscalar(x) && isreal(x) && isfinite(x) && x>0));
-
-
-    params = inputParser;
-    params.FunctionName = 'webupload.updateSectionImage';
-    params.CaseSensitive = false;
-
-    params.addParameter('Source', 'acq', @(x) isNonEmptyText(x) && ismember(char(x),{'acq','analysis'}))
-    params.addParameter('Montage', [], @(x) isnumeric(x) || ischar(x) || isstring(x))
-    params.addParameter('Range', [], @isnumeric)
-    params.addParameter('Finished', false, isLogicalScalar)
-    params.addParameter('ConnectTimeout', [], isTimeout)
-    params.addParameter('ResponseTimeout', [], isTimeout)
-    params.addParameter('DataTimeout', [], isTimeout)
-    params.addParameter('Poster', @webupload.zipAndPost, ...
-                        @(x) isa(x,'function_handle') && isscalar(x))
-    params.addParameter('StageRoot', tempdir, isNonEmptyText)
-    params.addParameter('ClearStage', false, isLogicalScalar)
-    params.parse(varargin{:});
-
-    opts = params.Results;
-
-    opts.Source = char(opts.Source);
-    opts.StageRoot = char(opts.StageRoot);
-    opts.Finished = logical(opts.Finished);
-    opts.ClearStage = logical(opts.ClearStage);
-
-    opts.PosterArgs = {};
-    for name = {'ConnectTimeout','ResponseTimeout','DataTimeout'}
-        if ~isempty(opts.(name{1}))
-            opts.PosterArgs = [opts.PosterArgs, name, {opts.(name{1})}];
-        end
-    end %for
-end % parseOptions
 
 
 function post = callPoster(opts,stageDir,cfg,micID)

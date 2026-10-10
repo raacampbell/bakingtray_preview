@@ -19,8 +19,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % recipe), a numeric array (converted with
     % webupload.toUint8 and written as a jpg) or the path of a jpg file (copied as is).
     % Any other empty array is an error, as is anything else, a path that is not an
-    % existing .jpg/.jpeg file, and an invalid 'Range'. All of these throw before
-    % stageDir is touched, 'ClearStage' included.
+    % existing .jpg/.jpeg file. All of these throw before stageDir is touched, 'ClearStage' included.
     %
     % THUMBNAIL: the server shows tile_thumbnail.jpg on the cards instead of the full image.
     % It is the main image shrunk to stageSpec's ThumbnailWidth (500 px) wide, aspect ratio
@@ -64,8 +63,6 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %
     % Inputs (optional param/val pairs)
     % 'Montage' - As img, staged as montage.jpg. Default is [] (none).
-    % 'Range'   - Numeric [lo hi] used to scale numeric images. Default is [] (see
-    %             webupload.toUint8).
     % 'ClearStage' - Logical scalar. If true, delete stageDir and everything in it, after
     %             the arguments have been checked. Default is false.
     %
@@ -98,15 +95,15 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     params.FunctionName = 'webupload.stageFiles';
     params.CaseSensitive = false;
     params.addParameter('Montage', [], @(x) true)
-    params.addParameter('Range', [], @isnumeric)
     params.addParameter('ClearStage', false, @(x) islogical(x) && isscalar(x))
     params.parse(varargin{:});
 
     % Pure conversion first: programming errors throw here, before any I/O.
-    mainSrc = imageSource(img,params.Results.Range);
-    montageSrc = imageSource(params.Results.Montage,params.Results.Range);
+    mainSrc = imageSource(img);
+    montageSrc = imageSource(params.Results.Montage);
 
-    result = struct('files', {{}}, 'mainStaged', false, 'thumbnailStaged', false, 'montageStaged', false, 'montageThumbnailStaged', false, ...
+    result = struct('files', {{}}, 'mainStaged', false, 'thumbnailStaged', false, ...
+                    'montageStaged', false, 'montageThumbnailStaged', false, ...
                     'recipeStaged', false, 'logStaged', false, 'logKept', false, ...
                     'recipeSource', '', 'stageOk', true);
     try
@@ -130,14 +127,13 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
 end % stageFiles
 
 
-function src = imageSource(img,range)
+function src = imageSource(img)
     % Validate an image argument and reduce it to what stageOnDisk writes
     %
-    % function src = webupload.stageFiles>imageSource(img,range)
+    % function src = webupload.stageFiles>imageSource(img)
     %
     % Inputs
     % img   - The literal [], a numeric image or the path of a jpg file.
-    % range - Numeric [lo hi] or [], passed to webupload.toUint8.
     %
     % Outputs
     % src - [] for no image, a uint8 image, or the char path of an existing jpg file.
@@ -151,7 +147,7 @@ function src = imageSource(img,range)
         return
     end
     if isnumeric(img)
-        src = webupload.toUint8(img,range);
+        src = webupload.toUint8(img);
         return
     end
 

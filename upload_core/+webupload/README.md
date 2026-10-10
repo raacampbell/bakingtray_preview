@@ -104,7 +104,6 @@ Anything else makes the call fail. `recipePath` is the recipe file and
 | `Montage` | image to send as `montage.jpg`, as for `img` (array or jpg path). Only with `Source` `'analysis'`: with `'acq'` the call fails and sends nothing |
 | `Finished` | `true` writes `{"finished": true}` into `status.json` (default `false`). Only a Finished call is retried, once, after a 429, waiting this client's copy of the server's minimum upload interval (`serverLimits().minUploadIntervalSec`, 5 s) plus 1 s, with the same timeouts. A site that raises the interval on the server will answer the retry with another 429, and the Finished flag is lost (`ok` false, with the usual warning) |
 | `ConnectTimeout`, `ResponseTimeout`, `DataTimeout` | seconds, for this call only (see `postZip`; whether `ResponseTimeout` and `DataTimeout` cover the upload transfer itself is unverified) |
-| `Range` | `[lo hi]` for non-uint8 arrays (below) |
 | `ClearStage` | `true` empties the stage folder first; default `false` |
 | `StageRoot` | parent of the stage folder; default `tempdir`; text options may be strings, paths are returned as char |
 | `Poster` | function handle `poster(folder, cfg, micID, source, ...)` returning `struct(ok, httpStatus, message)`; default `@webupload.zipAndPost`; for tests |
@@ -140,11 +139,7 @@ other names are left alone: the server ignores them.
 ### Images that are not uint8
 
 uint8 is used as is. uint16 and int16 are autoscaled to `[0 max(img)]`, so
-11-14 bit camera data is not near-black; negatives clamp to 0. Pass
-`'Range', [lo hi]` for a fixed mapping (`lo` becomes 0, `hi` 255, clamped), for
-example `[0 4095]` for a 12-bit camera so brightness does not change from
-section to section. single/double must lie in [0,1] unless `Range` is given.
-The same `Range` applies to the montage. Details: `help webupload.toUint8`.
+11-14 bit camera data is not near-black; negatives clamp to 0. 
 
 ## Uploading a folder
 
