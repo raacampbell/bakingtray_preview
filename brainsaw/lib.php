@@ -988,6 +988,91 @@ function bs_render_stats_svg(array $sections, int $width = 900, int $height = 22
     );
 }
 
+/**
+ * Inline SVG of cumulative acquisition time (hours) by section: the actual running total in
+ * blue, and in thin red what the total would be had every section taken as long as the longest
+ * section so far.
+ */
+function bs_render_cumulative_svg(array $sections, int $width = 900, int $height = 220): string
+{
+    if (count($sections) < 2) {
+        return '<p class="chart-empty">Not enough section-timing data yet to plot.</p>';
+    }
+
+    $padL = 46;
+    $padR = 16;
+    $padT = 16;
+    $padB = 30;
+    $plotW = $width - $padL - $padR;
+    $plotH = $height - $padT - $padB;
+
+    $actual = [];
+    $worst = [];
+    $sumA = 0.0;
+    $sumW = 0.0;
+    $longest = 0.0;
+    foreach ($sections as $s) {
+        $h = $s['duration_seconds'] / 3600.0;
+        $longest = max($longest, $h);
+        $sumA += $h;
+        $sumW += $longest;
+        $actual[] = $sumA;
+        $worst[] = $sumW;
+    }
+
+    $minX = $sections[0]['n'];
+    $maxX = end($sections)['n'];
+    $spanX = max($maxX - $minX, 1);
+    $maxY = max($sumW * 1.05, 1e-6);
+
+    $toPx = fn(float $x, float $y) => [
+        $padL + ($x - $minX) / $spanX * $plotW,
+        $padT + $plotH - $y / $maxY * $plotH,
+    ];
+
+    $line = function (array $vals) use ($sections, $toPx): string {
+        $pts = [];
+        foreach ($sections as $i => $s) {
+            [$px, $py] = $toPx((float) $s['n'], $vals[$i]);
+            $pts[] = sprintf('%.1f,%.1f', $px, $py);
+        }
+        return implode(' ', $pts);
+    };
+
+    $yLabels = '';
+    for ($i = 0; $i <= 4; $i++) {
+        $val = $maxY * $i / 4;
+        [, $py] = $toPx((float) $minX, $val);
+        $yLabels .= sprintf(
+            '<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="#2a2a2a" stroke-width="1"/>' .
+            '<text x="%d" y="%.1f" fill="#888" font-size="11" text-anchor="end" dominant-baseline="middle">%.1f</text>',
+            $padL, $py, $width - $padR, $py, $padL - 6, $py, $val
+        );
+    }
+
+    $xLabels = '';
+    foreach (array_unique([$minX, (int) round(($minX + $maxX) / 2), $maxX]) as $xt) {
+        [$px] = $toPx((float) $xt, 0);
+        $xLabels .= sprintf(
+            '<text x="%.1f" y="%d" fill="#888" font-size="11" text-anchor="middle">%d</text>',
+            $px, $height - 8, $xt
+        );
+    }
+
+    return sprintf(
+        '<svg viewBox="0 0 %d %d" width="100%%" height="%d" role="img" aria-label="Cumulative acquisition time">' .
+        '<rect x="0" y="0" width="%d" height="%d" fill="#161616"/>' .
+        '%s' .
+        '<polyline points="%s" fill="none" stroke="#e44" stroke-width="0.8"/>' .
+        '<polyline points="%s" fill="none" stroke="#6cf" stroke-width="1.6"/>' .
+        '%s' .
+        '<text x="%d" y="14" fill="#aaa" font-size="11">cumulative hours (red: if every section took as long as the longest so far)</text>' .
+        '</svg>',
+        $width, $height, $height, $width, $height,
+        $yLabels, $line($worst), $line($actual), $xLabels, $padL
+    );
+}
+
 const BS_PAGE_STYLE = <<<CSS
   body { font-family: system-ui, sans-serif; background: #111; color: #eee; margin: 0; padding: 24px; }
   a { color: #6cf; }
@@ -1388,6 +1473,11 @@ function bs_render_mic_page(array $config, array $view, string $base): void
       <div class="chart-title">Acquisition time per section</div>
       <?= bs_render_stats_svg($acq['sections']) ?>
     </div>
+
+    <div class="chart-box">
+      <div class="chart-title">Cumulative acquisition time</div>
+      <?= bs_render_cumulative_svg($acq['sections']) ?>
+    </div>
   </div>
 
   <div class="side-col">
@@ -1401,6 +1491,7 @@ function bs_render_mic_page(array $config, array $view, string $base): void
       <?php if (isset($recipe['num_optical_planes'])): ?><tr><td>Optical planes / section</td><td><?= (int) $recipe['num_optical_planes'] ?></td></tr><?php endif; ?>
       <?php if (isset($recipe['frames_averaged'])): ?><tr><td>Frames averaged</td><td><?= (int) $recipe['frames_averaged'] ?></td></tr><?php endif; ?>
       <?php if (!empty($recipe['acq_start_time'])): ?><tr><td>Acquisition started</td><td><?= htmlspecialchars($recipe['acq_start_time']) ?></td></tr><?php endif; ?>
+      <?php if ($acq['sections'] && !empty(end($acq['sections'])['timestamp'])): ?><tr><td>Last section completed</td><td><?= htmlspecialchars(gmdate('Y-m-d H:i:s', strtotime(end($acq['sections'])['timestamp']))) ?></td></tr><?php endif; ?>
       <?php if ($etaAt !== null): ?><tr><td>Estimated completion</td><td><time id="eta" datetime="<?= gmdate('Y-m-d\TH:i:s\Z', $etaAt) ?>"><?= gmdate('Y-m-d H:i', $etaAt) ?> UTC</time> (estimated)</td></tr><?php endif; ?>
     </table>
     <?php if ($etaAt !== null): ?>

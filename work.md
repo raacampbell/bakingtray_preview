@@ -261,18 +261,3 @@ I created a class to make life easier than the functional sprawl you created.
 When you write new MATLAB code, carry on the same vibe. 
 
 For the web code, do as you were doing before. 
-
-
-## Note on your readRecipe.m
-You were making your own readRecipe.m FWIW BakingTray has: https://github.com/SWC-Advanced-Microscopy/BakingTray/blob/master/code/%2BBakingTray/%2Bsettings/readRecipe.m
-But that won't be present on a machine with only stitchit. So maybe we leave this as is 
-
-
-## Note on functions that are in BakingTray right now
-`clearStage.m` and `clearStageDir.m` in the `BakingTray.webpreview` module are maybe in the wrong place. 
-Staging files is also, surely, going to be needed by StitchIt. So perhaps these should be in `upload_core/+webupload/`. 
-I'm not certain, I'm just thinking out loud here. Thoughts? Same, I think, for `stageDirFor.m` and `stageSpec` and `stageFiles`. 
-Probably `toUnit8` also. 
-
-That leaves us with `updateSectionImage`. TBH, that also could go. If we allow the first input arg there (`img`) to optionally be a file name, then this is a general purpose function and also lives in the generic toolset. Thoughts?
-
