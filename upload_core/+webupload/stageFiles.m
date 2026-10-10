@@ -24,7 +24,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %
     % THUMBNAIL: the server shows tile_thumbnail.jpg on the cards instead of the full image.
     % It is the main image shrunk to stageSpec's ThumbnailWidth (500 px) wide, aspect ratio
-    % kept, by averaging pixel blocks and then interpolating, so no toolbox is needed. An
+    % kept, with imresize (Image Processing Toolbox). An
     % image that is already narrower is not enlarged. A jpg path is read with imread. It is
     % only ever staged together with the image it was made from: when img is [], or the
     % thumbnail cannot be made (warning 'webupload:stageFiles:thumbnailFailed', not a stage
@@ -407,7 +407,10 @@ function p = thumbnailPart(src,kind,stageDir,spec)
         if ~isa(src,'uint8')
             src = webupload.toUint8(src,[]);
         end
-        imwrite(shrinkToWidth(src,spec.ThumbnailWidth),part,'jpg','Quality',spec.JpegQuality);
+        if size(src,2) > spec.ThumbnailWidth   % never enlarge
+            src = imresize(src,[NaN spec.ThumbnailWidth]);
+        end
+        imwrite(src,part,'jpg','Quality',spec.JpegQuality);
     catch ME
         warning('webupload:stageFiles:thumbnailFailed', ...
             '%s not staged (%s); the server will show the full image.', spec.Names.(kind), ME.message)
@@ -415,50 +418,6 @@ function p = thumbnailPart(src,kind,stageDir,spec)
     end %try
     p = struct('kind', kind, 'part', part);
 end % thumbnailPart
-
-
-function out = shrinkToWidth(img,width)
-    % Shrink an image to a given width, keeping its aspect ratio. Needs no toolbox
-    %
-    % function out = webupload.stageFiles>shrinkToWidth(img,width)
-    %
-    % Purpose
-    % Averages k-by-k blocks of pixels first, with k the largest whole factor that keeps
-    % the image at least width wide, which removes the detail that plain interpolation
-    % would alias. Then interpolates (interp2, linear) the remaining factor, which is less
-    % than 2, to exactly width. An image that is width or narrower is returned unchanged.
-    %
-    % Inputs
-    % img   - uint8 HxW or HxWxC image.
-    % width - Positive integer, the width wanted in pixels.
-    %
-    % Outputs
-    % out - uint8 image, width pixels wide (or img if it was not wider).
-
-    [h,w,c] = size(img);
-    if w <= width
-        out = img;
-        return
-    end
-
-    k = min(floor(w/width), h); % a block may not be taller than the image
-    hk = floor(h/k);
-    wk = floor(w/k);
-    x = double(img(1:hk*k, 1:wk*k, :));
-    x = reshape(mean(reshape(x, k, hk, wk*k, c), 1), hk, wk*k, c);  % average down the rows
-    x = reshape(mean(reshape(x, hk, k, wk, c), 2), hk, wk, c);      % then along the columns
-
-    newH = max(1, round(hk * width / wk));
-    [xq,yq] = meshgrid(linspace(1, wk, width), linspace(1, hk, newH));
-    out = zeros(newH, width, c, 'uint8');
-    for ch = 1:c
-        if hk == 1
-            out(:,:,ch) = uint8(round(interp1(1:wk, x(1,:,ch), xq(1,:))));  % interp2 needs two rows
-        else
-            out(:,:,ch) = uint8(round(interp2(x(:,:,ch), xq, yq, 'linear')));
-        end
-    end %for
-end % shrinkToWidth
 
 
 function p = copyPart(src,kind,stageDir,spec)

@@ -38,7 +38,9 @@ function zipPath = zipFolder(dirPath)
     try
         zip(zipPath, names, dirPath);
     catch err
-        deleteQuietly(zipPath); % do not leave a partial archive in tmp
+        if isfile(zipPath) % do not leave a partial archive in tmp
+            delete(zipPath);
+        end
         rethrow(err);
     end
 
@@ -55,21 +57,3 @@ function zipPath = zipFolder(dirPath)
             info.bytes / 1024^2, lim.maxZipBytes / 1024^2);
     end
 end % zipFolder
-
-
-function deleteQuietly(path)
-    % Delete a file if it exists
-    %
-    % function webupload.zipFolder>deleteQuietly(path)
-    %
-    % Purpose
-    % Used to remove a partial zip left behind if zip() fails. Does nothing if the file is
-    % not there.
-    %
-    % Inputs
-    % path - Path to the file to delete.
-
-    if isfile(path)
-        delete(path);
-    end
-end % deleteQuietly

@@ -11,7 +11,7 @@ for BakingTray are in `BakingTray/README.md`.
 
 Requires MATLAB R2019b or later (the oldest release BakingTray supports):
 `matlab.net.http.io.MultipartFormProvider` needs R2019b, and option parsing
-uses `inputParser`, not `arguments` blocks. No toolboxes are needed.
+uses `inputParser`, not `arguments` blocks. The Image Processing Toolbox is needed (imresize makes the thumbnails).
 
 ## Path
 
@@ -89,7 +89,7 @@ about 6 s and posts again, so it can block for about twice those timeouts plus
 | path of a `.jpg` file | copied in as `LastCompleteSection.jpg` |
 
 Whenever an image is staged, a card thumbnail `tile_thumbnail.jpg` (500 px wide,
-aspect ratio kept, made without any toolbox) is staged beside it; the server shows
+aspect ratio kept, made with imresize) is staged beside it; the server shows
 it on the cards instead of the full image. With `[]`, or if the thumbnail cannot
 be made (warning `webupload:stageFiles:thumbnailFailed`), no thumbnail is sent and
 the card shows the full image.
