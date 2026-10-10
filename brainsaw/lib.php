@@ -1464,7 +1464,10 @@ function bs_render_mic_page(array $config, array $view, string $base): void
         <img id="main-image" src="<?= htmlspecialchars($data['main_image_url']) ?>" alt="Last completed section">
       </div>
       <script>
-        $(function () { $('#main-image').imageLens({ lensSize: 220 }); });
+        // No magnifier on touch screens (phones, tablets): there it only gets in the way of scrolling.
+        $(function () {
+          if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) $('#main-image').imageLens({ lensSize: 220 });
+        });
       </script>
     <?php else: ?>
       <div class="placeholder">no image yet</div>
