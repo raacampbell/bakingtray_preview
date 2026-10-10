@@ -1,11 +1,11 @@
-function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
+function result = updateSectionImage(img,varargin)
     % Stage and upload the web preview for one section or run. Never throws
     %
     % function result = webupload.updateSectionImage(img,'Param1',val1,...)
     %
     % Purpose
-    % Sends to the web the last completed section image, or indicates the start or end
-    % of acquisition on the web site.
+    % Sends the last completed section image to the web site, or marks the start or end
+    % of an acquisition on it.
     %
     % This function is integrated into StitchIt, but can be called from BakingTray if
     % StitchIt is co-installed on the acquisition machine to allow BakingTray to also
@@ -18,16 +18,16 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %
     %
     % Inputs (required)
-    % img - a numeric array or the path of a jpg.
-    %   numeric array  - converted with webupload.toUint8
-    %   path of a jpg  - copied in as LastCompleteSection.jpg.
-    % img - can also be empty [] (no image). If empty any image staged by an earlier call
-    % is deleted (after the new files are in place, before the upload), so an old sample's
-    % image can never go up with a new recipe. Use this call at the start of a run, so
-    % the page shows the new recipe.
+    % img - can be:
+    %   1. A numeric array  - converted with webupload.toUint8
+    %   2. A path of a jpg  - copied in as LastCompleteSection.jpg.
+    %   3. Empty, [] (no image). Any image staged by an earlier call is deleted (after
+    %      the new files are in place, before the upload), so an old sample's image can
+    %      never go up with a new recipe. Use [] for the call at the start of a run, so
+    %      the page shows the new recipe.
     %
     %
-    % Inputs (optional param/val pairs: config and meta-data files)
+    % Inputs (optional param/val pairs: config and metadata files)
     % If webupload.updateSectionImage is called from a section directory, it looks for the
     % local recipe file and acquisition log files. This should cover most use cases. These
     % files can optionally be specified here. Similarly, the webupload config file containing
@@ -41,19 +41,19 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     %
     %
     % Inputs (optional param/val pairs: data source)
-    % 'Source' (string)
-    % This is an important setting. It tells the server if the data have from from the
-    % acquisition or analysis PC. If BakingTray is sending the data, then this is treated
-    % as the "ground truth". So if BakingTray reports that the acquisition is finished,
-    % the analysis PC can't revert that. The default for this setting is 'analysis',
-    % because it's more likely people are setting this up for syncAndCrunch and because
-    % we want want to opt into the ground truth state.
-    % Source 'analysis' by default. : with 'acq' the call fails and nothing is staged or sent.
+    % 'Source' (string, 'analysis' or 'acq')
+    % This is an important setting. It tells the server whether the data come from the
+    % acquisition or the analysis PC. Data sent by BakingTray ('acq') are treated as the
+    % "ground truth": if BakingTray reports that the acquisition is finished, the
+    % analysis PC cannot revert that. The default is 'analysis', because it is more
+    % likely that people are setting this up for syncAndCrunch, and because we want
+    % callers to opt in to the ground-truth state.
     %
     %
     % Inputs (optional param/val pairs: others)
-    %'Montage' is the all-depths-one-channel image that syndAndCrunch makes. Only the
-    %    analysis PC may send this. If empty it's just not sent. Empty by default.
+    % 'Montage' is the all-depths-one-channel image that syncAndCrunch makes. Only the
+    %    analysis PC may send this: with Source 'acq' the call fails and nothing is staged
+    %    or sent. If empty it is not sent. Empty by default.
     %
     % 'Finished',true marks the run as ended in status.json. The server answers HTTP 429
     % to an upload that follows another from the same site, microscope and source within
@@ -103,9 +103,9 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % staging, network, a throwing poster) is turned into a warning
     % 'webupload:updateSectionImage:failed' ("id: message") and result.ok = false. The
     % warning call itself is guarded, so warning('error',...) settings cannot make this
-    % function throw. Errors in the arguments img, recipePath, logPath and cfg (which must
-    % be a scalar, valid webConfig; a missing cfg is a failure too) are caught too, but a
-    % path variable that does not exist in the CALLER is an error MATLAB raises before this
+    % function throw. Errors in the arguments (including a cfg that is not a valid
+    % webConfig, or no recipe, log or config file being found) are caught too, but a
+    % variable that does not exist in the CALLER is an error MATLAB raises before this
     % function runs, and cannot be caught here.
     %
     % See also: webupload.clearStage, webupload.stageFiles, webupload.zipAndPost
@@ -138,9 +138,9 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     params.CaseSensitive = false;
 
 
-    params.addParameter('cfg', [], @(x) isempty(x) || isa(cfg,'webupload.webConfig'))
+    params.addParameter('cfg', [], @(x) isempty(x) || isa(x,'webupload.webConfig'))
     params.addParameter('recipePath', [], @(x) isempty(x) || ischar(x))
-    params.addParameter('logPath', [], @(x) isempty(x) || isChar(x))
+    params.addParameter('logPath', [], @(x) isempty(x) || ischar(x))
 
     params.addParameter('Source', 'analysis', @(x) isNonEmptyText(x) && ismember(char(x),{'acq','analysis'}))
 
@@ -151,13 +151,15 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     params.addParameter('DataTimeout', [], isTimeout)
     params.addParameter('Poster', @webupload.zipAndPost, ...
                         @(x) isa(x,'function_handle') && isscalar(x))
+    params.addParameter('StageRoot', tempdir, isNonEmptyText)
     params.addParameter('ClearStage', false, isLogicalScalar)
+
 
     try
         params.parse(varargin{:});
     catch err
         caught = err;
-        result = finalise(result,caught,cfg);
+        result = finalise(result,caught,params.Results.cfg);
         notify(result)
         return
     end
@@ -170,7 +172,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
         recipePath = getRecipeFileName;
     end
     if isempty(recipePath)
-        fprintf('No recipe found by webupload.%s\n',fname)
+        fprintf('No recipe found by webupload.%s\n',mfilename)
         result = finalise(result,[],cfg);
         return
     end
@@ -182,7 +184,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
         end
     end
     if isempty(logPath)
-        fprintf('No logPath found by webupload.%s\n',fname)
+        fprintf('No logPath found by webupload.%s\n',mfilename)
         result = finalise(result,[],cfg);
         return
     end
@@ -190,7 +192,7 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     if isempty(opts.cfg)
         cfgPath = webupload.getConfigFilePath;
         if isempty(cfgPath)
-            fprintf('No config file found by webupload.%s\n',fname)
+            fprintf('No config file found by webupload.%s\n',mfilename)
             result = finalise(result,[],cfg);
             return
         end
@@ -198,7 +200,6 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     end
 
 
-    % hard-code StageRoot
     % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/<source>, with
     % StageRoot defaulting to tempdir. It is reused between calls, so each call replaces
     % the previous files instead of accumulating them. The recipe is always staged afresh
@@ -209,10 +210,8 @@ function result = updateSectionImage(img,recipePath,logPath,cfg,varargin)
     % been checked; to do that without uploading anything, use webupload.clearStage. On a
     % machine where tempdir is shared between users (Linux /tmp) pass a private folder
     % as 'StageRoot'.
-    opts.StageRoot = tempdir;
-
-
     % Build the remaining options structure
+    opts.StageRoot = char(opts.StageRoot);
     opts.Source = char(opts.Source);
     opts.Finished = logical(opts.Finished);
     opts.ClearStage = logical(opts.ClearStage);
@@ -266,7 +265,7 @@ function result = runPipeline(result,img,recipePath,logPath,cfg,opts)
     % recipePath - Path to the recipe file.
     % logPath    - Path to the acquisition log file.
     % cfg        - webupload.webConfig object.
-    % opts       - Options structure from parseOptions.
+    % opts       - Options structure built in updateSectionImage.
     %
     % Outputs
     % result - The input structure with stage, stageDir, recipeFresh, logFresh and stale
@@ -325,7 +324,7 @@ function post = callPoster(opts,stageDir,cfg,micID)
     % appended to the call only when the caller gave them.
     %
     % Inputs
-    % opts     - Options structure from parseOptions: the Poster, Source and PosterArgs
+    % opts     - Options structure built in updateSectionImage: the Poster, Source and PosterArgs
     %            fields are used.
     % stageDir - Char path to the folder to upload.
     % cfg      - webupload.webConfig object.
