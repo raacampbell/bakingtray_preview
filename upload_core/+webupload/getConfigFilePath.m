@@ -11,11 +11,19 @@ function cfgPath = getConfigFilePath(verbose)
         verbose = false;
     end
 
-    cfgPath = which('brainsaw_webpreview.json');
+    configFileFname = 'brainsaw_webpreview.json';
+
+    if iscell(which(configFileFname,'-all'))
+        fprintf('WARRNING: Found %d %s files choosing the first one\n', ...
+            length(which(configFileFname,'-all')), configFileFname);
+    end
+
+    cfgPath = which(configFileFname);
+
 
     if verbose
         if ~isempty(cfgPath)
-            fpintf('webupload config file found at %s\n', cfgPath)
+            fprintf('webupload config file found at %s\n', cfgPath)
         else
             fprintf('No webupload config file found\n')
         end
