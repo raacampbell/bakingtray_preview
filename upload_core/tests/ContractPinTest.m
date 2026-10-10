@@ -5,7 +5,7 @@ classdef ContractPinTest < matlab.unittest.TestCase
 
     methods (Test)
         function copyIsThePinnedVersion(tc)
-            pinned = '6457f1beec63fe182e9afadad392f107b4e7db098fd1847170abc78520d93773';
+            pinned = '0567f43ac37cd53d4a6b72246960ff034115731c2d4832ddf736c5c9ad60d7fb';
             f = fullfile(fileparts(mfilename('fullpath')), 'upload_contract.json');
             fid = fopen(f, 'r');
             bytes = fread(fid, inf, '*uint8');

@@ -256,7 +256,7 @@ function bs_rate_limited(string $sourceDir, int $minInterval): bool
  * whitelist is what keeps executable files off disk. It must equal allowedNames in the shared
  * contract (tests/web/upload_contract.json); check_pages.sh checks that.
  */
-const BS_ZIP_ALLOWED_NAMES = ['LastCompleteSection.jpg', 'tile_thumbnail.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'];
+const BS_ZIP_ALLOWED_NAMES = ['LastCompleteSection.jpg', 'tile_thumbnail.jpg', 'montage.jpg', 'montage_thumbnail.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'];
 
 /** Names every upload must contain. They are parsed in memory, so they are size-capped (BS_ZIP_MAX_TEXT_BYTES). */
 const BS_ZIP_REQUIRED_NAMES = ['recipe.yml', 'status.json'];
@@ -578,6 +578,9 @@ function bs_install_upload(string $tmpDir, string $dir, array $names, string $sa
     if (in_array('LastCompleteSection.jpg', $names, true) && !in_array('tile_thumbnail.jpg', $names, true)) {
         @unlink($dir . '/tile_thumbnail.jpg');
     }
+    if (in_array('montage.jpg', $names, true) && !in_array('montage_thumbnail.jpg', $names, true)) {
+        @unlink($dir . '/montage_thumbnail.jpg'); // likewise for the montage
+    }
     $moved = [];
     foreach ($names as $name) {
         if (!rename($tmpDir . '/' . $name, $dir . '/' . $name)) {
@@ -776,8 +779,9 @@ function bs_displayed_sources(array $config, string $siteId, string $micId): arr
 /**
  * The files a view serves, by the name used in ?f=, for the sources from bs_displayed_sources().
  * Only existing files appear: 'main' (the StitchIt image if there is one, else the BakingTray
- * image), 'bakingtray' (the BakingTray image), 'montage' (the StitchIt montage) and 'tile' (the
- * client-made thumbnail of the card image, from the same folder and only beside it). Recipes and
+ * image), 'bakingtray' (the BakingTray image), 'montage' (the StitchIt montage) 'tile' (the
+ * client-made thumbnail of the card image, from the same folder and only beside it) and 'montage_tile'
+ * (the client-made thumbnail of the montage, likewise). Recipes and
  * logs are never served: a recipe can hold pasted secrets (e.g. a Slack webhook URL); they are
  * only parsed server-side.
  */
@@ -791,6 +795,7 @@ function bs_asset_paths(array $sources): array
         'main' => $file('analysis', 'LastCompleteSection.jpg') ?? $bakingtray,
         'bakingtray' => $bakingtray,
         'montage' => $file('analysis', 'montage.jpg'),
+        'montage_tile' => $file('analysis', 'montage.jpg') !== null ? $file('analysis', 'montage_thumbnail.jpg') : null,
         'tile' => $file($cardSource, 'LastCompleteSection.jpg') !== null ? $file($cardSource, 'tile_thumbnail.jpg') : null,
     ]);
 }
@@ -863,6 +868,7 @@ function bs_load_mic_data(array $config, string $siteId, string $micId, string $
         // Its thumbnail when the client sent one, else the full image.
         'card_image_url' => $url('tile') ?? (isset($sources['acq']) ? $url('bakingtray') : $url('main')),
         'tile_url' => $url('tile'),
+        'montage_tile_url' => $url('montage_tile'),
         'meta_url' => $micUrl . '?f=meta',
         'recipe' => $truth !== null ? bs_parse_recipe($truth['dir'] . '/recipe.yml') : [],
         'acquisition' => bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : ''),
@@ -883,7 +889,7 @@ function bs_render_stats_svg(array $sections, int $width = 900, int $height = 22
         return '<p class="chart-empty">Not enough section-timing data yet to plot.</p>';
     }
 
-    $padL = 46;
+    $padL = 58;
     $padR = 16;
     $padT = 16;
     $padB = 30;
@@ -969,7 +975,7 @@ function bs_render_stats_svg(array $sections, int $width = 900, int $height = 22
         '<polyline points="%s" fill="none" stroke="#6cf" stroke-width="1.6"/>' .
         '%s' .
         '%s' .
-        '<text x="%d" y="14" fill="#aaa" font-size="11">minutes / section</text>' .
+        '<text transform="translate(12,%.1f) rotate(-90)" fill="#aaa" font-size="11" text-anchor="middle">minutes / section</text>' .
         '</svg>',
         $width,
         $height,
@@ -984,7 +990,7 @@ function bs_render_stats_svg(array $sections, int $width = 900, int $height = 22
         $polyline,
         $dots,
         $xLabels,
-        $padL
+        $padT + $plotH / 2
     );
 }
 
@@ -999,10 +1005,10 @@ function bs_render_cumulative_svg(array $sections, int $width = 900, int $height
         return '<p class="chart-empty">Not enough section-timing data yet to plot.</p>';
     }
 
-    $padL = 46;
+    $padL = 58;
     $padR = 16;
     $padT = 16;
-    $padB = 30;
+    $padB = 46;
     $plotW = $width - $padL - $padR;
     $plotH = $height - $padT - $padB;
 
@@ -1055,7 +1061,7 @@ function bs_render_cumulative_svg(array $sections, int $width = 900, int $height
         [$px] = $toPx((float) $xt, 0);
         $xLabels .= sprintf(
             '<text x="%.1f" y="%d" fill="#888" font-size="11" text-anchor="middle">%d</text>',
-            $px, $height - 8, $xt
+            $px, $height - 24, $xt
         );
     }
 
@@ -1066,10 +1072,12 @@ function bs_render_cumulative_svg(array $sections, int $width = 900, int $height
         '<polyline points="%s" fill="none" stroke="#e44" stroke-width="0.8"/>' .
         '<polyline points="%s" fill="none" stroke="#6cf" stroke-width="1.6"/>' .
         '%s' .
-        '<text x="%d" y="14" fill="#aaa" font-size="11">cumulative hours (red: if every section took as long as the longest so far)</text>' .
+        '<text transform="translate(12,%.1f) rotate(-90)" fill="#aaa" font-size="11" text-anchor="middle">cumulative time (hours)</text>' .
+        '<text x="%.1f" y="%d" fill="#aaa" font-size="11" text-anchor="middle">section number</text>' .
+        '<text x="%d" y="14" fill="#e88" font-size="11" text-anchor="end">red: if every section took as long as the longest so far</text>' .
         '</svg>',
         $width, $height, $height, $width, $height,
-        $yLabels, $line($worst), $line($actual), $xLabels, $padL
+        $yLabels, $line($worst), $line($actual), $xLabels, $padT + $plotH / 2, $padL + $plotW / 2, $height - 6, $width - $padR
     );
 }
 
@@ -1367,6 +1375,24 @@ function bs_render_grid(array $config, array $view, string $base): void
 <?php endforeach; ?>
 </div>
 <?php endforeach; ?>
+<div id="overlay" role="dialog" aria-label="Full-size image"><button id="overlay-close" type="button" aria-label="Close">&times;</button><img alt=""></div>
+<script>
+  // A thumbnail marked data-overlay opens its full image over the page; without JS the link opens it as usual.
+  (function () {
+    var overlay = document.getElementById('overlay');
+    var img = overlay.querySelector('img');
+    function close() { overlay.classList.remove('open'); img.removeAttribute('src'); }
+    document.querySelectorAll('a[data-overlay]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        img.src = a.href;
+        overlay.classList.add('open');
+      });
+    });
+    overlay.addEventListener('click', function (e) { if (e.target !== img) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+</script>
 <?= bs_autorefresh_script($autorefreshJs) ?>
 </body>
 </html>
@@ -1431,6 +1457,10 @@ function bs_render_mic_page(array $config, array $view, string $base): void
   .thumbs a { flex: 1 1 240px; max-width: 360px; color: #ccc; text-decoration: none; font-size: 0.85rem; }
   .thumbs img { width: 100%; height: auto; display: block; border: 1px solid #333; background: #000; }
   .placeholder { height: 320px; }
+  #overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  #overlay.open { display: flex; }
+  #overlay img { max-width: 96vw; max-height: 96vh; background: #000; box-shadow: 0 0 24px #000; }
+  #overlay-close { position: absolute; top: 12px; left: 16px; font-size: 2rem; line-height: 1; color: #eee; background: none; border: 0; cursor: pointer; }
 </style>
 </head>
 <body data-server-now="<?= time() ?>">
@@ -1461,8 +1491,9 @@ function bs_render_mic_page(array $config, array $view, string $base): void
     <?php if ($data['thumb_urls']): ?>
       <div class="thumbs">
       <?php foreach ($data['thumb_urls'] as $kind => $thumbUrl): ?>
-        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumbUrl) ?>" target="_blank" rel="noopener noreferrer">
-          <img src="<?= htmlspecialchars($kind === 'bakingtray' && $data['tile_url'] !== null ? $data['tile_url'] : $thumbUrl) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
+        <?php $smallUrl = $kind === 'bakingtray' ? $data['tile_url'] : ($kind === 'montage' ? $data['montage_tile_url'] : null); ?>
+        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumbUrl) ?>" <?= $kind === 'montage' ? 'data-overlay' : 'target="_blank" rel="noopener noreferrer"' ?>>
+          <img src="<?= htmlspecialchars($smallUrl ?? $thumbUrl) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
           <span><?= htmlspecialchars($thumbCaptions[$kind]) ?></span>
         </a>
       <?php endforeach; ?>

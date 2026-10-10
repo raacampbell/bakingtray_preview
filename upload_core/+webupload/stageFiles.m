@@ -9,6 +9,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %   LastCompleteSection.jpg   from img, if given
     %   tile_thumbnail.jpg        made from img, if given (see THUMBNAIL below)
     %   montage.jpg               from the 'Montage' image, if given
+    %   montage_thumbnail.jpg     made from the 'Montage' image, if given (as the thumbnail above)
     %   recipe.yml                copy of the recipe, whatever the source extension
     %   acqLog.txt                copy of the log
     % status.json is written separately, by webupload.writeStatus.
@@ -28,7 +29,8 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     % only ever staged together with the image it was made from: when img is [], or the
     % thumbnail cannot be made (warning 'webupload:stageFiles:thumbnailFailed', not a stage
     % failure), or the image is not renamed into place, any staged thumbnail is deleted.
-    % The server then shows the full image on the card.
+    % The server then shows the full image on the card. The montage thumbnail follows the same
+    % rules with the montage.
     %
     % FAILURE POLICY: a preview must never abort an acquisition, so any error in reading
     % a recipe to compare sample IDs counts as "not the same sample", and
@@ -72,6 +74,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     %   files         - full paths renamed into place.
     %   mainStaged    - logical.
     %   thumbnailStaged - logical.
+    %   montageThumbnailStaged - logical.
     %   montageStaged - logical.
     %   recipeStaged  - logical.
     %   logStaged     - logical.
@@ -103,7 +106,7 @@ function result = stageFiles(img,recipePath,logPath,stageDir,varargin)
     mainSrc = imageSource(img,params.Results.Range);
     montageSrc = imageSource(params.Results.Montage,params.Results.Range);
 
-    result = struct('files', {{}}, 'mainStaged', false, 'thumbnailStaged', false, 'montageStaged', false, ...
+    result = struct('files', {{}}, 'mainStaged', false, 'thumbnailStaged', false, 'montageStaged', false, 'montageThumbnailStaged', false, ...
                     'recipeStaged', false, 'logStaged', false, 'logKept', false, ...
                     'recipeSource', '', 'stageOk', true);
     try
@@ -219,8 +222,9 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
     cleanup = onCleanup(@() cellfun(@(f) delete(f), partPaths(cellfun(@isfile,partPaths))));
 
     parts = [imagePart(mainSrc,'Main',stageDir,spec), ...
-             thumbnailPart(mainSrc,stageDir,spec), ...
+             thumbnailPart(mainSrc,'Thumbnail',stageDir,spec), ...
              imagePart(montageSrc,'Montage',stageDir,spec), ...
+             thumbnailPart(montageSrc,'MontageThumbnail',stageDir,spec), ...
              copyPart(recipeFile,'Recipe',stageDir,spec), ...
              copyPart(logFile,'Log',stageDir,spec)];
 
@@ -240,12 +244,14 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
     % not. A thumbnail is only kept beside the image it was made from.
     staged = result.files;
     mainStaged = ismember(fullfile(stageDir,spec.Names.Main),staged);
+    montageStaged = ismember(fullfile(stageDir,spec.Names.Montage),staged);
     for kind = fieldnames(spec.Names)'
         final = fullfile(stageDir,spec.Names.(kind{1}));
         if strcmp(kind{1},'Log') && keepLog
             continue
         end
-        stale = ~ismember(final,staged) || (strcmp(kind{1},'Thumbnail') && ~mainStaged);
+        stale = ~ismember(final,staged) || (strcmp(kind{1},'Thumbnail') && ~mainStaged) ...
+                || (strcmp(kind{1},'MontageThumbnail') && ~montageStaged);
         if stale && isfile(final)
             delete(final)
             if isfile(final)
@@ -256,7 +262,8 @@ function result = stageOnDisk(result,mainSrc,montageSrc,recipePath,logPath,stage
 
     result.mainStaged = mainStaged;
     result.thumbnailStaged = mainStaged && isfile(fullfile(stageDir,spec.Names.Thumbnail));
-    result.montageStaged = ismember(fullfile(stageDir,spec.Names.Montage),staged);
+    result.montageStaged = montageStaged;
+    result.montageThumbnailStaged = montageStaged && isfile(fullfile(stageDir,spec.Names.MontageThumbnail));
     result.recipeStaged = ismember(fullfile(stageDir,spec.Names.Recipe),staged);
     result.logStaged = ismember(fullfile(stageDir,spec.Names.Log),staged);
     result.logKept = ~result.logStaged && isfile(fullfile(stageDir,spec.Names.Log));
@@ -366,10 +373,10 @@ function p = imagePart(src,kind,stageDir,spec)
 end % imagePart
 
 
-function p = thumbnailPart(src,stageDir,spec)
-    % Write the card thumbnail of the main image to its '.part' name
+function p = thumbnailPart(src,kind,stageDir,spec)
+    % Write the thumbnail of an image to its '.part' name
     %
-    % function p = webupload.stageFiles>thumbnailPart(src,stageDir,spec)
+    % function p = webupload.stageFiles>thumbnailPart(src,kind,stageDir,spec)
     %
     % Purpose
     % The thumbnail is a convenience: if it cannot be made (an unreadable jpg, a failed
@@ -377,7 +384,9 @@ function p = thumbnailPart(src,stageDir,spec)
     % caller deletes any old thumbnail and the server shows the full image instead.
     %
     % Inputs
-    % src      - [] (nothing to do), the uint8 main image, or the path of the main jpg.
+    % src      - [] (nothing to do), the uint8 image, or the path of the jpg.
+    % kind     - 'Thumbnail' (of the main image) or 'MontageThumbnail': the field of
+    %            spec.Names giving the final name.
     % stageDir - Char path to the stage folder.
     % spec     - Structure from webupload.stageSpec.
     %
@@ -390,7 +399,7 @@ function p = thumbnailPart(src,stageDir,spec)
         return
     end
 
-    part = fullfile(stageDir,[spec.Names.Thumbnail spec.PartSuffix]);
+    part = fullfile(stageDir,[spec.Names.(kind) spec.PartSuffix]);
     try
         if ischar(src)
             src = imread(src);
@@ -401,10 +410,10 @@ function p = thumbnailPart(src,stageDir,spec)
         imwrite(shrinkToWidth(src,spec.ThumbnailWidth),part,'jpg','Quality',spec.JpegQuality);
     catch ME
         warning('webupload:stageFiles:thumbnailFailed', ...
-            'Card thumbnail not staged (%s); the server will show the full image.', ME.message)
+            '%s not staged (%s); the server will show the full image.', spec.Names.(kind), ME.message)
         return
     end %try
-    p = struct('kind', 'Thumbnail', 'part', part);
+    p = struct('kind', kind, 'part', part);
 end % thumbnailPart
 
 

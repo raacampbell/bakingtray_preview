@@ -202,6 +202,15 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyFalse(isfile(fullfile(tc.Stage, 'tile_thumbnail.jpg')));
         end
 
+        function montageThumbnailIs500WideAndGoneWithTheMontage(tc)
+            tc.stageOut(uint8(ones(8)), tc.Recipe, tc.Log, 'Montage', uint8(randi(255, 1000, 2000)));
+            info = imfinfo(fullfile(tc.Stage, 'montage_thumbnail.jpg'));
+            tc.verifyEqual([info.Width info.Height], [500 250]);
+            tc.stageOut(uint8(ones(8)), tc.Recipe, tc.Log);
+            tc.verifyFalse(isfile(fullfile(tc.Stage, 'montage.jpg')));
+            tc.verifyFalse(isfile(fullfile(tc.Stage, 'montage_thumbnail.jpg')));
+        end
+
         function unreadableJpgWarnsAndDropsTheOldThumbnail(tc)
             tc.stage(uint8(ones(10, 1000)));
             bad = fullfile(tc.Dir, 'bad.jpg');
@@ -218,9 +227,9 @@ classdef StageFilesTest < matlab.unittest.TestCase
         function filesHaveTheNamesTheServerKeeps(tc)
             r = tc.stageOut(uint8(ones(8)), tc.Recipe, tc.Log, 'Montage', uint8(ones(8)));
             tc.verifyEqual(tc.stagedNames(), ...
-                {'LastCompleteSection.jpg', 'acqLog.txt', 'montage.jpg', 'recipe.yml', 'tile_thumbnail.jpg'});
-            tc.verifyTrue(r.mainStaged && r.thumbnailStaged && r.montageStaged && r.recipeStaged && r.logStaged && r.stageOk);
-            tc.verifyNumElements(r.files, 5);
+                {'LastCompleteSection.jpg', 'acqLog.txt', 'montage.jpg', 'montage_thumbnail.jpg', 'recipe.yml', 'tile_thumbnail.jpg'});
+            tc.verifyTrue(r.mainStaged && r.thumbnailStaged && r.montageStaged && r.montageThumbnailStaged && r.recipeStaged && r.logStaged && r.stageOk);
+            tc.verifyNumElements(r.files, 6);
             tc.verifyTrue(all(cellfun(@isfile, r.files)));
         end
 

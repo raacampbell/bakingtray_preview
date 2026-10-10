@@ -8,7 +8,7 @@ function names = allowedNames()
     % server's BS_ZIP_ALLOWED_NAMES must match it, and a test checks this copy against it.
     %
     % Outputs
-    % names - cell row of the six file names the server extracts from an upload.
+    % names - cell row of the seven file names the server extracts from an upload.
 
-    names = {'LastCompleteSection.jpg', 'tile_thumbnail.jpg', 'montage.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'};
+    names = {'LastCompleteSection.jpg', 'tile_thumbnail.jpg', 'montage.jpg', 'montage_thumbnail.jpg', 'recipe.yml', 'acqLog.txt', 'status.json'};
 end % allowedNames

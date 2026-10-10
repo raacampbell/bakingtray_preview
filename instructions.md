@@ -185,7 +185,9 @@ folder, `system_data/<site_id>/<microscope_id>/<source>/`.
 
 The server extracts the zip into a temporary folder, keeping only these exact base file names
 (flattened; everything else, such as a stray `.php` or `.htaccess`, is dropped):
-`LastCompleteSection.jpg`, `tile_thumbnail.jpg`, `montage.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
+`LastCompleteSection.jpg`, `tile_thumbnail.jpg`, `montage.jpg`, `montage_thumbnail.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
+`montage_thumbnail.jpg` is the same for the montage: the page shows it in the strip, and clicking it opens
+the full montage over the page (cross top-left, Esc or a click outside closes it).
 `tile_thumbnail.jpg` is an optional small copy of the section image, made by the client, which
 the cards show instead of the full image (an upload with a new section image but no thumbnail
 removes the old thumbnail, so a card never shows an older section).
@@ -315,7 +317,7 @@ grid only after a manual reload.
 ## 10. The shared contract with the client
 
 `tests/web/upload_contract.json` holds what the server and the MATLAB client must agree on: the
-recipe ID rule (its `rule` text) with its test cases, the six file names, the zip size limit
+recipe ID rule (its `rule` text) with its test cases, the seven file names, the zip size limit
 and the minimum upload interval. The server owns it. The client keeps a copy in its tests folder
 (`upload_core/tests/upload_contract.json` here; in StitchIt once the package moves).
 

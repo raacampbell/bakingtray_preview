@@ -141,9 +141,10 @@ wins. In particular: the source is a form field (not text added to the zip name)
   warns. The server checks that the normalised `SYSTEM.ID` in the uploaded `recipe.yml` equals `microscope_id`, and
   refuses with 400 otherwise.
 - Zip contents: only these names are extracted, anything else is skipped:
-  `LastCompleteSection.jpg`, `tile_thumbnail.jpg`, `montage.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
+  `LastCompleteSection.jpg`, `tile_thumbnail.jpg`, `montage.jpg`, `montage_thumbnail.jpg`, `recipe.yml`, `acqLog.txt`, `status.json`.
   `tile_thumbnail.jpg` (added 2026-10-09): optional, made by the client, about 500 px wide; the card shows it instead
   of the full image. A new section image without one removes the old one.
+  `montage_thumbnail.jpg` (added 2026-10-10): the same for `montage.jpg`; the page shows it and opens the full montage in an overlay.
   `recipe.yml` and `status.json` are required in every upload (400 if missing). The recipe is always sent as
   `recipe.yml`, whatever the source file's extension.
 - `status.json`: `{"finished": true|false}`. Unknown keys are ignored, so more can be added later.
