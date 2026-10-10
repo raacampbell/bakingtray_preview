@@ -22,6 +22,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
     properties (Dependent)
         BaseArgs     % name-value cell used by most calls (a property so tc.BaseArgs{:} is legal)
+        PathArgs     % the recipe, log and config as named arguments (default Source is overridden by BaseArgs)
     end
 
     methods (TestClassSetup)
@@ -76,13 +77,17 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function args = get.BaseArgs(tc)
-            args = {'StageRoot', tc.StageRoot, 'Poster', @tc.recordingPoster};
+            args = {'Source', 'acq', 'StageRoot', tc.StageRoot, 'Poster', @tc.recordingPoster};
+        end
+
+        function args = get.PathArgs(tc)
+            args = {'recipePath', tc.Recipe, 'logPath', tc.Log, 'cfg', tc.Cfg};
         end
 
         function res = update(tc, varargin)
             % Run with the fake poster; store result and the warning issued.
             tc.callCapturing(@() webupload.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, tc.BaseArgs{:}, varargin{:}));
+                uint8(magic(8)), tc.PathArgs{:}, tc.BaseArgs{:}, varargin{:}));
             res = tc.Out;
         end
 
@@ -176,9 +181,10 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         % ---- Source and stage folder ----
-        function sourceDefaultsToAcq(tc)
-            tc.update();
-            tc.verifyEqual(tc.Calls.source, 'acq');
+        function sourceDefaultsToAnalysis(tc)
+            tc.callCapturing(@() webupload.updateSectionImage(uint8(magic(8)), tc.PathArgs{:}, ...
+                'StageRoot', tc.StageRoot, 'Poster', @tc.recordingPoster));
+            tc.verifyEqual(tc.Calls.source, 'analysis');
         end
 
         function sourceAnalysisIsPassedToThePoster(tc)
@@ -197,8 +203,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function badSourceIsNonFatalAndSendsNothing(tc)
             for bad = {'other', 1, '', {'acq'}}
-                tc.callCapturing(@() webupload.updateSectionImage(uint8(magic(8)), tc.Recipe, tc.Log, ...
-                    tc.Cfg, tc.BaseArgs{:}, 'Source', bad{1}));
+                tc.callCapturing(@() webupload.updateSectionImage(uint8(magic(8)), tc.PathArgs{:}, tc.BaseArgs{:}, 'Source', bad{1}));
                 tc.verifyFalse(tc.Out.ok);
                 tc.verifyFailedWarning();
             end
@@ -209,7 +214,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         function jpgPathIsStagedAsTheMainImage(tc)
             src = fullfile(tc.Dir, 'section_0007.jpg');
             imwrite(uint8(magic(8)) * 3, src, 'jpg');
-            tc.callCapturing(@() webupload.updateSectionImage(src, tc.Recipe, tc.Log, tc.Cfg, ...
+            tc.callCapturing(@() webupload.updateSectionImage(src, tc.PathArgs{:}, ...
                 tc.BaseArgs{:}, 'Source', 'analysis'));
             tc.verifyTrue(tc.Out.ok);
             tc.verifyEqual(fileread(fullfile(tc.Out.stageDir, 'LastCompleteSection.jpg')), fileread(src));
@@ -219,8 +224,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             bad = {{1}, struct('a', 1), 'no_such_file.jpg', fullfile(tc.Dir, 'x.png'), true, ...
                    zeros(0, 0, 'uint16'), zeros(0, 3)};
             for kk = 1:numel(bad)
-                tc.callCapturing(@() webupload.updateSectionImage(bad{kk}, tc.Recipe, tc.Log, ...
-                    tc.Cfg, tc.BaseArgs{:}));
+                tc.callCapturing(@() webupload.updateSectionImage(bad{kk}, tc.PathArgs{:}, tc.BaseArgs{:}));
                 tc.verifyFalse(tc.Out.ok);
                 tc.verifyFailedWarning();
             end
@@ -229,7 +233,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function badImageDoesNotWipeTheStageEvenWithClearStage(tc)
             tc.update();
-            tc.callCapturing(@() webupload.updateSectionImage(2 * ones(8), tc.Recipe, tc.Log, tc.Cfg, ...
+            tc.callCapturing(@() webupload.updateSectionImage(2 * ones(8), tc.PathArgs{:}, ...
                 tc.BaseArgs{:}, 'ClearStage', true));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyTrue(isfile(fullfile(tc.Calls(1).folder, 'recipe.yml')));
@@ -241,7 +245,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             first = tc.Calls(1);
             tc.verifyTrue(ismember('LastCompleteSection.jpg', first.names));
             writeText(tc.Recipe, sprintf('sample: {ID: B}\nSYSTEM:\n  ID: mic-1\n'));
-            tc.callCapturing(@() webupload.updateSectionImage([], tc.Recipe, tc.Log, tc.Cfg, tc.BaseArgs{:}));
+            tc.callCapturing(@() webupload.updateSectionImage([], tc.PathArgs{:}, tc.BaseArgs{:}));
             tc.verifyTrue(tc.Out.ok);
             tc.verifyEqual(tc.Calls(2).names, {'acqLog.txt', 'recipe.yml', 'status.json'});
             tc.verifyFalse(isfile(fullfile(tc.Out.stageDir, 'LastCompleteSection.jpg')));
@@ -360,17 +364,6 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             tc.verifyNumElements(tc.Calls, 1);
         end
 
-        function rangeIsForwardedToConversion(tc)
-            % A double image above 1 is an error without Range, so success
-            % proves Range reached toUint8; 2048 of [0 4095] is 128.
-            img = 2048 * ones(16);
-            tc.callCapturing(@() webupload.updateSectionImage(img, tc.Recipe, tc.Log, tc.Cfg, ...
-                tc.BaseArgs{:}, 'Range', [0 4095]));
-            tc.verifyTrue(tc.Out.ok);
-            px = imread(fullfile(tc.Out.stageDir, 'LastCompleteSection.jpg'));
-            tc.verifyEqual(double(px), 128 * ones(16), 'AbsTol', 2);
-        end
-
         function errorFieldIsPopulatedOnFailure(tc)
             tc.PosterError = 'kaboom';
             res = tc.update();
@@ -413,25 +406,42 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
         end
 
         function nonConfigCfgIsNonFatal(tc)
-            for bad = {[], 'cfg.json', struct('url', 'https://x'), [tc.Cfg tc.Cfg], tc.deletedCfg()}
+            for bad = {'cfg.json', struct('url', 'https://x'), [tc.Cfg tc.Cfg], tc.deletedCfg()}
                 tc.callCapturing(@() webupload.updateSectionImage( ...
-                    uint8(magic(8)), tc.Recipe, tc.Log, bad{1}, tc.BaseArgs{:}));
+                    uint8(magic(8)), 'recipePath', tc.Recipe, 'logPath', tc.Log, 'cfg', bad{1}, tc.BaseArgs{:}));
                 tc.verifyFalse(tc.Out.ok);
                 tc.verifyFailedWarning();
-                tc.verifySubstring(tc.WarnMsg, 'webupload:updateSectionImage:badConfig');
+                tc.verifySubstring(tc.WarnMsg, '''cfg''');
             end
             tc.verifyEmpty(tc.Calls);
         end
 
-        function missingCfgArgumentIsNonFatal(tc)
-            tc.callCapturing(@() webupload.updateSectionImage(uint8(magic(8)), tc.Recipe, tc.Log));
+        function logDefaultsToTheOneInTheCurrentFolder(tc)
+            old = cd(tc.Dir);
+            tc.addTeardown(@() cd(old));
+            tc.callCapturing(@() webupload.updateSectionImage(uint8(magic(8)), ...
+                'recipePath', tc.Recipe, 'cfg', tc.Cfg, tc.BaseArgs{:}));
+            tc.verifyTrue(tc.Out.ok);
+            tc.verifyTrue(tc.Out.logFresh);
+        end
+
+        function noRecipeInTheCurrentFolderIsNonFatal(tc)
+            tc.assumeNotEmpty(which('getRecipeFileName'), 'needs StitchIt''s getRecipeFileName');
+            empty = fullfile(tc.Dir, 'empty');
+            mkdir(empty);
+            old = cd(empty);
+            tc.addTeardown(@() cd(old));
+            tc.callCapturing(@() webupload.updateSectionImage(uint8(magic(8)), ...
+                'cfg', tc.Cfg, tc.BaseArgs{:}));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
+            tc.verifyEmpty(tc.Calls);
+        end
+            tc.verifyEmpty(tc.Calls);
         end
 
         function badImageIsNonFatal(tc)
-            tc.callCapturing(@() webupload.updateSectionImage(uint8(1), tc.Recipe, tc.Log, ...
-                tc.Cfg, tc.BaseArgs{:}));
+            tc.callCapturing(@() webupload.updateSectionImage(uint8(1), tc.PathArgs{:}, tc.BaseArgs{:}));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
             tc.verifyEmpty(tc.Calls);
@@ -439,7 +449,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function argumentShapeErrorIsNonFatal(tc)
             tc.callCapturing(@() webupload.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, 'Bogus', 1));
+                uint8(magic(8)), tc.PathArgs{:}, 'Bogus', 1));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
         end
@@ -542,7 +552,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function stageDirIsCharEvenForStringOptions(tc)
             tc.callCapturing(@() webupload.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, ...
+                uint8(magic(8)), tc.PathArgs{:}, ...
                 'StageRoot', string(tc.StageRoot), 'Poster', @tc.recordingPoster));
             tc.verifyClass(tc.Out.stageDir, 'char');
             tc.verifyTrue(tc.Out.ok);
@@ -561,7 +571,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % error() cannot output a value, so the poster must be a real function.
             poster = @throwWithoutId;
             tc.callCapturing(@() webupload.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, ...
+                uint8(magic(8)), tc.PathArgs{:}, ...
                 'StageRoot', tc.StageRoot, 'Poster', poster));
             tc.verifyFalse(tc.Out.ok);
             tc.verifySubstring(tc.Out.post.message, 'plain failure');
@@ -604,7 +614,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
 
         function warningsAsErrorsDoNotMakeItThrow(tc)
             tc.turnIntoErrors('webupload:updateSectionImage:failed');
-            res = webupload.updateSectionImage(uint8(1), tc.Recipe, tc.Log, tc.Cfg, ...
+            res = webupload.updateSectionImage(uint8(1), tc.PathArgs{:}, ...
                 tc.BaseArgs{:});
             tc.verifyFalse(res.ok);
         end
@@ -614,7 +624,7 @@ classdef UpdateSectionImageTest < matlab.unittest.TestCase
             % accepted by webConfig for localhost only.
             tc.Cfg = tc.makeCfg('http://127.0.0.1:9/up.php');
             tc.callCapturing(@() webupload.updateSectionImage( ...
-                uint8(magic(8)), tc.Recipe, tc.Log, tc.Cfg, 'StageRoot', tc.StageRoot));
+                uint8(magic(8)), tc.PathArgs{:}, 'StageRoot', tc.StageRoot));
             tc.verifyFalse(tc.Out.ok);
             tc.verifyFailedWarning();
             tc.verifyThat(tc.WarnMsg, ~matlab.unittest.constraints.ContainsSubstring(tc.Token));

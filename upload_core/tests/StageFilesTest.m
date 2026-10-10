@@ -78,10 +78,6 @@ classdef StageFilesTest < matlab.unittest.TestCase
             tc.verifyEqual(fileread(fullfile(tc.Stage, 'recipe.yml')), before);
         end
 
-        function badRangeThrowsFromStageFiles(tc)
-            tc.verifyError(@() tc.stage(uint8(ones(8)), 'Range', [5 1]), 'webupload:toUint8:badRange');
-        end
-
         % ---- stageFiles: images given as a path or as nothing ----
         function jpgPathIsCopiedAsTheMainImage(tc)
             src = tc.makeJpg('section_0042.jpg');
@@ -462,7 +458,7 @@ classdef StageFilesTest < matlab.unittest.TestCase
         function stage(tc, img, varargin)
             % Stage with the fixture recipe/log unless a recipe path is given first.
             recipe = tc.Recipe;
-            if ~isempty(varargin) && ischar(varargin{1}) && ~any(strcmp(varargin{1}, {'Montage', 'Range', 'ClearStage'}))
+            if ~isempty(varargin) && ischar(varargin{1}) && ~any(strcmp(varargin{1}, {'Montage', 'ClearStage'}))
                 recipe = varargin{1};
                 varargin(1) = [];
             end

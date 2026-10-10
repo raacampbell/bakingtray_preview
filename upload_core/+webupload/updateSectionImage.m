@@ -35,7 +35,8 @@ function result = updateSectionImage(img,varargin)
     % required.
     %
     % 'recipePath' - Path to the recipe file.
-    % 'logPath'    - Path to the acquisition log file.
+    % 'logPath'    - Path to the acquisition log file. If not given, the one acqLog_*.txt in the
+    %             current folder. If there is none, or several, no log is sent.
     % 'cfg'        - webupload.webConfig object. If not supplied, the function looks for a
     %             file called "brainsaw_webpreview.json" and builds the object from that.
     %
@@ -118,6 +119,7 @@ function result = updateSectionImage(img,varargin)
         'stageDir', '', 'recipeFresh', false, 'logFresh', false, 'stale', false, ...
         'error', []);
     caught = [];
+    cfg = [];
 
     % ---
     % Parse the input arguments
@@ -138,7 +140,7 @@ function result = updateSectionImage(img,varargin)
     params.CaseSensitive = false;
 
 
-    params.addParameter('cfg', [], @(x) isempty(x) || isa(x,'webupload.webConfig'))
+    params.addParameter('cfg', [], @(x) isempty(x) || (isa(x,'webupload.webConfig') && isscalar(x) && isvalid(x)))
     params.addParameter('recipePath', [], @(x) isempty(x) || ischar(x))
     params.addParameter('logPath', [], @(x) isempty(x) || ischar(x))
 
@@ -158,80 +160,63 @@ function result = updateSectionImage(img,varargin)
     try
         params.parse(varargin{:});
     catch err
-        caught = err;
-        result = finalise(result,caught,params.Results.cfg);
+        result = finalise(result,err,[]);
         notify(result)
         return
     end
-
-    % Further processing of the inputs
     opts = params.Results;
 
-    % Handle config or meta-data files
-    if isempty(opts.recipePath)
-        recipePath = getRecipeFileName;
-    end
-    if isempty(recipePath)
-        fprintf('No recipe found by webupload.%s\n',mfilename)
-        result = finalise(result,[],cfg);
-        return
-    end
-
-    if isempty(opts.logPath)
-        d = dir('acqLog_*.txt');
-        if length(d) == 1
-            logPath = d.name;
-        end
-    end
-    if isempty(logPath)
-        fprintf('No logPath found by webupload.%s\n',mfilename)
-        result = finalise(result,[],cfg);
-        return
-    end
-
-    if isempty(opts.cfg)
-        cfgPath = webupload.getConfigFilePath;
-        if isempty(cfgPath)
-            fprintf('No config file found by webupload.%s\n',mfilename)
-            result = finalise(result,[],cfg);
-            return
-        end
-        cfg = webupload.webConfig(cfgPath);
-    end
-
-
-    % The stage folder is <StageRoot>/brainsaw_webpreview/<siteID>/<micID>/<source>, with
-    % StageRoot defaulting to tempdir. It is reused between calls, so each call replaces
-    % the previous files instead of accumulating them. The recipe is always staged afresh
-    % from recipePath. If a new log cannot be staged, the previous copy stays and is
-    % uploaded only if the previously staged recipe has the same sample ID as the new
-    % one; otherwise no log is uploaded. Either way this is reported (see result.stale).
-    % 'ClearStage',true empties the managed stage folder first, once the arguments have
-    % been checked; to do that without uploading anything, use webupload.clearStage. On a
-    % machine where tempdir is shared between users (Linux /tmp) pass a private folder
-    % as 'StageRoot'.
-    % Build the remaining options structure
-    opts.StageRoot = char(opts.StageRoot);
-    opts.Source = char(opts.Source);
-    opts.Finished = logical(opts.Finished);
-    opts.ClearStage = logical(opts.ClearStage);
-
-    opts.PosterArgs = {};
-    for name = {'ConnectTimeout','ResponseTimeout','DataTimeout'}
-        if ~isempty(opts.(name{1}))
-            opts.PosterArgs = [opts.PosterArgs, name, {opts.(name{1})}];
-        end
-    end
-
-
-    % ---
-    % Run the stage and upload operation
     try
+        % Recipe, log and config: those given by name, else the ones found from the current folder
+        recipePath = opts.recipePath;
+        if isempty(recipePath)
+            recipePath = getRecipeFileName;
+        end
+        if isempty(recipePath)
+            error('webupload:updateSectionImage:noRecipe', 'No recipe file found.')
+        end
+
+        % The log is optional (stageFiles warns, and keeps the previous log for the same sample)
+        logPath = opts.logPath;
+        if isempty(logPath)
+            d = dir('acqLog_*.txt');
+            if isscalar(d)
+                logPath = fullfile(d.folder,d.name);
+            else
+                logPath = '';
+                if ~isempty(d)
+                    warning('webupload:updateSectionImage:manyLogs', ...
+                        'Found %d acqLog_*.txt files; no log sent.', numel(d))
+                end
+            end
+        end
+
+        cfg = opts.cfg;
+        if isempty(cfg)
+            cfgPath = webupload.getConfigFilePath;
+            if isempty(cfgPath)
+                error('webupload:updateSectionImage:noConfig', ...
+                    'No brainsaw_webpreview.json found on the MATLAB path.')
+            end
+            cfg = webupload.webConfig(cfgPath);
+        end
+
+        opts.StageRoot = char(opts.StageRoot);
+        opts.Source = char(opts.Source);
+        opts.Finished = logical(opts.Finished);
+        opts.ClearStage = logical(opts.ClearStage);
+
+        opts.PosterArgs = {};
+        for name = {'ConnectTimeout','ResponseTimeout','DataTimeout'}
+            if ~isempty(opts.(name{1}))
+                opts.PosterArgs = [opts.PosterArgs, name, {opts.(name{1})}];
+            end
+        end
+
         result = runPipeline(result,img,recipePath,logPath,cfg,opts);
     catch err
         caught = err;
     end %try
-
 
     % report the results
     result = finalise(result,caught,cfg);
