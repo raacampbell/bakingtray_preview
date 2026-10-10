@@ -50,7 +50,9 @@ the transfer of the upload itself; a warning `webupload:postZip:noTimeout`
 is issued if this release lacks either property. Redirects are never followed
 (the token must not be re-sent elsewhere); a 3xx reply is a failure.
 
-Build the config object once, at startup, and keep it:
+`updateSectionImage` builds the config object itself from `brainsaw_webpreview.json`, found on
+the MATLAB path (it should appear in one place only; the first is used, with a warning if
+there are more). To use another file, build the object once and pass it with `'cfg'`:
 
 ```matlab
 cfg = webupload.webConfig(file);       % the path is required
@@ -66,8 +68,12 @@ text, so they are safe even if the JSON cannot be parsed.
 
 ## Updating the web preview
 
-`res = webupload.updateSectionImage(img, recipePath, logPath, cfg, 'Source', src, ...)`
-is the call instrument and analysis code make. It stages the files, writes
+`res = webupload.updateSectionImage(img, 'Source', src, ...)`
+is the call instrument and analysis code make. Run it from the section folder:
+it finds the recipe (StitchIt's `getRecipeFileName`) and the acquisition log (the one
+`acqLog_*.txt` in the folder), and the config file (`brainsaw_webpreview.json`, found on the
+MATLAB path; see `webupload.getConfigFilePath`). Pass `'recipePath'`, `'logPath'` or `'cfg'`
+(a `webupload.webConfig` object) to use others. It stages the files, writes
 `status.json`, zips and uploads, and **never throws**: any problem becomes a
 warning `webupload:updateSectionImage:failed` (`id: message`) and `res.ok =
 false`, so an acquisition is never interrupted. (It cannot catch a path
@@ -94,13 +100,15 @@ it on the cards instead of the full image. With `[]`, or if the thumbnail cannot
 be made (warning `webupload:stageFiles:thumbnailFailed`), no thumbnail is sent and
 the card shows the full image.
 
-Anything else makes the call fail. `recipePath` is the recipe file and
-`logPath` the acquisition log. The microscope ID is `SYSTEM.ID` of the recipe
+Anything else makes the call fail. The microscope ID is `SYSTEM.ID` of the recipe
 (`readRecipe`); if it is missing or invalid nothing is staged or sent.
 
 | option | meaning |
 | --- | --- |
-| `Source` | `'acq'` (default) or `'analysis'` |
+| `recipePath` | path of the recipe file; default: the recipe found in the current folder |
+| `logPath` | path of the acquisition log; default: the one `acqLog_*.txt` in the current folder |
+| `cfg` | `webupload.webConfig` object; default: built from `brainsaw_webpreview.json` on the MATLAB path |
+| `Source` | `'analysis'` (default, StitchIt) or `'acq'` (BakingTray must pass this). `'acq'` is the ground truth for the finished state: an `analysis` upload cannot undo it |
 | `Montage` | image to send as `montage.jpg`, as for `img` (array or jpg path). Only with `Source` `'analysis'`: with `'acq'` the call fails and sends nothing |
 | `Finished` | `true` writes `{"finished": true}` into `status.json` (default `false`). Only a Finished call is retried, once, after a 429, waiting this client's copy of the server's minimum upload interval (`serverLimits().minUploadIntervalSec`, 5 s) plus 1 s, with the same timeouts. A site that raises the interval on the server will answer the retry with another 429, and the Finished flag is lost (`ok` false, with the usual warning) |
 | `ConnectTimeout`, `ResponseTimeout`, `DataTimeout` | seconds, for this call only (see `postZip`; whether `ResponseTimeout` and `DataTimeout` cover the upload transfer itself is unverified) |
@@ -130,7 +138,7 @@ the stage folder: it holds fixed file names that are overwritten or deleted. Two
 `webupload.clearStage(cfg, micID, 'Source', src)` empties it without
 uploading anything; it never throws (warning `webupload:clearStage:failed`).
 
-`webupload.stageFiles(img, recipePath, logPath, stageDir)` is usable alone. It
+`webupload.stageFiles(img, recipePath, logPath, stageDir)` is usable alone and still takes the paths. It
 writes `LastCompleteSection.jpg` and its thumbnail `tile_thumbnail.jpg`, `montage.jpg` (if given), `recipe.yml` and
 `acqLog.txt` under temporary `.part` names and renames them into place, so a
 zip taken meanwhile never sees a half-written file. Files in the stage with
@@ -139,7 +147,9 @@ other names are left alone: the server ignores them.
 ### Images that are not uint8
 
 uint8 is used as is. uint16 and int16 are autoscaled to `[0 max(img)]`, so
-11-14 bit camera data is not near-black; negatives clamp to 0. 
+11-14 bit camera data is not near-black; negatives clamp to 0. There is no option
+to fix the mapping: scale the image before the call if brightness must not vary
+between sections. Details: `help webupload.toUint8`.
 
 ## Uploading a folder
 

@@ -31,7 +31,7 @@ response and data timeouts cover the transfer of the upload itself, so treat
 ```matlab
 if ~isempty(which('webupload.updateSectionImage'))
     try
-        webupload.updateSectionImage([], recipePath, logPath, cfg, 'ClearStage', true, ...
+        webupload.updateSectionImage([], 'Source', 'acq', 'recipePath', recipePath, 'logPath', logPath, 'cfg', cfg, 'ClearStage', true, ...
             'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
@@ -42,14 +42,14 @@ end
 ### After each section (`sliceSample.m`, during the cut)
 
 `img` is the latest section image (gray HxW or RGB HxWx3). Non-uint8 images are
-autoscaled; pass `'Range', [0 4095]` for a fixed mapping (see
+autoscaled per image; scale the image before the call if a fixed mapping is wanted (see
 `upload_core/README.md`).
 
 ```matlab
 if ~isempty(which('webupload.updateSectionImage'))
     try
-        webupload.updateSectionImage(img, recipePath, logPath, cfg, ...
-            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10, 'Range', [0 4095]);
+        webupload.updateSectionImage(img, 'Source', 'acq', 'recipePath', recipePath, 'logPath', logPath, 'cfg', cfg, ...
+            'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
     end
@@ -67,7 +67,7 @@ can block for longer than the others.
 ```matlab
 if ~isempty(which('webupload.updateSectionImage'))
     try
-        webupload.updateSectionImage([], recipePath, logPath, cfg, 'Finished', true, ...
+        webupload.updateSectionImage([], 'Source', 'acq', 'recipePath', recipePath, 'logPath', logPath, 'cfg', cfg, 'Finished', true, ...
             'ConnectTimeout', 5, 'ResponseTimeout', 10, 'DataTimeout', 10);
     catch ME
         warning('preview:unexpected', 'Web preview failed: %s', ME.message);
