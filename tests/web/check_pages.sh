@@ -1078,6 +1078,34 @@ check "  ... and its image too" same_404 "$B/$SA/$MD3?f=stitchit"
 check "  ... no StitchIt thumbnail" body_lacks "$PAGE" 'id="thumb-stitchit"'
 check "  ... the version names only acq" body_lacks "$(attr_of data-version "$PAGE")" analysis
 
+# --- start-of-run wipes and the lag rule together ---
+# lag_seed: acq, and matching analysis whose log trails acq's by 3 sections (lagging: the acq image is the main image).
+lag_seed() {
+  backdate_if_any "$WD/acq"; dz lsacq "$MW" "$WSAMP" false ACQ; up acq "$MW" lsacq
+  backdate_if_any "$WD/analysis"; dz lsan "$MW" "$WSAMP" false STITCH 280; up analysis "$MW" lsan
+  backdate "$WD/acq"; backdate "$WD/analysis"
+}
+lag_seed; page "$MW"
+check "lag setup: the main image is the acq image" asset_is "$MW" main lsacq
+check "  ... the StitchIt image is in the strip" thumb_overlays "$PAGE" stitchit
+# An acq start call removes analysis/, so the lagging layout is gone with it.
+wipe_start wlg1 false; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wlg1.zip"; UP_STATUS="$STATUS"
+page "$MW"
+check "acq start call in a lagging layout: 200" test "$UP_STATUS" = 200
+check "  ... no StitchIt or montage thumbnail remains" bash -c '! grep -q "id=\"thumb-" <<<"$1"' _ "$PAGE"
+check "  ... ?f=stitchit is the usual 404" same_404 "$B/$SA/$MW?f=stitchit"
+check "  ... ?f=montage is the usual 404" same_404 "$B/$SA/$MW?f=montage"
+check "  ... the page shows the new recipe and no image" bash -c 'grep -q "<td>9</td>" <<<"$1" && ! grep -q "id=\"main-image\"" <<<"$1"' _ "$PAGE"
+# An analysis start call for another sample removes acq/: analysis shows alone, whatever its log says.
+lag_seed
+wipe_start wlg2 false noimage OTHERSAMP; upload "$TKA" "$SA" "$MW" analysis "$TMP/z/wlg2.zip"; UP_STATUS="$STATUS"
+page "$MW"
+check "analysis start call (other sample) in a lagging layout: 200, acq/ removed" test "$UP_STATUS" = 200 -a ! -e "$WD/acq"
+check "  ... the page shows analysis alone: new sample, no BakingTray thumbnail" bash -c 'grep -q ">OTHERSAMP<" <<<"$1" && ! grep -q "id=\"thumb-bakingtray\"" <<<"$1"' _ "$PAGE"
+check "  ... ?f=bakingtray is the usual 404" same_404 "$B/$SA/$MW?f=bakingtray"
+backdate "$WD/analysis"; dz lsan2 "$MW" OTHERSAMP false STITCH2; up analysis "$MW" lsan2
+check "  ... a later analysis upload is the main image" asset_is "$MW" main lsan2
+
 # --- shared contract (tests/web/upload_contract.json, see instructions.md): recipe IDs, names, limits ---
 CONTRACT="$ROOT/tests/web/upload_contract.json"
 # The recipe IDs: the cases pin the parsing rule (the MATLAB client runs the same cases from its copy).
