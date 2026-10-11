@@ -1304,7 +1304,16 @@ const BS_PAGE_STYLE = <<<CSS
   .updated { font-size: 0.85rem; color: #9a9; }
   .stale .updated { color: #e88; }
   .stale { border-color: #833; }
+  .stamp-wrap { position: relative; }
+  .stamp { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .stamp text { font: bold 16px Helvetica, Arial, sans-serif; fill: red; opacity: 0.5; }
 CSS;
+
+/** A red 45-degree "FINISHED" stamp, 50% transparent, spanning the middle 3/4 of the .stamp-wrap it sits in. */
+function bs_finished_stamp(): string
+{
+    return '<svg class="stamp" viewBox="0 0 100 100" aria-hidden="true"><text x="50" y="50" text-anchor="middle" dominant-baseline="central" textLength="75" lengthAdjust="spacingAndGlyphs" transform="rotate(-45 50 50)">FINISHED</text></svg>';
+}
 
 // Keep equal to DEFAULT_STALE_AFTER in js/autorefresh.js.
 const BS_DEFAULT_STALE_AFTER_SECONDS = 900;
@@ -1571,7 +1580,7 @@ function bs_render_grid(array $config, array $view, string $base): void
     ?>
   <a class="card<?= $isStale ? ' stale' : '' ?>" href="<?= htmlspecialchars($micUrl) ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
     <?php if ($data['card_image_url'] !== null): ?>
-      <img src="<?= htmlspecialchars($data['card_image_url']) ?>" alt="<?= htmlspecialchars($name) ?>">
+      <div class="stamp-wrap"><img src="<?= htmlspecialchars($data['card_image_url']) ?>" alt="<?= htmlspecialchars($name) ?>"><?= $data['finished'] ? bs_finished_stamp() : '' ?></div>
     <?php else: ?>
       <div class="placeholder">no image yet</div>
     <?php endif; ?>
@@ -1674,8 +1683,9 @@ function bs_render_mic_page(array $config, array $view, string $base): void
     </div>
 
     <?php if ($data['main_image_url'] !== null): ?>
-      <div class="image-wrap">
+      <div class="image-wrap stamp-wrap">
         <img id="main-image" src="<?= htmlspecialchars($data['main_image_url']) ?>" alt="Last completed section">
+        <?= $data['finished'] ? bs_finished_stamp() : '' ?>
       </div>
       <script>
         // No magnifier on touch screens (phones, tablets): there it only gets in the way of scrolling.
