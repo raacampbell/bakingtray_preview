@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Serves a throwaway copy of brainsaw/ with `php -S ... router.php` and a temp settings file
-# (two sites with one token each, fourteen microscopes in all, a panopticon word; every name and
+# (two sites with one token each, seventeen microscopes in all, a panopticon word; every name and
 # token random) and
 # checks the views, the 404 page, the asset route, uploads, settings validation and the
 # auto-refresh wiring. The copy sits in a sub-folder of the server's document root, so the
@@ -766,7 +766,7 @@ check "  ... with its bytes" cmp -s "$TMP/b" "$TMP/z/ta/tile_thumbnail.jpg"
 # StitchIt uploads. The fixture log ends at section 283, so an analysis log cut after section 280
 # lags by 3, after 281 by 2. Images are tagged: ACQ is the BakingTray image, STITCH the StitchIt one.
 lag_up() { # LAST [NAME]: a matching analysis upload whose log is cut after section LAST (whole when empty)
-  backdate "$(src_dir "$ML" analysis)"
+  if [ -d "$(src_dir "$ML" analysis)" ]; then backdate "$(src_dir "$ML" analysis)"; fi
   dz "${2:-lagan}" "$ML" LAMBDA false STITCH "$1"; up analysis "$ML" "${2:-lagan}"
 }
 dz lagacq "$ML" LAMBDA false ACQ; up acq "$ML" lagacq
@@ -782,10 +782,6 @@ check "  ... ?f=bakingtray is the acq image" asset_is "$ML" bakingtray lagacq
 check "  ... ?f=montage is the StitchIt montage" asset_is "$ML" montage lag3
 check "  ... the recipe table is still acq's" body_has "$PAGE" ">LAMBDA<"
 check "  ... still not finished" body_lacks "$CARD$PAGE" 'class="finished"'
-V_LAG="$(attr_of data-version "$CARD")"
-check "  ... the version names the lag" body_has "$V_LAG" ';lagging'
-fetch "$B/$SA/$ML?f=meta"
-check "  ... and so does the meta endpoint" body_has "$BODY" ';lagging'
 # Lag 2 (log cut after 281) is not lagging; nor is lag 0, nor a log with no finished section (unknown).
 for last in 281 283 "" "-"; do
   lag_up "$last" lagok
@@ -795,8 +791,6 @@ for last in 281 283 "" "-"; do
   check "  ... the acq image is in the strip, opening the overlay" thumb_overlays "$PAGE" bakingtray
   check "  ... no StitchIt thumbnail" body_lacks "$PAGE" 'id="thumb-stitchit"'
   check "  ... ?f=bakingtray is the acq image" asset_is "$ML" bakingtray lagacq
-  check "  ... the version no longer names the lag" body_lacks "$(attr_of data-version "$CARD")" lagging
-  check "  ... the version differs from the lagging one" test "$(attr_of data-version "$CARD")" != "$V_LAG"
 done
 lag_up 280 lag3
 page "$ML"
@@ -808,7 +802,35 @@ lag_cases() { php -r 'require $argv[1];
   foreach ($cases as [$acq, $stitch, $want]) {
     echo (bs_lag_exceeds_threshold($acq, $stitch) === $want ? "ok" : "bad"), "\t", json_encode([$acq, $stitch]), "\n";
   }' "$APP/lib.php"; }
-while IFS=$'\t' read -r verdict name; do check "lag rule (acq latest, StitchIt latest) $name" test "$verdict" = ok; done < <(lag_cases)
+lagc="$(lag_cases)"
+check "lag rule: every case was run" test "$(wc -l <<<"$lagc")" -eq 9
+while IFS=$'\t' read -r verdict name; do check "lag rule (acq latest, StitchIt latest) $name" test "$verdict" = ok; done <<<"$lagc"
+# Thumbnails on both sources: the card shows the thumbnail beside the image it shows (acq's while
+# lagging, StitchIt's otherwise); an image without a thumbnail never gets an older one.
+# lt NAME TAG [LAST]: dz plus a tile_thumbnail.jpg tagged TAG, so its bytes can be told apart.
+lt() { dz "$1" "$ML" LAMBDA false "$2" "${3:-}"; cp "$IMAGES/tile_thumbnail.jpeg" "$TMP/z/$1/tile_thumbnail.jpg"; printf '%s' "$2" >> "$TMP/z/$1/tile_thumbnail.jpg"; zip_dir "$1"; }
+asset_tile_is() { fetch "$B/$SA/$ML?f=$1"; [ "$STATUS" = 200 ] && cmp -s "$TMP/b" "$TMP/z/$2/tile_thumbnail.jpg"; }   # KIND NAME
+backdate "$(src_dir "$ML" acq)"; lt lagacqt ACQT; up acq "$ML" lagacqt
+lag_up_t() { backdate "$(src_dir "$ML" analysis)"; lt "$1" STITCHT "$2"; up analysis "$ML" "$1"; }   # NAME LAST
+lag_up_t lagt3 280
+page "$ML"; card "$ML"
+check "lag 3 with thumbnails: the card src is ?f=tile" img_src_has "$CARD" "f=tile"
+check "  ... it serves acq's thumbnail" asset_tile_is tile lagacqt
+check "  ... the strip's StitchIt image uses stitchit_tile" img_src_has "$(grep -A1 'id="thumb-stitchit"' <<<"$PAGE")" "f=stitchit_tile"
+check "  ... served with the StitchIt thumbnail bytes" asset_tile_is stitchit_tile lagt3
+lag_up_t lagt0 283
+page "$ML"; card "$ML"
+check "not lagging with thumbnails: the card src is ?f=tile" img_src_has "$CARD" "f=tile"
+check "  ... it serves the StitchIt thumbnail" asset_tile_is tile lagt0
+check "  ... the strip's acq image uses bakingtray_tile" img_src_has "$(grep -A1 'id="thumb-bakingtray"' <<<"$PAGE")" "f=bakingtray_tile"
+check "  ... served with acq's thumbnail bytes" asset_tile_is bakingtray_tile lagacqt
+backdate "$(src_dir "$ML" analysis)"; dz lagnt "$ML" LAMBDA false STITCHN 283; up analysis "$ML" lagnt
+page "$ML"; card "$ML"
+check "a new StitchIt image without a thumbnail: the card shows the full image" img_src_has "$CARD" "f=main"
+check "  ... not a thumbnail" bash -c '! grep -o "src=\"[^\"]*\"" <<<"$1" | grep -qF "f=tile"' _ "$CARD"
+check "  ... its bytes are the new image" card_bytes_are lagnt
+check "  ... the old StitchIt thumbnail is gone" same_404 "$B/$SA/$ML?f=stitchit_tile"
+lag_up 280 lag3
 # Without a finished section in acq's log the lag is unknown: not lagging.
 rm "$(src_dir "$ML" acq)/acqLog.txt"
 page "$ML"

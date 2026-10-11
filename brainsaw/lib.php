@@ -779,10 +779,10 @@ function bs_displayed_sources(array $config, string $siteId, string $micId): arr
 // StitchIt lags acq when its latest finished section trails acq's by more than this many sections.
 const BS_STITCHIT_LAG_SECTIONS = 2;
 
-/** The largest finished section number in an acquisition log, or null if it has none. */
-function bs_latest_finished_section(string $logText): ?int
+/** The largest finished section number in a log parsed by bs_parse_acqlog(), or null if it has none. */
+function bs_latest_finished_section(array $parsedLog): ?int
 {
-    $sections = bs_parse_acqlog($logText)['sections'];
+    $sections = $parsedLog['sections'];
     return $sections ? end($sections)['n'] : null;
 }
 
@@ -801,14 +801,15 @@ function bs_lag_exceeds_threshold(?int $acqLatest, ?int $stitchLatest): bool
  * acq/acqLog.txt by more than BS_STITCHIT_LAG_SECTIONS finished sections: StitchIt has probably
  * crashed, so its image is old. That log is the analysis PC's synced copy and can be a little
  * ahead of the section StitchIt has stitched, so the measured lag can understate the true lag.
+ * $acqLog is acq's log if the caller has already parsed it.
  */
-function bs_is_lagging(array $sources): bool
+function bs_is_lagging(array $sources, ?array $acqLog = null): bool
 {
     if (!isset($sources['acq'], $sources['analysis'])) {
         return false;
     }
-    $latest = fn(string $name) => bs_latest_finished_section((string) @file_get_contents($sources[$name]['dir'] . '/acqLog.txt'));
-    return bs_lag_exceeds_threshold($latest('acq'), $latest('analysis'));
+    $parse = fn(string $name) => bs_parse_acqlog((string) @file_get_contents($sources[$name]['dir'] . '/acqLog.txt'));
+    return bs_lag_exceeds_threshold(bs_latest_finished_section($acqLog ?? $parse('acq')), bs_latest_finished_section($parse('analysis')));
 }
 
 /**
@@ -816,10 +817,9 @@ function bs_is_lagging(array $sources): bool
  * StitchIt (analysis) first, because its image looks better, unless it lags; acq (BakingTray)
  * first then.
  */
-function bs_image_preference(array $sources, bool $lagging): array
+function bs_image_preference(bool $lagging): array
 {
-    $order = $lagging ? ['acq', 'analysis'] : ['analysis', 'acq'];
-    return array_values(array_filter($order, fn($name) => isset($sources[$name])));
+    return $lagging ? ['acq', 'analysis'] : ['analysis', 'acq'];
 }
 
 /**
@@ -839,7 +839,7 @@ function bs_asset_paths(array $sources, bool $lagging): array
     // A thumbnail is served only beside the image it shrinks.
     $thumb = fn(string $name, string $image, string $thumbName) => $file($name, $image) !== null ? $file($name, $thumbName) : null;
     $primary = null;
-    foreach (bs_image_preference($sources, $lagging) as $name) {
+    foreach (bs_image_preference($lagging) as $name) {
         if ($file($name, 'LastCompleteSection.jpg') !== null) {
             $primary = $name;
             break;
@@ -889,17 +889,14 @@ function bs_file_version(string $path, array $stat): string
 }
 
 /**
- * A string that changes whenever a displayed source is uploaded to, the set of sources changes,
- * or StitchIt starts or stops lagging (the page swaps its images then).
+ * A string that changes whenever a displayed source is uploaded to or the set of sources changes;
+ * that also covers the lag state, which only changes when one of the two logs does, i.e. on an upload.
  */
-function bs_version(array $sources, bool $lagging): string
+function bs_version(array $sources): string
 {
     $parts = [];
     foreach ($sources as $name => $source) {
         $parts[] = $name . '=' . bs_meta_string($source['meta'], 'uploaded_at');
-    }
-    if ($lagging) {
-        $parts[] = 'lagging';
     }
     return implode(';', $parts);
 }
@@ -912,29 +909,34 @@ function bs_version(array $sources, bool $lagging): string
 function bs_load_mic_data(array $config, string $siteId, string $micId, string $micUrl): array
 {
     $sources = bs_displayed_sources($config, $siteId, $micId);
-    $lagging = bs_is_lagging($sources);
-    $version = bs_version($sources, $lagging);
+    $version = bs_version($sources);
     $truth = $sources ? reset($sources) : null; // recipe, log and freshness come from the ground truth
+    $acquisition = bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : '');
+    $lagging = bs_is_lagging($sources, isset($sources['acq']) ? $acquisition : null); // acq is the truth whenever it is shown
     $paths = bs_asset_paths($sources, $lagging);
     $url = function (string $kind) use ($paths, $micUrl): ?string {
         $stat = isset($paths[$kind]) ? @stat($paths[$kind]) : false;
         return $stat !== false ? $micUrl . '?f=' . $kind . '&v=' . bs_file_version($paths[$kind], $stat) : null;
     };
 
+    // Thumbnails below the main image: each of the acq image, the StitchIt image and the montage
+    // that is not the main image itself and can still be read (a file may vanish between listing
+    // and stat when an upload empties the folder). Each opens in the page's overlay.
+    $thumbs = [];
+    foreach (['bakingtray', 'stitchit', 'montage'] as $kind) {
+        if (($paths[$kind] ?? null) !== ($paths['main'] ?? null) && $url($kind) !== null) {
+            $thumbs[$kind] = ['url' => $url($kind), 'small_url' => $url($kind . '_tile')];
+        }
+    }
+
     return [
         'main_image_url' => $url('main'),
-        // Thumbnails below the main image: each of the acq image, the StitchIt image and the montage
-        // that is not the main image itself. Each opens in the page's overlay.
-        'thumbs' => array_filter(array_map(
-            fn(string $kind) => isset($paths[$kind]) && $paths[$kind] !== ($paths['main'] ?? null)
-                ? ['url' => $url($kind), 'small_url' => $url($kind . '_tile')] : null,
-            ['bakingtray' => 'bakingtray', 'stitchit' => 'stitchit', 'montage' => 'montage']
-        )),
+        'thumbs' => $thumbs,
         // The card shows the main image, or its client-made thumbnail when there is one.
         'card_image_url' => $url('tile') ?? $url('main'),
         'meta_url' => $micUrl . '?f=meta',
         'recipe' => $truth !== null ? bs_parse_recipe($truth['dir'] . '/recipe.yml') : [],
-        'acquisition' => bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : ''),
+        'acquisition' => $acquisition,
         'uploaded_at' => $truth !== null ? bs_meta_string($truth['meta'], 'uploaded_at') : null,
         'version' => $version,
         'finished' => bs_is_finished($sources),
@@ -1342,7 +1344,7 @@ function bs_handle_view(array $config): never
     $sources = bs_displayed_sources($config, $view['site'], $view['mic']);
     if ($kind === 'meta' && $sources) {
         header('Cache-Control: no-store');
-        bs_send_json(200, ['version' => bs_version($sources, bs_is_lagging($sources))]);
+        bs_send_json(200, ['version' => bs_version($sources)]);
     }
     // Any other kind (including the recipe and log) has no entry, so it gets the 404 page.
     bs_serve_asset(is_string($kind) ? (bs_asset_paths($sources, bs_is_lagging($sources))[$kind] ?? null) : null);
