@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Serves a throwaway copy of brainsaw/ with `php -S ... router.php` and a temp settings file
-# (two sites with one token each, fourteen microscopes in all, a panopticon word; every name and
+# (two sites with one token each, seventeen microscopes in all, a panopticon word; every name and
 # token random) and
 # checks the views, the 404 page, the asset route, uploads, settings validation and the
 # auto-refresh wiring. The copy sits in a sub-folder of the server's document root, so the
