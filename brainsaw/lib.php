@@ -389,10 +389,13 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
 
     // Installing empties, moves and then writes meta.json; two uploads of the same source
     // running those steps together could leave one upload's meta.json describing the other's
-    // files. The lock serialises them (a dotfile in the microscope folder, never served), and
-    // the rate limit is re-checked under it so the loser of a race gets a 429.
-    $lock = fopen($micDir . '/.lock-' . basename($sourceDir), 'c');
-    if ($lock === false || !flock($lock, LOCK_EX)) {
+    // files. The locks serialise them (dotfiles in the microscope folder, never served), and
+    // the sender's rate limit is re-checked under them so the loser of a race gets a 429. A
+    // start-of-run call also empties the other source, so it holds both locks, taken in
+    // BS_SOURCES order so two such calls cannot wait on each other.
+    $startOfRun = bs_is_start_of_run($tmpDir, array_keys($entries));
+    $locks = bs_lock_sources($micDir, $startOfRun ? BS_SOURCES : [basename($sourceDir)]);
+    if ($locks === null) {
         bs_log($logFile, $label, 500, 'could not lock the source folder');
         bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
     }
@@ -400,9 +403,13 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
         bs_log($logFile, $label, 429, 'rate limited');
         bs_send_json(429, ['status' => 'error', 'message' => 'uploading too fast']);
     }
+    if ($startOfRun && !bs_empty_source_dirs(array_map(fn($s) => $micDir . '/' . $s, BS_SOURCES))) {
+        error_log('brainsaw: could not empty the source folders in ' . $micDir);
+        bs_log($logFile, $label, 500, 'emptying the source folders failed');
+        bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
+    }
     $installed = bs_install_upload($tmpDir, $sourceDir, array_keys($entries), $checked['sampleID']);
-    flock($lock, LOCK_UN);
-    fclose($lock);
+    bs_unlock($locks);
     if (!$installed) {
         error_log('brainsaw: could not install an upload into ' . $sourceDir);
         bs_log($logFile, $label, 500, 'installing the upload failed');
@@ -410,6 +417,64 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
     }
     bs_log($logFile, $label, 200, 'ok (zip: ' . implode(',', array_keys($entries)) . ')');
     bs_send_json(200, ['status' => 'ok', 'files' => array_keys($entries)]);
+}
+
+/**
+ * True for the start-of-run call: an upload (already checked, so its status.json is valid)
+ * with no LastCompleteSection.jpg whose status.json says finished:false. It tells the server
+ * the client has cleared its stage, so the old images must vanish. An end-of-run call is
+ * finished:true and must keep its final images even when it carries none.
+ */
+function bs_is_start_of_run(string $tmpDir, array $names): bool
+{
+    $status = json_decode((string) file_get_contents($tmpDir . '/status.json'), true);
+    return !in_array('LastCompleteSection.jpg', $names, true) && $status['finished'] === false;
+}
+
+/** Take the exclusive lock of each of $sources (in the order given) for the microscope folder $micDir. Returns the handles, or null if one cannot be taken. */
+function bs_lock_sources(string $micDir, array $sources): ?array
+{
+    $handles = [];
+    foreach ($sources as $source) {
+        $handle = fopen($micDir . '/.lock-' . $source, 'c');
+        if ($handle === false || !flock($handle, LOCK_EX)) {
+            bs_unlock($handles);
+            return null;
+        }
+        $handles[] = $handle;
+    }
+    return $handles;
+}
+
+/** Release locks taken by bs_lock_sources(). */
+function bs_unlock(array $handles): void
+{
+    foreach ($handles as $handle) {
+        flock($handle, LOCK_UN);
+        fclose($handle);
+    }
+}
+
+/**
+ * Delete every regular file in each of $dirs (folders that do not exist are skipped). The
+ * folders themselves stay. meta.json goes first, so a folder emptied only in part never claims
+ * an upload. Returns false at the first file that cannot be deleted.
+ */
+function bs_empty_source_dirs(array $dirs): bool
+{
+    foreach ($dirs as $dir) {
+        $names = is_dir($dir) ? scandir($dir) : [];
+        if ($names === false) {
+            return false;
+        }
+        usort($names, fn($a, $b) => ($b === 'meta.json') <=> ($a === 'meta.json'));
+        foreach ($names as $name) {
+            if (is_file($dir . '/' . $name) && !unlink($dir . '/' . $name)) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 /**
