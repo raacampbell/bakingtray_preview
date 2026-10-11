@@ -736,7 +736,8 @@ check "  ... the card shows the full BakingTray image" img_src_has "$CARD" "f=ba
 check "  ... ?f=tile is the usual 404" same_404 "$B/$SA/$MT?f=tile"
 # An end-of-run upload without an image keeps the thumbnail that sits beside its image.
 backdate "$(src_dir "$MT" acq)"; tz t4 THETA T4; up acq "$MT" t4
-backdate "$(src_dir "$MT" acq)"; new_dir t5 "$MT" THETA; rm "$TMP/z/t5/LastCompleteSection.jpg" "$TMP/z/t5/montage.jpg"; echo '{"finished": true}' > "$TMP/z/t5/status.json"; zip_dir t5   # finished:true: with finished:false this would be a start-of-run call, which removes the thumbnail; up acq "$MT" t5
+backdate "$(src_dir "$MT" acq)"; new_dir t5 "$MT" THETA; rm "$TMP/z/t5/LastCompleteSection.jpg" "$TMP/z/t5/montage.jpg"; echo '{"finished": true}' > "$TMP/z/t5/status.json"; zip_dir t5; up acq "$MT" t5
+# t5 sends finished:true: with finished:false and no image it would be a start-of-run call, which removes the thumbnail.
 check "upload without an image keeps the thumbnail" tile_is t4
 # A thumbnail is never shown without its image: a new sample with no image (and finished) empties the folder.
 backdate "$(src_dir "$MT" acq)"; new_dir t6 "$MT" IOTA; rm "$TMP/z/t6/LastCompleteSection.jpg" "$TMP/z/t6/montage.jpg"; echo '{"finished": true}' > "$TMP/z/t6/status.json"; zip_dir t6; up acq "$MT" t6   # finished:true: with finished:false this no-image upload would be a start-of-run call (tested as t8 below); this way the new sample ID alone empties the folder
@@ -832,13 +833,14 @@ wipe_start wst4 false; upload "$TKA" "$SA" "$MW" analysis "$TMP/z/wst4.zip"
 check "start call (analysis, acq without meta.json): 200" test "$STATUS" = 200
 check "  ... acq/ is removed" test ! -e "$WD/acq"
 
-# A montage-only analysis upload (no section image, finished false) is a start call too; with
-# acq of the same sample only analysis/'s old files go.
+# A montage-only analysis upload (a montage but no section image, finished false) is a mid-run
+# result, not an empty start call: nothing is wiped and it merges into analysis/ as before.
 wipe_seed; BEFORE_ACQ="$(snapshot "$WD/acq")"
-wipe_start wmon false; rm -f "$TMP/z/wmon/montage.jpg"; printf M > "$TMP/z/wmon/montage.jpg"; zip_dir wmon
+wipe_start wmon false; printf M > "$TMP/z/wmon/montage.jpg"; zip_dir wmon
 upload "$TKA" "$SA" "$MW" analysis "$TMP/z/wmon.zip"
 check "montage-only analysis upload: 200" test "$STATUS" = 200
-check "  ... analysis/ holds only this upload's files" test "$(files_in "$WD/analysis")" = "acqLog.txt montage.jpg recipe.yml status.json "
+check "  ... analysis/ keeps its other files and gets the new ones" test "$(files_in "$WD/analysis")" = "LastCompleteSection.jpg acqLog.txt montage.jpg montage_thumbnail.jpg recipe.yml status.json tile_thumbnail.jpg "
+check "  ... the montage is the new one" cmp -s "$WD/analysis/montage.jpg" "$TMP/z/wmon/montage.jpg"
 check "  ... acq/ is untouched" test "$(snapshot "$WD/acq")" = "$BEFORE_ACQ"
 
 # End-of-run call without an image (finished true): nothing is wiped.
@@ -849,6 +851,7 @@ for src in acq analysis; do
   check "end call ($src), no image, finished: 200" test "$STATUS" = 200
   check "  ... the other source is untouched" test "$(snapshot "$WD/$other")" = "$BEFORE_OTHER"
   check "  ... the sender's images stay" test -f "$WD/$src/LastCompleteSection.jpg" -a -f "$WD/$src/montage.jpg"
+  check "  ... and its thumbnails" test -f "$WD/$src/tile_thumbnail.jpg" -a -f "$WD/$src/montage_thumbnail.jpg"
   check "  ... an image is still served" test "$(fetch "$B/$SA/$MW?f=main"; echo "$STATUS")" = 200
 done
 
@@ -877,8 +880,8 @@ wipe_start wrl false; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wrl.zip"
 check "rate-limited start call: 429" test "$STATUS" = 429
 check "  ... acq/ untouched" test "$(snapshot "$WD/acq")" = "$BEFORE_ACQ"
 check "  ... analysis/ untouched" test "$(snapshot "$WD/analysis")" = "$BEFORE_AN"
-# Two start calls arriving together: both can pass the early check, so the one that loses the
-# race is stopped by the check under the lock. Exactly one is installed.
+# Two start calls arriving together: exactly one is installed and the other gets 429. Whether the
+# loser is stopped by the early check or by the check under the lock depends on timing.
 wipe_seed
 conc_start() { curl -s "$U" -o /dev/null -w '%{http_code}' -X POST -H "$(hdr "$TKA")" -F site_id="$SA" -F microscope_id="$MW" -F source=acq -F "data=@$TMP/z/wst1.zip;type=application/zip" > "$TMP/cs.$1"; }
 conc_start 1 & P1=$!; conc_start 2 & P2=$!; wait "$P1" "$P2"
@@ -935,13 +938,43 @@ check "analysis start after acq finished, other sample: acq/ is removed" test ! 
 check "  ... the page shows the analysis sample" body_has "$PAGE" '>OTHERSAMP<'
 check "  ... and is not finished" body_lacks "$PAGE" 'class="finished"'
 
+# A folder to be removed must be a real directory without sub-folders; otherwise 500 and nothing changes.
+wipe_seed; mv "$WD/analysis" "$TMP/realan"; ln -s "$TMP/realan" "$WD/analysis"
+BEFORE_ACQ="$(snapshot "$WD/acq")"; BEFORE_AN="$(snapshot "$TMP/realan")"
+wipe_start wlink false; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wlink.zip"
+check "acq start call, analysis/ is a symlink: 500" test "$STATUS" = 500
+check "  ... acq/ unchanged" test "$(snapshot "$WD/acq")" = "$BEFORE_ACQ"
+check "  ... the folder behind the link unchanged" test "$(snapshot "$TMP/realan")" = "$BEFORE_AN"
+rm "$WD/analysis"; mv "$TMP/realan" "$WD/analysis"
+wipe_seed; mkdir "$WD/analysis/sub"; echo x > "$WD/analysis/sub/f"
+BEFORE_ACQ="$(snapshot "$WD/acq")"; BEFORE_AN="$(snapshot "$WD/analysis")"
+wipe_start wsub false; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wsub.zip"
+check "acq start call, analysis/ has a sub-folder: 500" test "$STATUS" = 500
+check "  ... acq/ unchanged" test "$(snapshot "$WD/acq")" = "$BEFORE_ACQ"
+check "  ... analysis/ unchanged" test "$(snapshot "$WD/analysis")" = "$BEFORE_AN"
+rm -r "$WD/analysis/sub"
+
+# Sample IDs are compared exactly, as the display rule does; an empty stored ID is no ID.
+wipe_seed; wipe_start wcase false noimage "$(tr A-Z a-z <<<"$WSAMP")"; upload "$TKA" "$SA" "$MW" analysis "$TMP/z/wcase.zip"
+check "analysis start with a sample ID differing only in case: acq/ is removed" test "$STATUS:$(test -e "$WD/acq" && echo there)" = "200:"
+wipe_seed; printf '{"uploaded_at":"%s","sample_id":""}' "$UPLOADED_AT" > "$WD/acq/meta.json"
+wipe_start wempty false; upload "$TKA" "$SA" "$MW" analysis "$TMP/z/wempty.zip"
+check "analysis start, acq/meta.json with an empty sample_id: acq/ is removed" test "$STATUS:$(test -e "$WD/acq" && echo there)" = "200:"
+
+# An acq start call and an analysis upload arriving together, each needing a lock the other may hold: both finish.
+wipe_seed; wipe_start wcs false; wipe_start wca false image
+conc_a() { curl -s "$U" -o /dev/null -w '%{http_code}' -X POST -H "$(hdr "$TKA")" -F site_id="$SA" -F microscope_id="$MW" -F source="$2" -F "data=@$TMP/z/$3.zip;type=application/zip" > "$TMP/ca.$1"; }
+conc_a 1 acq wcs & P1=$!; conc_a 2 analysis wca & P2=$!; wait "$P1" "$P2"
+check "acq start call with a simultaneous analysis upload: both 200" test "$(cat "$TMP/ca.1") $(cat "$TMP/ca.2")" = "200 200"
+check "  ... acq/ holds the new files only" test "$(files_in "$WD/acq")" = "acqLog.txt recipe.yml status.json "
+
 # The decisions as pure functions.
 purefn() { php -r 'require $argv[1]; echo json_encode([
-  bs_is_start_of_run([], false), bs_is_start_of_run(["recipe.yml", "montage.jpg"], false),
+  bs_is_start_of_run([], false), bs_is_start_of_run(["recipe.yml", "montage.jpg"], false), bs_is_start_of_run(["recipe.yml", "status.json", "acqLog.txt"], false),
   bs_is_start_of_run(["LastCompleteSection.jpg"], false), bs_is_start_of_run([], true),
   bs_clears_other_source("acq", "S", "S"), bs_clears_other_source("acq", "S", null),
   bs_clears_other_source("analysis", "S", "S"), bs_clears_other_source("analysis", "S", "T"), bs_clears_other_source("analysis", "S", null)]);' "$APP/lib.php"; }
-check "start-of-run and other-source decisions" test "$(purefn)" = "[true,true,false,false,true,true,false,true,true]"
+check "start-of-run and other-source decisions" test "$(purefn)" = "[true,false,true,false,false,true,true,false,true,true]"
 
 # --- shared contract (tests/web/upload_contract.json, see instructions.md): recipe IDs, names, limits ---
 CONTRACT="$ROOT/tests/web/upload_contract.json"
