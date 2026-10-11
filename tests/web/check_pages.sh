@@ -839,7 +839,7 @@ wipe_seed; BEFORE_ACQ="$(snapshot "$WD/acq")"
 wipe_start wmon false; printf M > "$TMP/z/wmon/montage.jpg"; zip_dir wmon
 upload "$TKA" "$SA" "$MW" analysis "$TMP/z/wmon.zip"
 check "montage-only analysis upload: 200" test "$STATUS" = 200
-check "  ... analysis/ keeps its other files and gets the new ones" test "$(files_in "$WD/analysis")" = "LastCompleteSection.jpg acqLog.txt montage.jpg montage_thumbnail.jpg recipe.yml status.json tile_thumbnail.jpg "
+check "  ... analysis/ keeps its other files (the old montage thumbnail goes with the old montage) and gets the new ones" test "$(files_in "$WD/analysis")" = "LastCompleteSection.jpg acqLog.txt montage.jpg recipe.yml status.json tile_thumbnail.jpg "
 check "  ... the montage is the new one" cmp -s "$WD/analysis/montage.jpg" "$TMP/z/wmon/montage.jpg"
 check "  ... acq/ is untouched" test "$(snapshot "$WD/acq")" = "$BEFORE_ACQ"
 
