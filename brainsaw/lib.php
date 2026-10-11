@@ -110,6 +110,11 @@ function bs_load_settings(string $file): array
         error_log('brainsaw: invalid settings file: ' . $problem);
         return BS_EMPTY_SETTINGS;
     }
+    // Microscope IDs are matched in lower case (the upload lower-cases the ID it receives), so a
+    // key with capitals would be unreachable. The validator has already refused case duplicates.
+    foreach ($data['sites'] as $siteId => $site) {
+        $data['sites'][$siteId]['microscopes'] = array_change_key_case($site['microscopes'], CASE_LOWER);
+    }
     return $data + ['panopticon' => null];
 }
 
@@ -202,6 +207,9 @@ function bs_handle_upload(array $config): void
 
     $siteId = $_POST['site_id'] ?? null;
     $micId = $_POST['microscope_id'] ?? null;
+    if (is_string($micId)) {
+        $micId = strtolower($micId); // caps are not kept in URLs, folders or settings keys
+    }
     $refuse = function (string $label, string $why) use ($logFile): never {
         bs_log($logFile, $label, 403, $why);
         bs_send_json(403, ['status' => 'error', 'message' => 'unknown site_id, microscope_id or token']);
@@ -558,7 +566,7 @@ function bs_empty_dir(string $dir): ?string
  * Check the extracted upload in $dir. Returns the reason to refuse it (a string), or the
  * recipe's IDs from bs_recipe_ids() plus status.json's 'finished' flag when it is acceptable.
  * It needs recipe.yml and status.json; status.json must be an object whose "finished" is a
- * boolean; the recipe's SYSTEM.ID must equal $micId; and the recipe needs a sample.ID, which
+ * boolean; the recipe's SYSTEM.ID must equal $micId ignoring case; and the recipe needs a sample.ID, which
  * is only stored, compared and escaped, so it must just be non-empty valid UTF-8. The messages
  * reach only an authenticated client.
  */
@@ -574,7 +582,7 @@ function bs_check_upload(string $dir, string $micId): string|array
         return 'status.json must be a JSON object with a boolean "finished"';
     }
     $ids = bs_recipe_ids((string) file_get_contents($dir . '/recipe.yml'));
-    if ($ids['micID'] !== $micId) {
+    if (strtolower($ids['micID']) !== $micId) {
         return 'SYSTEM.ID in recipe.yml does not match microscope_id';
     }
     if ($ids['sampleID'] === '') {

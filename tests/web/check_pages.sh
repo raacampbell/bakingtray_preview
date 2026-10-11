@@ -332,6 +332,16 @@ done
 fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F microscope_id="$MB" -F "data=@$ZIP;type=application/zip"
 check "missing source: 400" test "$STATUS" = 400
 check "refused uploads created no folder" test ! -e "$APP/system_data/$SB/$MB/acq"
+# Capitals in the microscope ID (posted, and in the recipe's SYSTEM.ID) are lower-cased before
+# the match, so the upload is accepted and stored under the lower-case folder only.
+UPMB="$(tr a-z A-Z <<<"$MB")"
+good_zip capsmic "$UPMB" S1
+upload "$TKB" "$SB" "$UPMB" acq "$TMP/z/capsmic.zip"
+check "upper-case microscope ID and recipe ID: accepted" test "$STATUS" = 200
+check "upper-case microscope ID: stored under the lower-case folder" test -d "$APP/system_data/$SB/$MB/acq"
+# ls, not test -e: a case-insensitive file system would find the lower-case folder under the upper-case name
+check "upper-case microscope ID: no upper-case folder made" test -z "$(ls "$APP/system_data/$SB" | grep -x -- "$UPMB" || true)"
+backdate "$APP/system_data/$SB/$MB/acq"
 fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F microscope_id="$MB" -F source=acq -F "image=@$IMAGES/montage.jpg;type=image/jpeg"
 check "no data field: 400" test "$STATUS" = 400
 # Raw IDs never reach the log: a newline/tab payload must not forge a log line.
