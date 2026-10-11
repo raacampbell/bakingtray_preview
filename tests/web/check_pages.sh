@@ -1102,8 +1102,6 @@ else echo "FAIL  server matches the shared contract: differs: $contract_differs"
 recorded="$(cut -d' ' -f1 "$ROOT/tests/web/upload_contract.sha256")"
 actual="$(php -r 'echo hash_file("sha256", $argv[1]);' "$CONTRACT")"
 check "contract unchanged since its recorded sync (tests/web/upload_contract.sha256)" test "$recorded" = "$actual"
-# TEMPORARY, until upload_core moves to StitchIt: the client's copy must equal the contract.
-check "upload_core copy equals the contract (delete this line when upload_core moves)" cmp -s "$CONTRACT" "$ROOT/upload_core/tests/upload_contract.json"
 
 # --- the Authorization header is found under every name a host may use ---
 auth_of() { php -r 'require $argv[1]; echo bs_authorization_header(json_decode($argv[2], true));' "$APP/lib.php" "$1"; }

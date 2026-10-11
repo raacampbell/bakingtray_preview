@@ -369,7 +369,7 @@ grid only after a manual reload.
 `tests/web/upload_contract.json` holds what the server and the MATLAB client must agree on: the
 recipe ID rule (its `rule` text) with its test cases, the seven file names, the zip size limit
 and the minimum upload interval. The server owns it. The client keeps a copy in its tests folder
-(`upload_core/tests/upload_contract.json` here; in StitchIt once the package moves).
+(in the StitchIt repository).
 
 `tests/web/check_pages.sh` checks that `lib.php` and `config.php` match the contract, and that
 the contract is still the version recorded in `tests/web/upload_contract.sha256`. The client's
@@ -382,6 +382,3 @@ To change the contract:
 3. Update the pinned hash in the client's `ContractPinTest.m`, and the record here:
    `(cd tests/web && shasum -a 256 upload_contract.json > upload_contract.sha256)`.
 4. Run `tests/web/check_pages.sh` and the client's suite. Both must pass.
-
-Until the client moves, `check_pages.sh` also checks that `upload_core/tests/upload_contract.json`
-equals the contract; delete that line when the package moves.
