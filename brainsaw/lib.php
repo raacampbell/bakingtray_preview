@@ -424,14 +424,15 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
 }
 
 /**
- * True for the start-of-run call: an upload with no LastCompleteSection.jpg whose status.json
- * says finished:false ($names are the files it carries). It tells the server the client has
- * cleared its stage, so the old images must vanish. An end-of-run call is finished:true and
- * keeps its final images even when it carries none. A montage-only upload counts as a start call.
+ * True for the start-of-run call: an upload with no image (neither LastCompleteSection.jpg nor
+ * montage.jpg) whose status.json says finished:false ($names are the files it carries). It
+ * tells the server the client has cleared its stage, so the old images must vanish. An
+ * end-of-run call is finished:true and keeps its final images even when it carries none; an
+ * upload with a montage is a mid-run result, not an empty start.
  */
 function bs_is_start_of_run(array $names, bool $finished): bool
 {
-    return !in_array('LastCompleteSection.jpg', $names, true) && !$finished;
+    return !in_array('LastCompleteSection.jpg', $names, true) && !in_array('montage.jpg', $names, true) && !$finished;
 }
 
 /**
@@ -480,11 +481,20 @@ function bs_clear_for_start(string $micDir, string $sender, string $sampleId): ?
     return null;
 }
 
-/** The first thing that would stop bs_empty_dir() (and, with $remove, rmdir) on $dir: '' for the folder itself, else a file name; null if none. */
+/**
+ * The first thing that would stop bs_empty_dir() (and, with $remove, rmdir) on $dir: '' for the
+ * folder itself, else a file name; null if none. A folder to be removed must be a real
+ * directory (rmdir cannot remove a symlink to one, and emptying its target first would lose the
+ * data for nothing) without sub-folders; the sender's own folder is only emptied, so it may
+ * hold sub-folders, which stay.
+ */
 function bs_undeletable_in(string $dir, bool $remove): ?string
 {
     if (!is_dir($dir)) {
         return null;
+    }
+    if ($remove && is_link($dir)) {
+        return '';
     }
     $names = scandir($dir);
     if ($names === false || !is_writable($dir)) {
@@ -546,11 +556,11 @@ function bs_empty_dir(string $dir): ?string
 
 /**
  * Check the extracted upload in $dir. Returns the reason to refuse it (a string), or the
- * recipe's IDs from bs_recipe_ids() plus status.json's 'finished' flag when it is acceptable. It needs recipe.yml and
- * status.json; status.json must be an object whose "finished" is a boolean; the recipe's
- * SYSTEM.ID must equal $micId; and the recipe needs a sample.ID, which is only stored,
- * compared and escaped, so it must just be non-empty valid UTF-8. The messages reach only
- * an authenticated client.
+ * recipe's IDs from bs_recipe_ids() plus status.json's 'finished' flag when it is acceptable.
+ * It needs recipe.yml and status.json; status.json must be an object whose "finished" is a
+ * boolean; the recipe's SYSTEM.ID must equal $micId; and the recipe needs a sample.ID, which
+ * is only stored, compared and escaped, so it must just be non-empty valid UTF-8. The messages
+ * reach only an authenticated client.
  */
 function bs_check_upload(string $dir, string $micId): string|array
 {
