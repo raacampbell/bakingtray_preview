@@ -1306,10 +1306,10 @@ const BS_PAGE_STYLE = <<<CSS
   .stale { border-color: #833; }
   .stamp-wrap { position: relative; }
   .stamp { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  .stamp text { font: bold 16px Helvetica, Arial, sans-serif; fill: red; opacity: 0.5; }
+  .stamp text { font: bold 16px Helvetica, Arial, sans-serif; fill: red; opacity: 0.66; }
 CSS;
 
-/** A red 45-degree "FINISHED" stamp, 50% transparent, spanning the middle 3/4 of the .stamp-wrap it sits in. */
+/** A red 45-degree "FINISHED" stamp, 66% opaque, spanning the middle 3/4 of the .stamp-wrap it sits in. */
 function bs_finished_stamp(): string
 {
     return '<svg class="stamp" viewBox="0 0 100 100" aria-hidden="true"><text x="50" y="50" text-anchor="middle" dominant-baseline="central" textLength="75" lengthAdjust="spacingAndGlyphs" transform="rotate(-45 50 50)">FINISHED</text></svg>';
