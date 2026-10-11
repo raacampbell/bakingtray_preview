@@ -88,8 +88,11 @@ and the same body, so probing cannot tell a real word from a made-up one. No vie
 the code, `.htaccess` or any served file.
 
 Images and meta come through the view, never from `system_data/` directly:
-`<microscope page URL>?f=main` (the main image), `?f=bakingtray` (the BakingTray image),
-`?f=montage` (the StitchIt montage), `?f=meta` (a small JSON with the
+`<microscope page URL>?f=main` (the main image: StitchIt's, or BakingTray's when StitchIt lags),
+`?f=tile` (its client-made thumbnail), `?f=bakingtray` and `?f=bakingtray_tile` (the BakingTray
+image and its thumbnail), `?f=stitchit` and `?f=stitchit_tile` (the StitchIt image and its thumbnail),
+`?f=montage` and `?f=montage_tile` (the StitchIt montage and its thumbnail; a thumbnail is served
+only beside its image), `?f=meta` (a small JSON with the
 `version` that auto-refresh polls, `Cache-Control: no-store`). The view re-checks that its word
 may see that microscope; only files the display rule (§5) shows are served, and anything else,
 such as a hidden `analysis/` image, gets the same 404 as any missing page. Recipe and log files
