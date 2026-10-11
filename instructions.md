@@ -206,10 +206,11 @@ the same sample merges, so files not in the upload stay. `logs/upload.log` recor
 `site/microscope/source`. The two sources do not rate-limit each other, and neither empties the
 other, with one exception:
 
-**Start of a run.** An upload that has no `LastCompleteSection.jpg` and whose `status.json` says
-`finished: false` is the client's start-of-run call (it has cleared its stage and has no image
-yet). A montage-only upload (a `montage.jpg` but no section image, `finished: false`) counts as
-one too. What it empties depends on the sender:
+**Start of a run.** An upload with no image, that is neither `LastCompleteSection.jpg` nor
+`montage.jpg`, whose `status.json` says `finished: false` is the client's start-of-run call (it
+has cleared its stage and sends nothing to show). An upload with a montage but no section image
+is not a start call: it is a mid-run analysis result, and wiping would delete `analysis/`'s
+section image, so it merges as any upload does. What a start call empties depends on the sender:
 
 - `acq` start call: `acq/` and `analysis/` are both emptied (every file, `meta.json` included),
   and `analysis/` is removed. The upload is then installed into `acq/`.
@@ -229,11 +230,13 @@ start call.
 The `finished: false` condition is deliberate: an end-of-run call (`finished: true`) without an
 image must not delete the final images. Validation and the rate limit come first, so a refused
 (400) or rate-limited (429) call empties nothing. Both sources' locks are held meanwhile (`acq`,
-then `analysis`). Before deleting anything the server checks that the folders to empty are
-writable and hold nothing but files, and answers 500 (logging the folder) without changing
-anything if not. This is a best-effort pre-check: if a delete still fails part-way, the
-microscope can be left half wiped (the sender's data possibly gone, the upload not installed,
-a 500 returned); the next upload repairs it.
+then `analysis`). Before deleting anything the server checks that every folder to empty is
+writable, and that a folder to be removed is a real directory (not a symlink) with no
+sub-folders; the sender's own folder is only emptied, so sub-folders in it just stay. If the
+check fails the answer is 500 (logging the folder) and nothing has changed, so the source
+folders must be real directories. This is a best-effort pre-check: if a delete still fails
+part-way, the microscope can be left half wiped (the sender's data possibly gone, the upload not
+installed, a 500 returned); the next upload repairs it.
 
 ### Which sources a view shows
 

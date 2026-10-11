@@ -159,8 +159,8 @@ wins. In particular: the source is a form field (not text added to the zip name)
 - New sample: when an upload's recipe has a sample ID different from the one stored in that source folder (or none is
   stored), the folder is emptied before extracting. This applies to `acq/` and `analysis/` alike, so neither ever mixes
   two samples.
-- Start of a run: an upload with no `LastCompleteSection.jpg` and `finished: false` (the client cleared its stage and
-  has no image yet; a montage-only upload counts) empties folders before installing into the sender's folder, so the
+- Start of a run: an upload with no image (no `LastCompleteSection.jpg` and no `montage.jpg`) and `finished: false` (the client
+  cleared its stage; a montage-only upload is a mid-run result and merges as usual) empties folders before installing into the sender's folder, so the
   old images vanish even for the same sample ID. An `acq` start empties `acq/` and removes `analysis/`. An `analysis`
   start empties `analysis/`, and removes `acq/` only when acq's stored sample ID differs from the upload's or is
   unreadable (analysis starts minutes after acq and must not blank acq's images). A removed other-source folder makes
