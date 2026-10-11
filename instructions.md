@@ -208,15 +208,32 @@ other, with one exception:
 
 **Start of a run.** An upload that has no `LastCompleteSection.jpg` and whose `status.json` says
 `finished: false` is the client's start-of-run call (it has cleared its stage and has no image
-yet). The server then empties both source folders of that microscope, `acq/` and `analysis/`
-(every file, `meta.json` included), before installing the upload into the sender's folder. So
-the previous acquisition's images, thumbnails and montage vanish even when the sample ID is
-unchanged, and an `analysis` start call also removes `acq/`'s files (and the reverse); the other
-source's data returns with its next upload, and the display rule falls back to what remains.
+yet). A montage-only upload (a `montage.jpg` but no section image, `finished: false`) counts as
+one too. What it empties depends on the sender:
+
+- `acq` start call: `acq/` and `analysis/` are both emptied (every file, `meta.json` included),
+  and `analysis/` is removed. The upload is then installed into `acq/`.
+- `analysis` start call: `analysis/` is always emptied. `acq/` is emptied and removed only when
+  its stored sample ID (`acq/meta.json`) differs from the sample ID in the uploaded recipe, or
+  when it has no readable sample ID (then it is an orphan of another sample). When the sample
+  IDs are equal `acq/` is left completely untouched, because analysis starts some minutes after
+  acq and must not blank acq's images. The upload is then installed into `analysis/`.
+
+So the previous acquisition's images, thumbnails and montage vanish even when the sample ID is
+unchanged. A folder that belongs to the other source is removed (not just emptied), so the
+display rule falls back to what remains (no `acq/` means `analysis/` alone); the sender's own
+folder is kept, and the other source's data returns with its next upload. Known gap: an orphan
+`acq/` with the SAME sample ID as an analysis start call is not cleared by it, only by an `acq`
+start call.
+
 The `finished: false` condition is deliberate: an end-of-run call (`finished: true`) without an
 image must not delete the final images. Validation and the rate limit come first, so a refused
-(400) or rate-limited (429) call empties nothing; a file that cannot be deleted gives a 500.
-Both sources' locks are held meanwhile (`acq`, then `analysis`).
+(400) or rate-limited (429) call empties nothing. Both sources' locks are held meanwhile (`acq`,
+then `analysis`). Before deleting anything the server checks that the folders to empty are
+writable and hold nothing but files, and answers 500 (logging the folder) without changing
+anything if not. This is a best-effort pre-check: if a delete still fails part-way, the
+microscope can be left half wiped (the sender's data possibly gone, the upload not installed,
+a 500 returned); the next upload repairs it.
 
 ### Which sources a view shows
 
