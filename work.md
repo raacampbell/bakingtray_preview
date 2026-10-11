@@ -159,6 +159,12 @@ wins. In particular: the source is a form field (not text added to the zip name)
 - New sample: when an upload's recipe has a sample ID different from the one stored in that source folder (or none is
   stored), the folder is emptied before extracting. This applies to `acq/` and `analysis/` alike, so neither ever mixes
   two samples.
+- Start of a run: an upload with no `LastCompleteSection.jpg` and `finished: false` (the client cleared its stage and
+  has no image yet) empties BOTH source folders of that microscope (every file, `meta.json` too) before installing the
+  upload into the sender's folder, so the old images vanish even for the same sample ID. An analysis start call also
+  wipes `acq/` and vice versa; the other source returns with its next upload. The `finished: false` guard is deliberate:
+  an end-of-run call (`finished: true`) with no image must not wipe the final images. A refused or rate-limited call
+  wipes nothing.
 - Which data is shown, per microscope:
   - `acq/` exists: it is the ground truth (image, recipe table, log chart, status, freshness). `analysis/` is shown in
     addition only if its sample ID equals `acq/`'s.

@@ -202,8 +202,21 @@ Then it checks, before the live folder is touched:
 A refused upload (400) leaves the stored data exactly as it was. An accepted one is moved into
 the source folder and `meta.json` is written there with `uploaded_at` and `sample_id`. If the
 sample ID differs from the stored one (or none is stored) the source folder is emptied first;
-the same sample merges, so files not in the upload stay. `acq/` and `analysis/` are independent:
-neither empties or rate-limits the other. `logs/upload.log` records `site/microscope/source`.
+the same sample merges, so files not in the upload stay. `logs/upload.log` records
+`site/microscope/source`. The two sources do not rate-limit each other, and neither empties the
+other, with one exception:
+
+**Start of a run.** An upload that has no `LastCompleteSection.jpg` and whose `status.json` says
+`finished: false` is the client's start-of-run call (it has cleared its stage and has no image
+yet). The server then empties both source folders of that microscope, `acq/` and `analysis/`
+(every file, `meta.json` included), before installing the upload into the sender's folder. So
+the previous acquisition's images, thumbnails and montage vanish even when the sample ID is
+unchanged, and an `analysis` start call also removes `acq/`'s files (and the reverse); the other
+source's data returns with its next upload, and the display rule falls back to what remains.
+The `finished: false` condition is deliberate: an end-of-run call (`finished: true`) without an
+image must not delete the final images. Validation and the rate limit come first, so a refused
+(400) or rate-limited (429) call empties nothing; a file that cannot be deleted gives a 500.
+Both sources' locks are held meanwhile (`acq`, then `analysis`).
 
 ### Which sources a view shows
 
