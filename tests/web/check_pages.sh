@@ -63,7 +63,7 @@ for f in "$SRC"/*.php; do check "php -l $(basename "$f")" lint_ok "$f"; done
 # --- random settings: nothing here may look like anything in the repo ---
 r() { openssl rand -hex "$1"; }
 PAN="p$(r 6)"; SA="a$(r 5)"; SB="b$(r 5)"
-MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"; MT="t$(r 4)"; MTA="u$(r 4)"   # one microscope per display-rule case; MT, MTA: thumbnails
+MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"; MT="t$(r 4)"; MTA="u$(r 4)"; MW="v$(r 4)"   # one microscope per display-rule case; MT, MTA: thumbnails; MW: start-of-run wipe
 MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"; MSPACE="Scope_$(r 3)"   # MSPACE: its recipe says "Scope <hex>"
 TKA="$(r 32)"; TKB="$(r 32)"; TOLD="$(r 32)"   # one token per site; TOLD stands for a per-microscope token of the old format
 SETTINGS="$TMP/www/brainsaw_settings.json"   # config.php default: next to brainsaw/
@@ -75,7 +75,7 @@ write_settings() { # panopticon word, site A id
      "$MA1": {"display_name": "Scope A1 $MA1"},
      "$MA2": {"display_name": "Scope A2 $MA2"},
      "$MSPACE": {"display_name": "Scope with a space"},
-     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}, "$MT": {}, "$MTA": {}}},
+     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}, "$MT": {}, "$MTA": {}, "$MW": {}}},
   "$SB": {"display_name": "Lab B $SB", "token": "$TKB", "microscopes": {
      "$MB": {"display_name": "Scope B $MB"},
      "logs": {}}}}}
@@ -400,7 +400,7 @@ fetch "$U" -X POST -H "$(hdr "$TKB")" -F site_id="$SB" -F microscope_id="$MB" -F
 check "not a zip: 415, acq folder untouched" test "$STATUS $(snapshot "$MBD/acq")" = "415 $BEFORE_ACQ"
 
 # A new sample empties only that source's folder.
-new_dir s2 "$MB" S2; rm "$TMP/z/s2/acqLog.txt" "$TMP/z/s2/LastCompleteSection.jpg"; zip_dir s2
+new_dir s2 "$MB" S2; rm "$TMP/z/s2/acqLog.txt" "$TMP/z/s2/LastCompleteSection.jpg"; echo '{"finished": true}' > "$TMP/z/s2/status.json"; zip_dir s2   # finished: not a start call, so no other folder is wiped
 upload "$TKB" "$SB" "$MB" acq "$TMP/z/s2.zip"
 check "new sample, acq: 200" test "$STATUS" = 200
 check "new sample: old acq files gone" test ! -e "$MBD/acq/acqLog.txt" -a ! -e "$MBD/acq/LastCompleteSection.jpg"
@@ -409,7 +409,7 @@ check "new sample: meta.json has the new sample ID" test "$(meta_of "$MBD/acq" s
 check "new sample in acq: analysis folder untouched" test "$(snapshot "$MBD/analysis")" = "$BEFORE_AN"
 # The same sample merges: files not in this upload stay.
 backdate "$MBD/acq"
-new_dir s2b "$MB" S2; rm "$TMP/z/s2b/montage.jpg" "$TMP/z/s2b/LastCompleteSection.jpg"; zip_dir s2b
+new_dir s2b "$MB" S2; rm "$TMP/z/s2b/montage.jpg" "$TMP/z/s2b/LastCompleteSection.jpg"; echo '{"finished": true}' > "$TMP/z/s2b/status.json"; zip_dir s2b
 upload "$TKB" "$SB" "$MB" acq "$TMP/z/s2b.zip"
 check "same sample, acq: 200" test "$STATUS" = 200
 check "same sample: the earlier montage.jpg stays" test -f "$MBD/acq/montage.jpg"
@@ -732,9 +732,9 @@ card "$MT"
 check "new image without a thumbnail: old thumbnail removed" test ! -e "$(src_dir "$MT" acq)/tile_thumbnail.jpg"
 check "  ... the card shows the full BakingTray image" img_src_has "$CARD" "f=bakingtray"
 check "  ... ?f=tile is the usual 404" same_404 "$B/$SA/$MT?f=tile"
-# An upload without an image (the start upload) keeps the thumbnail that sits beside its image.
+# An end-of-run upload without an image keeps the thumbnail that sits beside its image.
 backdate "$(src_dir "$MT" acq)"; tz t4 THETA T4; up acq "$MT" t4
-backdate "$(src_dir "$MT" acq)"; new_dir t5 "$MT" THETA; rm "$TMP/z/t5/LastCompleteSection.jpg" "$TMP/z/t5/montage.jpg"; zip_dir t5; up acq "$MT" t5
+backdate "$(src_dir "$MT" acq)"; new_dir t5 "$MT" THETA; rm "$TMP/z/t5/LastCompleteSection.jpg" "$TMP/z/t5/montage.jpg"; echo '{"finished": true}' > "$TMP/z/t5/status.json"; zip_dir t5; up acq "$MT" t5
 check "upload without an image keeps the thumbnail" tile_is t4
 # A thumbnail is never shown without its image: a new sample with no image empties the folder.
 backdate "$(src_dir "$MT" acq)"; new_dir t6 "$MT" IOTA; rm "$TMP/z/t6/LastCompleteSection.jpg" "$TMP/z/t6/montage.jpg"; zip_dir t6; up acq "$MT" t6
@@ -747,6 +747,98 @@ up analysis "$MTA" ta; card "$MTA"
 check "analysis only: the card shows the analysis thumbnail" img_src_has "$CARD" "f=tile"
 fetch "$B/$SA/$MTA?f=tile"
 check "  ... with its bytes" cmp -s "$TMP/b" "$TMP/z/ta/tile_thumbnail.jpg"
+
+# --- an upload with no image and finished:false (the start of a run) empties both source folders ---
+WSAMP=WIPE
+WD="$APP/system_data/$SA/$MW"
+backdate_if_any() { [ -f "$1/meta.json" ] && backdate "$1" || true; }
+# The other source's folder name, and the file names (not meta.json) in a folder.
+other_of() { if [ "$1" = acq ]; then echo analysis; else echo acq; fi; }
+files_in() { find "$1" -type f ! -name 'meta.json' -exec basename {} \; | LC_ALL=C sort | tr '\n' ' '; }
+# wipe_seed: acq and analysis of one sample, each with image, montage, acqLog, recipe and status; both old enough to upload again.
+wipe_seed() {
+  backdate_if_any "$WD/acq"; dz wacq "$MW" "$WSAMP" false ACQ; up acq "$MW" wacq
+  backdate_if_any "$WD/analysis"; dz wan "$MW" "$WSAMP" false STITCH; up analysis "$MW" wan
+  backdate "$WD/acq"; backdate "$WD/analysis"
+}
+# wipe_start NAME FINISHED [image]: a recipe that differs from the seeded one (9 optical planes), without the images unless "image" is given.
+wipe_start() {
+  new_dir "$1" "$MW" "$WSAMP"; printf '{"finished": %s}' "$2" > "$TMP/z/$1/status.json"
+  sed -i.bak 's/numOpticalPlanes: 7.0/numOpticalPlanes: 9.0/' "$TMP/z/$1/recipe.yml"; rm "$TMP/z/$1/recipe.yml.bak"
+  if [ "${3:-}" != image ]; then rm "$TMP/z/$1/LastCompleteSection.jpg" "$TMP/z/$1/montage.jpg"; fi
+  zip_dir "$1"
+}
+wipe_seed
+page "$MW"
+check "wipe setup: the stitched montage is shown" asset_is "$MW" montage wan
+check "wipe setup: the page does not show 9 optical planes yet" body_lacks "$PAGE" '<td>9</td>'
+
+# acq start call: acq/ holds only the new files, analysis/ is empty.
+wipe_start wst1 false; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wst1.zip"
+check "start call (acq): 200" test "$STATUS" = 200
+check "  ... acq/ holds only the new files" test "$(files_in "$WD/acq")" = "acqLog.txt recipe.yml status.json "
+check "  ... acq/ has a fresh meta.json" test "$(meta_of "$WD/acq" sample_id)" = "$WSAMP"
+check "  ... analysis/ is empty, even of meta.json" test -z "$(find "$WD/analysis" -type f)"
+check "  ... the source folders and lock files remain" test -d "$WD/acq" -a -d "$WD/analysis" -a -e "$WD/.lock-acq" -a -e "$WD/.lock-analysis"
+page "$MW"
+check "  ... the page shows the new recipe" body_has "$PAGE" '<td>9</td>'
+check "  ... and no image" body_lacks "$PAGE" 'id="main-image"'
+for kind in main bakingtray montage tile montage_tile; do check "  ... ?f=$kind is the usual 404" same_404 "$B/$SA/$MW?f=$kind"; done
+
+# analysis start call wipes acq/.
+wipe_seed; wipe_start wst2 false; upload "$TKA" "$SA" "$MW" analysis "$TMP/z/wst2.zip"
+check "start call (analysis): 200" test "$STATUS" = 200
+check "  ... analysis/ holds only the new files" test "$(files_in "$WD/analysis")" = "acqLog.txt recipe.yml status.json "
+check "  ... acq/ is empty" test -z "$(find "$WD/acq" -type f)"
+page "$MW"
+check "  ... the page has no image" body_lacks "$PAGE" 'id="main-image"'
+check "  ... ?f=main is the usual 404" same_404 "$B/$SA/$MW?f=main"
+
+# End-of-run call without an image (finished true): nothing is wiped.
+for src in acq analysis; do
+  other="$(other_of "$src")"
+  wipe_seed; BEFORE_OTHER="$(snapshot "$WD/$other")"
+  wipe_start wend true; upload "$TKA" "$SA" "$MW" "$src" "$TMP/z/wend.zip"
+  check "end call ($src), no image, finished: 200" test "$STATUS" = 200
+  check "  ... the other source is untouched" test "$(snapshot "$WD/$other")" = "$BEFORE_OTHER"
+  check "  ... the sender's images stay" test -f "$WD/$src/LastCompleteSection.jpg" -a -f "$WD/$src/montage.jpg"
+  check "  ... an image is still served" test "$(fetch "$B/$SA/$MW?f=main"; echo "$STATUS")" = 200
+done
+
+# An upload with an image never wipes the other source, even when unfinished.
+for src in acq analysis; do
+  other="$(other_of "$src")"
+  wipe_seed; BEFORE_OTHER="$(snapshot "$WD/$other")"
+  wipe_start wimg false image; upload "$TKA" "$SA" "$MW" "$src" "$TMP/z/wimg.zip"
+  check "upload with an image ($src), finished false: 200" test "$STATUS" = 200
+  check "  ... the other source is untouched" test "$(snapshot "$WD/$other")" = "$BEFORE_OTHER"
+done
+
+# A refused start call wipes nothing.
+wipe_seed; BEFORE_ACQ="$(snapshot "$WD/acq")"; BEFORE_AN="$(snapshot "$WD/analysis")"
+wipe_start wbad false; sed -i.bak "s/^  ID: $MW/  ID: other_scope/" "$TMP/z/wbad/recipe.yml"; rm "$TMP/z/wbad/recipe.yml.bak"; zip_dir wbad
+upload "$TKA" "$SA" "$MW" acq "$TMP/z/wbad.zip"
+check "refused start call (wrong SYSTEM.ID): 400" test "$STATUS" = 400
+check "  ... acq/ untouched" test "$(snapshot "$WD/acq")" = "$BEFORE_ACQ"
+check "  ... analysis/ untouched" test "$(snapshot "$WD/analysis")" = "$BEFORE_AN"
+
+# A rate-limited start call wipes nothing.
+wipe_seed; wipe_start wimg2 false image; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wimg2.zip"
+BEFORE_ACQ="$(snapshot "$WD/acq")"; BEFORE_AN="$(snapshot "$WD/analysis")"
+wipe_start wrl false; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wrl.zip"
+check "rate-limited start call: 429" test "$STATUS" = 429
+check "  ... acq/ untouched" test "$(snapshot "$WD/acq")" = "$BEFORE_ACQ"
+check "  ... analysis/ untouched" test "$(snapshot "$WD/analysis")" = "$BEFORE_AN"
+
+# A file that cannot be deleted: 500, and the sender's meta.json does not claim the upload.
+if [ "$(id -u)" != 0 ]; then
+  wipe_seed; chmod 555 "$WD/analysis"
+  wipe_start wfail false; upload "$TKA" "$SA" "$MW" acq "$TMP/z/wfail.zip"
+  chmod 755 "$WD/analysis"
+  check "start call that cannot empty a folder: 500" test "$STATUS" = 500
+  check "  ... the sender's meta.json does not claim an upload" test ! -e "$WD/acq/meta.json"
+  check "  ... the failure is logged" bash -c 'tail -n1 "$1" | cut -f3 | grep -qx 500' _ "$LOG"
+fi
 
 # --- shared contract (tests/web/upload_contract.json, see instructions.md): recipe IDs, names, limits ---
 CONTRACT="$ROOT/tests/web/upload_contract.json"
