@@ -391,22 +391,26 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
     // running those steps together could leave one upload's meta.json describing the other's
     // files. The locks serialise them (dotfiles in the microscope folder, never served), and
     // the sender's rate limit is re-checked under them so the loser of a race gets a 429. A
-    // start-of-run call also empties the other source, so it holds both locks, taken in
-    // BS_SOURCES order so two such calls cannot wait on each other.
-    $startOfRun = bs_is_start_of_run($tmpDir, array_keys($entries));
-    $locks = bs_lock_sources($micDir, $startOfRun ? BS_SOURCES : [basename($sourceDir)]);
+    // start-of-run call may also empty the other source, so it holds both locks, always taken
+    // in BS_SOURCES order: two uploads that each need both can then never wait on each other.
+    $source = basename($sourceDir);
+    $startOfRun = bs_is_start_of_run(array_keys($entries), $checked['finished']);
+    $locks = bs_lock_sources($micDir, $startOfRun ? BS_SOURCES : [$source]);
     if ($locks === null) {
-        bs_log($logFile, $label, 500, 'could not lock the source folder');
+        bs_log($logFile, $label, 500, 'could not lock the source folder(s)');
         bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
     }
     if (bs_rate_limited($sourceDir, $config['min_upload_interval_seconds'] ?? 0)) {
         bs_log($logFile, $label, 429, 'rate limited');
         bs_send_json(429, ['status' => 'error', 'message' => 'uploading too fast']);
     }
-    if ($startOfRun && !bs_empty_source_dirs(array_map(fn($s) => $micDir . '/' . $s, BS_SOURCES))) {
-        error_log('brainsaw: could not empty the source folders in ' . $micDir);
-        bs_log($logFile, $label, 500, 'emptying the source folders failed');
-        bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
+    if ($startOfRun) {
+        $failed = bs_clear_for_start($micDir, $source, $checked['sampleID']);
+        if ($failed !== null) {
+            error_log('brainsaw: could not empty ' . $micDir . '/' . $failed);
+            bs_log($logFile, $label, 500, 'could not empty ' . $failed);
+            bs_send_json(500, ['status' => 'error', 'message' => 'server error']);
+        }
     }
     $installed = bs_install_upload($tmpDir, $sourceDir, array_keys($entries), $checked['sampleID']);
     bs_unlock($locks);
@@ -420,15 +424,78 @@ function bs_handle_zip_upload(array $config, string $label, string $micDir, stri
 }
 
 /**
- * True for the start-of-run call: an upload (already checked, so its status.json is valid)
- * with no LastCompleteSection.jpg whose status.json says finished:false. It tells the server
- * the client has cleared its stage, so the old images must vanish. An end-of-run call is
- * finished:true and must keep its final images even when it carries none.
+ * True for the start-of-run call: an upload with no LastCompleteSection.jpg whose status.json
+ * says finished:false ($names are the files it carries). It tells the server the client has
+ * cleared its stage, so the old images must vanish. An end-of-run call is finished:true and
+ * keeps its final images even when it carries none. A montage-only upload counts as a start call.
  */
-function bs_is_start_of_run(string $tmpDir, array $names): bool
+function bs_is_start_of_run(array $names, bool $finished): bool
 {
-    $status = json_decode((string) file_get_contents($tmpDir . '/status.json'), true);
-    return !in_array('LastCompleteSection.jpg', $names, true) && $status['finished'] === false;
+    return !in_array('LastCompleteSection.jpg', $names, true) && !$finished;
+}
+
+/**
+ * Whether a start-of-run call from $sender also clears the other source. An acq start always
+ * does. An analysis start does only when acq's stored sample ID ($otherSampleId, null when
+ * unreadable) is not the upload's, because analysis starts minutes after acq and must not blank
+ * acq's images; an acq folder of another sample, or without a readable sample ID, is an orphan.
+ * (An orphan acq of the same sample ID is therefore left for the next acq start to clear.)
+ */
+function bs_clears_other_source(string $sender, string $sampleId, ?string $otherSampleId): bool
+{
+    return $sender === 'acq' || $otherSampleId !== $sampleId;
+}
+
+/**
+ * Apply a start-of-run call from $sender (an upload of $sampleId): empty the sender's folder,
+ * and when bs_clears_other_source() says so, empty the other source's folder and remove it, so
+ * the display rule falls back to what remains. The caller holds both locks. Returns null, or
+ * the folder or file that stopped it. It first checks that everything can be deleted, so a
+ * refusal changes nothing; this is best effort, and a race with a change of permissions can
+ * still leave a partial wipe.
+ */
+function bs_clear_for_start(string $micDir, string $sender, string $sampleId): ?string
+{
+    $other = $sender === 'acq' ? 'analysis' : 'acq';
+    $dirs = [$sender => false];
+    if (bs_clears_other_source($sender, $sampleId, bs_read_meta_field($micDir . '/' . $other, 'sample_id'))) {
+        $dirs[$other] = true; // true: remove the folder too
+    }
+    foreach ($dirs as $source => $remove) {
+        $problem = bs_undeletable_in($micDir . '/' . $source, $remove);
+        if ($problem !== null) {
+            return $source . '/' . $problem;
+        }
+    }
+    foreach ($dirs as $source => $remove) {
+        $dir = $micDir . '/' . $source;
+        $failed = bs_empty_dir($dir);
+        if ($failed !== null) {
+            return $source . '/' . $failed;
+        }
+        if ($remove && is_dir($dir) && !rmdir($dir)) {
+            return $source . '/';
+        }
+    }
+    return null;
+}
+
+/** The first thing that would stop bs_empty_dir() (and, with $remove, rmdir) on $dir: '' for the folder itself, else a file name; null if none. */
+function bs_undeletable_in(string $dir, bool $remove): ?string
+{
+    if (!is_dir($dir)) {
+        return null;
+    }
+    $names = scandir($dir);
+    if ($names === false || !is_writable($dir)) {
+        return '';
+    }
+    foreach (array_diff($names, ['.', '..']) as $name) {
+        if ($remove && !is_file($dir . '/' . $name)) {
+            return $name; // a sub-folder would make rmdir fail
+        }
+    }
+    return null;
 }
 
 /** Take the exclusive lock of each of $sources (in the order given) for the microscope folder $micDir. Returns the handles, or null if one cannot be taken. */
@@ -456,30 +523,30 @@ function bs_unlock(array $handles): void
 }
 
 /**
- * Delete every regular file in each of $dirs (folders that do not exist are skipped). The
- * folders themselves stay. meta.json goes first, so a folder emptied only in part never claims
- * an upload. Returns false at the first file that cannot be deleted.
+ * Delete every regular file in $dir (the folder itself stays; a missing folder is already
+ * empty). meta.json goes first, so a partly emptied folder does not claim an upload. Returns
+ * null, or the name of the first file that could not be deleted.
  */
-function bs_empty_source_dirs(array $dirs): bool
+function bs_empty_dir(string $dir): ?string
 {
-    foreach ($dirs as $dir) {
-        $names = is_dir($dir) ? scandir($dir) : [];
-        if ($names === false) {
-            return false;
-        }
-        usort($names, fn($a, $b) => ($b === 'meta.json') <=> ($a === 'meta.json'));
-        foreach ($names as $name) {
-            if (is_file($dir . '/' . $name) && !unlink($dir . '/' . $name)) {
-                return false;
-            }
+    $names = is_dir($dir) ? scandir($dir) : [];
+    if ($names === false) {
+        return '';
+    }
+    if (is_file($dir . '/meta.json') && !unlink($dir . '/meta.json')) {
+        return 'meta.json';
+    }
+    foreach (array_diff($names, ['.', '..']) as $name) {
+        if (is_file($dir . '/' . $name) && !unlink($dir . '/' . $name)) {
+            return $name;
         }
     }
-    return true;
+    return null;
 }
 
 /**
  * Check the extracted upload in $dir. Returns the reason to refuse it (a string), or the
- * recipe's IDs from bs_recipe_ids() when it is acceptable. It needs recipe.yml and
+ * recipe's IDs from bs_recipe_ids() plus status.json's 'finished' flag when it is acceptable. It needs recipe.yml and
  * status.json; status.json must be an object whose "finished" is a boolean; the recipe's
  * SYSTEM.ID must equal $micId; and the recipe needs a sample.ID, which is only stored,
  * compared and escaped, so it must just be non-empty valid UTF-8. The messages reach only
@@ -506,7 +573,7 @@ function bs_check_upload(string $dir, string $micId): string|array
     if (preg_match('//u', $ids['sampleID']) !== 1) {
         return 'the sample ID in recipe.yml is not valid UTF-8';
     }
-    return $ids;
+    return $ids + ['finished' => $status['finished']];
 }
 
 /**
@@ -626,16 +693,9 @@ function bs_install_upload(string $tmpDir, string $dir, array $names, string $sa
     if ($meta === false || (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir))) {
         return false;
     }
-    $existing = scandir($dir);
-    if ($existing === false) {
-        return false;
-    }
     if (bs_read_meta_field($dir, 'sample_id') !== $sampleId) {
-        @unlink($dir . '/meta.json'); // a half-emptied folder must not claim an upload
-        foreach (array_diff($existing, ['.', '..']) as $old) {
-            if (is_file($dir . '/' . $old) && !unlink($dir . '/' . $old)) {
-                return false;
-            }
+        if (bs_empty_dir($dir) !== null) {
+            return false;
         }
     }
     // A new section image without a thumbnail leaves the old thumbnail stale: remove it, so the
