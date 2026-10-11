@@ -532,6 +532,8 @@ page "$MD2"; card "$MD2"
 check "acq + same-sample analysis: main image is the StitchIt image" asset_is "$MD2" main d2an
 check "  ... the page's main image is ?f=main" img_src_has "$(grep 'id="main-image"' <<<"$PAGE")" "f=main"
 check "  ... with the magnifier" body_has "$PAGE" "imageLens({ lensSize"
+check "  ... no thumbnail sent: the strip's BakingTray image is the full image" bash -c 'l="$(grep -A1 "id=\"thumb-bakingtray\"" <<<"$1" | grep "<img")"; grep -q "src=\"[^\"]*f=bakingtray&" <<<"$l" && ! grep -q bakingtray_tile <<<"$l"' _ "$PAGE"
+check "  ... no montage thumbnail sent: the strip shows the full montage" bash -c 'grep -A1 "id=\"thumb-montage\"" <<<"$1" | grep "<img" | grep -q "src=\"[^\"]*f=montage&"' _ "$PAGE"
 check "  ... BakingTray thumbnail present, enlarges on click" body_has "$PAGE" '<a id="thumb-bakingtray" href="/brainsaw/'"$SA/$MD2"'?f=bakingtray'
 check "  ... montage thumbnail present, enlarges on click" body_has "$PAGE" '<a id="thumb-montage" href="/brainsaw/'"$SA/$MD2"'?f=montage'
 check "  ... the BakingTray asset is the acq image" asset_is "$MD2" bakingtray d2acq
@@ -818,6 +820,9 @@ check "lag 3 with thumbnails: the card src is ?f=tile" img_src_has "$CARD" "f=ti
 check "  ... it serves acq's thumbnail" asset_tile_is tile lagacqt
 check "  ... the strip's StitchIt image uses stitchit_tile" img_src_has "$(grep -A1 'id="thumb-stitchit"' <<<"$PAGE")" "f=stitchit_tile"
 check "  ... served with the StitchIt thumbnail bytes" asset_tile_is stitchit_tile lagt3
+lag_up 280 lagnt3   # StitchIt image without a thumbnail while lagging: only acq has one
+page "$ML"
+check "lagging, only acq has a thumbnail: the strip's StitchIt image is the full image" bash -c 'l="$(grep -A1 "id=\"thumb-stitchit\"" <<<"$1" | grep "<img")"; grep -q "src=\"[^\"]*f=stitchit&" <<<"$l" && ! grep -q stitchit_tile <<<"$l"' _ "$PAGE"
 lag_up_t lagt0 283
 page "$ML"; card "$ML"
 check "not lagging with thumbnails: the card src is ?f=tile" img_src_has "$CARD" "f=tile"
