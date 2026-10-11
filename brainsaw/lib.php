@@ -920,12 +920,13 @@ function bs_load_mic_data(array $config, string $siteId, string $micId, string $
     };
 
     // Thumbnails below the main image: each of the acq image, the StitchIt image and the montage
-    // that is not the main image itself and can still be read (a file may vanish between listing
-    // and stat when an upload empties the folder). Each opens in the page's overlay.
+    // that is not the main image itself. An image whose file cannot be stat'ed (it may vanish when an
+    // upload empties the folder) gets no URL and is left out. Each opens in the page's overlay.
     $thumbs = [];
     foreach (['bakingtray', 'stitchit', 'montage'] as $kind) {
-        if (($paths[$kind] ?? null) !== ($paths['main'] ?? null) && $url($kind) !== null) {
-            $thumbs[$kind] = ['url' => $url($kind), 'small_url' => $url($kind . '_tile')];
+        $imageUrl = $url($kind);
+        if (($paths[$kind] ?? null) !== ($paths['main'] ?? null) && $imageUrl !== null) {
+            $thumbs[$kind] = ['url' => $imageUrl, 'small_url' => $url($kind . '_tile')];
         }
     }
 
