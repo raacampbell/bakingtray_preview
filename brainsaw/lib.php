@@ -911,27 +911,84 @@ function bs_displayed_sources(array $config, string $siteId, string $micId): arr
     return ['acq' => $acq];
 }
 
+// StitchIt lags acq when its latest finished section trails acq's by more than this many sections.
+const BS_STITCHIT_LAG_SECTIONS = 2;
+
+/** The largest finished section number in a log parsed by bs_parse_acqlog(), or null if it has none. */
+function bs_latest_finished_section(array $parsedLog): ?int
+{
+    $sections = $parsedLog['sections'];
+    return $sections ? end($sections)['n'] : null;
+}
+
 /**
- * The files a view serves, by the name used in ?f=, for the sources from bs_displayed_sources().
- * Only existing files appear: 'main' (the StitchIt image if there is one, else the BakingTray
- * image), 'bakingtray' (the BakingTray image), 'montage' (the StitchIt montage) 'tile' (the
- * client-made thumbnail of the card image, from the same folder and only beside it) and 'montage_tile'
- * (the client-made thumbnail of the montage, likewise). Recipes and
- * logs are never served: a recipe can hold pasted secrets (e.g. a Slack webhook URL); they are
- * only parsed server-side.
+ * Whether StitchIt lags acq: acq's latest finished section exceeds StitchIt's by more than
+ * BS_STITCHIT_LAG_SECTIONS. Unknown (either side has no finished section) counts as not lagging,
+ * so a missing log never hides the StitchIt image.
  */
-function bs_asset_paths(array $sources): array
+function bs_lag_exceeds_threshold(?int $acqLatest, ?int $stitchLatest): bool
+{
+    return $acqLatest !== null && $stitchLatest !== null && $acqLatest - $stitchLatest > BS_STITCHIT_LAG_SECTIONS;
+}
+
+/**
+ * True if both sources are shown and the log copy StitchIt uploads (analysis/acqLog.txt) trails
+ * acq/acqLog.txt by more than BS_STITCHIT_LAG_SECTIONS finished sections: StitchIt has probably
+ * crashed, so its image is old. That log is the analysis PC's synced copy and can be a little
+ * ahead of the section StitchIt has stitched, so the measured lag can understate the true lag.
+ * $acqLog is acq's log if the caller has already parsed it.
+ */
+function bs_is_lagging(array $sources, ?array $acqLog = null): bool
+{
+    if (!isset($sources['acq'], $sources['analysis'])) {
+        return false;
+    }
+    $parse = fn(string $name) => bs_parse_acqlog((string) @file_get_contents($sources[$name]['dir'] . '/acqLog.txt'));
+    return bs_lag_exceeds_threshold(bs_latest_finished_section($acqLog ?? $parse('acq')), bs_latest_finished_section($parse('analysis')));
+}
+
+/**
+ * The sources in the order their image is preferred for the card and the page's main image:
+ * StitchIt (analysis) first, because its image looks better, unless it lags; acq (BakingTray)
+ * first then.
+ */
+function bs_image_preference(bool $lagging): array
+{
+    return $lagging ? ['acq', 'analysis'] : ['analysis', 'acq'];
+}
+
+/**
+ * The files a view serves, by the name used in ?f=, for the sources from bs_displayed_sources()
+ * and whether StitchIt lags (bs_is_lagging()). Only existing files appear:
+ * 'main' (the preferred image, see bs_image_preference(); the first source that has one) and 'tile'
+ * (the client-made thumbnail beside that image, only beside it); 'bakingtray' / 'bakingtray_tile'
+ * (the acq image and its thumbnail); 'stitchit' (the analysis image, 'stitchit_tile' its
+ * thumbnail); 'montage' (the StitchIt montage) and 'montage_tile' (its thumbnail, only beside it).
+ * Recipes and logs are never served: a recipe can hold pasted secrets (e.g. a Slack webhook URL);
+ * they are only parsed server-side.
+ */
+function bs_asset_paths(array $sources, bool $lagging): array
 {
     $file = fn(string $name, string $fileName) => isset($sources[$name]) && is_file($sources[$name]['dir'] . '/' . $fileName)
         ? $sources[$name]['dir'] . '/' . $fileName : null;
-    $bakingtray = $file('acq', 'LastCompleteSection.jpg');
-    $cardSource = isset($sources['acq']) ? 'acq' : 'analysis'; // the card shows this folder's image
+    // A thumbnail is served only beside the image it shrinks.
+    $thumb = fn(string $name, string $image, string $thumbName) => $file($name, $image) !== null ? $file($name, $thumbName) : null;
+    $primary = null;
+    foreach (bs_image_preference($lagging) as $name) {
+        if ($file($name, 'LastCompleteSection.jpg') !== null) {
+            $primary = $name;
+            break;
+        }
+    }
     return array_filter([
-        'main' => $file('analysis', 'LastCompleteSection.jpg') ?? $bakingtray,
-        'bakingtray' => $bakingtray,
+        'main' => $primary !== null ? $file($primary, 'LastCompleteSection.jpg') : null,
+        'tile' => $primary !== null ? $thumb($primary, 'LastCompleteSection.jpg', 'tile_thumbnail.jpg') : null,
+        'bakingtray' => $file('acq', 'LastCompleteSection.jpg'),
+        'bakingtray_tile' => $thumb('acq', 'LastCompleteSection.jpg', 'tile_thumbnail.jpg'),
+        'stitchit' => $file('analysis', 'LastCompleteSection.jpg'),
+        'stitchit_tile' => $thumb('analysis', 'LastCompleteSection.jpg', 'tile_thumbnail.jpg'),
         'montage' => $file('analysis', 'montage.jpg'),
-        'montage_tile' => $file('analysis', 'montage.jpg') !== null ? $file('analysis', 'montage_thumbnail.jpg') : null,
-        'tile' => $file($cardSource, 'LastCompleteSection.jpg') !== null ? $file($cardSource, 'tile_thumbnail.jpg') : null,
+        'montage_tile' => $thumb('analysis', 'montage.jpg', 'montage_thumbnail.jpg'),
     ]);
 }
 
@@ -966,7 +1023,10 @@ function bs_file_version(string $path, array $stat): string
     return substr(md5($path . '|' . $stat['mtime'] . '|' . $stat['size']), 0, 16);
 }
 
-/** A string that changes whenever a displayed source is uploaded to, or the set of sources changes. */
+/**
+ * A string that changes whenever a displayed source is uploaded to or the set of sources changes;
+ * that also covers the lag state, which only changes when one of the two logs does, i.e. on an upload.
+ */
 function bs_version(array $sources): string
 {
     $parts = [];
@@ -986,27 +1046,33 @@ function bs_load_mic_data(array $config, string $siteId, string $micId, string $
     $sources = bs_displayed_sources($config, $siteId, $micId);
     $version = bs_version($sources);
     $truth = $sources ? reset($sources) : null; // recipe, log and freshness come from the ground truth
-    $paths = bs_asset_paths($sources);
+    $acquisition = bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : '');
+    $lagging = bs_is_lagging($sources, isset($sources['acq']) ? $acquisition : null); // acq is the truth whenever it is shown
+    $paths = bs_asset_paths($sources, $lagging);
     $url = function (string $kind) use ($paths, $micUrl): ?string {
         $stat = isset($paths[$kind]) ? @stat($paths[$kind]) : false;
         return $stat !== false ? $micUrl . '?f=' . $kind . '&v=' . bs_file_version($paths[$kind], $stat) : null;
     };
 
+    // Thumbnails below the main image: each of the acq image, the StitchIt image and the montage
+    // that is not the main image itself. An image whose file cannot be stat'ed (it may vanish when an
+    // upload empties the folder) gets no URL and is left out. Each opens in the page's overlay.
+    $thumbs = [];
+    foreach (['bakingtray', 'stitchit', 'montage'] as $kind) {
+        $imageUrl = $url($kind);
+        if (($paths[$kind] ?? null) !== ($paths['main'] ?? null) && $imageUrl !== null) {
+            $thumbs[$kind] = ['url' => $imageUrl, 'small_url' => $url($kind . '_tile')];
+        }
+    }
+
     return [
         'main_image_url' => $url('main'),
-        // Thumbnails below the main image; the BakingTray image only when the main image is another one.
-        'thumb_urls' => array_filter([
-            'bakingtray' => ($paths['bakingtray'] ?? null) !== ($paths['main'] ?? null) ? $url('bakingtray') : null,
-            'montage' => $url('montage'),
-        ]),
-        // The BakingTray image whenever acq/ is shown (a placeholder if it has none); the analysis image only without acq/.
-        // Its thumbnail when the client sent one, else the full image.
-        'card_image_url' => $url('tile') ?? (isset($sources['acq']) ? $url('bakingtray') : $url('main')),
-        'tile_url' => $url('tile'),
-        'montage_tile_url' => $url('montage_tile'),
+        'thumbs' => $thumbs,
+        // The card shows the main image, or its client-made thumbnail when there is one.
+        'card_image_url' => $url('tile') ?? $url('main'),
         'meta_url' => $micUrl . '?f=meta',
         'recipe' => $truth !== null ? bs_parse_recipe($truth['dir'] . '/recipe.yml') : [],
-        'acquisition' => bs_parse_acqlog($truth !== null ? (string) @file_get_contents($truth['dir'] . '/acqLog.txt') : ''),
+        'acquisition' => $acquisition,
         'uploaded_at' => $truth !== null ? bs_meta_string($truth['meta'], 'uploaded_at') : null,
         'version' => $version,
         'finished' => bs_is_finished($sources),
@@ -1382,7 +1448,7 @@ function bs_not_found(): never
 
 /**
  * Entry point for every request path that is not an existing file (see .htaccess and
- * router.php): a card grid, a microscope page, one of its assets (?f=main|bakingtray|montage|tile,
+ * router.php): a card grid, a microscope page, one of its assets (?f=main|tile|bakingtray|stitchit|montage|...,
  * see bs_asset_paths(); ?f=meta is the version the auto-refresh polls), or the 404 page.
  * The headers keep view URLs out of Referer headers and search engines.
  */
@@ -1417,7 +1483,7 @@ function bs_handle_view(array $config): never
         bs_send_json(200, ['version' => bs_version($sources)]);
     }
     // Any other kind (including the recipe and log) has no entry, so it gets the 404 page.
-    bs_serve_asset(is_string($kind) ? (bs_asset_paths($sources)[$kind] ?? null) : null);
+    bs_serve_asset(is_string($kind) ? (bs_asset_paths($sources, bs_is_lagging($sources))[$kind] ?? null) : null);
 }
 
 /**
@@ -1517,8 +1583,9 @@ function bs_render_grid(array $config, array $view, string $base): void
 }
 
 /**
- * Render one microscope's page: the main image with a magnifier lens, below it (when there is
- * one) thumbnails of the BakingTray image and the StitchIt montage that open full size, a
+ * Render one microscope's page: the main image with a magnifier lens (the StitchIt image, or the
+ * BakingTray image when StitchIt lags), below it (when there is one) thumbnails of the other
+ * images (BakingTray or StitchIt, and the StitchIt montage) that open full size in an overlay, a
  * metadata table parsed from the recipe file, and a per-section acquisition-time chart parsed
  * from the acquisition log.
  */
@@ -1532,7 +1599,11 @@ function bs_render_mic_page(array $config, array $view, string $base): void
     $recipe = $data['recipe'];
     $acq = $data['acquisition'];
     [$ago, $isStale] = bs_freshness($data['uploaded_at'], $staleAfter, $data['finished']);
-    $thumbCaptions = ['bakingtray' => 'BakingTray: last section', 'montage' => 'StitchIt: montage (all optical planes, single channel)'];
+    $thumbCaptions = [
+        'bakingtray' => 'BakingTray: last section',
+        'stitchit' => 'StitchIt: last stitched section',
+        'montage' => 'StitchIt: montage (all optical planes, single channel)',
+    ];
 
     // Rough ETA estimate from the average per-section duration seen so far —
     // labeled "estimated" since there's no dedicated ETA file yet.
@@ -1608,12 +1679,11 @@ function bs_render_mic_page(array $config, array $view, string $base): void
       <div class="placeholder">no image yet</div>
     <?php endif; ?>
 
-    <?php if ($data['thumb_urls']): ?>
+    <?php if ($data['thumbs']): ?>
       <div class="thumbs">
-      <?php foreach ($data['thumb_urls'] as $kind => $thumbUrl): ?>
-        <?php $smallUrl = $kind === 'bakingtray' ? $data['tile_url'] : ($kind === 'montage' ? $data['montage_tile_url'] : null); ?>
-        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumbUrl) ?>" <?= $kind === 'montage' ? 'data-overlay' : 'target="_blank" rel="noopener noreferrer"' ?>>
-          <img src="<?= htmlspecialchars($smallUrl ?? $thumbUrl) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
+      <?php foreach ($data['thumbs'] as $kind => $thumb): ?>
+        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumb['url']) ?>" data-overlay>
+          <img src="<?= htmlspecialchars($thumb['small_url'] ?? $thumb['url']) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
           <span><?= htmlspecialchars($thumbCaptions[$kind]) ?></span>
         </a>
       <?php endforeach; ?>

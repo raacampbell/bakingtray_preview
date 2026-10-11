@@ -88,8 +88,11 @@ and the same body, so probing cannot tell a real word from a made-up one. No vie
 the code, `.htaccess` or any served file.
 
 Images and meta come through the view, never from `system_data/` directly:
-`<microscope page URL>?f=main` (the main image), `?f=bakingtray` (the BakingTray image),
-`?f=montage` (the StitchIt montage), `?f=meta` (a small JSON with the
+`<microscope page URL>?f=main` (the main image: StitchIt's, or BakingTray's when StitchIt lags),
+`?f=tile` (its client-made thumbnail), `?f=bakingtray` and `?f=bakingtray_tile` (the BakingTray
+image and its thumbnail), `?f=stitchit` and `?f=stitchit_tile` (the StitchIt image and its thumbnail),
+`?f=montage` and `?f=montage_tile` (the StitchIt montage and its thumbnail; a thumbnail is served
+only beside its image), `?f=meta` (a small JSON with the
 `version` that auto-refresh polls, `Cache-Control: no-store`). The view re-checks that its word
 may see that microscope; only files the display rule (§5) shows are served, and anything else,
 such as a hidden `analysis/` image, gets the same 404 as any missing page. Recipe and log files
@@ -175,7 +178,9 @@ route, direct-access refusals, the URL base, uploads, logging, rate limits, sett
 validation, headers and the auto-refresh wiring. It also covers the display rule (§5): acq
 alone, acq with matching and with non-matching analysis, analysis alone, the finished flag
 (including that analysis never sets or clears it), staleness, an `acq/` whose `meta.json` is
-missing or corrupt, and which assets are served.
+missing or corrupt, and which assets are served. It covers the StitchIt lag rule too: lag 3, lag
+exactly 2, equal logs, an analysis log with no finished section, a missing acq log, the
+card and strip thumbnails in both layouts, and the layout flipping back and forth.
 
 ## 5. What gets uploaded
 
@@ -250,18 +255,29 @@ installed, a 500 returned); the next upload repairs it.
   `sample_id`; otherwise it is hidden, and so are its files.
 - No `acq/` folder: `analysis/`, once it holds an upload (`meta.json` with `uploaded_at`), is
   shown alone as the ground truth (a BakingTray that is not upgraded).
-- The card shows the BakingTray image whenever `acq/` exists, a placeholder if it has none;
-  the `analysis/` image only when there is no `acq/`.
+- The card and the page's main image show the StitchIt (`analysis/`) image when `analysis/` is shown,
+  because it looks better, and the BakingTray image otherwise (acq alone). When StitchIt lags (below)
+  they switch to the BakingTray image. If the preferred source has no image, the other source's image
+  is used; a card with no image from either shows a placeholder.
+- **StitchIt lag.** StitchIt can crash, leaving `analysis/` behind `acq/`. Lag is the largest finished
+  section number in `acq/acqLog.txt` minus the largest in `analysis/acqLog.txt` (the copy of the log
+  that StitchIt uploads each time; it freezes when StitchIt crashes). More than 2 sections
+  (`BS_STITCHIT_LAG_SECTIONS` in `lib.php`; exactly 2 is not lagging) counts as lagging. If either log
+  has no finished section the lag is unknown and counts as not lagging. The analysis log is the
+  analysis PC's synced copy and can be slightly ahead of the section StitchIt has actually stitched,
+  so the measured lag can be a little smaller than the true lag. Lag changes only which image is
+  main and what the strip shows; the finished flag, freshness, recipe table and chart stay acq's.
 
 Files are found by their fixed names:
 
 | File | Source | Used for |
 |---|---|---|
-| `LastCompleteSection.jpg` | `acq/` | the BakingTray image: main image when there is no StitchIt image, otherwise a thumbnail; the card thumbnail |
-| `LastCompleteSection.jpg` | `analysis/` | the StitchIt image: the large main image (the card thumbnail when there is no `acq/`) |
+| `LastCompleteSection.jpg` | `acq/` | the BakingTray image: the main image and card thumbnail when there is no StitchIt image or StitchIt lags, otherwise a strip thumbnail |
+| `LastCompleteSection.jpg` | `analysis/` | the StitchIt image: the main image and card thumbnail (unless StitchIt lags, then a strip thumbnail) |
 | `montage.jpg` | `analysis/` | the montage thumbnail. A `montage.jpg` in `acq/` is stored but not shown |
 | `recipe.yml` | ground truth | sample, laser power, voxel size, ... |
 | `acqLog.txt` | ground truth | timing chart, progress, ETA estimate |
+| `acqLog.txt` | `analysis/` | read only for the lag check (its latest finished section, against `acq/`'s) |
 | `status.json` | ground truth | finished flag |
 
 **Finished.** Finished is the `finished` of the ground truth's `status.json` alone: `acq/`, or
@@ -301,9 +317,10 @@ site ID (and move its data folder) or remove the site. A new site ID also means 
 ## 8. The microscope page
 
 - **Main image + magnifier**: the StitchIt image when a matching `analysis/` is shown, else the
-  BakingTray image, with a hover lens.
-- **Thumbnails** (only when a matching `analysis/` is shown): below the main image, the
-  BakingTray image and the StitchIt montage. Clicking one opens it full size in a new tab.
+  BakingTray image (also when StitchIt lags, §5). It has a hover lens.
+- **Thumbnails** (only when a matching `analysis/` is shown): below the main image, the image
+  that is not the main one (BakingTray normally, StitchIt when it lags) and the StitchIt montage.
+  Clicking one opens it full size over the page (cross top-left, Esc or a click outside closes it).
 - **Status line**: "Finished" when the acquisition is finished, then "Last updated X ago"
   (of the ground-truth source), and the section being acquired.
 - **Metadata table**: parsed from the recipe by `bs_parse_recipe()` (targeted regexes, no YAML
@@ -316,7 +333,7 @@ site ID (and move its data folder) or remove the site. A new site ID also means 
 - **Acquisition-time chart**: inline SVG (no JS library) of minutes per section from
   `acqLog.txt`; the dashed line is the mean.
 
-A card shows the BakingTray image (the `analysis/` image when there is no `acq/`), the sample,
+A card shows the main image (its `tile_thumbnail.jpg` when sent), the sample,
 "finished" when it is, and how long ago the ground truth was uploaded. It turns red past
 `stale_after_seconds` unless the acquisition is finished.
 

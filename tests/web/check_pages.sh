@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Serves a throwaway copy of brainsaw/ with `php -S ... router.php` and a temp settings file
-# (two sites with one token each, seventeen microscopes in all, a panopticon word; every name and
+# (two sites with one token each, eighteen microscopes in all, a panopticon word; every name and
 # token random) and
 # checks the views, the 404 page, the asset route, uploads, settings validation and the
 # auto-refresh wiring. The copy sits in a sub-folder of the server's document root, so the
@@ -63,7 +63,7 @@ for f in "$SRC"/*.php; do check "php -l $(basename "$f")" lint_ok "$f"; done
 # --- random settings: nothing here may look like anything in the repo ---
 r() { openssl rand -hex "$1"; }
 PAN="p$(r 6)"; SA="a$(r 5)"; SB="b$(r 5)"
-MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"; MT="t$(r 4)"; MTA="u$(r 4)"; MW="v$(r 4)"   # one microscope per display-rule case; MT, MTA: thumbnails; MW: start-of-run wipe
+MD1="d$(r 4)"; MD2="e$(r 4)"; MD3="f$(r 4)"; MD4="g$(r 4)"; MD5="h$(r 4)"; MD6="i$(r 4)"; MD7="j$(r 4)"; MD8="o$(r 4)"; MD9="q$(r 4)"; MT="t$(r 4)"; MTA="u$(r 4)"; ML="l$(r 4)"; MW="v$(r 4)"   # one microscope per display-rule case; MT, MTA: thumbnails; ML: the lag rule; MW: start-of-run wipe
 MA1="m$(r 4)"; MA2="n$(r 4)"; MB="k$(r 4)"; MSPACE="Scope_$(r 3)"   # MSPACE: its recipe says "Scope <hex>"
 TKA="$(r 32)"; TKB="$(r 32)"; TOLD="$(r 32)"   # one token per site; TOLD stands for a per-microscope token of the old format
 SETTINGS="$TMP/www/brainsaw_settings.json"   # config.php default: next to brainsaw/
@@ -75,7 +75,7 @@ write_settings() { # panopticon word, site A id
      "$MA1": {"display_name": "Scope A1 $MA1"},
      "$MA2": {"display_name": "Scope A2 $MA2"},
      "$MSPACE": {"display_name": "Scope with a space"},
-     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}, "$MT": {}, "$MTA": {}, "$MW": {}}},
+     "$MD1": {}, "$MD2": {}, "$MD3": {}, "$MD4": {}, "$MD5": {}, "$MD6": {}, "$MD7": {}, "$MD8": {}, "$MD9": {}, "$MT": {}, "$MTA": {}, "$ML": {}, "$MW": {}}},
   "$SB": {"display_name": "Lab B $SB", "token": "$TKB", "microscopes": {
      "$MB": {"display_name": "Scope B $MB"},
      "logs": {}}}}}
@@ -483,9 +483,13 @@ check "microscope A2 through the panopticon: image served" test "$STATUS" = 200
 # --- the display rule: which sources a view shows, finished, staleness, assets ---
 # One microscope per case, all in site A. Every upload carries images tagged with its source, so
 # a served asset can be told apart by its bytes.
-# dz NAME SYSTEM_ID SAMPLE FINISHED TAG: the zip $TMP/z/NAME.zip, its folder kept to compare bytes with.
+# dz NAME SYSTEM_ID SAMPLE FINISHED TAG [LAST]: the zip $TMP/z/NAME.zip, its folder kept to compare
+# bytes with. LAST cuts the acquisition log after that finished section ("-": a log with no finished
+# section); the fixture log ends at section 283 and is kept whole when LAST is not given.
 dz() {
   new_dir "$1" "$2" "$3"; printf '{"finished": %s}' "$4" > "$TMP/z/$1/status.json"
+  if [ "${6:-}" = "-" ]; then : > "$TMP/z/$1/acqLog.txt"
+  elif [ -n "${6:-}" ]; then sed "/FINISHED section number $6,/q" "$TMP/z/$1/acqLog.txt" > "$TMP/z/$1/acqLog.cut" && mv "$TMP/z/$1/acqLog.cut" "$TMP/z/$1/acqLog.txt"; fi
   printf '%s' "$5" >> "$TMP/z/$1/LastCompleteSection.jpg"; printf '%s' "$5" >> "$TMP/z/$1/montage.jpg"
   zip_dir "$1"
 }
@@ -503,6 +507,10 @@ asset_is() {
 is_stale_card() { grep -q 'class="card stale"' <<<"$CARD"; }
 is_stale_page() { grep -q 'class="status stale"' <<<"$PAGE"; }
 img_src_has() { grep -o 'src="[^"]*"' <<<"$1" | grep -qF -- "$2"; }
+# card_bytes_are DIR: the image the last card() shows is DIR's full image (images carry a source tag).
+card_bytes_are() { fetch "http://localhost:$PORT$(attr_of src "$(grep '<img' <<<"$CARD")" | html_unescape)"; [ "$STATUS" = 200 ] && cmp -s "$TMP/b" "$TMP/z/$1/LastCompleteSection.jpg"; }
+# thumb_overlays PAGE KIND: the strip link of KIND opens the overlay (it has data-overlay, not a new tab).
+thumb_overlays() { grep "id=\"thumb-$2\"" <<<"$1" | grep -q 'data-overlay'; }
 
 # acq alone: BakingTray image, magnifier, no montage; the card shows that image.
 dz d1acq "$MD1" ALPHA false ACQ;  up acq "$MD1" d1acq
@@ -512,7 +520,7 @@ check "acq only: magnifier on the main image" body_has "$PAGE" "imageLens({ lens
 check "acq only: no thumbnails" body_lacks "$PAGE" 'id="thumb-'
 check "acq only: recipe table from acq" body_has "$PAGE" ">ALPHA<"
 check "acq only: the acq montage is not served" same_404 "$B/$SA/$MD1?f=montage"
-check "acq only: card image is the BakingTray image" img_src_has "$CARD" "f=bakingtray"
+check "acq only: the card shows the acq image" card_bytes_are d1acq
 check "acq only: not finished" body_lacks "$CARD$PAGE" 'class="finished"'
 backdate "$(src_dir "$MD1" acq)" 7200
 page "$MD1"; card "$MD1"
@@ -526,11 +534,17 @@ page "$MD2"; card "$MD2"
 check "acq + same-sample analysis: main image is the StitchIt image" asset_is "$MD2" main d2an
 check "  ... the page's main image is ?f=main" img_src_has "$(grep 'id="main-image"' <<<"$PAGE")" "f=main"
 check "  ... with the magnifier" body_has "$PAGE" "imageLens({ lensSize"
+check "  ... no thumbnail sent: the strip's BakingTray image is the full image" bash -c 'l="$(grep -A1 "id=\"thumb-bakingtray\"" <<<"$1" | grep "<img")"; grep -q "src=\"[^\"]*f=bakingtray&" <<<"$l" && ! grep -q bakingtray_tile <<<"$l"' _ "$PAGE"
+check "  ... no montage thumbnail sent: the strip shows the full montage" bash -c 'grep -A1 "id=\"thumb-montage\"" <<<"$1" | grep "<img" | grep -q "src=\"[^\"]*f=montage&"' _ "$PAGE"
 check "  ... BakingTray thumbnail present, enlarges on click" body_has "$PAGE" '<a id="thumb-bakingtray" href="/brainsaw/'"$SA/$MD2"'?f=bakingtray'
 check "  ... montage thumbnail present, enlarges on click" body_has "$PAGE" '<a id="thumb-montage" href="/brainsaw/'"$SA/$MD2"'?f=montage'
 check "  ... the BakingTray asset is the acq image" asset_is "$MD2" bakingtray d2acq
 check "  ... the montage asset is the StitchIt montage" asset_is "$MD2" montage d2an
 check "  ... montage link opens the overlay, and no thumbnail yet: the strip shows the full montage" body_has "$PAGE" 'data-overlay'
+check "  ... the BakingTray link opens the same overlay" thumb_overlays "$PAGE" bakingtray
+check "  ... the montage link opens the overlay" thumb_overlays "$PAGE" montage
+check "  ... no StitchIt thumbnail (it is the main image)" body_lacks "$PAGE" 'id="thumb-stitchit"'
+check "  ... the overlay script is present" body_has "$PAGE" "querySelectorAll('a[data-overlay]')"
 check "  ... the page has the overlay and its close button" body_has "$PAGE" 'id="overlay-close"'
 check "  ... ?f=montage_tile is the usual 404" same_404 "$B/$SA/$MD2?f=montage_tile"
 backdate "$(src_dir "$MD2" analysis)"; dz d2mt "$MD2" BETA false STITCH; cp "$IMAGES/tile_thumbnail.jpeg" "$TMP/z/d2mt/montage_thumbnail.jpg"; zip_dir d2mt; up analysis "$MD2" d2mt
@@ -540,7 +554,7 @@ fetch "$B/$SA/$MD2?f=montage_tile"
 check "  ... served with the uploaded bytes" cmp -s "$TMP/b" "$IMAGES/tile_thumbnail.jpeg"
 backdate "$(src_dir "$MD2" analysis)"; dz d2mn "$MD2" BETA false STITCH; up analysis "$MD2" d2mn
 check "  ... a new montage without a thumbnail removes the old one" same_404 "$B/$SA/$MD2?f=montage_tile"
-check "  ... the card image is the BakingTray image" img_src_has "$CARD" "f=bakingtray"
+check "  ... the card image is the StitchIt image" card_bytes_are d2an
 check "  ... the version covers both sources" body_has "$CARD" 'data-version="acq='
 check "  ... and the analysis" body_has "$CARD" ';analysis='
 fetch "$B/$SA/$MD2?f=meta"
@@ -676,12 +690,11 @@ dz u2an "$MD8" THETA true STITCH; up analysis "$MD8" u2an
 card "$MD8"
 check "analysis only, then finished: finished" body_has "$CARD" '<span class="finished">finished</span>'
 
-# acq/ exists but has no image: the card shows the placeholder, not the matching analysis image.
+# acq/ exists but has no image: the matching analysis image stands in on the page and the card.
 dz n1acq "$MD9" IOTA false ACQ; rm "$TMP/z/n1acq/LastCompleteSection.jpg"; zip_dir n1acq; up acq "$MD9" n1acq
 dz n1an  "$MD9" IOTA false STITCH; up analysis "$MD9" n1an
 card "$MD9"; page "$MD9"
-check "acq without an image: card shows the placeholder" body_has "$CARD" 'no image yet'
-check "  ... not an image" body_lacks "$CARD" '<img'
+check "acq without an image: the card shows the analysis image" card_bytes_are n1an
 check "  ... the page's main image is still the analysis image" asset_is "$MD9" main n1an
 
 # An acq/ folder with no upload in it (empty, or left by a failed first install) is still the
@@ -712,7 +725,7 @@ check "?f[]=main (an array) is the usual 404" same_404 "$B/$SA/$MD5?f%5B%5D=main
 # --- card thumbnails: the client's tile_thumbnail.jpg, from the card image's folder and only beside it ---
 # tz NAME SAMPLE TAG: like dz (not finished) plus a thumbnail tagged with TAG, so its bytes can be told apart.
 tz() { dz "$1" "$MT" "$2" false "$3"; cp "$IMAGES/tile_thumbnail.jpeg" "$TMP/z/$1/tile_thumbnail.jpg"; printf '%s' "$3" >> "$TMP/z/$1/tile_thumbnail.jpg"; zip_dir "$1"; }
-tile_is() { fetch "$B/$SA/$MT?f=tile"; [ "$STATUS" = 200 ] && cmp -s "$TMP/b" "$TMP/z/$1/tile_thumbnail.jpg"; }
+tile_is() { fetch "$B/$SA/$MT?f=${2:-tile}"; [ "$STATUS" = 200 ] && cmp -s "$TMP/b" "$TMP/z/$1/tile_thumbnail.jpg"; }   # NAME [KIND]
 tz t1 THETA T1; up acq "$MT" t1
 page "$MT"; card "$MT"
 check "thumbnail: the card shows it" img_src_has "$CARD" "f=tile"
@@ -726,19 +739,21 @@ check "  ... acq alone: no thumbnail strip" body_lacks "$PAGE" 'id="thumb-'
 backdate "$(src_dir "$MT" acq)"; tz t2an THETA STITCH; up analysis "$MT" t2an
 page "$MT"; card "$MT"
 check "  ... strip: the BakingTray link opens the full image" body_has "$PAGE" '<a id="thumb-bakingtray" href="/brainsaw/'"$SA/$MT"'?f=bakingtray'
-check "  ... strip: the BakingTray image is the thumbnail" img_src_has "$(grep -A1 'id="thumb-bakingtray"' <<<"$PAGE")" "f=tile"
-check "  ... the card thumbnail is still acq's, not analysis's" tile_is t1
-# A new section image without a thumbnail: the old thumbnail is removed and the card shows the full image.
+check "  ... strip: the BakingTray image is acq's thumbnail" img_src_has "$(grep -A1 'id="thumb-bakingtray"' <<<"$PAGE")" "f=bakingtray_tile"
+check "  ... served with acq's thumbnail bytes" tile_is t1 bakingtray_tile
+check "  ... the card thumbnail is now the StitchIt one" tile_is t2an
+check "  ... and the card shows it" img_src_has "$CARD" "f=tile"
+# A new section image without a thumbnail: the old thumbnail is removed.
 backdate "$(src_dir "$MT" acq)"; dz t3 "$MT" THETA false T3; up acq "$MT" t3
 card "$MT"
 check "new image without a thumbnail: old thumbnail removed" test ! -e "$(src_dir "$MT" acq)/tile_thumbnail.jpg"
-check "  ... the card shows the full BakingTray image" img_src_has "$CARD" "f=bakingtray"
-check "  ... ?f=tile is the usual 404" same_404 "$B/$SA/$MT?f=tile"
+check "  ... the acq thumbnail is the usual 404" same_404 "$B/$SA/$MT?f=bakingtray_tile"
+check "  ... the card still shows the StitchIt thumbnail" tile_is t2an
 # An end-of-run upload without an image keeps the thumbnail that sits beside its image.
 backdate "$(src_dir "$MT" acq)"; tz t4 THETA T4; up acq "$MT" t4
 backdate "$(src_dir "$MT" acq)"; new_dir t5 "$MT" THETA; rm "$TMP/z/t5/LastCompleteSection.jpg" "$TMP/z/t5/montage.jpg"; echo '{"finished": true}' > "$TMP/z/t5/status.json"; zip_dir t5; up acq "$MT" t5
 # t5 sends finished:true: with finished:false and no image it would be a start-of-run call, which removes the thumbnail.
-check "upload without an image keeps the thumbnail" tile_is t4
+check "upload without an image keeps the thumbnail" tile_is t4 bakingtray_tile
 # A thumbnail is never shown without its image: a new sample with no image (and finished) empties the folder.
 backdate "$(src_dir "$MT" acq)"; new_dir t6 "$MT" IOTA; rm "$TMP/z/t6/LastCompleteSection.jpg" "$TMP/z/t6/montage.jpg"; echo '{"finished": true}' > "$TMP/z/t6/status.json"; zip_dir t6; up acq "$MT" t6   # finished:true: with finished:false this no-image upload would be a start-of-run call (tested as t8 below); this way the new sample ID alone empties the folder
 card "$MT"
@@ -975,6 +990,93 @@ purefn() { php -r 'require $argv[1]; echo json_encode([
   bs_clears_other_source("acq", "S", "S"), bs_clears_other_source("acq", "S", null),
   bs_clears_other_source("analysis", "S", "S"), bs_clears_other_source("analysis", "S", "T"), bs_clears_other_source("analysis", "S", null)]);' "$APP/lib.php"; }
 check "start-of-run and other-source decisions" test "$(purefn)" = "[true,false,true,false,false,true,true,false,true,true]"
+
+# --- the lag rule: StitchIt lags acq by more than BS_STITCHIT_LAG_SECTIONS (2) sections ---
+# Lag = acq's latest finished section minus the latest finished section in the log copy that
+# StitchIt uploads. The fixture log ends at section 283, so an analysis log cut after section 280
+# lags by 3, after 281 by 2. Images are tagged: ACQ is the BakingTray image, STITCH the StitchIt one.
+lag_up() { # LAST [NAME]: a matching analysis upload whose log is cut after section LAST (whole when empty)
+  if [ -d "$(src_dir "$ML" analysis)" ]; then backdate "$(src_dir "$ML" analysis)"; fi
+  dz "${2:-lagan}" "$ML" LAMBDA false STITCH "$1"; up analysis "$ML" "${2:-lagan}"
+}
+dz lagacq "$ML" LAMBDA false ACQ; up acq "$ML" lagacq
+lag_up 280 lag3
+page "$ML"; card "$ML"
+check "lag 3: the main image is the acq image" asset_is "$ML" main lagacq
+check "  ... the card shows the acq image" card_bytes_are lagacq
+check "  ... the StitchIt image is in the strip, opening the overlay" thumb_overlays "$PAGE" stitchit
+check "  ... the montage is in the strip, opening the overlay" thumb_overlays "$PAGE" montage
+check "  ... the acq image is not repeated in the strip" body_lacks "$PAGE" 'id="thumb-bakingtray"'
+check "  ... ?f=stitchit is the StitchIt image" asset_is "$ML" stitchit lag3
+check "  ... ?f=bakingtray is the acq image" asset_is "$ML" bakingtray lagacq
+check "  ... ?f=montage is the StitchIt montage" asset_is "$ML" montage lag3
+check "  ... the recipe table is still acq's" body_has "$PAGE" ">LAMBDA<"
+check "  ... still not finished" body_lacks "$CARD$PAGE" 'class="finished"'
+# Lag 2 (log cut after 281) is not lagging; nor is lag 0, nor a log with no finished section (unknown).
+for last in 281 283 "" "-"; do
+  lag_up "$last" lagok
+  page "$ML"; card "$ML"
+  check "analysis log cut after '${last:-whole}': not lagging, the main image is the StitchIt image" asset_is "$ML" main lagok
+  check "  ... the card shows the StitchIt image" card_bytes_are lagok
+  check "  ... the acq image is in the strip, opening the overlay" thumb_overlays "$PAGE" bakingtray
+  check "  ... no StitchIt thumbnail" body_lacks "$PAGE" 'id="thumb-stitchit"'
+  check "  ... ?f=bakingtray is the acq image" asset_is "$ML" bakingtray lagacq
+done
+lag_up 280 lag3
+page "$ML"
+check "lagging again when the analysis log falls behind: the main image is acq" asset_is "$ML" main lagacq
+# The lag flag is a pure function of the two latest finished section numbers.
+lag_cases() { php -r 'require $argv[1];
+  $cases = [[283, 280, true], [283, 281, false], [283, 0, true], [283, 283, false], [283, 290, false],
+            [283, null, false], [null, 280, false], [null, null, false], [0, 0, false]];
+  foreach ($cases as [$acq, $stitch, $want]) {
+    echo (bs_lag_exceeds_threshold($acq, $stitch) === $want ? "ok" : "bad"), "\t", json_encode([$acq, $stitch]), "\n";
+  }' "$APP/lib.php"; }
+lagc="$(lag_cases)"
+check "lag rule: every case was run" test "$(wc -l <<<"$lagc")" -eq 9
+while IFS=$'\t' read -r verdict name; do check "lag rule (acq latest, StitchIt latest) $name" test "$verdict" = ok; done <<<"$lagc"
+# Thumbnails on both sources: the card shows the thumbnail beside the image it shows (acq's while
+# lagging, StitchIt's otherwise); an image without a thumbnail never gets an older one.
+# lt NAME TAG [LAST]: dz plus a tile_thumbnail.jpg tagged TAG, so its bytes can be told apart.
+lt() { dz "$1" "$ML" LAMBDA false "$2" "${3:-}"; cp "$IMAGES/tile_thumbnail.jpeg" "$TMP/z/$1/tile_thumbnail.jpg"; printf '%s' "$2" >> "$TMP/z/$1/tile_thumbnail.jpg"; zip_dir "$1"; }
+asset_tile_is() { fetch "$B/$SA/$ML?f=$1"; [ "$STATUS" = 200 ] && cmp -s "$TMP/b" "$TMP/z/$2/tile_thumbnail.jpg"; }   # KIND NAME
+backdate "$(src_dir "$ML" acq)"; lt lagacqt ACQT; up acq "$ML" lagacqt
+lag_up_t() { backdate "$(src_dir "$ML" analysis)"; lt "$1" STITCHT "$2"; up analysis "$ML" "$1"; }   # NAME LAST
+lag_up_t lagt3 280
+page "$ML"; card "$ML"
+check "lag 3 with thumbnails: the card src is ?f=tile" img_src_has "$CARD" "f=tile"
+check "  ... it serves acq's thumbnail" asset_tile_is tile lagacqt
+check "  ... the strip's StitchIt image uses stitchit_tile" img_src_has "$(grep -A1 'id="thumb-stitchit"' <<<"$PAGE")" "f=stitchit_tile"
+check "  ... served with the StitchIt thumbnail bytes" asset_tile_is stitchit_tile lagt3
+lag_up 280 lagnt3   # StitchIt image without a thumbnail while lagging: only acq has one
+page "$ML"
+check "lagging, only acq has a thumbnail: the strip's StitchIt image is the full image" bash -c 'l="$(grep -A1 "id=\"thumb-stitchit\"" <<<"$1" | grep "<img")"; grep -q "src=\"[^\"]*f=stitchit&" <<<"$l" && ! grep -q stitchit_tile <<<"$l"' _ "$PAGE"
+lag_up_t lagt0 283
+page "$ML"; card "$ML"
+check "not lagging with thumbnails: the card src is ?f=tile" img_src_has "$CARD" "f=tile"
+check "  ... it serves the StitchIt thumbnail" asset_tile_is tile lagt0
+check "  ... the strip's acq image uses bakingtray_tile" img_src_has "$(grep -A1 'id="thumb-bakingtray"' <<<"$PAGE")" "f=bakingtray_tile"
+check "  ... served with acq's thumbnail bytes" asset_tile_is bakingtray_tile lagacqt
+backdate "$(src_dir "$ML" analysis)"; dz lagnt "$ML" LAMBDA false STITCHN 283; up analysis "$ML" lagnt
+page "$ML"; card "$ML"
+check "a new StitchIt image without a thumbnail: the card shows the full image" img_src_has "$CARD" "f=main"
+check "  ... not a thumbnail" bash -c '! grep -o "src=\"[^\"]*\"" <<<"$1" | grep -qF "f=tile"' _ "$CARD"
+check "  ... its bytes are the new image" card_bytes_are lagnt
+check "  ... the old StitchIt thumbnail is gone" same_404 "$B/$SA/$ML?f=stitchit_tile"
+lag_up 280 lag3
+# Without a finished section in acq's log the lag is unknown: not lagging.
+rm "$(src_dir "$ML" acq)/acqLog.txt"
+page "$ML"
+check "acq without a log: not lagging even with StitchIt's log cut at 280" asset_is "$ML" main lag3
+# A non-matching analysis stays hidden whatever its log says.
+backdate "$(src_dir "$MD3" acq)"; backdate "$(src_dir "$MD3" analysis)"
+dz lagh_acq "$MD3" GAMMA2 false ACQ; up acq "$MD3" lagh_acq
+dz lagh_an "$MD3" OTHER2 false STITCH 100; up analysis "$MD3" lagh_an
+page "$MD3"
+check "non-matching analysis with a short log: hidden, its montage is a 404" same_404 "$B/$SA/$MD3?f=montage"
+check "  ... and its image too" same_404 "$B/$SA/$MD3?f=stitchit"
+check "  ... no StitchIt thumbnail" body_lacks "$PAGE" 'id="thumb-stitchit"'
+check "  ... the version names only acq" body_lacks "$(attr_of data-version "$PAGE")" analysis
 
 # --- shared contract (tests/web/upload_contract.json, see instructions.md): recipe IDs, names, limits ---
 CONTRACT="$ROOT/tests/web/upload_contract.json"
