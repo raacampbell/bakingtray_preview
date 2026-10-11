@@ -1405,7 +1405,7 @@ function bs_base_path(): ?string
  * What a request path shows, or null if it must get the 404 page. $segments is the path
  * below the deployment base split on '/'. Shapes: [word] is a card grid; [site, mic] is a
  * microscope page through a site's own word; [panopticon, site, mic] is the same page
- * through the panopticon word. Returns ['word', 'panopticon' => bool, 'sites' => the sites
+ * through the panopticon word, which never shows the "demo" site. Returns ['word', 'panopticon' => bool, 'sites' => the sites
  * the word may see, 'site' => ?id, 'mic' => ?id].
  */
 function bs_resolve_view(array $settings, array $segments): ?array
@@ -1417,7 +1417,7 @@ function bs_resolve_view(array $settings, array $segments): ?array
     $word = $segments[0];
     $isPanopticon = $settings['panopticon'] !== null && $word === $settings['panopticon'];
     if ($isPanopticon) {
-        $sites = $settings['sites'];
+        $sites = array_diff_key($settings['sites'], ['demo' => true]);
         $rest = array_slice($segments, 1);
     } elseif (isset($settings['sites'][$word])) {
         $sites = [$word => $settings['sites'][$word]];
