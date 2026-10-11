@@ -175,7 +175,9 @@ route, direct-access refusals, the URL base, uploads, logging, rate limits, sett
 validation, headers and the auto-refresh wiring. It also covers the display rule (§5): acq
 alone, acq with matching and with non-matching analysis, analysis alone, the finished flag
 (including that analysis never sets or clears it), staleness, an `acq/` whose `meta.json` is
-missing or corrupt, and which assets are served.
+missing or corrupt, and which assets are served. It covers the StitchIt lag rule too: lag 3, lag
+exactly 2, equal logs, an analysis log with no finished section, a missing acq log, the
+card and strip thumbnails in both layouts, and the layout flipping back and forth.
 
 ## 5. What gets uploaded
 
@@ -219,8 +221,8 @@ neither empties or rate-limits the other. `logs/upload.log` records `site/micros
   shown alone as the ground truth (a BakingTray that is not upgraded).
 - The card and the page's main image show the StitchIt (`analysis/`) image when `analysis/` is shown,
   because it looks better, and the BakingTray image otherwise (acq alone). When StitchIt lags (below)
-  they switch to the BakingTray image. A source without an image is skipped for the other's, and a
-  card with no image at all shows a placeholder.
+  they switch to the BakingTray image. If the preferred source has no image, the other source's image
+  is used; a card with no image from either shows a placeholder.
 - **StitchIt lag.** StitchIt can crash, leaving `analysis/` behind `acq/`. Lag is the largest finished
   section number in `acq/acqLog.txt` minus the largest in `analysis/acqLog.txt` (the copy of the log
   that StitchIt uploads each time; it freezes when StitchIt crashes). More than 2 sections
@@ -239,6 +241,7 @@ Files are found by their fixed names:
 | `montage.jpg` | `analysis/` | the montage thumbnail. A `montage.jpg` in `acq/` is stored but not shown |
 | `recipe.yml` | ground truth | sample, laser power, voxel size, ... |
 | `acqLog.txt` | ground truth | timing chart, progress, ETA estimate |
+| `acqLog.txt` | `analysis/` | read only for the lag check (its latest finished section, against `acq/`'s) |
 | `status.json` | ground truth | finished flag |
 
 **Finished.** Finished is the `finished` of the ground truth's `status.json` alone: `acq/`, or
@@ -278,7 +281,7 @@ site ID (and move its data folder) or remove the site. A new site ID also means 
 ## 8. The microscope page
 
 - **Main image + magnifier**: the StitchIt image when a matching `analysis/` is shown, else the
-  BakingTray image; the BakingTray image too when StitchIt lags (§5), with a hover lens.
+  BakingTray image (also when StitchIt lags, §5). It has a hover lens.
 - **Thumbnails** (only when a matching `analysis/` is shown): below the main image, the image
   that is not the main one (BakingTray normally, StitchIt when it lags) and the StitchIt montage.
   Clicking one opens it full size over the page (cross top-left, Esc or a click outside closes it).
