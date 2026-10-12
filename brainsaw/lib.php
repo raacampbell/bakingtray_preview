@@ -1073,8 +1073,12 @@ function bs_load_mic_data(array $config, string $siteId, string $micId, string $
         }
     }
 
+    // Pixel size of the main image, so the page can reserve its space before the file has loaded.
+    $mainSize = isset($paths['main']) ? @getimagesize($paths['main']) : false;
+
     return [
         'main_image_url' => $url('main'),
+        'main_image_size' => $mainSize !== false ? [(int) $mainSize[0], (int) $mainSize[1]] : null,
         'thumbs' => $thumbs,
         // The card shows the main image, or its client-made thumbnail when there is one.
         'card_image_url' => $url('tile') ?? $url('main'),
@@ -1684,7 +1688,7 @@ function bs_render_mic_page(array $config, array $view, string $base): void
 
     <?php if ($data['main_image_url'] !== null): ?>
       <div class="image-wrap stamp-wrap">
-        <img id="main-image" src="<?= htmlspecialchars($data['main_image_url']) ?>" alt="Last completed section">
+        <img id="main-image" src="<?= htmlspecialchars($data['main_image_url']) ?>"<?= $data['main_image_size'] !== null ? ' width="' . $data['main_image_size'][0] . '" height="' . $data['main_image_size'][1] . '"' : '' ?> alt="Last completed section">
         <?= $data['finished'] ? bs_finished_stamp() : '' ?>
       </div>
       <script>
