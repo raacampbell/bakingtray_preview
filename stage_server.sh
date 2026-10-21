@@ -112,7 +112,7 @@ fi
 echo "  all checks passed"
 
 # --- report ---------------------------------------------------------------------
-FLAGS="--delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log'"
+FLAGS="--delete --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r --filter='P /system_data/*/' --filter='P /logs/*.log'"
 echo
 echo "Staged $(git -C "$ROOT" rev-parse --short HEAD) into: $OUT"
 echo "Files:"

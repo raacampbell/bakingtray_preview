@@ -18,7 +18,7 @@ s) arg='-avz' ;;
 esac
 done
 
-rsync $arg --delete --chmod=D755,F644 \
+rsync $arg --delete --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r \
   --filter='P /system_data/*/' \
   --filter='P /logs/*.log' \
   -e ssh staging/livefeed/ raacampbell@mouse.vision:/home/raacampbell/brainsaw/livefeed/

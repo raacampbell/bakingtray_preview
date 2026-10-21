@@ -158,8 +158,8 @@ the folder and upload the file to the same absolute path.
 `stage_server.sh` prints the exact commands for the folder it staged. For the test deployment:
 
 ```bash
-rsync -azn --delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/livefeed/ USER@HOST:/home/www/public/livefeed/
-rsync -az  --delete --chmod=D755,F644 --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/livefeed/ USER@HOST:/home/www/public/livefeed/
+rsync -azn --delete --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/livefeed/ USER@HOST:/home/www/public/livefeed/
+rsync -az  --delete --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r --filter='P /system_data/*/' --filter='P /logs/*.log' -e ssh staging/livefeed/ USER@HOST:/home/www/public/livefeed/
 ```
 
 The first is a dry run (`-n`): read its list before running the second.

@@ -836,38 +836,55 @@ function bs_parse_recipe(string $path): array
 
 /**
  * The laser powers in mW that BakingTray logs on a "LASER POWERS: MaiTai: 105.5 mW, Axon1064: 0.0 mW"
- * line (present only when ScanImage could convert the percentage to mW). Returns [{name, mw}, ...]
+ * line (present only when ScanImage could convert the percentage to mW). Returns [{name, mw, nm}, ...]
  * in log order, mw being null for nan; empty if the log has no such line. A resumed run logs the
- * line again, so the last one wins.
+ * line again, so the last one wins. Each power is keyed by ScanImage's beam name, which the
+ * "Acquiring sample with Axon-1064 (Axon1064) tuned to 1064 nm" lines map to the laser's own name
+ * and wavelength; name stays the beam name and nm null where no such line matches. A single-laser
+ * rig logs "Acquiring sample with laser tuned to 920 nm", which goes to the lone power.
  */
 function bs_parse_laser_powers(string $text): array
 {
     if (!preg_match_all('/^LASER POWERS:(.*)$/m', $text, $lines)) {
         return [];
     }
-    $out = [];
+    preg_match_all('/^Acquiring sample with (.+?)(?: \((.+)\))? tuned to ([\d.]+) nm/m', $text, $tuned, PREG_SET_ORDER);
+    $byBeam = [];
+    foreach ($tuned as $t) {
+        $byBeam[$t[2]] = ['name' => $t[1], 'nm' => (float) $t[3]];
+    }
     preg_match_all('/([^,:]+):\s*(nan|[\d.]+)\s*mW/i', end($lines[1]), $m, PREG_SET_ORDER);
+    $lone = count($m) === 1 && count($byBeam) === 1 ? ($byBeam[''] ?? null) : null;
+    $out = [];
     foreach ($m as $laser) {
-        $out[] = ['name' => trim($laser[1]), 'mw' => is_numeric($laser[2]) ? (float) $laser[2] : null];
+        $beam = trim($laser[1]);
+        $info = $byBeam[$beam] ?? $lone;
+        $out[] = [
+            'name' => $info['name'] ?? $beam,
+            'mw' => is_numeric($laser[2]) ? (float) $laser[2] : null,
+            'nm' => $info['nm'] ?? null,
+        ];
     }
     return $out;
 }
 
 /**
- * The text for the page's "Laser power" row, or null for no row. Lasers reading above 0 mW are
- * shown in mW: a lone laser unnamed, otherwise as "name: x mW" joined by "; ". When no laser has
- * a usable mW reading (none logged, nan or 0), fall back to the recipe's percentage.
+ * The page's laser rows as [[label, value], ...]; empty for none. Lasers reading above 0 mW are
+ * shown as "x mW (y nm)": a lone laser labelled "Laser", otherwise one row per laser labelled
+ * with its name. When no laser has a usable mW reading (none logged, nan or 0), fall back to a
+ * "Laser" row with the recipe's percentage.
  */
-function bs_laser_power_text(array $laserPowers, ?float $percent): ?string
+function bs_laser_rows(array $laserPowers, ?float $percent): array
 {
     $on = array_values(array_filter($laserPowers, fn($l) => $l['mw'] !== null && $l['mw'] > 0));
+    $value = fn($l) => sprintf('%s mW', round($l['mw'], 1)) . ($l['nm'] !== null ? sprintf(' (%s nm)', round($l['nm'])) : '');
     if (count($on) === 1 && count($laserPowers) === 1) {
-        return sprintf('%s mW', round($on[0]['mw'], 1));
+        return [['Laser', $value($on[0])]];
     }
     if ($on) {
-        return implode('; ', array_map(fn($l) => sprintf('%s: %s mW', $l['name'], round($l['mw'], 1)), $on));
+        return array_map(fn($l) => [$l['name'], $value($l)], $on);
     }
-    return $percent !== null ? $percent . '%' : null;
+    return $percent !== null ? [['Laser', $percent . '%']] : [];
 }
 
 /**
@@ -1780,8 +1797,7 @@ function bs_render_mic_page(array $config, array $view, string $base): void
   <div class="side-col">
     <table class="meta-table">
       <?php if (($recipe['sample_id'] ?? '') !== ''): ?><tr><td>Sample</td><td><?= htmlspecialchars($recipe['sample_id']) ?></td></tr><?php endif; ?>
-      <?php $laserText = bs_laser_power_text($acq['laser_powers'] ?? [], $recipe['laser_power_percent'] ?? null); ?>
-      <?php if ($laserText !== null): ?><tr><td>Laser power</td><td><?= htmlspecialchars($laserText) ?></td></tr><?php endif; ?>
+      <?php foreach (bs_laser_rows($acq['laser_powers'] ?? [], $recipe['laser_power_percent'] ?? null) as [$label, $value]): ?><tr><td><?= htmlspecialchars($label) ?></td><td><?= htmlspecialchars($value) ?></td></tr><?php endforeach; ?>
       <?php if (!empty($recipe['voxel_size_um'])): ?>
         <tr><td>Voxel size X / Y / Z (&micro;m)</td>
             <td><?= htmlspecialchars(sprintf('%.1f x %.1f x %.0f', $recipe['voxel_size_um']['x'], $recipe['voxel_size_um']['y'], $recipe['voxel_size_um']['z'])) ?></td></tr>
