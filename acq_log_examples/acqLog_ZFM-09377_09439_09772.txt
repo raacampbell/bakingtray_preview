@@ -1,0 +1,1817 @@
+2026/07/09 17:01:16 -- STARTING NEW ACQUISITION
+Writing to volume F: which has 6375/7452 GB free
+Using laser: Spectra Physics,MaiTai,20239/50198/20180,0245-2.00.31 / CD00000019 / 214-00.003.035
+Acquiring with: ScanImage(R) Basic 2023.1.1 d280f35131 on MATLAB 9.11.0.2358333 (R2021b) Update 7
+Using BakingTray version a07643951e8a84fd8745b940c1ae89e8438e1b2e from branch dev
+Acquiring sample with laser tuned to 920 nm
+LASER POWERS: Pockels: 109.4 mW
+
+2026/07/09 17:01:16 -- STARTING section number 1 (1 of 435) at z=16.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0001
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12388mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:02:04 -- acquired 57 tile positions in 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:03:21 -- FINISHED section number 1, section completed in 2 mins 5 secs
+2026/07/09 17:03:21 -- STARTING section number 2 (2 of 435) at z=16.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0002
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:04:07 -- acquired 56 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:05:24 -- FINISHED section number 2, section completed in 2 mins 2 secs
+2026/07/09 17:05:24 -- STARTING section number 3 (3 of 435) at z=16.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0003
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:06:07 -- acquired 53 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:07:26 -- FINISHED section number 3, section completed in 2 mins 2 secs
+2026/07/09 17:07:26 -- STARTING section number 4 (4 of 435) at z=16.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0004
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:08:13 -- acquired 61 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:09:29 -- FINISHED section number 4, section completed in 2 mins 3 secs
+2026/07/09 17:09:29 -- STARTING section number 5 (5 of 435) at z=16.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0005
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:10:25 -- acquired 71 tile positions in 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 17:11:41 -- FINISHED section number 5, section completed in 2 mins 12 secs
+2026/07/09 17:11:41 -- STARTING section number 6 (6 of 435) at z=16.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0006
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12379mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 17:12:31 -- acquired 67 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 17:13:50 -- FINISHED section number 6, section completed in 2 mins 9 secs
+2026/07/09 17:13:50 -- STARTING section number 7 (7 of 435) at z=16.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0007
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 17:14:49 -- acquired 76 tile positions in 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:16:08 -- FINISHED section number 7, section completed in 2 mins 18 secs
+2026/07/09 17:16:08 -- STARTING section number 8 (8 of 435) at z=16.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0008
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:17:03 -- acquired 72 tile positions in 55 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 17:18:22 -- FINISHED section number 8, section completed in 2 mins 14 secs
+2026/07/09 17:18:22 -- STARTING section number 9 (9 of 435) at z=16.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0009
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:19:17 -- acquired 71 tile positions in 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:20:37 -- FINISHED section number 9, section completed in 2 mins 15 secs
+2026/07/09 17:20:37 -- STARTING section number 10 (10 of 435) at z=16.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0010
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:21:33 -- acquired 72 tile positions in 57 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 17:22:52 -- FINISHED section number 10, section completed in 2 mins 15 secs
+2026/07/09 17:22:52 -- STARTING section number 11 (11 of 435) at z=16.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0011
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 17:23:48 -- acquired 76 tile positions in 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:25:07 -- FINISHED section number 11, section completed in 2 mins 15 secs
+2026/07/09 17:25:07 -- STARTING section number 12 (12 of 435) at z=16.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0012
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:26:03 -- acquired 72 tile positions in 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:27:21 -- FINISHED section number 12, section completed in 2 mins 14 secs
+2026/07/09 17:27:21 -- STARTING section number 13 (13 of 435) at z=16.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0013
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:28:19 -- acquired 76 tile positions in 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:29:38 -- FINISHED section number 13, section completed in 2 mins 17 secs
+2026/07/09 17:29:38 -- STARTING section number 14 (14 of 435) at z=16.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0014
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:30:36 -- acquired 72 tile positions in 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:31:55 -- FINISHED section number 14, section completed in 2 mins 16 secs
+2026/07/09 17:31:55 -- STARTING section number 15 (15 of 435) at z=16.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0015
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:32:55 -- acquired 76 tile positions in 1 mins 
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:34:14 -- FINISHED section number 15, section completed in 2 mins 19 secs
+2026/07/09 17:34:14 -- STARTING section number 16 (16 of 435) at z=16.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0016
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:35:12 -- acquired 76 tile positions in 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:36:31 -- FINISHED section number 16, section completed in 2 mins 17 secs
+2026/07/09 17:36:31 -- STARTING section number 17 (17 of 435) at z=16.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0017
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 17:37:30 -- acquired 76 tile positions in 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:38:49 -- FINISHED section number 17, section completed in 2 mins 18 secs
+2026/07/09 17:38:49 -- STARTING section number 18 (18 of 435) at z=16.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0018
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:39:49 -- acquired 82 tile positions in 1 mins 1 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:41:08 -- FINISHED section number 18, section completed in 2 mins 19 secs
+2026/07/09 17:41:08 -- STARTING section number 19 (19 of 435) at z=16.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0019
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:42:09 -- acquired 82 tile positions in 1 mins 1 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:43:28 -- FINISHED section number 19, section completed in 2 mins 20 secs
+2026/07/09 17:43:28 -- STARTING section number 20 (20 of 435) at z=17.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0020
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:44:29 -- acquired 77 tile positions in 1 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 17:45:48 -- FINISHED section number 20, section completed in 2 mins 21 secs
+2026/07/09 17:45:49 -- STARTING section number 21 (21 of 435) at z=17.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0021
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 17:46:50 -- acquired 77 tile positions in 1 mins 1 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:48:09 -- FINISHED section number 21, section completed in 2 mins 21 secs
+2026/07/09 17:48:09 -- STARTING section number 22 (22 of 435) at z=17.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0022
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:49:11 -- acquired 77 tile positions in 1 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 17:50:30 -- FINISHED section number 22, section completed in 2 mins 21 secs
+2026/07/09 17:50:30 -- STARTING section number 23 (23 of 435) at z=17.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0023
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:51:32 -- acquired 77 tile positions in 1 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:52:51 -- FINISHED section number 23, section completed in 2 mins 20 secs
+2026/07/09 17:52:51 -- STARTING section number 24 (24 of 435) at z=17.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0024
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:53:53 -- acquired 82 tile positions in 1 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:55:12 -- FINISHED section number 24, section completed in 2 mins 21 secs
+2026/07/09 17:55:12 -- STARTING section number 25 (25 of 435) at z=17.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0025
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:56:22 -- acquired 92 tile positions in 1 mins 10 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:57:42 -- FINISHED section number 25, section completed in 2 mins 29 secs
+2026/07/09 17:57:42 -- STARTING section number 26 (26 of 435) at z=17.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0026
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 17:58:49 -- acquired 87 tile positions in 1 mins 7 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:00:08 -- FINISHED section number 26, section completed in 2 mins 26 secs
+2026/07/09 18:00:08 -- STARTING section number 27 (27 of 435) at z=17.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0027
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:01:19 -- acquired 92 tile positions in 1 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:02:38 -- FINISHED section number 27, section completed in 2 mins 30 secs
+2026/07/09 18:02:38 -- STARTING section number 28 (28 of 435) at z=17.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0028
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:03:48 -- acquired 92 tile positions in 1 mins 10 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:05:07 -- FINISHED section number 28, section completed in 2 mins 29 secs
+2026/07/09 18:05:07 -- STARTING section number 29 (29 of 435) at z=17.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0029
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:06:23 -- acquired 102 tile positions in 1 mins 16 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:07:42 -- FINISHED section number 29, section completed in 2 mins 35 secs
+2026/07/09 18:07:42 -- STARTING section number 30 (30 of 435) at z=17.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0030
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:08:56 -- acquired 98 tile positions in 1 mins 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:10:15 -- FINISHED section number 30, section completed in 2 mins 33 secs
+2026/07/09 18:10:15 -- STARTING section number 31 (31 of 435) at z=17.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0031
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:11:33 -- acquired 102 tile positions in 1 mins 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:12:51 -- FINISHED section number 31, section completed in 2 mins 36 secs
+2026/07/09 18:12:52 -- STARTING section number 32 (32 of 435) at z=17.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0032
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:14:07 -- acquired 98 tile positions in 1 mins 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:15:26 -- FINISHED section number 32, section completed in 2 mins 34 secs
+2026/07/09 18:15:26 -- STARTING section number 33 (33 of 435) at z=17.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0033
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 18:16:40 -- acquired 102 tile positions in 1 mins 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:17:58 -- FINISHED section number 33, section completed in 2 mins 33 secs
+2026/07/09 18:17:58 -- STARTING section number 34 (34 of 435) at z=17.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0034
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:19:10 -- acquired 98 tile positions in 1 mins 11 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:20:29 -- FINISHED section number 34, section completed in 2 mins 30 secs
+2026/07/09 18:20:29 -- STARTING section number 35 (35 of 435) at z=17.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0035
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:21:47 -- acquired 102 tile positions in 1 mins 18 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:23:06 -- FINISHED section number 35, section completed in 2 mins 37 secs
+2026/07/09 18:23:06 -- STARTING section number 36 (36 of 435) at z=17.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0036
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:24:29 -- acquired 111 tile positions in 1 mins 23 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:25:48 -- FINISHED section number 36, section completed in 2 mins 42 secs
+2026/07/09 18:25:48 -- STARTING section number 37 (37 of 435) at z=17.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0037
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:27:11 -- acquired 107 tile positions in 1 mins 22 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:28:30 -- FINISHED section number 37, section completed in 2 mins 42 secs
+2026/07/09 18:28:30 -- STARTING section number 38 (38 of 435) at z=17.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0038
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:29:56 -- acquired 113 tile positions in 1 mins 26 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:31:15 -- FINISHED section number 38, section completed in 2 mins 45 secs
+2026/07/09 18:31:15 -- STARTING section number 39 (39 of 435) at z=17.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0039
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 18:32:41 -- acquired 113 tile positions in 1 mins 26 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:33:59 -- FINISHED section number 39, section completed in 2 mins 44 secs
+2026/07/09 18:33:59 -- STARTING section number 40 (40 of 435) at z=17.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0040
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:35:23 -- acquired 113 tile positions in 1 mins 23 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:36:41 -- FINISHED section number 40, section completed in 2 mins 42 secs
+2026/07/09 18:36:41 -- STARTING section number 41 (41 of 435) at z=17.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0041
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:38:07 -- acquired 120 tile positions in 1 mins 26 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:39:29 -- FINISHED section number 41, section completed in 2 mins 48 secs
+2026/07/09 18:39:29 -- STARTING section number 42 (42 of 435) at z=17.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0042
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:40:58 -- acquired 120 tile positions in 1 mins 29 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12379mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:42:17 -- FINISHED section number 42, section completed in 2 mins 48 secs
+2026/07/09 18:42:17 -- STARTING section number 43 (43 of 435) at z=17.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0043
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:43:48 -- acquired 125 tile positions in 1 mins 31 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:45:07 -- FINISHED section number 43, section completed in 2 mins 50 secs
+2026/07/09 18:45:07 -- STARTING section number 44 (44 of 435) at z=17.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0044
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:46:38 -- acquired 120 tile positions in 1 mins 31 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:47:57 -- FINISHED section number 44, section completed in 2 mins 49 secs
+2026/07/09 18:47:57 -- STARTING section number 45 (45 of 435) at z=18.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0045
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:49:37 -- acquired 139 tile positions in 1 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:50:56 -- FINISHED section number 45, section completed in 2 mins 59 secs
+2026/07/09 18:50:56 -- STARTING section number 46 (46 of 435) at z=18.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0046
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 18:52:29 -- acquired 128 tile positions in 1 mins 34 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:53:48 -- FINISHED section number 46, section completed in 2 mins 53 secs
+2026/07/09 18:53:48 -- STARTING section number 47 (47 of 435) at z=18.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0047
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:55:29 -- acquired 139 tile positions in 1 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:56:48 -- FINISHED section number 47, section completed in 2 mins 59 secs
+2026/07/09 18:56:48 -- STARTING section number 48 (48 of 435) at z=18.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0048
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:58:33 -- acquired 141 tile positions in 1 mins 45 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 18:59:52 -- FINISHED section number 48, section completed in 3 mins 4 secs
+2026/07/09 18:59:52 -- STARTING section number 49 (49 of 435) at z=18.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0049
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:01:39 -- acquired 146 tile positions in 1 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:02:58 -- FINISHED section number 49, section completed in 3 mins 6 secs
+2026/07/09 19:02:58 -- STARTING section number 50 (50 of 435) at z=18.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0050
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:04:48 -- acquired 146 tile positions in 1 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:06:06 -- FINISHED section number 50, section completed in 3 mins 8 secs
+2026/07/09 19:06:06 -- STARTING section number 51 (51 of 435) at z=18.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0051
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:07:52 -- acquired 146 tile positions in 1 mins 45 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:09:11 -- FINISHED section number 51, section completed in 3 mins 4 secs
+2026/07/09 19:09:11 -- STARTING section number 52 (52 of 435) at z=18.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0052
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12378mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:10:58 -- acquired 146 tile positions in 1 mins 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:12:17 -- FINISHED section number 52, section completed in 3 mins 7 secs
+2026/07/09 19:12:17 -- STARTING section number 53 (53 of 435) at z=18.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0053
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:14:08 -- acquired 151 tile positions in 1 mins 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:15:27 -- FINISHED section number 53, section completed in 3 mins 10 secs
+2026/07/09 19:15:27 -- STARTING section number 54 (54 of 435) at z=18.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0054
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:17:15 -- acquired 146 tile positions in 1 mins 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:18:34 -- FINISHED section number 54, section completed in 3 mins 7 secs
+2026/07/09 19:18:34 -- STARTING section number 55 (55 of 435) at z=18.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0055
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:20:22 -- acquired 151 tile positions in 1 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:21:41 -- FINISHED section number 55, section completed in 3 mins 7 secs
+2026/07/09 19:21:41 -- STARTING section number 56 (56 of 435) at z=18.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0056
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:23:25 -- acquired 146 tile positions in 1 mins 44 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:24:44 -- FINISHED section number 56, section completed in 3 mins 3 secs
+2026/07/09 19:24:44 -- STARTING section number 57 (57 of 435) at z=18.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0057
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:26:42 -- acquired 159 tile positions in 1 mins 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:28:01 -- FINISHED section number 57, section completed in 3 mins 17 secs
+2026/07/09 19:28:01 -- STARTING section number 58 (58 of 435) at z=18.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0058
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:29:48 -- acquired 146 tile positions in 1 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:31:07 -- FINISHED section number 58, section completed in 3 mins 6 secs
+2026/07/09 19:31:07 -- STARTING section number 59 (59 of 435) at z=18.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0059
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 19:32:53 -- acquired 142 tile positions in 1 mins 46 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:34:11 -- FINISHED section number 59, section completed in 3 mins 4 secs
+2026/07/09 19:34:11 -- STARTING section number 60 (60 of 435) at z=18.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0060
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:35:54 -- acquired 142 tile positions in 1 mins 43 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:37:13 -- FINISHED section number 60, section completed in 3 mins 2 secs
+2026/07/09 19:37:13 -- STARTING section number 61 (61 of 435) at z=18.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0061
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:38:59 -- acquired 142 tile positions in 1 mins 46 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:40:18 -- FINISHED section number 61, section completed in 3 mins 5 secs
+2026/07/09 19:40:18 -- STARTING section number 62 (62 of 435) at z=18.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0062
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:42:05 -- acquired 142 tile positions in 1 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:43:23 -- FINISHED section number 62, section completed in 3 mins 5 secs
+2026/07/09 19:43:23 -- STARTING section number 63 (63 of 435) at z=18.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0063
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:45:19 -- acquired 159 tile positions in 1 mins 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:46:38 -- FINISHED section number 63, section completed in 3 mins 15 secs
+2026/07/09 19:46:38 -- STARTING section number 64 (64 of 435) at z=18.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0064
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 19:48:39 -- acquired 165 tile positions in 2 mins 1 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 19:49:56 -- FINISHED section number 64, section completed in 3 mins 18 secs
+2026/07/09 19:49:56 -- STARTING section number 65 (65 of 435) at z=18.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0065
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 19:51:53 -- acquired 159 tile positions in 1 mins 57 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 19:53:12 -- FINISHED section number 65, section completed in 3 mins 16 secs
+2026/07/09 19:53:12 -- STARTING section number 66 (66 of 435) at z=18.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0066
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 19:55:07 -- acquired 156 tile positions in 1 mins 55 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 19:56:24 -- FINISHED section number 66, section completed in 3 mins 12 secs
+2026/07/09 19:56:24 -- STARTING section number 67 (67 of 435) at z=18.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0067
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 19:58:15 -- acquired 150 tile positions in 1 mins 51 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 19:59:34 -- FINISHED section number 67, section completed in 3 mins 10 secs
+2026/07/09 19:59:34 -- STARTING section number 68 (68 of 435) at z=18.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0068
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:01:28 -- acquired 156 tile positions in 1 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 20:02:45 -- FINISHED section number 68, section completed in 3 mins 11 secs
+2026/07/09 20:02:45 -- STARTING section number 69 (69 of 435) at z=18.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0069
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 20:04:44 -- acquired 162 tile positions in 1 mins 60 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:06:01 -- FINISHED section number 69, section completed in 3 mins 16 secs
+2026/07/09 20:06:01 -- STARTING section number 70 (70 of 435) at z=19.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0070
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:07:55 -- acquired 156 tile positions in 1 mins 55 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:09:12 -- FINISHED section number 70, section completed in 3 mins 11 secs
+2026/07/09 20:09:12 -- STARTING section number 71 (71 of 435) at z=19.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0071
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:11:11 -- acquired 162 tile positions in 1 mins 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:12:27 -- FINISHED section number 71, section completed in 3 mins 15 secs
+2026/07/09 20:12:27 -- STARTING section number 72 (72 of 435) at z=19.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0072
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12390mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:14:21 -- acquired 156 tile positions in 1 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 20:15:39 -- FINISHED section number 72, section completed in 3 mins 12 secs
+2026/07/09 20:15:39 -- STARTING section number 73 (73 of 435) at z=19.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0073
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 20:17:33 -- acquired 156 tile positions in 1 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 20:18:49 -- FINISHED section number 73, section completed in 3 mins 10 secs
+2026/07/09 20:18:49 -- STARTING section number 74 (74 of 435) at z=19.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0074
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 20:20:48 -- acquired 162 tile positions in 1 mins 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:22:05 -- FINISHED section number 74, section completed in 3 mins 15 secs
+2026/07/09 20:22:05 -- STARTING section number 75 (75 of 435) at z=19.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0075
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:24:03 -- acquired 164 tile positions in 1 mins 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:25:20 -- FINISHED section number 75, section completed in 3 mins 15 secs
+2026/07/09 20:25:20 -- STARTING section number 76 (76 of 435) at z=19.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0076
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:27:31 -- acquired 180 tile positions in 2 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:28:48 -- FINISHED section number 76, section completed in 3 mins 28 secs
+2026/07/09 20:28:48 -- STARTING section number 77 (77 of 435) at z=19.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0077
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 20:30:59 -- acquired 180 tile positions in 2 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:32:18 -- FINISHED section number 77, section completed in 3 mins 30 secs
+2026/07/09 20:32:18 -- STARTING section number 78 (78 of 435) at z=19.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0078
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:34:23 -- acquired 171 tile positions in 2 mins 5 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:35:40 -- FINISHED section number 78, section completed in 3 mins 22 secs
+2026/07/09 20:35:40 -- STARTING section number 79 (79 of 435) at z=19.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0079
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:37:43 -- acquired 170 tile positions in 2 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:39:02 -- FINISHED section number 79, section completed in 3 mins 22 secs
+2026/07/09 20:39:02 -- STARTING section number 80 (80 of 435) at z=19.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0080
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:41:05 -- acquired 171 tile positions in 2 mins 4 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:42:22 -- FINISHED section number 80, section completed in 3 mins 20 secs
+2026/07/09 20:42:22 -- STARTING section number 81 (81 of 435) at z=19.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0081
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:44:21 -- acquired 164 tile positions in 1 mins 60 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:45:38 -- FINISHED section number 81, section completed in 3 mins 16 secs
+2026/07/09 20:45:38 -- STARTING section number 82 (82 of 435) at z=19.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0082
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 20:47:47 -- acquired 177 tile positions in 2 mins 9 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 20:49:04 -- FINISHED section number 82, section completed in 3 mins 26 secs
+2026/07/09 20:49:04 -- STARTING section number 83 (83 of 435) at z=19.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0083
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 20:51:05 -- acquired 164 tile positions in 2 mins 1 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 20:52:24 -- FINISHED section number 83, section completed in 3 mins 20 secs
+2026/07/09 20:52:24 -- STARTING section number 84 (84 of 435) at z=19.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0084
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:54:30 -- acquired 171 tile positions in 2 mins 6 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 20:55:49 -- FINISHED section number 84, section completed in 3 mins 25 secs
+2026/07/09 20:55:49 -- STARTING section number 85 (85 of 435) at z=19.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0085
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 20:57:49 -- acquired 164 tile positions in 2 mins 
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 20:59:06 -- FINISHED section number 85, section completed in 3 mins 17 secs
+2026/07/09 20:59:06 -- STARTING section number 86 (86 of 435) at z=19.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0086
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 21:01:15 -- acquired 177 tile positions in 2 mins 9 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 21:02:34 -- FINISHED section number 86, section completed in 3 mins 28 secs
+2026/07/09 21:02:34 -- STARTING section number 87 (87 of 435) at z=19.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0087
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/09 21:04:46 -- acquired 179 tile positions in 2 mins 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:06:02 -- FINISHED section number 87, section completed in 3 mins 28 secs
+2026/07/09 21:06:02 -- STARTING section number 88 (88 of 435) at z=19.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0088
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:08:05 -- acquired 171 tile positions in 2 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:09:24 -- FINISHED section number 88, section completed in 3 mins 21 secs
+2026/07/09 21:09:24 -- STARTING section number 89 (89 of 435) at z=19.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0089
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:11:34 -- acquired 180 tile positions in 2 mins 10 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 21:12:53 -- FINISHED section number 89, section completed in 3 mins 29 secs
+2026/07/09 21:12:53 -- STARTING section number 90 (90 of 435) at z=19.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0090
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12380mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 21:15:10 -- acquired 187 tile positions in 2 mins 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 21:16:28 -- FINISHED section number 90, section completed in 3 mins 36 secs
+2026/07/09 21:16:28 -- STARTING section number 91 (91 of 435) at z=19.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0091
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 21:18:37 -- acquired 173 tile positions in 2 mins 8 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:19:56 -- FINISHED section number 91, section completed in 3 mins 28 secs
+2026/07/09 21:19:56 -- STARTING section number 92 (92 of 435) at z=19.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0092
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:22:12 -- acquired 187 tile positions in 2 mins 16 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:23:31 -- FINISHED section number 92, section completed in 3 mins 35 secs
+2026/07/09 21:23:31 -- STARTING section number 93 (93 of 435) at z=19.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0093
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:25:49 -- acquired 187 tile positions in 2 mins 18 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 21:27:08 -- FINISHED section number 93, section completed in 3 mins 37 secs
+2026/07/09 21:27:08 -- STARTING section number 94 (94 of 435) at z=19.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0094
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:29:23 -- acquired 187 tile positions in 2 mins 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 21:30:42 -- FINISHED section number 94, section completed in 3 mins 34 secs
+2026/07/09 21:30:42 -- STARTING section number 95 (95 of 435) at z=20.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0095
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.5,humidity=2.1
+2026/07/09 21:32:54 -- acquired 181 tile positions in 2 mins 13 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:34:13 -- FINISHED section number 95, section completed in 3 mins 32 secs
+2026/07/09 21:34:13 -- STARTING section number 96 (96 of 435) at z=20.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0096
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:36:30 -- acquired 187 tile positions in 2 mins 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:37:49 -- FINISHED section number 96, section completed in 3 mins 35 secs
+2026/07/09 21:37:49 -- STARTING section number 97 (97 of 435) at z=20.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0097
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:40:05 -- acquired 187 tile positions in 2 mins 16 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:41:24 -- FINISHED section number 97, section completed in 3 mins 35 secs
+2026/07/09 21:41:24 -- STARTING section number 98 (98 of 435) at z=20.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0098
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:43:42 -- acquired 189 tile positions in 2 mins 18 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 21:45:01 -- FINISHED section number 98, section completed in 3 mins 37 secs
+2026/07/09 21:45:01 -- STARTING section number 99 (99 of 435) at z=20.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0099
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 21:47:25 -- acquired 196 tile positions in 2 mins 24 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 21:48:44 -- FINISHED section number 99, section completed in 3 mins 43 secs
+2026/07/09 21:48:44 -- STARTING section number 100 (100 of 435) at z=20.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0100
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 21:50:56 -- acquired 181 tile positions in 2 mins 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:52:15 -- FINISHED section number 100, section completed in 3 mins 31 secs
+2026/07/09 21:52:15 -- STARTING section number 101 (101 of 435) at z=20.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0101
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:54:32 -- acquired 187 tile positions in 2 mins 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:55:51 -- FINISHED section number 101, section completed in 3 mins 36 secs
+2026/07/09 21:55:51 -- STARTING section number 102 (102 of 435) at z=20.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0102
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12389mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 21:58:07 -- acquired 187 tile positions in 2 mins 16 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 21:59:26 -- FINISHED section number 102, section completed in 3 mins 35 secs
+2026/07/09 21:59:26 -- STARTING section number 103 (103 of 435) at z=20.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0103
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12389mW,pumpCurrent=96.5,humidity=2.0
+2026/07/09 22:01:48 -- acquired 194 tile positions in 2 mins 22 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:03:10 -- FINISHED section number 103, section completed in 3 mins 44 secs
+2026/07/09 22:03:10 -- STARTING section number 104 (104 of 435) at z=20.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0104
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:05:24 -- acquired 187 tile positions in 2 mins 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:06:43 -- FINISHED section number 104, section completed in 3 mins 33 secs
+2026/07/09 22:06:43 -- STARTING section number 105 (105 of 435) at z=20.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0105
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:09:00 -- acquired 194 tile positions in 2 mins 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:10:19 -- FINISHED section number 105, section completed in 3 mins 36 secs
+2026/07/09 22:10:19 -- STARTING section number 106 (106 of 435) at z=20.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0106
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:12:41 -- acquired 194 tile positions in 2 mins 22 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:14:00 -- FINISHED section number 106, section completed in 3 mins 41 secs
+2026/07/09 22:14:00 -- STARTING section number 107 (107 of 435) at z=20.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0107
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:16:22 -- acquired 194 tile positions in 2 mins 23 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:17:42 -- FINISHED section number 107, section completed in 3 mins 42 secs
+2026/07/09 22:17:42 -- STARTING section number 108 (108 of 435) at z=20.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0108
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:20:13 -- acquired 207 tile positions in 2 mins 31 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:21:32 -- FINISHED section number 108, section completed in 3 mins 51 secs
+2026/07/09 22:21:32 -- STARTING section number 109 (109 of 435) at z=20.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0109
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:24:00 -- acquired 203 tile positions in 2 mins 28 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:25:19 -- FINISHED section number 109, section completed in 3 mins 47 secs
+2026/07/09 22:25:19 -- STARTING section number 110 (110 of 435) at z=20.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0110
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:27:58 -- acquired 220 tile positions in 2 mins 39 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:29:15 -- FINISHED section number 110, section completed in 3 mins 56 secs
+2026/07/09 22:29:15 -- STARTING section number 111 (111 of 435) at z=20.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0111
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:31:56 -- acquired 220 tile positions in 2 mins 41 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:33:15 -- FINISHED section number 111, section completed in 3 mins 60 secs
+2026/07/09 22:33:15 -- STARTING section number 112 (112 of 435) at z=20.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0112
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:35:55 -- acquired 221 tile positions in 2 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 22:37:14 -- FINISHED section number 112, section completed in 3 mins 58 secs
+2026/07/09 22:37:14 -- STARTING section number 113 (113 of 435) at z=20.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0113
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 22:40:03 -- acquired 235 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:41:21 -- FINISHED section number 113, section completed in 4 mins 8 secs
+2026/07/09 22:41:21 -- STARTING section number 114 (114 of 435) at z=20.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0114
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:44:07 -- acquired 230 tile positions in 2 mins 46 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:45:27 -- FINISHED section number 114, section completed in 4 mins 5 secs
+2026/07/09 22:45:27 -- STARTING section number 115 (115 of 435) at z=20.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0115
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:48:25 -- acquired 246 tile positions in 2 mins 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:49:43 -- FINISHED section number 115, section completed in 4 mins 16 secs
+2026/07/09 22:49:43 -- STARTING section number 116 (116 of 435) at z=20.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0116
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 22:52:30 -- acquired 230 tile positions in 2 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:53:50 -- FINISHED section number 116, section completed in 4 mins 6 secs
+2026/07/09 22:53:50 -- STARTING section number 117 (117 of 435) at z=20.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0117
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:56:38 -- acquired 230 tile positions in 2 mins 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 22:57:57 -- FINISHED section number 117, section completed in 4 mins 7 secs
+2026/07/09 22:57:57 -- STARTING section number 118 (118 of 435) at z=20.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0118
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:00:46 -- acquired 232 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:02:02 -- FINISHED section number 118, section completed in 4 mins 5 secs
+2026/07/09 23:02:02 -- STARTING section number 119 (119 of 435) at z=20.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0119
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:04:47 -- acquired 225 tile positions in 2 mins 44 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:06:05 -- FINISHED section number 119, section completed in 4 mins 2 secs
+2026/07/09 23:06:05 -- STARTING section number 120 (120 of 435) at z=21.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0120
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:08:43 -- acquired 216 tile positions in 2 mins 38 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:10:00 -- FINISHED section number 120, section completed in 3 mins 55 secs
+2026/07/09 23:10:00 -- STARTING section number 121 (121 of 435) at z=21.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0121
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:12:48 -- acquired 230 tile positions in 2 mins 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.2,humidity=2.1
+2026/07/09 23:14:07 -- FINISHED section number 121, section completed in 4 mins 7 secs
+2026/07/09 23:14:07 -- STARTING section number 122 (122 of 435) at z=21.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0122
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:16:44 -- acquired 214 tile positions in 2 mins 37 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:18:01 -- FINISHED section number 122, section completed in 3 mins 54 secs
+2026/07/09 23:18:01 -- STARTING section number 123 (123 of 435) at z=21.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0123
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:20:39 -- acquired 214 tile positions in 2 mins 37 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:21:58 -- FINISHED section number 123, section completed in 3 mins 56 secs
+2026/07/09 23:21:58 -- STARTING section number 124 (124 of 435) at z=21.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0124
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:24:35 -- acquired 214 tile positions in 2 mins 38 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:25:52 -- FINISHED section number 124, section completed in 3 mins 54 secs
+2026/07/09 23:25:52 -- STARTING section number 125 (125 of 435) at z=21.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0125
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:28:29 -- acquired 214 tile positions in 2 mins 37 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:29:47 -- FINISHED section number 125, section completed in 3 mins 55 secs
+2026/07/09 23:29:47 -- STARTING section number 126 (126 of 435) at z=21.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0126
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:32:24 -- acquired 214 tile positions in 2 mins 37 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:33:41 -- FINISHED section number 126, section completed in 3 mins 55 secs
+2026/07/09 23:33:41 -- STARTING section number 127 (127 of 435) at z=21.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0127
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:36:17 -- acquired 214 tile positions in 2 mins 36 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:37:34 -- FINISHED section number 127, section completed in 3 mins 53 secs
+2026/07/09 23:37:34 -- STARTING section number 128 (128 of 435) at z=21.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0128
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:40:09 -- acquired 214 tile positions in 2 mins 35 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:41:26 -- FINISHED section number 128, section completed in 3 mins 52 secs
+2026/07/09 23:41:26 -- STARTING section number 129 (129 of 435) at z=21.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0129
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:44:03 -- acquired 214 tile positions in 2 mins 37 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:45:19 -- FINISHED section number 129, section completed in 3 mins 53 secs
+2026/07/09 23:45:19 -- STARTING section number 130 (130 of 435) at z=21.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0130
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/09 23:47:52 -- acquired 214 tile positions in 2 mins 33 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:49:11 -- FINISHED section number 130, section completed in 3 mins 52 secs
+2026/07/09 23:49:11 -- STARTING section number 131 (131 of 435) at z=21.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0131
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:51:58 -- acquired 230 tile positions in 2 mins 48 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:53:17 -- FINISHED section number 131, section completed in 4 mins 7 secs
+2026/07/09 23:53:17 -- STARTING section number 132 (132 of 435) at z=21.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0132
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/09 23:56:04 -- acquired 232 tile positions in 2 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/09 23:57:23 -- FINISHED section number 132, section completed in 4 mins 6 secs
+2026/07/09 23:57:23 -- STARTING section number 133 (133 of 435) at z=21.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0133
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:00:26 -- acquired 251 tile positions in 3 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:01:43 -- FINISHED section number 133, section completed in 4 mins 20 secs
+2026/07/10 00:01:43 -- STARTING section number 134 (134 of 435) at z=21.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0134
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:04:49 -- acquired 261 tile positions in 3 mins 6 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:06:06 -- FINISHED section number 134, section completed in 4 mins 22 secs
+2026/07/10 00:06:06 -- STARTING section number 135 (135 of 435) at z=21.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0135
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:09:22 -- acquired 275 tile positions in 3 mins 17 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:10:39 -- FINISHED section number 135, section completed in 4 mins 34 secs
+2026/07/10 00:10:39 -- STARTING section number 136 (136 of 435) at z=21.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0136
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:13:34 -- acquired 239 tile positions in 2 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:14:53 -- FINISHED section number 136, section completed in 4 mins 13 secs
+2026/07/10 00:14:53 -- STARTING section number 137 (137 of 435) at z=21.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0137
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:17:47 -- acquired 239 tile positions in 2 mins 54 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:19:04 -- FINISHED section number 137, section completed in 4 mins 11 secs
+2026/07/10 00:19:04 -- STARTING section number 138 (138 of 435) at z=21.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0138
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:21:58 -- acquired 239 tile positions in 2 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:23:17 -- FINISHED section number 138, section completed in 4 mins 13 secs
+2026/07/10 00:23:17 -- STARTING section number 139 (139 of 435) at z=21.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0139
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:26:19 -- acquired 250 tile positions in 3 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:27:36 -- FINISHED section number 139, section completed in 4 mins 19 secs
+2026/07/10 00:27:36 -- STARTING section number 140 (140 of 435) at z=21.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0140
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:30:33 -- acquired 244 tile positions in 2 mins 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:31:52 -- FINISHED section number 140, section completed in 4 mins 17 secs
+2026/07/10 00:31:52 -- STARTING section number 141 (141 of 435) at z=21.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0141
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:35:01 -- acquired 259 tile positions in 3 mins 8 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:36:18 -- FINISHED section number 141, section completed in 4 mins 26 secs
+2026/07/10 00:36:18 -- STARTING section number 142 (142 of 435) at z=21.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0142
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:39:48 -- acquired 293 tile positions in 3 mins 30 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:41:05 -- FINISHED section number 142, section completed in 4 mins 47 secs
+2026/07/10 00:41:05 -- STARTING section number 143 (143 of 435) at z=21.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0143
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:44:05 -- acquired 245 tile positions in 2 mins 60 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:45:24 -- FINISHED section number 143, section completed in 4 mins 19 secs
+2026/07/10 00:45:24 -- STARTING section number 144 (144 of 435) at z=21.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0144
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:48:25 -- acquired 246 tile positions in 3 mins 1 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:49:42 -- FINISHED section number 144, section completed in 4 mins 18 secs
+2026/07/10 00:49:42 -- STARTING section number 145 (145 of 435) at z=22.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0145
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 00:52:53 -- acquired 264 tile positions in 3 mins 11 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:54:13 -- FINISHED section number 145, section completed in 4 mins 31 secs
+2026/07/10 00:54:13 -- STARTING section number 146 (146 of 435) at z=22.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0146
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:57:07 -- acquired 239 tile positions in 2 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 00:58:24 -- FINISHED section number 146, section completed in 4 mins 11 secs
+2026/07/10 00:58:24 -- STARTING section number 147 (147 of 435) at z=22.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0147
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 01:01:22 -- acquired 246 tile positions in 2 mins 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 01:02:39 -- FINISHED section number 147, section completed in 4 mins 15 secs
+2026/07/10 01:02:39 -- STARTING section number 148 (148 of 435) at z=22.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0148
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 01:05:33 -- acquired 239 tile positions in 2 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 01:06:50 -- FINISHED section number 148, section completed in 4 mins 10 secs
+2026/07/10 01:06:50 -- STARTING section number 149 (149 of 435) at z=22.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0149
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 01:09:48 -- acquired 249 tile positions in 2 mins 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:11:05 -- FINISHED section number 149, section completed in 4 mins 15 secs
+2026/07/10 01:11:05 -- STARTING section number 150 (150 of 435) at z=22.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0150
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:13:57 -- acquired 239 tile positions in 2 mins 52 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 01:15:16 -- FINISHED section number 150, section completed in 4 mins 11 secs
+2026/07/10 01:15:16 -- STARTING section number 151 (151 of 435) at z=22.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0151
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 01:18:21 -- acquired 257 tile positions in 3 mins 5 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 01:19:38 -- FINISHED section number 151, section completed in 4 mins 22 secs
+2026/07/10 01:19:38 -- STARTING section number 152 (152 of 435) at z=22.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0152
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 01:22:41 -- acquired 249 tile positions in 3 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 01:23:57 -- FINISHED section number 152, section completed in 4 mins 19 secs
+2026/07/10 01:23:57 -- STARTING section number 153 (153 of 435) at z=22.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0153
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 01:27:15 -- acquired 272 tile positions in 3 mins 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 01:28:32 -- FINISHED section number 153, section completed in 4 mins 35 secs
+2026/07/10 01:28:32 -- STARTING section number 154 (154 of 435) at z=22.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0154
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 01:31:35 -- acquired 249 tile positions in 3 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:32:54 -- FINISHED section number 154, section completed in 4 mins 22 secs
+2026/07/10 01:32:54 -- STARTING section number 155 (155 of 435) at z=22.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0155
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:35:52 -- acquired 247 tile positions in 2 mins 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:37:09 -- FINISHED section number 155, section completed in 4 mins 15 secs
+2026/07/10 01:37:09 -- STARTING section number 156 (156 of 435) at z=22.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0156
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:40:17 -- acquired 257 tile positions in 3 mins 8 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 01:41:34 -- FINISHED section number 156, section completed in 4 mins 25 secs
+2026/07/10 01:41:34 -- STARTING section number 157 (157 of 435) at z=22.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0157
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 01:44:24 -- acquired 234 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:45:43 -- FINISHED section number 157, section completed in 4 mins 8 secs
+2026/07/10 01:45:43 -- STARTING section number 158 (158 of 435) at z=22.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0158
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:48:30 -- acquired 230 tile positions in 2 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:49:46 -- FINISHED section number 158, section completed in 4 mins 4 secs
+2026/07/10 01:49:46 -- STARTING section number 159 (159 of 435) at z=22.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0159
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:52:36 -- acquired 234 tile positions in 2 mins 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 01:53:55 -- FINISHED section number 159, section completed in 4 mins 9 secs
+2026/07/10 01:53:55 -- STARTING section number 160 (160 of 435) at z=22.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0160
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 01:56:36 -- acquired 220 tile positions in 2 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 01:57:52 -- FINISHED section number 160, section completed in 3 mins 57 secs
+2026/07/10 01:57:52 -- STARTING section number 161 (161 of 435) at z=22.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0161
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 02:00:55 -- acquired 253 tile positions in 3 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:02:12 -- FINISHED section number 161, section completed in 4 mins 19 secs
+2026/07/10 02:02:12 -- STARTING section number 162 (162 of 435) at z=22.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0162
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:04:58 -- acquired 234 tile positions in 2 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 02:06:17 -- FINISHED section number 162, section completed in 4 mins 5 secs
+2026/07/10 02:06:17 -- STARTING section number 163 (163 of 435) at z=22.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0163
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 02:09:18 -- acquired 253 tile positions in 3 mins 1 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:10:35 -- FINISHED section number 163, section completed in 4 mins 18 secs
+2026/07/10 02:10:35 -- STARTING section number 164 (164 of 435) at z=22.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0164
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:13:25 -- acquired 234 tile positions in 2 mins 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:14:44 -- FINISHED section number 164, section completed in 4 mins 9 secs
+2026/07/10 02:14:44 -- STARTING section number 165 (165 of 435) at z=22.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0165
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:17:40 -- acquired 242 tile positions in 2 mins 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 02:18:57 -- FINISHED section number 165, section completed in 4 mins 13 secs
+2026/07/10 02:18:57 -- STARTING section number 166 (166 of 435) at z=22.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0166
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 02:21:54 -- acquired 245 tile positions in 2 mins 57 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 02:23:13 -- FINISHED section number 166, section completed in 4 mins 16 secs
+2026/07/10 02:23:13 -- STARTING section number 167 (167 of 435) at z=22.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0167
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 02:26:09 -- acquired 242 tile positions in 2 mins 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:27:26 -- FINISHED section number 167, section completed in 4 mins 13 secs
+2026/07/10 02:27:26 -- STARTING section number 168 (168 of 435) at z=22.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0168
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:30:17 -- acquired 234 tile positions in 2 mins 51 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:31:36 -- FINISHED section number 168, section completed in 4 mins 9 secs
+2026/07/10 02:31:36 -- STARTING section number 169 (169 of 435) at z=22.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0169
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:34:40 -- acquired 253 tile positions in 3 mins 4 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:35:57 -- FINISHED section number 169, section completed in 4 mins 21 secs
+2026/07/10 02:35:57 -- STARTING section number 170 (170 of 435) at z=23.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0170
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:38:46 -- acquired 234 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:40:05 -- FINISHED section number 170, section completed in 4 mins 9 secs
+2026/07/10 02:40:05 -- STARTING section number 171 (171 of 435) at z=23.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0171
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:43:09 -- acquired 253 tile positions in 3 mins 4 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 02:44:27 -- FINISHED section number 171, section completed in 4 mins 21 secs
+2026/07/10 02:44:27 -- STARTING section number 172 (172 of 435) at z=23.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0172
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 02:47:14 -- acquired 230 tile positions in 2 mins 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 02:48:32 -- FINISHED section number 172, section completed in 4 mins 5 secs
+2026/07/10 02:48:32 -- STARTING section number 173 (173 of 435) at z=23.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0173
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 02:51:36 -- acquired 253 tile positions in 3 mins 4 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:52:53 -- FINISHED section number 173, section completed in 4 mins 21 secs
+2026/07/10 02:52:53 -- STARTING section number 174 (174 of 435) at z=23.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0174
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 02:55:50 -- acquired 245 tile positions in 2 mins 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 02:57:09 -- FINISHED section number 174, section completed in 4 mins 16 secs
+2026/07/10 02:57:09 -- STARTING section number 175 (175 of 435) at z=23.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0175
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:00:03 -- acquired 238 tile positions in 2 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:01:20 -- FINISHED section number 175, section completed in 4 mins 11 secs
+2026/07/10 03:01:20 -- STARTING section number 176 (176 of 435) at z=23.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0176
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:04:10 -- acquired 234 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:05:29 -- FINISHED section number 176, section completed in 4 mins 8 secs
+2026/07/10 03:05:29 -- STARTING section number 177 (177 of 435) at z=23.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0177
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:08:32 -- acquired 253 tile positions in 3 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 03:09:49 -- FINISHED section number 177, section completed in 4 mins 20 secs
+2026/07/10 03:09:49 -- STARTING section number 178 (178 of 435) at z=23.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0178
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:12:39 -- acquired 234 tile positions in 2 mins 50 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 03:13:58 -- FINISHED section number 178, section completed in 4 mins 9 secs
+2026/07/10 03:13:58 -- STARTING section number 179 (179 of 435) at z=23.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0179
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 03:16:54 -- acquired 242 tile positions in 2 mins 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 03:18:11 -- FINISHED section number 179, section completed in 4 mins 12 secs
+2026/07/10 03:18:11 -- STARTING section number 180 (180 of 435) at z=23.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0180
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 03:20:56 -- acquired 230 tile positions in 2 mins 45 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:22:13 -- FINISHED section number 180, section completed in 4 mins 2 secs
+2026/07/10 03:22:13 -- STARTING section number 181 (181 of 435) at z=23.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0181
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:25:09 -- acquired 242 tile positions in 2 mins 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 03:26:26 -- FINISHED section number 181, section completed in 4 mins 13 secs
+2026/07/10 03:26:26 -- STARTING section number 182 (182 of 435) at z=23.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0182
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 03:29:25 -- acquired 245 tile positions in 2 mins 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 03:30:42 -- FINISHED section number 182, section completed in 4 mins 16 secs
+2026/07/10 03:30:42 -- STARTING section number 183 (183 of 435) at z=23.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0183
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 03:33:55 -- acquired 268 tile positions in 3 mins 13 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:35:14 -- FINISHED section number 183, section completed in 4 mins 32 secs
+2026/07/10 03:35:14 -- STARTING section number 184 (184 of 435) at z=23.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0184
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:38:04 -- acquired 234 tile positions in 2 mins 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 03:39:23 -- FINISHED section number 184, section completed in 4 mins 9 secs
+2026/07/10 03:39:23 -- STARTING section number 185 (185 of 435) at z=23.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0185
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 03:42:03 -- acquired 220 tile positions in 2 mins 40 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 03:43:20 -- FINISHED section number 185, section completed in 3 mins 57 secs
+2026/07/10 03:43:20 -- STARTING section number 186 (186 of 435) at z=23.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0186
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 03:46:22 -- acquired 253 tile positions in 3 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:47:39 -- FINISHED section number 186, section completed in 4 mins 19 secs
+2026/07/10 03:47:39 -- STARTING section number 187 (187 of 435) at z=23.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0187
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:50:19 -- acquired 220 tile positions in 2 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:51:36 -- FINISHED section number 187, section completed in 3 mins 57 secs
+2026/07/10 03:51:36 -- STARTING section number 188 (188 of 435) at z=23.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0188
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:54:27 -- acquired 234 tile positions in 2 mins 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:55:46 -- FINISHED section number 188, section completed in 4 mins 10 secs
+2026/07/10 03:55:46 -- STARTING section number 189 (189 of 435) at z=23.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0189
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 03:58:41 -- acquired 238 tile positions in 2 mins 55 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 03:59:58 -- FINISHED section number 189, section completed in 4 mins 12 secs
+2026/07/10 03:59:58 -- STARTING section number 190 (190 of 435) at z=23.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0190
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:02:48 -- acquired 234 tile positions in 2 mins 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:04:07 -- FINISHED section number 190, section completed in 4 mins 9 secs
+2026/07/10 04:04:07 -- STARTING section number 191 (191 of 435) at z=23.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0191
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 04:07:10 -- acquired 253 tile positions in 3 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:08:28 -- FINISHED section number 191, section completed in 4 mins 20 secs
+2026/07/10 04:08:28 -- STARTING section number 192 (192 of 435) at z=23.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0192
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:11:18 -- acquired 234 tile positions in 2 mins 51 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 04:12:38 -- FINISHED section number 192, section completed in 4 mins 10 secs
+2026/07/10 04:12:38 -- STARTING section number 193 (193 of 435) at z=23.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0193
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:15:34 -- acquired 242 tile positions in 2 mins 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:16:50 -- FINISHED section number 193, section completed in 4 mins 13 secs
+2026/07/10 04:16:50 -- STARTING section number 194 (194 of 435) at z=23.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0194
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:19:34 -- acquired 230 tile positions in 2 mins 44 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 04:20:51 -- FINISHED section number 194, section completed in 4 mins 
+2026/07/10 04:20:51 -- STARTING section number 195 (195 of 435) at z=24.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0195
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:23:40 -- acquired 234 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 04:24:59 -- FINISHED section number 195, section completed in 4 mins 8 secs
+2026/07/10 04:24:59 -- STARTING section number 196 (196 of 435) at z=24.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0196
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:27:45 -- acquired 228 tile positions in 2 mins 47 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:29:02 -- FINISHED section number 196, section completed in 4 mins 4 secs
+2026/07/10 04:29:02 -- STARTING section number 197 (197 of 435) at z=24.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0197
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:31:58 -- acquired 245 tile positions in 2 mins 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 04:33:17 -- FINISHED section number 197, section completed in 4 mins 14 secs
+2026/07/10 04:33:17 -- STARTING section number 198 (198 of 435) at z=24.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0198
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:35:56 -- acquired 220 tile positions in 2 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 04:37:13 -- FINISHED section number 198, section completed in 3 mins 57 secs
+2026/07/10 04:37:13 -- STARTING section number 199 (199 of 435) at z=24.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0199
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 04:39:54 -- acquired 220 tile positions in 2 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:41:11 -- FINISHED section number 199, section completed in 3 mins 57 secs
+2026/07/10 04:41:11 -- STARTING section number 200 (200 of 435) at z=24.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0200
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 04:43:51 -- acquired 220 tile positions in 2 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:45:07 -- FINISHED section number 200, section completed in 3 mins 57 secs
+2026/07/10 04:45:07 -- STARTING section number 201 (201 of 435) at z=24.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0201
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 04:48:06 -- acquired 245 tile positions in 2 mins 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:49:25 -- FINISHED section number 201, section completed in 4 mins 18 secs
+2026/07/10 04:49:25 -- STARTING section number 202 (202 of 435) at z=24.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0202
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:52:14 -- acquired 228 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:53:31 -- FINISHED section number 202, section completed in 4 mins 5 secs
+2026/07/10 04:53:31 -- STARTING section number 203 (203 of 435) at z=24.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0203
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 04:56:22 -- acquired 234 tile positions in 2 mins 51 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 04:57:41 -- FINISHED section number 203, section completed in 4 mins 11 secs
+2026/07/10 04:57:42 -- STARTING section number 204 (204 of 435) at z=24.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0204
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 05:00:32 -- acquired 230 tile positions in 2 mins 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:01:49 -- FINISHED section number 204, section completed in 4 mins 7 secs
+2026/07/10 05:01:49 -- STARTING section number 205 (205 of 435) at z=24.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0205
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:04:40 -- acquired 234 tile positions in 2 mins 52 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 05:05:59 -- FINISHED section number 205, section completed in 4 mins 10 secs
+2026/07/10 05:05:59 -- STARTING section number 206 (206 of 435) at z=24.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0206
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 05:08:48 -- acquired 230 tile positions in 2 mins 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:10:04 -- FINISHED section number 206, section completed in 4 mins 5 secs
+2026/07/10 05:10:04 -- STARTING section number 207 (207 of 435) at z=24.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0207
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:12:46 -- acquired 220 tile positions in 2 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:14:04 -- FINISHED section number 207, section completed in 3 mins 59 secs
+2026/07/10 05:14:04 -- STARTING section number 208 (208 of 435) at z=24.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0208
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:16:47 -- acquired 220 tile positions in 2 mins 44 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:18:05 -- FINISHED section number 208, section completed in 4 mins 1 secs
+2026/07/10 05:18:05 -- STARTING section number 209 (209 of 435) at z=24.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0209
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:20:53 -- acquired 230 tile positions in 2 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:22:11 -- FINISHED section number 209, section completed in 4 mins 6 secs
+2026/07/10 05:22:11 -- STARTING section number 210 (210 of 435) at z=24.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0210
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:24:53 -- acquired 220 tile positions in 2 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 05:26:09 -- FINISHED section number 210, section completed in 3 mins 59 secs
+2026/07/10 05:26:10 -- STARTING section number 211 (211 of 435) at z=24.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0211
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:29:07 -- acquired 245 tile positions in 2 mins 58 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:30:26 -- FINISHED section number 211, section completed in 4 mins 17 secs
+2026/07/10 05:30:26 -- STARTING section number 212 (212 of 435) at z=24.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0212
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:33:08 -- acquired 220 tile positions in 2 mins 42 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 05:34:25 -- FINISHED section number 212, section completed in 3 mins 59 secs
+2026/07/10 05:34:25 -- STARTING section number 213 (213 of 435) at z=24.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0213
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 05:37:07 -- acquired 220 tile positions in 2 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 05:38:24 -- FINISHED section number 213, section completed in 3 mins 59 secs
+2026/07/10 05:38:24 -- STARTING section number 214 (214 of 435) at z=24.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0214
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 05:41:06 -- acquired 220 tile positions in 2 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 05:42:23 -- FINISHED section number 214, section completed in 3 mins 59 secs
+2026/07/10 05:42:23 -- STARTING section number 215 (215 of 435) at z=24.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0215
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 05:45:11 -- acquired 230 tile positions in 2 mins 48 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 05:46:28 -- FINISHED section number 215, section completed in 4 mins 5 secs
+2026/07/10 05:46:28 -- STARTING section number 216 (216 of 435) at z=24.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0216
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 05:49:09 -- acquired 220 tile positions in 2 mins 41 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:50:26 -- FINISHED section number 216, section completed in 3 mins 58 secs
+2026/07/10 05:50:26 -- STARTING section number 217 (217 of 435) at z=24.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0217
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 05:53:07 -- acquired 220 tile positions in 2 mins 41 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 05:54:25 -- FINISHED section number 217, section completed in 3 mins 58 secs
+2026/07/10 05:54:25 -- STARTING section number 218 (218 of 435) at z=24.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0218
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 05:57:07 -- acquired 220 tile positions in 2 mins 43 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 05:58:25 -- FINISHED section number 218, section completed in 3 mins 60 secs
+2026/07/10 05:58:25 -- STARTING section number 219 (219 of 435) at z=24.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0219
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 06:00:57 -- acquired 203 tile positions in 2 mins 33 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:02:15 -- FINISHED section number 219, section completed in 3 mins 50 secs
+2026/07/10 06:02:15 -- STARTING section number 220 (220 of 435) at z=25.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0220
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:04:51 -- acquired 210 tile positions in 2 mins 36 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 06:06:08 -- FINISHED section number 220, section completed in 3 mins 53 secs
+2026/07/10 06:06:08 -- STARTING section number 221 (221 of 435) at z=25.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0221
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:08:49 -- acquired 220 tile positions in 2 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:10:07 -- FINISHED section number 221, section completed in 3 mins 59 secs
+2026/07/10 06:10:07 -- STARTING section number 222 (222 of 435) at z=25.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0222
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 06:12:38 -- acquired 203 tile positions in 2 mins 31 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:13:55 -- FINISHED section number 222, section completed in 3 mins 48 secs
+2026/07/10 06:13:55 -- STARTING section number 223 (223 of 435) at z=25.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0223
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:16:28 -- acquired 203 tile positions in 2 mins 33 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 06:17:45 -- FINISHED section number 223, section completed in 3 mins 50 secs
+2026/07/10 06:17:45 -- STARTING section number 224 (224 of 435) at z=25.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0224
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 06:20:16 -- acquired 203 tile positions in 2 mins 31 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 06:21:33 -- FINISHED section number 224, section completed in 3 mins 48 secs
+2026/07/10 06:21:33 -- STARTING section number 225 (225 of 435) at z=25.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0225
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 06:24:02 -- acquired 203 tile positions in 2 mins 29 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 06:25:19 -- FINISHED section number 225, section completed in 3 mins 46 secs
+2026/07/10 06:25:19 -- STARTING section number 226 (226 of 435) at z=25.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0226
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 06:27:52 -- acquired 203 tile positions in 2 mins 33 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:29:09 -- FINISHED section number 226, section completed in 3 mins 50 secs
+2026/07/10 06:29:09 -- STARTING section number 227 (227 of 435) at z=25.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0227
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:31:40 -- acquired 203 tile positions in 2 mins 31 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12373mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:32:57 -- FINISHED section number 227, section completed in 3 mins 48 secs
+2026/07/10 06:32:57 -- STARTING section number 228 (228 of 435) at z=25.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0228
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 06:35:25 -- acquired 203 tile positions in 2 mins 28 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 06:36:44 -- FINISHED section number 228, section completed in 3 mins 47 secs
+2026/07/10 06:36:44 -- STARTING section number 229 (229 of 435) at z=25.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0229
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 06:39:13 -- acquired 203 tile positions in 2 mins 29 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 06:40:30 -- FINISHED section number 229, section completed in 3 mins 46 secs
+2026/07/10 06:40:30 -- STARTING section number 230 (230 of 435) at z=25.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0230
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 06:43:02 -- acquired 203 tile positions in 2 mins 32 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:44:21 -- FINISHED section number 230, section completed in 3 mins 51 secs
+2026/07/10 06:44:21 -- STARTING section number 231 (231 of 435) at z=25.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0231
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:46:47 -- acquired 194 tile positions in 2 mins 25 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 06:48:04 -- FINISHED section number 231, section completed in 3 mins 43 secs
+2026/07/10 06:48:04 -- STARTING section number 232 (232 of 435) at z=25.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0232
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 06:50:26 -- acquired 189 tile positions in 2 mins 22 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:51:44 -- FINISHED section number 232, section completed in 3 mins 40 secs
+2026/07/10 06:51:44 -- STARTING section number 233 (233 of 435) at z=25.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0233
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 06:54:04 -- acquired 187 tile positions in 2 mins 19 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 06:55:21 -- FINISHED section number 233, section completed in 3 mins 36 secs
+2026/07/10 06:55:21 -- STARTING section number 234 (234 of 435) at z=25.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0234
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 06:57:37 -- acquired 181 tile positions in 2 mins 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12373mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 06:58:54 -- FINISHED section number 234, section completed in 3 mins 33 secs
+2026/07/10 06:58:54 -- STARTING section number 235 (235 of 435) at z=25.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0235
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12370mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 07:01:08 -- acquired 181 tile positions in 2 mins 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 07:02:25 -- FINISHED section number 235, section completed in 3 mins 31 secs
+2026/07/10 07:02:25 -- STARTING section number 236 (236 of 435) at z=25.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0236
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 07:04:41 -- acquired 181 tile positions in 2 mins 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 07:05:59 -- FINISHED section number 236, section completed in 3 mins 33 secs
+2026/07/10 07:05:59 -- STARTING section number 237 (237 of 435) at z=25.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0237
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12370mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 07:08:13 -- acquired 181 tile positions in 2 mins 14 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:09:30 -- FINISHED section number 237, section completed in 3 mins 31 secs
+2026/07/10 07:09:30 -- STARTING section number 238 (238 of 435) at z=25.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0238
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 07:11:41 -- acquired 174 tile positions in 2 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:12:58 -- FINISHED section number 238, section completed in 3 mins 28 secs
+2026/07/10 07:12:58 -- STARTING section number 239 (239 of 435) at z=25.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0239
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:15:09 -- acquired 174 tile positions in 2 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12371mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:16:26 -- FINISHED section number 239, section completed in 3 mins 28 secs
+2026/07/10 07:16:26 -- STARTING section number 240 (240 of 435) at z=25.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0240
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12372mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:18:36 -- acquired 174 tile positions in 2 mins 10 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:19:53 -- FINISHED section number 240, section completed in 3 mins 28 secs
+2026/07/10 07:19:53 -- STARTING section number 241 (241 of 435) at z=25.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0241
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:22:04 -- acquired 174 tile positions in 2 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:23:21 -- FINISHED section number 241, section completed in 3 mins 27 secs
+2026/07/10 07:23:21 -- STARTING section number 242 (242 of 435) at z=25.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0242
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:25:31 -- acquired 174 tile positions in 2 mins 10 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:26:48 -- FINISHED section number 242, section completed in 3 mins 27 secs
+2026/07/10 07:26:48 -- STARTING section number 243 (243 of 435) at z=25.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0243
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:28:59 -- acquired 174 tile positions in 2 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 07:30:16 -- FINISHED section number 243, section completed in 3 mins 28 secs
+2026/07/10 07:30:16 -- STARTING section number 244 (244 of 435) at z=25.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0244
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 07:32:28 -- acquired 174 tile positions in 2 mins 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 07:33:46 -- FINISHED section number 244, section completed in 3 mins 30 secs
+2026/07/10 07:33:46 -- STARTING section number 245 (245 of 435) at z=26.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0245
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 07:35:56 -- acquired 174 tile positions in 2 mins 10 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:37:13 -- FINISHED section number 245, section completed in 3 mins 27 secs
+2026/07/10 07:37:13 -- STARTING section number 246 (246 of 435) at z=26.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0246
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:39:26 -- acquired 174 tile positions in 2 mins 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 07:40:44 -- FINISHED section number 246, section completed in 3 mins 31 secs
+2026/07/10 07:40:44 -- STARTING section number 247 (247 of 435) at z=26.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0247
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 07:42:56 -- acquired 174 tile positions in 2 mins 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:44:12 -- FINISHED section number 247, section completed in 3 mins 29 secs
+2026/07/10 07:44:12 -- STARTING section number 248 (248 of 435) at z=26.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0248
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:46:23 -- acquired 174 tile positions in 2 mins 10 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:47:40 -- FINISHED section number 248, section completed in 3 mins 27 secs
+2026/07/10 07:47:40 -- STARTING section number 249 (249 of 435) at z=26.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0249
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:49:51 -- acquired 174 tile positions in 2 mins 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 07:51:08 -- FINISHED section number 249, section completed in 3 mins 29 secs
+2026/07/10 07:51:08 -- STARTING section number 250 (250 of 435) at z=26.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0250
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 07:53:20 -- acquired 174 tile positions in 2 mins 11 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 07:54:37 -- FINISHED section number 250, section completed in 3 mins 28 secs
+2026/07/10 07:54:37 -- STARTING section number 251 (251 of 435) at z=26.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0251
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 07:56:49 -- acquired 174 tile positions in 2 mins 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 07:58:06 -- FINISHED section number 251, section completed in 3 mins 29 secs
+2026/07/10 07:58:06 -- STARTING section number 252 (252 of 435) at z=26.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0252
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 08:00:18 -- acquired 174 tile positions in 2 mins 12 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:01:36 -- FINISHED section number 252, section completed in 3 mins 29 secs
+2026/07/10 08:01:36 -- STARTING section number 253 (253 of 435) at z=26.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0253
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:03:49 -- acquired 174 tile positions in 2 mins 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:05:07 -- FINISHED section number 253, section completed in 3 mins 31 secs
+2026/07/10 08:05:07 -- STARTING section number 254 (254 of 435) at z=26.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0254
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:07:10 -- acquired 161 tile positions in 2 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:08:28 -- FINISHED section number 254, section completed in 3 mins 21 secs
+2026/07/10 08:08:28 -- STARTING section number 255 (255 of 435) at z=26.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0255
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:10:23 -- acquired 153 tile positions in 1 mins 55 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:11:40 -- FINISHED section number 255, section completed in 3 mins 12 secs
+2026/07/10 08:11:40 -- STARTING section number 256 (256 of 435) at z=26.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0256
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 08:13:33 -- acquired 145 tile positions in 1 mins 53 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:14:51 -- FINISHED section number 256, section completed in 3 mins 11 secs
+2026/07/10 08:14:51 -- STARTING section number 257 (257 of 435) at z=26.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0257
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:16:44 -- acquired 146 tile positions in 1 mins 53 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 08:18:01 -- FINISHED section number 257, section completed in 3 mins 10 secs
+2026/07/10 08:18:01 -- STARTING section number 258 (258 of 435) at z=26.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0258
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 08:19:47 -- acquired 139 tile positions in 1 mins 45 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:21:04 -- FINISHED section number 258, section completed in 3 mins 2 secs
+2026/07/10 08:21:04 -- STARTING section number 259 (259 of 435) at z=26.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0259
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:22:51 -- acquired 139 tile positions in 1 mins 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:24:08 -- FINISHED section number 259, section completed in 3 mins 4 secs
+2026/07/10 08:24:08 -- STARTING section number 260 (260 of 435) at z=26.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0260
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:25:54 -- acquired 139 tile positions in 1 mins 46 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:27:11 -- FINISHED section number 260, section completed in 3 mins 3 secs
+2026/07/10 08:27:11 -- STARTING section number 261 (261 of 435) at z=26.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0261
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:29:00 -- acquired 139 tile positions in 1 mins 49 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:30:18 -- FINISHED section number 261, section completed in 3 mins 7 secs
+2026/07/10 08:30:18 -- STARTING section number 262 (262 of 435) at z=26.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0262
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:32:12 -- acquired 146 tile positions in 1 mins 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:33:29 -- FINISHED section number 262, section completed in 3 mins 11 secs
+2026/07/10 08:33:29 -- STARTING section number 263 (263 of 435) at z=26.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0263
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:35:11 -- acquired 131 tile positions in 1 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:36:28 -- FINISHED section number 263, section completed in 2 mins 59 secs
+2026/07/10 08:36:28 -- STARTING section number 264 (264 of 435) at z=26.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0264
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:38:10 -- acquired 131 tile positions in 1 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:39:27 -- FINISHED section number 264, section completed in 2 mins 59 secs
+2026/07/10 08:39:27 -- STARTING section number 265 (265 of 435) at z=26.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0265
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 08:41:11 -- acquired 131 tile positions in 1 mins 44 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:42:28 -- FINISHED section number 265, section completed in 3 mins 1 secs
+2026/07/10 08:42:28 -- STARTING section number 266 (266 of 435) at z=26.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0266
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:44:10 -- acquired 131 tile positions in 1 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:45:27 -- FINISHED section number 266, section completed in 2 mins 59 secs
+2026/07/10 08:45:27 -- STARTING section number 267 (267 of 435) at z=26.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0267
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:47:11 -- acquired 131 tile positions in 1 mins 44 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:48:28 -- FINISHED section number 267, section completed in 3 mins 1 secs
+2026/07/10 08:48:28 -- STARTING section number 268 (268 of 435) at z=26.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0268
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:50:11 -- acquired 131 tile positions in 1 mins 43 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 08:51:28 -- FINISHED section number 268, section completed in 2 mins 60 secs
+2026/07/10 08:51:28 -- STARTING section number 269 (269 of 435) at z=26.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0269
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:53:10 -- acquired 131 tile positions in 1 mins 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 08:54:27 -- FINISHED section number 269, section completed in 2 mins 59 secs
+2026/07/10 08:54:27 -- STARTING section number 270 (270 of 435) at z=27.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0270
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 08:56:09 -- acquired 131 tile positions in 1 mins 43 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:57:27 -- FINISHED section number 270, section completed in 2 mins 60 secs
+2026/07/10 08:57:27 -- STARTING section number 271 (271 of 435) at z=27.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0271
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 08:59:05 -- acquired 126 tile positions in 1 mins 38 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 09:00:26 -- FINISHED section number 271, section completed in 2 mins 59 secs
+2026/07/10 09:00:26 -- STARTING section number 272 (272 of 435) at z=27.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0272
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:02:06 -- acquired 126 tile positions in 1 mins 40 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:03:23 -- FINISHED section number 272, section completed in 2 mins 57 secs
+2026/07/10 09:03:23 -- STARTING section number 273 (273 of 435) at z=27.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0273
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:05:02 -- acquired 126 tile positions in 1 mins 38 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:06:18 -- FINISHED section number 273, section completed in 2 mins 55 secs
+2026/07/10 09:06:18 -- STARTING section number 274 (274 of 435) at z=27.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0274
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:07:48 -- acquired 114 tile positions in 1 mins 29 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:09:05 -- FINISHED section number 274, section completed in 2 mins 47 secs
+2026/07/10 09:09:05 -- STARTING section number 275 (275 of 435) at z=27.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0275
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:10:42 -- acquired 120 tile positions in 1 mins 36 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:11:59 -- FINISHED section number 275, section completed in 2 mins 54 secs
+2026/07/10 09:11:59 -- STARTING section number 276 (276 of 435) at z=27.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0276
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 09:13:30 -- acquired 114 tile positions in 1 mins 32 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:14:48 -- FINISHED section number 276, section completed in 2 mins 49 secs
+2026/07/10 09:14:48 -- STARTING section number 277 (277 of 435) at z=27.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0277
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:16:22 -- acquired 120 tile positions in 1 mins 34 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:17:39 -- FINISHED section number 277, section completed in 2 mins 52 secs
+2026/07/10 09:17:39 -- STARTING section number 278 (278 of 435) at z=27.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0278
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:19:11 -- acquired 114 tile positions in 1 mins 32 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:20:28 -- FINISHED section number 278, section completed in 2 mins 49 secs
+2026/07/10 09:20:28 -- STARTING section number 279 (279 of 435) at z=27.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0279
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:22:00 -- acquired 114 tile positions in 1 mins 31 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:23:17 -- FINISHED section number 279, section completed in 2 mins 48 secs
+2026/07/10 09:23:17 -- STARTING section number 280 (280 of 435) at z=27.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0280
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:24:48 -- acquired 114 tile positions in 1 mins 31 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:26:05 -- FINISHED section number 280, section completed in 2 mins 49 secs
+2026/07/10 09:26:05 -- STARTING section number 281 (281 of 435) at z=27.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0281
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:27:37 -- acquired 114 tile positions in 1 mins 31 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:28:54 -- FINISHED section number 281, section completed in 2 mins 49 secs
+2026/07/10 09:28:54 -- STARTING section number 282 (282 of 435) at z=27.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0282
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 09:30:24 -- acquired 114 tile positions in 1 mins 30 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:31:41 -- FINISHED section number 282, section completed in 2 mins 47 secs
+2026/07/10 09:31:41 -- STARTING section number 283 (283 of 435) at z=27.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0283
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:33:10 -- acquired 114 tile positions in 1 mins 29 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 09:34:27 -- FINISHED section number 283, section completed in 2 mins 46 secs
+2026/07/10 09:34:27 -- STARTING section number 284 (284 of 435) at z=27.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0284
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 09:35:52 -- acquired 107 tile positions in 1 mins 24 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:37:09 -- FINISHED section number 284, section completed in 2 mins 41 secs
+2026/07/10 09:37:09 -- STARTING section number 285 (285 of 435) at z=27.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0285
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:38:33 -- acquired 102 tile positions in 1 mins 24 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:39:49 -- FINISHED section number 285, section completed in 2 mins 41 secs
+2026/07/10 09:39:50 -- STARTING section number 286 (286 of 435) at z=27.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0286
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:41:13 -- acquired 102 tile positions in 1 mins 24 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:42:31 -- FINISHED section number 286, section completed in 2 mins 41 secs
+2026/07/10 09:42:31 -- STARTING section number 287 (287 of 435) at z=27.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0287
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:43:52 -- acquired 97 tile positions in 1 mins 21 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:45:09 -- FINISHED section number 287, section completed in 2 mins 38 secs
+2026/07/10 09:45:09 -- STARTING section number 288 (288 of 435) at z=27.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0288
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:46:25 -- acquired 90 tile positions in 1 mins 16 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:47:42 -- FINISHED section number 288, section completed in 2 mins 33 secs
+2026/07/10 09:47:42 -- STARTING section number 289 (289 of 435) at z=27.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0289
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 09:48:58 -- acquired 90 tile positions in 1 mins 16 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:50:15 -- FINISHED section number 289, section completed in 2 mins 33 secs
+2026/07/10 09:50:15 -- STARTING section number 290 (290 of 435) at z=27.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0290
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:51:30 -- acquired 90 tile positions in 1 mins 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:52:47 -- FINISHED section number 290, section completed in 2 mins 31 secs
+2026/07/10 09:52:47 -- STARTING section number 291 (291 of 435) at z=27.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0291
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:53:53 -- acquired 80 tile positions in 1 mins 6 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12389mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:55:10 -- FINISHED section number 291, section completed in 2 mins 23 secs
+2026/07/10 09:55:10 -- STARTING section number 292 (292 of 435) at z=27.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0292
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12392mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 09:56:15 -- acquired 76 tile positions in 1 mins 5 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 09:57:32 -- FINISHED section number 292, section completed in 2 mins 22 secs
+2026/07/10 09:57:32 -- STARTING section number 293 (293 of 435) at z=27.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0293
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:58:42 -- acquired 81 tile positions in 1 mins 10 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 09:59:59 -- FINISHED section number 293, section completed in 2 mins 27 secs
+2026/07/10 09:59:59 -- STARTING section number 294 (294 of 435) at z=27.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0294
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:01:06 -- acquired 76 tile positions in 1 mins 7 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:02:23 -- FINISHED section number 294, section completed in 2 mins 24 secs
+2026/07/10 10:02:23 -- STARTING section number 295 (295 of 435) at z=28.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0295
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:03:26 -- acquired 76 tile positions in 1 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:04:43 -- FINISHED section number 295, section completed in 2 mins 20 secs
+2026/07/10 10:04:43 -- STARTING section number 296 (296 of 435) at z=28.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0296
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:05:51 -- acquired 81 tile positions in 1 mins 8 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:07:08 -- FINISHED section number 296, section completed in 2 mins 25 secs
+2026/07/10 10:07:08 -- STARTING section number 297 (297 of 435) at z=28.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0297
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:08:15 -- acquired 76 tile positions in 1 mins 7 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:09:32 -- FINISHED section number 297, section completed in 2 mins 24 secs
+2026/07/10 10:09:32 -- STARTING section number 298 (298 of 435) at z=28.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0298
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:10:37 -- acquired 76 tile positions in 1 mins 5 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:11:53 -- FINISHED section number 298, section completed in 2 mins 21 secs
+2026/07/10 10:11:53 -- STARTING section number 299 (299 of 435) at z=28.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0299
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12375mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:12:57 -- acquired 76 tile positions in 1 mins 4 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:14:14 -- FINISHED section number 299, section completed in 2 mins 20 secs
+2026/07/10 10:14:14 -- STARTING section number 300 (300 of 435) at z=28.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0300
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:15:17 -- acquired 76 tile positions in 1 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:16:34 -- FINISHED section number 300, section completed in 2 mins 20 secs
+2026/07/10 10:16:34 -- STARTING section number 301 (301 of 435) at z=28.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0301
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:17:39 -- acquired 76 tile positions in 1 mins 5 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:18:56 -- FINISHED section number 301, section completed in 2 mins 22 secs
+2026/07/10 10:18:57 -- STARTING section number 302 (302 of 435) at z=28.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0302
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:20:01 -- acquired 76 tile positions in 1 mins 4 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:21:18 -- FINISHED section number 302, section completed in 2 mins 22 secs
+2026/07/10 10:21:18 -- STARTING section number 303 (303 of 435) at z=28.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0303
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:22:23 -- acquired 76 tile positions in 1 mins 5 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:23:39 -- FINISHED section number 303, section completed in 2 mins 21 secs
+2026/07/10 10:23:39 -- STARTING section number 304 (304 of 435) at z=28.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0304
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:24:41 -- acquired 76 tile positions in 1 mins 2 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:25:58 -- FINISHED section number 304, section completed in 2 mins 19 secs
+2026/07/10 10:25:58 -- STARTING section number 305 (305 of 435) at z=28.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0305
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:27:01 -- acquired 76 tile positions in 1 mins 3 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:28:19 -- FINISHED section number 305, section completed in 2 mins 21 secs
+2026/07/10 10:28:19 -- STARTING section number 306 (306 of 435) at z=28.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0306
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:29:25 -- acquired 76 tile positions in 1 mins 6 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:30:42 -- FINISHED section number 306, section completed in 2 mins 23 secs
+2026/07/10 10:30:42 -- STARTING section number 307 (307 of 435) at z=28.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0307
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:31:41 -- acquired 66 tile positions in 59 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:32:59 -- FINISHED section number 307, section completed in 2 mins 17 secs
+2026/07/10 10:32:59 -- STARTING section number 308 (308 of 435) at z=28.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0308
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:33:58 -- acquired 70 tile positions in 59 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:35:15 -- FINISHED section number 308, section completed in 2 mins 15 secs
+2026/07/10 10:35:15 -- STARTING section number 309 (309 of 435) at z=28.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0309
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:36:06 -- acquired 61 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:37:22 -- FINISHED section number 309, section completed in 2 mins 7 secs
+2026/07/10 10:37:22 -- STARTING section number 310 (310 of 435) at z=28.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0310
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:38:16 -- acquired 65 tile positions in 54 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:39:33 -- FINISHED section number 310, section completed in 2 mins 11 secs
+2026/07/10 10:39:33 -- STARTING section number 311 (311 of 435) at z=28.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0311
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12374mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:40:26 -- acquired 59 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:41:43 -- FINISHED section number 311, section completed in 2 mins 10 secs
+2026/07/10 10:41:43 -- STARTING section number 312 (312 of 435) at z=28.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0312
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:42:33 -- acquired 57 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:43:50 -- FINISHED section number 312, section completed in 2 mins 7 secs
+2026/07/10 10:43:50 -- STARTING section number 313 (313 of 435) at z=28.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0313
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:44:40 -- acquired 57 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:45:57 -- FINISHED section number 313, section completed in 2 mins 7 secs
+2026/07/10 10:45:57 -- STARTING section number 314 (314 of 435) at z=28.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0314
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:46:53 -- acquired 61 tile positions in 56 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:48:10 -- FINISHED section number 314, section completed in 2 mins 13 secs
+2026/07/10 10:48:10 -- STARTING section number 315 (315 of 435) at z=28.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0315
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 10:48:57 -- acquired 52 tile positions in 47 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:50:13 -- FINISHED section number 315, section completed in 2 mins 3 secs
+2026/07/10 10:50:13 -- STARTING section number 316 (316 of 435) at z=28.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0316
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:50:57 -- acquired 47 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:52:14 -- FINISHED section number 316, section completed in 2 mins 1 secs
+2026/07/10 10:52:14 -- STARTING section number 317 (317 of 435) at z=28.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0317
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:52:57 -- acquired 43 tile positions in 43 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12387mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 10:54:14 -- FINISHED section number 317, section completed in 1 mins 60 secs
+2026/07/10 10:54:14 -- STARTING section number 318 (318 of 435) at z=28.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0318
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12388mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 10:54:55 -- acquired 43 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:56:11 -- FINISHED section number 318, section completed in 1 mins 57 secs
+2026/07/10 10:56:11 -- STARTING section number 319 (319 of 435) at z=28.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0319
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:56:50 -- acquired 43 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12389mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:58:07 -- FINISHED section number 319, section completed in 1 mins 56 secs
+2026/07/10 10:58:07 -- STARTING section number 320 (320 of 435) at z=29.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0320
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 10:58:46 -- acquired 43 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:00:02 -- FINISHED section number 320, section completed in 1 mins 56 secs
+2026/07/10 11:00:02 -- STARTING section number 321 (321 of 435) at z=29.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0321
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:00:44 -- acquired 43 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:02:01 -- FINISHED section number 321, section completed in 1 mins 58 secs
+2026/07/10 11:02:01 -- STARTING section number 322 (322 of 435) at z=29.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0322
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:02:43 -- acquired 43 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:04:00 -- FINISHED section number 322, section completed in 1 mins 60 secs
+2026/07/10 11:04:00 -- STARTING section number 323 (323 of 435) at z=29.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0323
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:04:41 -- acquired 41 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:05:58 -- FINISHED section number 323, section completed in 1 mins 57 secs
+2026/07/10 11:05:58 -- STARTING section number 324 (324 of 435) at z=29.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0324
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:06:36 -- acquired 36 tile positions in 38 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:07:54 -- FINISHED section number 324, section completed in 1 mins 56 secs
+2026/07/10 11:07:54 -- STARTING section number 325 (325 of 435) at z=29.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0325
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:08:28 -- acquired 32 tile positions in 34 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:09:47 -- FINISHED section number 325, section completed in 1 mins 53 secs
+2026/07/10 11:09:47 -- STARTING section number 326 (326 of 435) at z=29.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0326
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:10:20 -- acquired 32 tile positions in 33 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:11:39 -- FINISHED section number 326, section completed in 1 mins 52 secs
+2026/07/10 11:11:39 -- STARTING section number 327 (327 of 435) at z=29.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0327
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:12:12 -- acquired 32 tile positions in 34 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:13:31 -- FINISHED section number 327, section completed in 1 mins 53 secs
+2026/07/10 11:13:31 -- STARTING section number 328 (328 of 435) at z=29.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0328
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:14:03 -- acquired 28 tile positions in 32 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:15:22 -- FINISHED section number 328, section completed in 1 mins 51 secs
+2026/07/10 11:15:22 -- STARTING section number 329 (329 of 435) at z=29.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0329
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:15:53 -- acquired 25 tile positions in 31 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:17:11 -- FINISHED section number 329, section completed in 1 mins 49 secs
+2026/07/10 11:17:11 -- STARTING section number 330 (330 of 435) at z=29.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0330
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:17:39 -- acquired 25 tile positions in 28 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:18:58 -- FINISHED section number 330, section completed in 1 mins 46 secs
+2026/07/10 11:18:58 -- STARTING section number 331 (331 of 435) at z=29.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0331
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:19:22 -- acquired 21 tile positions in 24 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:20:40 -- FINISHED section number 331, section completed in 1 mins 42 secs
+2026/07/10 11:20:40 -- STARTING section number 332 (332 of 435) at z=29.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0332
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:21:04 -- acquired 21 tile positions in 24 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:22:23 -- FINISHED section number 332, section completed in 1 mins 43 secs
+2026/07/10 11:22:23 -- STARTING section number 333 (333 of 435) at z=29.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0333
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:22:51 -- acquired 21 tile positions in 28 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:24:10 -- FINISHED section number 333, section completed in 1 mins 47 secs
+2026/07/10 11:24:10 -- STARTING section number 334 (334 of 435) at z=29.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0334
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:24:38 -- acquired 21 tile positions in 28 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:25:57 -- FINISHED section number 334, section completed in 1 mins 46 secs
+2026/07/10 11:25:57 -- STARTING section number 335 (335 of 435) at z=29.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0335
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:26:22 -- acquired 21 tile positions in 25 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:27:40 -- FINISHED section number 335, section completed in 1 mins 44 secs
+2026/07/10 11:27:41 -- STARTING section number 336 (336 of 435) at z=29.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0336
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:28:06 -- acquired 21 tile positions in 25 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:29:25 -- FINISHED section number 336, section completed in 1 mins 44 secs
+2026/07/10 11:29:25 -- STARTING section number 337 (337 of 435) at z=29.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0337
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:29:50 -- acquired 19 tile positions in 25 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:31:09 -- FINISHED section number 337, section completed in 1 mins 44 secs
+2026/07/10 11:31:09 -- STARTING section number 338 (338 of 435) at z=29.7400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0338
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:31:30 -- acquired 18 tile positions in 22 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:32:49 -- FINISHED section number 338, section completed in 1 mins 40 secs
+2026/07/10 11:32:49 -- STARTING section number 339 (339 of 435) at z=29.7800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0339
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:33:14 -- acquired 18 tile positions in 25 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:34:33 -- FINISHED section number 339, section completed in 1 mins 44 secs
+2026/07/10 11:34:33 -- STARTING section number 340 (340 of 435) at z=29.8200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0340
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:34:54 -- acquired 18 tile positions in 22 secs
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:36:13 -- FINISHED section number 340, section completed in 1 mins 40 secs
+2026/07/10 11:36:13 -- STARTING section number 341 (341 of 435) at z=29.8600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0341
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:36:36 -- acquired 15 tile positions in 22 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 11:37:54 -- FINISHED section number 341, section completed in 1 mins 41 secs
+2026/07/10 11:37:54 -- STARTING section number 342 (342 of 435) at z=29.9000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0342
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:38:14 -- acquired 15 tile positions in 20 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:39:32 -- FINISHED section number 342, section completed in 1 mins 38 secs
+2026/07/10 11:39:32 -- STARTING section number 343 (343 of 435) at z=29.9400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0343
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:39:54 -- acquired 13 tile positions in 21 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:41:12 -- FINISHED section number 343, section completed in 1 mins 40 secs
+2026/07/10 11:41:12 -- STARTING section number 344 (344 of 435) at z=29.9800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0344
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12383mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:41:30 -- acquired 13 tile positions in 18 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:42:49 -- FINISHED section number 344, section completed in 1 mins 37 secs
+2026/07/10 11:42:49 -- STARTING section number 345 (345 of 435) at z=30.0200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0345
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12386mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:43:06 -- acquired 9 tile positions in 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:44:25 -- FINISHED section number 345, section completed in 1 mins 36 secs
+2026/07/10 11:44:25 -- STARTING section number 346 (346 of 435) at z=30.0600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0346
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:44:42 -- acquired 9 tile positions in 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:46:01 -- FINISHED section number 346, section completed in 1 mins 36 secs
+2026/07/10 11:46:01 -- STARTING section number 347 (347 of 435) at z=30.1000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0347
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:46:19 -- acquired 6 tile positions in 18 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:47:38 -- FINISHED section number 347, section completed in 1 mins 36 secs
+2026/07/10 11:47:38 -- STARTING section number 348 (348 of 435) at z=30.1400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0348
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:47:54 -- acquired 6 tile positions in 17 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:49:13 -- FINISHED section number 348, section completed in 1 mins 36 secs
+2026/07/10 11:49:13 -- STARTING section number 349 (349 of 435) at z=30.1800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0349
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:49:32 -- acquired 6 tile positions in 18 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:50:51 -- FINISHED section number 349, section completed in 1 mins 37 secs
+2026/07/10 11:50:51 -- STARTING section number 350 (350 of 435) at z=30.2200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0350
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:51:07 -- acquired 4 tile positions in 16 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:52:26 -- FINISHED section number 350, section completed in 1 mins 35 secs
+2026/07/10 11:52:26 -- STARTING section number 351 (351 of 435) at z=30.2600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0351
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:52:39 -- acquired 4 tile positions in 13 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:53:58 -- FINISHED section number 351, section completed in 1 mins 32 secs
+2026/07/10 11:53:58 -- STARTING section number 352 (352 of 435) at z=30.3000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0352
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 11:54:13 -- acquired 4 tile positions in 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:55:32 -- FINISHED section number 352, section completed in 1 mins 34 secs
+2026/07/10 11:55:32 -- STARTING section number 353 (353 of 435) at z=30.3400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0353
+laser status: wavelength=920nm,outputPower=1801mW,pumpPower=12381mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:55:46 -- acquired 4 tile positions in 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12377mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:57:05 -- FINISHED section number 353, section completed in 1 mins 33 secs
+2026/07/10 11:57:05 -- STARTING section number 354 (354 of 435) at z=30.3800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0354
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12376mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:57:19 -- acquired 4 tile positions in 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12385mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 11:58:37 -- FINISHED section number 354, section completed in 1 mins 33 secs
+2026/07/10 11:58:37 -- STARTING section number 355 (355 of 435) at z=30.4200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0355
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 11:58:49 -- acquired 4 tile positions in 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12380mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 12:00:08 -- FINISHED section number 355, section completed in 1 mins 30 secs
+2026/07/10 12:00:08 -- STARTING section number 356 (356 of 435) at z=30.4600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0356
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 12:00:22 -- acquired 4 tile positions in 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12384mW,pumpCurrent=96.2,humidity=2.1
+2026/07/10 12:01:41 -- FINISHED section number 356, section completed in 1 mins 33 secs
+2026/07/10 12:01:41 -- STARTING section number 357 (357 of 435) at z=30.5000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0357
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12381mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 12:01:52 -- acquired 4 tile positions in 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 12:03:11 -- FINISHED section number 357, section completed in 1 mins 30 secs
+2026/07/10 12:03:11 -- STARTING section number 358 (358 of 435) at z=30.5400 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0358
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 12:03:23 -- acquired 4 tile positions in 13 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 12:04:43 -- FINISHED section number 358, section completed in 1 mins 32 secs
+2026/07/10 12:04:43 -- STARTING section number 359 (359 of 435) at z=30.5800 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0359
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.1
+2026/07/10 12:04:57 -- acquired 4 tile positions in 14 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 12:06:16 -- FINISHED section number 359, section completed in 1 mins 33 secs
+2026/07/10 12:06:16 -- STARTING section number 360 (360 of 435) at z=30.6200 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0360
+laser status: wavelength=920nm,outputPower=1799mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 12:06:31 -- acquired 4 tile positions in 15 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.2,humidity=2.0
+2026/07/10 12:07:49 -- FINISHED section number 360, section completed in 1 mins 33 secs
+2026/07/10 12:07:49 -- STARTING section number 361 (361 of 435) at z=30.6600 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0361
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12378mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 12:08:01 -- acquired 4 tile positions in 12 secs
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12379mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 12:09:19 -- FINISHED section number 361, section completed in 1 mins 30 secs
+2026/07/10 12:09:20 -- STARTING section number 362 (362 of 435) at z=30.7000 in directory F:\ZFM-09377_09439_09772\rawData\ZFM-09377_09439_09772-0362
+laser status: wavelength=920nm,outputPower=1800mW,pumpPower=12382mW,pumpCurrent=96.4,humidity=2.0
+2026/07/10 12:09:29 -- Found no tissue in Section 362 during Bake. Quitting acquisition.
+Attempting to turn off laser

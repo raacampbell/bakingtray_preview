@@ -1,0 +1,1470 @@
+2026/10/09 16:12:43 -- STARTING NEW ACQUISITION
+Writing to volume D: which has 3054/7452 GB free
+Using laser: Spectra Physics,MaiTai,4918eV/51557/41355,0245-2.00.39 / CD00000019 / 214-00.004.095
+Using laser: Coherent Axon, Serial Number: 9919
+Acquiring with: ScanImage(R) Basic 2023.1.1 d280f35131 on MATLAB 9.11.0.2358333 (R2021b) Update 7
+Using BakingTray version abb77e8d1a4d7f6b0bc3ac5eafde833fa0192db1 from branch dev
+Acquiring sample with MaiTai (MaiTai) tuned to 920 nm
+Acquiring sample with Axon-1064 (Axon1064) tuned to 1064 nm
+LASER POWERS: MaiTai: 105.5 mW, Axon1064: 158.4 mW
+
+2026/10/09 16:12:43 -- STARTING section number 1 (1 of 208) at z=13.7399 in directory D:\RH_5050\rawData\RH_5050-0001
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12105mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:13:25 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:14:08 -- FINISHED section number 1, section completed in 1 mins 24 secs
+2026/10/09 16:14:08 -- STARTING section number 2 (2 of 208) at z=13.7900 in directory D:\RH_5050\rawData\RH_5050-0002
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 16:14:47 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:15:30 -- FINISHED section number 2, section completed in 1 mins 22 secs
+2026/10/09 16:15:30 -- STARTING section number 3 (3 of 208) at z=13.8399 in directory D:\RH_5050\rawData\RH_5050-0003
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12110mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:16:11 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:16:54 -- FINISHED section number 3, section completed in 1 mins 24 secs
+2026/10/09 16:16:54 -- STARTING section number 4 (4 of 208) at z=13.8900 in directory D:\RH_5050\rawData\RH_5050-0004
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:17:32 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:18:14 -- FINISHED section number 4, section completed in 1 mins 21 secs
+2026/10/09 16:18:15 -- STARTING section number 5 (5 of 208) at z=13.9399 in directory D:\RH_5050\rawData\RH_5050-0005
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:18:53 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:19:36 -- FINISHED section number 5, section completed in 1 mins 21 secs
+2026/10/09 16:19:36 -- STARTING section number 6 (6 of 208) at z=13.9900 in directory D:\RH_5050\rawData\RH_5050-0006
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12121mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:20:15 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12107mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:21:03 -- FINISHED section number 6, section completed in 1 mins 27 secs
+2026/10/09 16:21:03 -- STARTING section number 7 (7 of 208) at z=14.0401 in directory D:\RH_5050\rawData\RH_5050-0007
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:21:46 -- acquired 54 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:22:30 -- FINISHED section number 7, section completed in 1 mins 27 secs
+2026/10/09 16:22:30 -- STARTING section number 8 (8 of 208) at z=14.0900 in directory D:\RH_5050\rawData\RH_5050-0008
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:23:12 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:23:54 -- FINISHED section number 8, section completed in 1 mins 25 secs
+2026/10/09 16:23:54 -- STARTING section number 9 (9 of 208) at z=14.1401 in directory D:\RH_5050\rawData\RH_5050-0009
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:24:40 -- acquired 54 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12123mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:25:23 -- FINISHED section number 9, section completed in 1 mins 29 secs
+2026/10/09 16:25:23 -- STARTING section number 10 (10 of 208) at z=14.1900 in directory D:\RH_5050\rawData\RH_5050-0010
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:26:04 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:26:47 -- FINISHED section number 10, section completed in 1 mins 24 secs
+2026/10/09 16:26:47 -- STARTING section number 11 (11 of 208) at z=14.2401 in directory D:\RH_5050\rawData\RH_5050-0011
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:27:26 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:28:08 -- FINISHED section number 11, section completed in 1 mins 21 secs
+2026/10/09 16:28:08 -- STARTING section number 12 (12 of 208) at z=14.2900 in directory D:\RH_5050\rawData\RH_5050-0012
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:28:53 -- acquired 54 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12123mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:29:35 -- FINISHED section number 12, section completed in 1 mins 28 secs
+2026/10/09 16:29:35 -- STARTING section number 13 (13 of 208) at z=14.3401 in directory D:\RH_5050\rawData\RH_5050-0013
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:30:20 -- acquired 54 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:31:03 -- FINISHED section number 13, section completed in 1 mins 27 secs
+2026/10/09 16:31:03 -- STARTING section number 14 (14 of 208) at z=14.3900 in directory D:\RH_5050\rawData\RH_5050-0014
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:31:44 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:32:27 -- FINISHED section number 14, section completed in 1 mins 24 secs
+2026/10/09 16:32:27 -- STARTING section number 15 (15 of 208) at z=14.4401 in directory D:\RH_5050\rawData\RH_5050-0015
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:33:09 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12104mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:33:52 -- FINISHED section number 15, section completed in 1 mins 25 secs
+2026/10/09 16:33:52 -- STARTING section number 16 (16 of 208) at z=14.4900 in directory D:\RH_5050\rawData\RH_5050-0016
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12109mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:34:32 -- acquired 54 tile positions in 40 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:35:14 -- FINISHED section number 16, section completed in 1 mins 23 secs
+2026/10/09 16:35:14 -- STARTING section number 17 (17 of 208) at z=14.5401 in directory D:\RH_5050\rawData\RH_5050-0017
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12126mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 16:35:53 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12133mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:36:36 -- FINISHED section number 17, section completed in 1 mins 21 secs
+2026/10/09 16:36:36 -- STARTING section number 18 (18 of 208) at z=14.5900 in directory D:\RH_5050\rawData\RH_5050-0018
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12131mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:37:16 -- acquired 54 tile positions in 40 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:37:58 -- FINISHED section number 18, section completed in 1 mins 23 secs
+2026/10/09 16:37:58 -- STARTING section number 19 (19 of 208) at z=14.6401 in directory D:\RH_5050\rawData\RH_5050-0019
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:38:40 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12106mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:39:22 -- FINISHED section number 19, section completed in 1 mins 24 secs
+2026/10/09 16:39:22 -- STARTING section number 20 (20 of 208) at z=14.6899 in directory D:\RH_5050\rawData\RH_5050-0020
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:40:01 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12123mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:40:44 -- FINISHED section number 20, section completed in 1 mins 22 secs
+2026/10/09 16:40:44 -- STARTING section number 21 (21 of 208) at z=14.7400 in directory D:\RH_5050\rawData\RH_5050-0021
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12126mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:41:25 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:42:08 -- FINISHED section number 21, section completed in 1 mins 25 secs
+2026/10/09 16:42:08 -- STARTING section number 22 (22 of 208) at z=14.7899 in directory D:\RH_5050\rawData\RH_5050-0022
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:42:50 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12106mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 16:43:32 -- FINISHED section number 22, section completed in 1 mins 24 secs
+2026/10/09 16:43:32 -- STARTING section number 23 (23 of 208) at z=14.8400 in directory D:\RH_5050\rawData\RH_5050-0023
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12109mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:44:12 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:44:54 -- FINISHED section number 23, section completed in 1 mins 21 secs
+2026/10/09 16:44:54 -- STARTING section number 24 (24 of 208) at z=14.8899 in directory D:\RH_5050\rawData\RH_5050-0024
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:45:34 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1571mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:46:17 -- FINISHED section number 24, section completed in 1 mins 23 secs
+2026/10/09 16:46:17 -- STARTING section number 25 (25 of 208) at z=14.9400 in directory D:\RH_5050\rawData\RH_5050-0025
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:46:57 -- acquired 54 tile positions in 40 secs
+laser status: wavelength=920nm,outputPower=1571mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:47:44 -- FINISHED section number 25, section completed in 1 mins 28 secs
+2026/10/09 16:47:44 -- STARTING section number 26 (26 of 208) at z=14.9899 in directory D:\RH_5050\rawData\RH_5050-0026
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:48:25 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:49:08 -- FINISHED section number 26, section completed in 1 mins 23 secs
+2026/10/09 16:49:08 -- STARTING section number 27 (27 of 208) at z=15.0400 in directory D:\RH_5050\rawData\RH_5050-0027
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:49:48 -- acquired 54 tile positions in 40 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12105mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:50:30 -- FINISHED section number 27, section completed in 1 mins 22 secs
+2026/10/09 16:50:30 -- STARTING section number 28 (28 of 208) at z=15.0899 in directory D:\RH_5050\rawData\RH_5050-0028
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12128mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:51:09 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12136mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:51:51 -- FINISHED section number 28, section completed in 1 mins 21 secs
+2026/10/09 16:51:51 -- STARTING section number 29 (29 of 208) at z=15.1400 in directory D:\RH_5050\rawData\RH_5050-0029
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12135mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:52:33 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:53:17 -- FINISHED section number 29, section completed in 1 mins 25 secs
+2026/10/09 16:53:17 -- STARTING section number 30 (30 of 208) at z=15.1899 in directory D:\RH_5050\rawData\RH_5050-0030
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:53:58 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1571mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:54:40 -- FINISHED section number 30, section completed in 1 mins 23 secs
+2026/10/09 16:54:40 -- STARTING section number 31 (31 of 208) at z=15.2400 in directory D:\RH_5050\rawData\RH_5050-0031
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:55:19 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:56:01 -- FINISHED section number 31, section completed in 1 mins 21 secs
+2026/10/09 16:56:01 -- STARTING section number 32 (32 of 208) at z=15.2899 in directory D:\RH_5050\rawData\RH_5050-0032
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12103mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:56:40 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:57:23 -- FINISHED section number 32, section completed in 1 mins 22 secs
+2026/10/09 16:57:23 -- STARTING section number 33 (33 of 208) at z=15.3400 in directory D:\RH_5050\rawData\RH_5050-0033
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:58:08 -- acquired 60 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 16:58:50 -- FINISHED section number 33, section completed in 1 mins 27 secs
+2026/10/09 16:58:50 -- STARTING section number 34 (34 of 208) at z=15.3901 in directory D:\RH_5050\rawData\RH_5050-0034
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 16:59:33 -- acquired 60 tile positions in 43 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12108mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:00:20 -- FINISHED section number 34, section completed in 1 mins 30 secs
+2026/10/09 17:00:20 -- STARTING section number 35 (35 of 208) at z=15.4400 in directory D:\RH_5050\rawData\RH_5050-0035
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:01:04 -- acquired 60 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12106mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:01:47 -- FINISHED section number 35, section completed in 1 mins 27 secs
+2026/10/09 17:01:47 -- STARTING section number 36 (36 of 208) at z=15.4901 in directory D:\RH_5050\rawData\RH_5050-0036
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:02:32 -- acquired 60 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12105mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:03:14 -- FINISHED section number 36, section completed in 1 mins 27 secs
+2026/10/09 17:03:14 -- STARTING section number 37 (37 of 208) at z=15.5400 in directory D:\RH_5050\rawData\RH_5050-0037
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:03:58 -- acquired 60 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:04:40 -- FINISHED section number 37, section completed in 1 mins 26 secs
+2026/10/09 17:04:40 -- STARTING section number 38 (38 of 208) at z=15.5901 in directory D:\RH_5050\rawData\RH_5050-0038
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:05:25 -- acquired 60 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:06:08 -- FINISHED section number 38, section completed in 1 mins 27 secs
+2026/10/09 17:06:08 -- STARTING section number 39 (39 of 208) at z=15.6400 in directory D:\RH_5050\rawData\RH_5050-0039
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:06:59 -- acquired 60 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12124mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:07:41 -- FINISHED section number 39, section completed in 1 mins 33 secs
+2026/10/09 17:07:41 -- STARTING section number 40 (40 of 208) at z=15.6901 in directory D:\RH_5050\rawData\RH_5050-0040
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:08:26 -- acquired 60 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12127mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:09:08 -- FINISHED section number 40, section completed in 1 mins 27 secs
+2026/10/09 17:09:08 -- STARTING section number 41 (41 of 208) at z=15.7400 in directory D:\RH_5050\rawData\RH_5050-0041
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12134mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:09:53 -- acquired 60 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12106mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:10:34 -- FINISHED section number 41, section completed in 1 mins 26 secs
+2026/10/09 17:10:34 -- STARTING section number 42 (42 of 208) at z=15.7901 in directory D:\RH_5050\rawData\RH_5050-0042
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:11:19 -- acquired 60 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:12:01 -- FINISHED section number 42, section completed in 1 mins 26 secs
+2026/10/09 17:12:01 -- STARTING section number 43 (43 of 208) at z=15.8400 in directory D:\RH_5050\rawData\RH_5050-0043
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:12:47 -- acquired 60 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:13:33 -- FINISHED section number 43, section completed in 1 mins 32 secs
+2026/10/09 17:13:33 -- STARTING section number 44 (44 of 208) at z=15.8901 in directory D:\RH_5050\rawData\RH_5050-0044
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12098mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:14:18 -- acquired 60 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:15:00 -- FINISHED section number 44, section completed in 1 mins 27 secs
+2026/10/09 17:15:00 -- STARTING section number 45 (45 of 208) at z=15.9400 in directory D:\RH_5050\rawData\RH_5050-0045
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:15:46 -- acquired 60 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:16:28 -- FINISHED section number 45, section completed in 1 mins 28 secs
+2026/10/09 17:16:28 -- STARTING section number 46 (46 of 208) at z=15.9901 in directory D:\RH_5050\rawData\RH_5050-0046
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:17:12 -- acquired 60 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12122mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:17:54 -- FINISHED section number 46, section completed in 1 mins 26 secs
+2026/10/09 17:17:54 -- STARTING section number 47 (47 of 208) at z=16.0399 in directory D:\RH_5050\rawData\RH_5050-0047
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12126mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:18:40 -- acquired 60 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12121mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:19:22 -- FINISHED section number 47, section completed in 1 mins 28 secs
+2026/10/09 17:19:22 -- STARTING section number 48 (48 of 208) at z=16.0900 in directory D:\RH_5050\rawData\RH_5050-0048
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12122mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:20:09 -- acquired 60 tile positions in 47 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:20:52 -- FINISHED section number 48, section completed in 1 mins 30 secs
+2026/10/09 17:20:52 -- STARTING section number 49 (49 of 208) at z=16.1399 in directory D:\RH_5050\rawData\RH_5050-0049
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:21:38 -- acquired 60 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:22:20 -- FINISHED section number 49, section completed in 1 mins 28 secs
+2026/10/09 17:22:20 -- STARTING section number 50 (50 of 208) at z=16.1900 in directory D:\RH_5050\rawData\RH_5050-0050
+laser status: wavelength=920nm,outputPower=1570mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:23:04 -- acquired 60 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:23:46 -- FINISHED section number 50, section completed in 1 mins 26 secs
+2026/10/09 17:23:46 -- STARTING section number 51 (51 of 208) at z=16.2399 in directory D:\RH_5050\rawData\RH_5050-0051
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:24:30 -- acquired 60 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12125mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:25:13 -- FINISHED section number 51, section completed in 1 mins 27 secs
+2026/10/09 17:25:13 -- STARTING section number 52 (52 of 208) at z=16.2900 in directory D:\RH_5050\rawData\RH_5050-0052
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12144mW,pumpCurrent=95.6,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:25:59 -- acquired 60 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:26:41 -- FINISHED section number 52, section completed in 1 mins 28 secs
+2026/10/09 17:26:41 -- STARTING section number 53 (53 of 208) at z=16.3399 in directory D:\RH_5050\rawData\RH_5050-0053
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:27:27 -- acquired 60 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:28:09 -- FINISHED section number 53, section completed in 1 mins 27 secs
+2026/10/09 17:28:09 -- STARTING section number 54 (54 of 208) at z=16.3900 in directory D:\RH_5050\rawData\RH_5050-0054
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.4,humidity=1.6
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:28:58 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:29:39 -- FINISHED section number 54, section completed in 1 mins 31 secs
+2026/10/09 17:29:39 -- STARTING section number 55 (55 of 208) at z=16.4399 in directory D:\RH_5050\rawData\RH_5050-0055
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:30:30 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:31:12 -- FINISHED section number 55, section completed in 1 mins 33 secs
+2026/10/09 17:31:12 -- STARTING section number 56 (56 of 208) at z=16.4900 in directory D:\RH_5050\rawData\RH_5050-0056
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12120mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:32:05 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:32:47 -- FINISHED section number 56, section completed in 1 mins 35 secs
+2026/10/09 17:32:47 -- STARTING section number 57 (57 of 208) at z=16.5399 in directory D:\RH_5050\rawData\RH_5050-0057
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:33:34 -- acquired 60 tile positions in 47 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:34:16 -- FINISHED section number 57, section completed in 1 mins 29 secs
+2026/10/09 17:34:16 -- STARTING section number 58 (58 of 208) at z=16.5900 in directory D:\RH_5050\rawData\RH_5050-0058
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:35:01 -- acquired 60 tile positions in 45 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12125mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:35:42 -- FINISHED section number 58, section completed in 1 mins 26 secs
+2026/10/09 17:35:42 -- STARTING section number 59 (59 of 208) at z=16.6399 in directory D:\RH_5050\rawData\RH_5050-0059
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12129mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:36:28 -- acquired 60 tile positions in 46 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:37:10 -- FINISHED section number 59, section completed in 1 mins 27 secs
+2026/10/09 17:37:10 -- STARTING section number 60 (60 of 208) at z=16.6900 in directory D:\RH_5050\rawData\RH_5050-0060
+laser status: wavelength=920nm,outputPower=1565mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:37:53 -- acquired 60 tile positions in 43 secs
+laser status: wavelength=920nm,outputPower=1565mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:38:35 -- FINISHED section number 60, section completed in 1 mins 25 secs
+2026/10/09 17:38:35 -- STARTING section number 61 (61 of 208) at z=16.7401 in directory D:\RH_5050\rawData\RH_5050-0061
+laser status: wavelength=920nm,outputPower=1565mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:39:27 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1564mW,pumpPower=12105mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:40:09 -- FINISHED section number 61, section completed in 1 mins 34 secs
+2026/10/09 17:40:09 -- STARTING section number 62 (62 of 208) at z=16.7900 in directory D:\RH_5050\rawData\RH_5050-0062
+laser status: wavelength=920nm,outputPower=1565mW,pumpPower=12108mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:41:02 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1565mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:41:44 -- FINISHED section number 62, section completed in 1 mins 35 secs
+2026/10/09 17:41:44 -- STARTING section number 63 (63 of 208) at z=16.8401 in directory D:\RH_5050\rawData\RH_5050-0063
+laser status: wavelength=920nm,outputPower=1565mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:42:37 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12110mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:43:24 -- FINISHED section number 63, section completed in 1 mins 40 secs
+2026/10/09 17:43:24 -- STARTING section number 64 (64 of 208) at z=16.8900 in directory D:\RH_5050\rawData\RH_5050-0064
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:44:29 -- acquired 70 tile positions in 1 mins 5 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:45:11 -- FINISHED section number 64, section completed in 1 mins 47 secs
+2026/10/09 17:45:11 -- STARTING section number 65 (65 of 208) at z=16.9401 in directory D:\RH_5050\rawData\RH_5050-0065
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:46:01 -- acquired 70 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12108mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:46:43 -- FINISHED section number 65, section completed in 1 mins 32 secs
+2026/10/09 17:46:43 -- STARTING section number 66 (66 of 208) at z=16.9900 in directory D:\RH_5050\rawData\RH_5050-0066
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12108mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:47:32 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12107mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:48:14 -- FINISHED section number 66, section completed in 1 mins 31 secs
+2026/10/09 17:48:14 -- STARTING section number 67 (67 of 208) at z=17.0401 in directory D:\RH_5050\rawData\RH_5050-0067
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12103mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:49:05 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:49:47 -- FINISHED section number 67, section completed in 1 mins 33 secs
+2026/10/09 17:49:47 -- STARTING section number 68 (68 of 208) at z=17.0900 in directory D:\RH_5050\rawData\RH_5050-0068
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12121mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:50:39 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12128mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:51:21 -- FINISHED section number 68, section completed in 1 mins 34 secs
+2026/10/09 17:51:21 -- STARTING section number 69 (69 of 208) at z=17.1401 in directory D:\RH_5050\rawData\RH_5050-0069
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12123mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:52:15 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:52:57 -- FINISHED section number 69, section completed in 1 mins 35 secs
+2026/10/09 17:52:57 -- STARTING section number 70 (70 of 208) at z=17.1900 in directory D:\RH_5050\rawData\RH_5050-0070
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:53:49 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:54:31 -- FINISHED section number 70, section completed in 1 mins 34 secs
+2026/10/09 17:54:31 -- STARTING section number 71 (71 of 208) at z=17.2401 in directory D:\RH_5050\rawData\RH_5050-0071
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:55:21 -- acquired 70 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:56:03 -- FINISHED section number 71, section completed in 1 mins 32 secs
+2026/10/09 17:56:03 -- STARTING section number 72 (72 of 208) at z=17.2900 in directory D:\RH_5050\rawData\RH_5050-0072
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:57:00 -- acquired 70 tile positions in 57 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:57:47 -- FINISHED section number 72, section completed in 1 mins 44 secs
+2026/10/09 17:57:47 -- STARTING section number 73 (73 of 208) at z=17.3401 in directory D:\RH_5050\rawData\RH_5050-0073
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:58:36 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 17:59:18 -- FINISHED section number 73, section completed in 1 mins 31 secs
+2026/10/09 17:59:18 -- STARTING section number 74 (74 of 208) at z=17.3899 in directory D:\RH_5050\rawData\RH_5050-0074
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:00:11 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12110mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:00:53 -- FINISHED section number 74, section completed in 1 mins 34 secs
+2026/10/09 18:00:53 -- STARTING section number 75 (75 of 208) at z=17.4401 in directory D:\RH_5050\rawData\RH_5050-0075
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:01:45 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:02:27 -- FINISHED section number 75, section completed in 1 mins 34 secs
+2026/10/09 18:02:27 -- STARTING section number 76 (76 of 208) at z=17.4899 in directory D:\RH_5050\rawData\RH_5050-0076
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:03:19 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:04:02 -- FINISHED section number 76, section completed in 1 mins 35 secs
+2026/10/09 18:04:02 -- STARTING section number 77 (77 of 208) at z=17.5400 in directory D:\RH_5050\rawData\RH_5050-0077
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:04:59 -- acquired 70 tile positions in 57 secs
+laser status: wavelength=920nm,outputPower=1569mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:05:41 -- FINISHED section number 77, section completed in 1 mins 39 secs
+2026/10/09 18:05:41 -- STARTING section number 78 (78 of 208) at z=17.5899 in directory D:\RH_5050\rawData\RH_5050-0078
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:06:33 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:07:15 -- FINISHED section number 78, section completed in 1 mins 34 secs
+2026/10/09 18:07:15 -- STARTING section number 79 (79 of 208) at z=17.6400 in directory D:\RH_5050\rawData\RH_5050-0079
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12099mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:08:09 -- acquired 70 tile positions in 54 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:08:51 -- FINISHED section number 79, section completed in 1 mins 36 secs
+2026/10/09 18:08:51 -- STARTING section number 80 (80 of 208) at z=17.6899 in directory D:\RH_5050\rawData\RH_5050-0080
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:09:41 -- acquired 70 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:10:23 -- FINISHED section number 80, section completed in 1 mins 32 secs
+2026/10/09 18:10:23 -- STARTING section number 81 (81 of 208) at z=17.7400 in directory D:\RH_5050\rawData\RH_5050-0081
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:11:13 -- acquired 70 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:11:55 -- FINISHED section number 81, section completed in 1 mins 32 secs
+2026/10/09 18:11:55 -- STARTING section number 82 (82 of 208) at z=17.7899 in directory D:\RH_5050\rawData\RH_5050-0082
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 18:12:45 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:13:33 -- FINISHED section number 82, section completed in 1 mins 38 secs
+2026/10/09 18:13:33 -- STARTING section number 83 (83 of 208) at z=17.8400 in directory D:\RH_5050\rawData\RH_5050-0083
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:14:23 -- acquired 70 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12107mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:15:10 -- FINISHED section number 83, section completed in 1 mins 37 secs
+2026/10/09 18:15:10 -- STARTING section number 84 (84 of 208) at z=17.8899 in directory D:\RH_5050\rawData\RH_5050-0084
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12130mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:16:03 -- acquired 70 tile positions in 54 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:16:45 -- FINISHED section number 84, section completed in 1 mins 36 secs
+2026/10/09 18:16:45 -- STARTING section number 85 (85 of 208) at z=17.9400 in directory D:\RH_5050\rawData\RH_5050-0085
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:17:34 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:18:16 -- FINISHED section number 85, section completed in 1 mins 31 secs
+2026/10/09 18:18:16 -- STARTING section number 86 (86 of 208) at z=17.9899 in directory D:\RH_5050\rawData\RH_5050-0086
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:19:08 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:19:50 -- FINISHED section number 86, section completed in 1 mins 34 secs
+2026/10/09 18:19:50 -- STARTING section number 87 (87 of 208) at z=18.0400 in directory D:\RH_5050\rawData\RH_5050-0087
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:20:39 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 18:21:21 -- FINISHED section number 87, section completed in 1 mins 31 secs
+2026/10/09 18:21:21 -- STARTING section number 88 (88 of 208) at z=18.0899 in directory D:\RH_5050\rawData\RH_5050-0088
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:22:10 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:22:52 -- FINISHED section number 88, section completed in 1 mins 31 secs
+2026/10/09 18:22:52 -- STARTING section number 89 (89 of 208) at z=18.1400 in directory D:\RH_5050\rawData\RH_5050-0089
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:23:49 -- acquired 70 tile positions in 57 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:24:31 -- FINISHED section number 89, section completed in 1 mins 39 secs
+2026/10/09 18:24:31 -- STARTING section number 90 (90 of 208) at z=18.1901 in directory D:\RH_5050\rawData\RH_5050-0090
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12107mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:25:20 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:26:02 -- FINISHED section number 90, section completed in 1 mins 31 secs
+2026/10/09 18:26:02 -- STARTING section number 91 (91 of 208) at z=18.2400 in directory D:\RH_5050\rawData\RH_5050-0091
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12106mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:26:55 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12127mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:27:37 -- FINISHED section number 91, section completed in 1 mins 35 secs
+2026/10/09 18:27:37 -- STARTING section number 92 (92 of 208) at z=18.2901 in directory D:\RH_5050\rawData\RH_5050-0092
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:28:30 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:29:12 -- FINISHED section number 92, section completed in 1 mins 35 secs
+2026/10/09 18:29:12 -- STARTING section number 93 (93 of 208) at z=18.3400 in directory D:\RH_5050\rawData\RH_5050-0093
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:30:05 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12129mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:30:47 -- FINISHED section number 93, section completed in 1 mins 35 secs
+2026/10/09 18:30:47 -- STARTING section number 94 (94 of 208) at z=18.3901 in directory D:\RH_5050\rawData\RH_5050-0094
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12126mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:31:39 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:32:21 -- FINISHED section number 94, section completed in 1 mins 34 secs
+2026/10/09 18:32:21 -- STARTING section number 95 (95 of 208) at z=18.4400 in directory D:\RH_5050\rawData\RH_5050-0095
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:33:14 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:33:56 -- FINISHED section number 95, section completed in 1 mins 35 secs
+2026/10/09 18:33:56 -- STARTING section number 96 (96 of 208) at z=18.4901 in directory D:\RH_5050\rawData\RH_5050-0096
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:34:48 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:35:30 -- FINISHED section number 96, section completed in 1 mins 34 secs
+2026/10/09 18:35:30 -- STARTING section number 97 (97 of 208) at z=18.5400 in directory D:\RH_5050\rawData\RH_5050-0097
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:36:22 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:37:04 -- FINISHED section number 97, section completed in 1 mins 34 secs
+2026/10/09 18:37:04 -- STARTING section number 98 (98 of 208) at z=18.5901 in directory D:\RH_5050\rawData\RH_5050-0098
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:37:53 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:38:35 -- FINISHED section number 98, section completed in 1 mins 32 secs
+2026/10/09 18:38:35 -- STARTING section number 99 (99 of 208) at z=18.6400 in directory D:\RH_5050\rawData\RH_5050-0099
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:39:31 -- acquired 70 tile positions in 55 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:40:13 -- FINISHED section number 99, section completed in 1 mins 37 secs
+2026/10/09 18:40:13 -- STARTING section number 100 (100 of 208) at z=18.6901 in directory D:\RH_5050\rawData\RH_5050-0100
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12101mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:41:05 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:41:47 -- FINISHED section number 100, section completed in 1 mins 34 secs
+2026/10/09 18:41:47 -- STARTING section number 101 (101 of 208) at z=18.7400 in directory D:\RH_5050\rawData\RH_5050-0101
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:42:38 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 18:43:20 -- FINISHED section number 101, section completed in 1 mins 34 secs
+2026/10/09 18:43:20 -- STARTING section number 102 (102 of 208) at z=18.7901 in directory D:\RH_5050\rawData\RH_5050-0102
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:44:11 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:44:53 -- FINISHED section number 102, section completed in 1 mins 33 secs
+2026/10/09 18:44:53 -- STARTING section number 103 (103 of 208) at z=18.8399 in directory D:\RH_5050\rawData\RH_5050-0103
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12122mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:45:47 -- acquired 70 tile positions in 54 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:46:29 -- FINISHED section number 103, section completed in 1 mins 36 secs
+2026/10/09 18:46:30 -- STARTING section number 104 (104 of 208) at z=18.8900 in directory D:\RH_5050\rawData\RH_5050-0104
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:47:21 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12124mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:48:04 -- FINISHED section number 104, section completed in 1 mins 34 secs
+2026/10/09 18:48:04 -- STARTING section number 105 (105 of 208) at z=18.9399 in directory D:\RH_5050\rawData\RH_5050-0105
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12123mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:48:56 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:49:38 -- FINISHED section number 105, section completed in 1 mins 34 secs
+2026/10/09 18:49:38 -- STARTING section number 106 (106 of 208) at z=18.9900 in directory D:\RH_5050\rawData\RH_5050-0106
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:50:27 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:51:09 -- FINISHED section number 106, section completed in 1 mins 31 secs
+2026/10/09 18:51:09 -- STARTING section number 107 (107 of 208) at z=19.0399 in directory D:\RH_5050\rawData\RH_5050-0107
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:52:00 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12104mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:52:42 -- FINISHED section number 107, section completed in 1 mins 33 secs
+2026/10/09 18:52:42 -- STARTING section number 108 (108 of 208) at z=19.0900 in directory D:\RH_5050\rawData\RH_5050-0108
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:53:34 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:54:16 -- FINISHED section number 108, section completed in 1 mins 34 secs
+2026/10/09 18:54:16 -- STARTING section number 109 (109 of 208) at z=19.1399 in directory D:\RH_5050\rawData\RH_5050-0109
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12104mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:55:07 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:55:49 -- FINISHED section number 109, section completed in 1 mins 32 secs
+2026/10/09 18:55:49 -- STARTING section number 110 (110 of 208) at z=19.1900 in directory D:\RH_5050\rawData\RH_5050-0110
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:56:38 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:57:20 -- FINISHED section number 110, section completed in 1 mins 31 secs
+2026/10/09 18:57:20 -- STARTING section number 111 (111 of 208) at z=19.2399 in directory D:\RH_5050\rawData\RH_5050-0111
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:58:12 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:58:54 -- FINISHED section number 111, section completed in 1 mins 34 secs
+2026/10/09 18:58:54 -- STARTING section number 112 (112 of 208) at z=19.2900 in directory D:\RH_5050\rawData\RH_5050-0112
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 18:59:46 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:00:28 -- FINISHED section number 112, section completed in 1 mins 34 secs
+2026/10/09 19:00:28 -- STARTING section number 113 (113 of 208) at z=19.3399 in directory D:\RH_5050\rawData\RH_5050-0113
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:01:21 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:02:03 -- FINISHED section number 113, section completed in 1 mins 35 secs
+2026/10/09 19:02:03 -- STARTING section number 114 (114 of 208) at z=19.3900 in directory D:\RH_5050\rawData\RH_5050-0114
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:02:55 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:03:37 -- FINISHED section number 114, section completed in 1 mins 34 secs
+2026/10/09 19:03:37 -- STARTING section number 115 (115 of 208) at z=19.4399 in directory D:\RH_5050\rawData\RH_5050-0115
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:04:27 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:05:09 -- FINISHED section number 115, section completed in 1 mins 31 secs
+2026/10/09 19:05:09 -- STARTING section number 116 (116 of 208) at z=19.4900 in directory D:\RH_5050\rawData\RH_5050-0116
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:05:58 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12108mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:06:40 -- FINISHED section number 116, section completed in 1 mins 31 secs
+2026/10/09 19:06:40 -- STARTING section number 117 (117 of 208) at z=19.5401 in directory D:\RH_5050\rawData\RH_5050-0117
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:07:29 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:08:11 -- FINISHED section number 117, section completed in 1 mins 31 secs
+2026/10/09 19:08:11 -- STARTING section number 118 (118 of 208) at z=19.5900 in directory D:\RH_5050\rawData\RH_5050-0118
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:09:02 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:09:44 -- FINISHED section number 118, section completed in 1 mins 33 secs
+2026/10/09 19:09:44 -- STARTING section number 119 (119 of 208) at z=19.6401 in directory D:\RH_5050\rawData\RH_5050-0119
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:10:36 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12104mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:11:18 -- FINISHED section number 119, section completed in 1 mins 34 secs
+2026/10/09 19:11:18 -- STARTING section number 120 (120 of 208) at z=19.6900 in directory D:\RH_5050\rawData\RH_5050-0120
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:12:09 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12121mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:12:52 -- FINISHED section number 120, section completed in 1 mins 33 secs
+2026/10/09 19:12:52 -- STARTING section number 121 (121 of 208) at z=19.7401 in directory D:\RH_5050\rawData\RH_5050-0121
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:13:45 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:14:27 -- FINISHED section number 121, section completed in 1 mins 35 secs
+2026/10/09 19:14:27 -- STARTING section number 122 (122 of 208) at z=19.7900 in directory D:\RH_5050\rawData\RH_5050-0122
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:15:19 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:16:01 -- FINISHED section number 122, section completed in 1 mins 34 secs
+2026/10/09 19:16:01 -- STARTING section number 123 (123 of 208) at z=19.8401 in directory D:\RH_5050\rawData\RH_5050-0123
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:16:51 -- acquired 70 tile positions in 50 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:17:33 -- FINISHED section number 123, section completed in 1 mins 32 secs
+2026/10/09 19:17:33 -- STARTING section number 124 (124 of 208) at z=19.8900 in directory D:\RH_5050\rawData\RH_5050-0124
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12107mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:18:22 -- acquired 70 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:19:04 -- FINISHED section number 124, section completed in 1 mins 31 secs
+2026/10/09 19:19:04 -- STARTING section number 125 (125 of 208) at z=19.9401 in directory D:\RH_5050\rawData\RH_5050-0125
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:19:55 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:20:37 -- FINISHED section number 125, section completed in 1 mins 33 secs
+2026/10/09 19:20:37 -- STARTING section number 126 (126 of 208) at z=19.9900 in directory D:\RH_5050\rawData\RH_5050-0126
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:21:30 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:22:18 -- FINISHED section number 126, section completed in 1 mins 40 secs
+2026/10/09 19:22:18 -- STARTING section number 127 (127 of 208) at z=20.0401 in directory D:\RH_5050\rawData\RH_5050-0127
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:23:10 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:23:53 -- FINISHED section number 127, section completed in 1 mins 35 secs
+2026/10/09 19:23:53 -- STARTING section number 128 (128 of 208) at z=20.0900 in directory D:\RH_5050\rawData\RH_5050-0128
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:24:45 -- acquired 70 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:25:27 -- FINISHED section number 128, section completed in 1 mins 35 secs
+2026/10/09 19:25:27 -- STARTING section number 129 (129 of 208) at z=20.1401 in directory D:\RH_5050\rawData\RH_5050-0129
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12124mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 19:26:18 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 19:27:00 -- FINISHED section number 129, section completed in 1 mins 33 secs
+2026/10/09 19:27:00 -- STARTING section number 130 (130 of 208) at z=20.1899 in directory D:\RH_5050\rawData\RH_5050-0130
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 19:27:51 -- acquired 70 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:28:33 -- FINISHED section number 130, section completed in 1 mins 33 secs
+2026/10/09 19:28:33 -- STARTING section number 131 (131 of 208) at z=20.2400 in directory D:\RH_5050\rawData\RH_5050-0131
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12104mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:29:25 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 19:30:07 -- FINISHED section number 131, section completed in 1 mins 34 secs
+2026/10/09 19:30:07 -- STARTING section number 132 (132 of 208) at z=20.2899 in directory D:\RH_5050\rawData\RH_5050-0132
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12110mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:30:59 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:31:41 -- FINISHED section number 132, section completed in 1 mins 34 secs
+2026/10/09 19:31:41 -- STARTING section number 133 (133 of 208) at z=20.3400 in directory D:\RH_5050\rawData\RH_5050-0133
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:32:32 -- acquired 70 tile positions in 52 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:33:15 -- FINISHED section number 133, section completed in 1 mins 34 secs
+2026/10/09 19:33:15 -- STARTING section number 134 (134 of 208) at z=20.3899 in directory D:\RH_5050\rawData\RH_5050-0134
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:34:02 -- acquired 63 tile positions in 47 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:34:45 -- FINISHED section number 134, section completed in 1 mins 30 secs
+2026/10/09 19:34:45 -- STARTING section number 135 (135 of 208) at z=20.4400 in directory D:\RH_5050\rawData\RH_5050-0135
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:35:34 -- acquired 63 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:36:17 -- FINISHED section number 135, section completed in 1 mins 32 secs
+2026/10/09 19:36:17 -- STARTING section number 136 (136 of 208) at z=20.4899 in directory D:\RH_5050\rawData\RH_5050-0136
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:37:05 -- acquired 63 tile positions in 48 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:37:47 -- FINISHED section number 136, section completed in 1 mins 31 secs
+2026/10/09 19:37:47 -- STARTING section number 137 (137 of 208) at z=20.5400 in directory D:\RH_5050\rawData\RH_5050-0137
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:38:35 -- acquired 63 tile positions in 47 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12129mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:39:17 -- FINISHED section number 137, section completed in 1 mins 30 secs
+2026/10/09 19:39:17 -- STARTING section number 138 (138 of 208) at z=20.5899 in directory D:\RH_5050\rawData\RH_5050-0138
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:40:05 -- acquired 63 tile positions in 48 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:40:48 -- FINISHED section number 138, section completed in 1 mins 31 secs
+2026/10/09 19:40:48 -- STARTING section number 139 (139 of 208) at z=20.6400 in directory D:\RH_5050\rawData\RH_5050-0139
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12105mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:41:37 -- acquired 63 tile positions in 49 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3346mW,state=lasing
+2026/10/09 19:42:20 -- FINISHED section number 139, section completed in 1 mins 32 secs
+2026/10/09 19:42:20 -- STARTING section number 140 (140 of 208) at z=20.6899 in directory D:\RH_5050\rawData\RH_5050-0140
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 19:43:02 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:43:45 -- FINISHED section number 140, section completed in 1 mins 25 secs
+2026/10/09 19:43:45 -- STARTING section number 141 (141 of 208) at z=20.7400 in directory D:\RH_5050\rawData\RH_5050-0141
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:44:27 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12101mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:45:09 -- FINISHED section number 141, section completed in 1 mins 24 secs
+2026/10/09 19:45:09 -- STARTING section number 142 (142 of 208) at z=20.7899 in directory D:\RH_5050\rawData\RH_5050-0142
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12098mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:45:52 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:46:34 -- FINISHED section number 142, section completed in 1 mins 25 secs
+2026/10/09 19:46:34 -- STARTING section number 143 (143 of 208) at z=20.8400 in directory D:\RH_5050\rawData\RH_5050-0143
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:47:18 -- acquired 54 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12125mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:48:00 -- FINISHED section number 143, section completed in 1 mins 26 secs
+2026/10/09 19:48:00 -- STARTING section number 144 (144 of 208) at z=20.8901 in directory D:\RH_5050\rawData\RH_5050-0144
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12121mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:48:41 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:49:24 -- FINISHED section number 144, section completed in 1 mins 23 secs
+2026/10/09 19:49:24 -- STARTING section number 145 (145 of 208) at z=20.9400 in directory D:\RH_5050\rawData\RH_5050-0145
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:50:06 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:50:48 -- FINISHED section number 145, section completed in 1 mins 24 secs
+2026/10/09 19:50:48 -- STARTING section number 146 (146 of 208) at z=20.9901 in directory D:\RH_5050\rawData\RH_5050-0146
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:51:28 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12126mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:52:10 -- FINISHED section number 146, section completed in 1 mins 22 secs
+2026/10/09 19:52:10 -- STARTING section number 147 (147 of 208) at z=21.0400 in directory D:\RH_5050\rawData\RH_5050-0147
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12124mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:52:54 -- acquired 54 tile positions in 44 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:53:36 -- FINISHED section number 147, section completed in 1 mins 26 secs
+2026/10/09 19:53:36 -- STARTING section number 148 (148 of 208) at z=21.0901 in directory D:\RH_5050\rawData\RH_5050-0148
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=not lasing
+2026/10/09 19:54:27 -- acquired 54 tile positions in 51 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12104mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:55:09 -- FINISHED section number 148, section completed in 1 mins 33 secs
+2026/10/09 19:55:09 -- STARTING section number 149 (149 of 208) at z=21.1400 in directory D:\RH_5050\rawData\RH_5050-0149
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12107mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:55:48 -- acquired 54 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:56:31 -- FINISHED section number 149, section completed in 1 mins 22 secs
+2026/10/09 19:56:31 -- STARTING section number 150 (150 of 208) at z=21.1901 in directory D:\RH_5050\rawData\RH_5050-0150
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 19:57:12 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:57:54 -- FINISHED section number 150, section completed in 1 mins 23 secs
+2026/10/09 19:57:54 -- STARTING section number 151 (151 of 208) at z=21.2400 in directory D:\RH_5050\rawData\RH_5050-0151
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 19:58:36 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3347mW,state=lasing
+2026/10/09 19:59:19 -- FINISHED section number 151, section completed in 1 mins 25 secs
+2026/10/09 19:59:19 -- STARTING section number 152 (152 of 208) at z=21.2901 in directory D:\RH_5050\rawData\RH_5050-0152
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:00:01 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:00:44 -- FINISHED section number 152, section completed in 1 mins 25 secs
+2026/10/09 20:00:44 -- STARTING section number 153 (153 of 208) at z=21.3400 in directory D:\RH_5050\rawData\RH_5050-0153
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:01:26 -- acquired 54 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:02:08 -- FINISHED section number 153, section completed in 1 mins 25 secs
+2026/10/09 20:02:08 -- STARTING section number 154 (154 of 208) at z=21.3901 in directory D:\RH_5050\rawData\RH_5050-0154
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:02:50 -- acquired 54 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12119mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:03:33 -- FINISHED section number 154, section completed in 1 mins 24 secs
+2026/10/09 20:03:33 -- STARTING section number 155 (155 of 208) at z=21.4400 in directory D:\RH_5050\rawData\RH_5050-0155
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:04:11 -- acquired 48 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 20:04:53 -- FINISHED section number 155, section completed in 1 mins 20 secs
+2026/10/09 20:04:53 -- STARTING section number 156 (156 of 208) at z=21.4901 in directory D:\RH_5050\rawData\RH_5050-0156
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12108mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 20:05:32 -- acquired 48 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:06:13 -- FINISHED section number 156, section completed in 1 mins 20 secs
+2026/10/09 20:06:14 -- STARTING section number 157 (157 of 208) at z=21.5399 in directory D:\RH_5050\rawData\RH_5050-0157
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:06:55 -- acquired 56 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:07:37 -- FINISHED section number 157, section completed in 1 mins 23 secs
+2026/10/09 20:07:37 -- STARTING section number 158 (158 of 208) at z=21.5900 in directory D:\RH_5050\rawData\RH_5050-0158
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:08:17 -- acquired 56 tile positions in 41 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 20:08:59 -- FINISHED section number 158, section completed in 1 mins 23 secs
+2026/10/09 20:08:59 -- STARTING section number 159 (159 of 208) at z=21.6399 in directory D:\RH_5050\rawData\RH_5050-0159
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:09:41 -- acquired 56 tile positions in 42 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12097mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 20:10:23 -- FINISHED section number 159, section completed in 1 mins 24 secs
+2026/10/09 20:10:23 -- STARTING section number 160 (160 of 208) at z=21.6900 in directory D:\RH_5050\rawData\RH_5050-0160
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12102mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 20:11:06 -- acquired 56 tile positions in 43 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12101mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:11:49 -- FINISHED section number 160, section completed in 1 mins 26 secs
+2026/10/09 20:11:49 -- STARTING section number 161 (161 of 208) at z=21.7399 in directory D:\RH_5050\rawData\RH_5050-0161
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12097mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:12:28 -- acquired 48 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3346mW,state=lasing
+2026/10/09 20:13:10 -- FINISHED section number 161, section completed in 1 mins 22 secs
+2026/10/09 20:13:10 -- STARTING section number 162 (162 of 208) at z=21.7900 in directory D:\RH_5050\rawData\RH_5050-0162
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:13:48 -- acquired 48 tile positions in 38 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12121mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:14:30 -- FINISHED section number 162, section completed in 1 mins 20 secs
+2026/10/09 20:14:30 -- STARTING section number 163 (163 of 208) at z=21.8399 in directory D:\RH_5050\rawData\RH_5050-0163
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3346mW,state=lasing
+2026/10/09 20:15:06 -- acquired 48 tile positions in 36 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:15:48 -- FINISHED section number 163, section completed in 1 mins 18 secs
+2026/10/09 20:15:48 -- STARTING section number 164 (164 of 208) at z=21.8900 in directory D:\RH_5050\rawData\RH_5050-0164
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:16:23 -- acquired 48 tile positions in 35 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12105mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:17:06 -- FINISHED section number 164, section completed in 1 mins 18 secs
+2026/10/09 20:17:06 -- STARTING section number 165 (165 of 208) at z=21.9399 in directory D:\RH_5050\rawData\RH_5050-0165
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12108mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:17:44 -- acquired 48 tile positions in 38 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:18:26 -- FINISHED section number 165, section completed in 1 mins 20 secs
+2026/10/09 20:18:26 -- STARTING section number 166 (166 of 208) at z=21.9900 in directory D:\RH_5050\rawData\RH_5050-0166
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12103mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:19:02 -- acquired 48 tile positions in 36 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:19:44 -- FINISHED section number 166, section completed in 1 mins 18 secs
+2026/10/09 20:19:44 -- STARTING section number 167 (167 of 208) at z=22.0399 in directory D:\RH_5050\rawData\RH_5050-0167
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:20:20 -- acquired 48 tile positions in 36 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12133mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:21:07 -- FINISHED section number 167, section completed in 1 mins 23 secs
+2026/10/09 20:21:07 -- STARTING section number 168 (168 of 208) at z=22.0900 in directory D:\RH_5050\rawData\RH_5050-0168
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12101mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:21:46 -- acquired 48 tile positions in 39 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3346mW,state=lasing
+2026/10/09 20:22:28 -- FINISHED section number 168, section completed in 1 mins 21 secs
+2026/10/09 20:22:28 -- STARTING section number 169 (169 of 208) at z=22.1399 in directory D:\RH_5050\rawData\RH_5050-0169
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3346mW,state=lasing
+2026/10/09 20:23:11 -- acquired 48 tile positions in 43 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:23:54 -- FINISHED section number 169, section completed in 1 mins 26 secs
+2026/10/09 20:23:54 -- STARTING section number 170 (170 of 208) at z=22.1900 in directory D:\RH_5050\rawData\RH_5050-0170
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:24:33 -- acquired 48 tile positions in 40 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:25:16 -- FINISHED section number 170, section completed in 1 mins 22 secs
+2026/10/09 20:25:16 -- STARTING section number 171 (171 of 208) at z=22.2401 in directory D:\RH_5050\rawData\RH_5050-0171
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3334mW,state=lasing
+2026/10/09 20:25:56 -- acquired 48 tile positions in 40 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:26:39 -- FINISHED section number 171, section completed in 1 mins 22 secs
+2026/10/09 20:26:39 -- STARTING section number 172 (172 of 208) at z=22.2900 in directory D:\RH_5050\rawData\RH_5050-0172
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:27:10 -- acquired 35 tile positions in 31 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:27:52 -- FINISHED section number 172, section completed in 1 mins 13 secs
+2026/10/09 20:27:52 -- STARTING section number 173 (173 of 208) at z=22.3401 in directory D:\RH_5050\rawData\RH_5050-0173
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:28:21 -- acquired 35 tile positions in 29 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:29:03 -- FINISHED section number 173, section completed in 1 mins 11 secs
+2026/10/09 20:29:03 -- STARTING section number 174 (174 of 208) at z=22.3900 in directory D:\RH_5050\rawData\RH_5050-0174
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 20:29:36 -- acquired 35 tile positions in 33 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 20:30:18 -- FINISHED section number 174, section completed in 1 mins 15 secs
+2026/10/09 20:30:18 -- STARTING section number 175 (175 of 208) at z=22.4401 in directory D:\RH_5050\rawData\RH_5050-0175
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12108mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3346mW,state=lasing
+2026/10/09 20:30:48 -- acquired 35 tile positions in 30 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 20:31:30 -- FINISHED section number 175, section completed in 1 mins 12 secs
+2026/10/09 20:31:30 -- STARTING section number 176 (176 of 208) at z=22.4900 in directory D:\RH_5050\rawData\RH_5050-0176
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:32:00 -- acquired 35 tile positions in 29 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:32:42 -- FINISHED section number 176, section completed in 1 mins 12 secs
+2026/10/09 20:32:42 -- STARTING section number 177 (177 of 208) at z=22.5401 in directory D:\RH_5050\rawData\RH_5050-0177
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:33:12 -- acquired 35 tile positions in 30 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:33:54 -- FINISHED section number 177, section completed in 1 mins 12 secs
+2026/10/09 20:33:54 -- STARTING section number 178 (178 of 208) at z=22.5900 in directory D:\RH_5050\rawData\RH_5050-0178
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:34:25 -- acquired 35 tile positions in 31 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 20:35:08 -- FINISHED section number 178, section completed in 1 mins 13 secs
+2026/10/09 20:35:08 -- STARTING section number 179 (179 of 208) at z=22.6401 in directory D:\RH_5050\rawData\RH_5050-0179
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:35:39 -- acquired 35 tile positions in 31 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:36:21 -- FINISHED section number 179, section completed in 1 mins 13 secs
+2026/10/09 20:36:21 -- STARTING section number 180 (180 of 208) at z=22.6900 in directory D:\RH_5050\rawData\RH_5050-0180
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:36:53 -- acquired 35 tile positions in 32 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:37:36 -- FINISHED section number 180, section completed in 1 mins 15 secs
+2026/10/09 20:37:36 -- STARTING section number 181 (181 of 208) at z=22.7401 in directory D:\RH_5050\rawData\RH_5050-0181
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:38:07 -- acquired 35 tile positions in 31 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:38:50 -- FINISHED section number 181, section completed in 1 mins 14 secs
+2026/10/09 20:38:50 -- STARTING section number 182 (182 of 208) at z=22.7900 in directory D:\RH_5050\rawData\RH_5050-0182
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12123mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:39:20 -- acquired 35 tile positions in 30 secs
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12110mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 20:40:02 -- FINISHED section number 182, section completed in 1 mins 13 secs
+2026/10/09 20:40:02 -- STARTING section number 183 (183 of 208) at z=22.8401 in directory D:\RH_5050\rawData\RH_5050-0183
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:40:30 -- acquired 35 tile positions in 27 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:41:12 -- FINISHED section number 183, section completed in 1 mins 10 secs
+2026/10/09 20:41:12 -- STARTING section number 184 (184 of 208) at z=22.8899 in directory D:\RH_5050\rawData\RH_5050-0184
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 20:41:44 -- acquired 35 tile positions in 32 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12117mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:42:27 -- FINISHED section number 184, section completed in 1 mins 14 secs
+2026/10/09 20:42:27 -- STARTING section number 185 (185 of 208) at z=22.9401 in directory D:\RH_5050\rawData\RH_5050-0185
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3339mW,state=lasing
+2026/10/09 20:42:54 -- acquired 30 tile positions in 28 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12106mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:43:36 -- FINISHED section number 185, section completed in 1 mins 10 secs
+2026/10/09 20:43:36 -- STARTING section number 186 (186 of 208) at z=22.9899 in directory D:\RH_5050\rawData\RH_5050-0186
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 20:44:05 -- acquired 30 tile positions in 28 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12132mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 20:44:47 -- FINISHED section number 186, section completed in 1 mins 10 secs
+2026/10/09 20:44:47 -- STARTING section number 187 (187 of 208) at z=23.0400 in directory D:\RH_5050\rawData\RH_5050-0187
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12140mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:45:13 -- acquired 30 tile positions in 26 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:45:55 -- FINISHED section number 187, section completed in 1 mins 8 secs
+2026/10/09 20:45:55 -- STARTING section number 188 (188 of 208) at z=23.0899 in directory D:\RH_5050\rawData\RH_5050-0188
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12123mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:46:24 -- acquired 30 tile positions in 29 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 20:47:06 -- FINISHED section number 188, section completed in 1 mins 11 secs
+2026/10/09 20:47:06 -- STARTING section number 189 (189 of 208) at z=23.1400 in directory D:\RH_5050\rawData\RH_5050-0189
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:47:32 -- acquired 30 tile positions in 26 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 20:48:14 -- FINISHED section number 189, section completed in 1 mins 8 secs
+2026/10/09 20:48:14 -- STARTING section number 190 (190 of 208) at z=23.1899 in directory D:\RH_5050\rawData\RH_5050-0190
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12115mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 20:48:41 -- acquired 30 tile positions in 27 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 20:49:23 -- FINISHED section number 190, section completed in 1 mins 8 secs
+2026/10/09 20:49:23 -- STARTING section number 191 (191 of 208) at z=23.2400 in directory D:\RH_5050\rawData\RH_5050-0191
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12123mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 20:50:01 -- acquired 30 tile positions in 38 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3338mW,state=lasing
+2026/10/09 20:50:43 -- FINISHED section number 191, section completed in 1 mins 21 secs
+2026/10/09 20:50:43 -- STARTING section number 192 (192 of 208) at z=23.2899 in directory D:\RH_5050\rawData\RH_5050-0192
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:51:10 -- acquired 30 tile positions in 27 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:51:52 -- FINISHED section number 192, section completed in 1 mins 9 secs
+2026/10/09 20:51:52 -- STARTING section number 193 (193 of 208) at z=23.3400 in directory D:\RH_5050\rawData\RH_5050-0193
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12115mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:52:19 -- acquired 30 tile positions in 27 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12107mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:53:01 -- FINISHED section number 193, section completed in 1 mins 9 secs
+2026/10/09 20:53:01 -- STARTING section number 194 (194 of 208) at z=23.3899 in directory D:\RH_5050\rawData\RH_5050-0194
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12108mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3334mW,state=lasing
+2026/10/09 20:53:28 -- acquired 30 tile positions in 27 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12100mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3337mW,state=lasing
+2026/10/09 20:54:10 -- FINISHED section number 194, section completed in 1 mins 9 secs
+2026/10/09 20:54:10 -- STARTING section number 195 (195 of 208) at z=23.4400 in directory D:\RH_5050\rawData\RH_5050-0195
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12098mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 20:54:39 -- acquired 30 tile positions in 29 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:55:21 -- FINISHED section number 195, section completed in 1 mins 11 secs
+2026/10/09 20:55:21 -- STARTING section number 196 (196 of 208) at z=23.4899 in directory D:\RH_5050\rawData\RH_5050-0196
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12109mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 20:55:45 -- acquired 25 tile positions in 24 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12119mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3346mW,state=lasing
+2026/10/09 20:56:27 -- FINISHED section number 196, section completed in 1 mins 6 secs
+2026/10/09 20:56:27 -- STARTING section number 197 (197 of 208) at z=23.5400 in directory D:\RH_5050\rawData\RH_5050-0197
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12114mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 20:56:49 -- acquired 25 tile positions in 21 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 20:57:31 -- FINISHED section number 197, section completed in 1 mins 4 secs
+2026/10/09 20:57:31 -- STARTING section number 198 (198 of 208) at z=23.5899 in directory D:\RH_5050\rawData\RH_5050-0198
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 20:57:55 -- acquired 25 tile positions in 23 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 20:58:37 -- FINISHED section number 198, section completed in 1 mins 6 secs
+2026/10/09 20:58:37 -- STARTING section number 199 (199 of 208) at z=23.6400 in directory D:\RH_5050\rawData\RH_5050-0199
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3341mW,state=lasing
+2026/10/09 20:59:01 -- acquired 25 tile positions in 24 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3342mW,state=lasing
+2026/10/09 20:59:43 -- FINISHED section number 199, section completed in 1 mins 6 secs
+2026/10/09 20:59:43 -- STARTING section number 200 (200 of 208) at z=23.6901 in directory D:\RH_5050\rawData\RH_5050-0200
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12120mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 21:00:04 -- acquired 25 tile positions in 21 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12122mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 21:00:52 -- FINISHED section number 200, section completed in 1 mins 9 secs
+2026/10/09 21:00:52 -- STARTING section number 201 (201 of 208) at z=23.7400 in directory D:\RH_5050\rawData\RH_5050-0201
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 21:01:16 -- acquired 25 tile positions in 24 secs
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12108mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 21:01:58 -- FINISHED section number 201, section completed in 1 mins 6 secs
+2026/10/09 21:01:58 -- STARTING section number 202 (202 of 208) at z=23.7901 in directory D:\RH_5050\rawData\RH_5050-0202
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12107mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3345mW,state=lasing
+2026/10/09 21:02:20 -- acquired 25 tile positions in 21 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12122mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3336mW,state=lasing
+2026/10/09 21:03:02 -- FINISHED section number 202, section completed in 1 mins 4 secs
+2026/10/09 21:03:02 -- STARTING section number 203 (203 of 208) at z=23.8400 in directory D:\RH_5050\rawData\RH_5050-0203
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12123mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3340mW,state=lasing
+2026/10/09 21:03:20 -- acquired 20 tile positions in 18 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3342mW,state=lasing
+2026/10/09 21:04:02 -- FINISHED section number 203, section completed in 60 secs
+2026/10/09 21:04:02 -- STARTING section number 204 (204 of 208) at z=23.8901 in directory D:\RH_5050\rawData\RH_5050-0204
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12112mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 21:04:20 -- acquired 20 tile positions in 18 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12118mW,pumpCurrent=95.4,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3344mW,state=lasing
+2026/10/09 21:05:03 -- FINISHED section number 204, section completed in 1 mins 1 secs
+2026/10/09 21:05:03 -- STARTING section number 205 (205 of 208) at z=23.9400 in directory D:\RH_5050\rawData\RH_5050-0205
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12110mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 21:05:23 -- acquired 20 tile positions in 21 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 21:06:06 -- FINISHED section number 205, section completed in 1 mins 3 secs
+2026/10/09 21:06:06 -- STARTING section number 206 (206 of 208) at z=23.9901 in directory D:\RH_5050\rawData\RH_5050-0206
+laser status: wavelength=920nm,outputPower=1566mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.8
+laser status: wavelength=1064nm,outputPower=3333mW,state=lasing
+2026/10/09 21:06:26 -- acquired 20 tile positions in 20 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12116mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3335mW,state=lasing
+2026/10/09 21:07:09 -- FINISHED section number 206, section completed in 1 mins 3 secs
+2026/10/09 21:07:09 -- STARTING section number 207 (207 of 208) at z=24.0400 in directory D:\RH_5050\rawData\RH_5050-0207
+laser status: wavelength=920nm,outputPower=1568mW,pumpPower=12113mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 21:07:27 -- acquired 20 tile positions in 18 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12122mW,pumpCurrent=95.4,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 21:08:09 -- FINISHED section number 207, section completed in 1 mins 1 secs
+2026/10/09 21:08:09 -- STARTING section number 208 (208 of 208) at z=24.0901 in directory D:\RH_5050\rawData\RH_5050-0208
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12122mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3343mW,state=lasing
+2026/10/09 21:08:31 -- acquired 20 tile positions in 22 secs
+laser status: wavelength=920nm,outputPower=1567mW,pumpPower=12111mW,pumpCurrent=95.6,humidity=1.7
+laser status: wavelength=1064nm,outputPower=3342mW,state=lasing
+2026/10/09 21:08:32 -- FINISHED section number 208, section completed in 22 secs
+2026/10/09 21:08:32 -- FINISHED AND COMPLETED ACQUISITION
+Attempting to turn off all lasers
+MaiTai (MaiTai) reports it turned off: wavelength=920nm,outputPower=0mW,pumpPower=3mW,pumpCurrent=0.3,humidity=1.8
+Axon-1064 (Axon1064) reports it turned off: wavelength=1064nm,outputPower=-2mW,state=not lasing

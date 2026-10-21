@@ -1,0 +1,40 @@
+2026/10/21 10:45:00 -- STARTING NEW ACQUISITION
+Writing to volume D: which has 3313/7452 GB free
+Using laser: Spectra Physics,MaiTai,20408-EV/51740/41539,0245-2.00.31 / CD00000019 / 214-00.004.095
+Acquiring with: ScanImage(R) Basic 2023.1.1 d280f35131 on MATLAB 9.11.0.2358333 (R2021b) Update 7
+Using BakingTray version b148beb0c182be8b2bdfbcb0b9f0241fd175e5f9 from branch dev
+Acquiring sample with MaiTai (Pockels) tuned to 920 nm
+LASER POWERS: Pockels: 124.2 mW
+
+2026/10/21 10:45:01 -- STARTING section number 1 (1 of 436) at z=15.7838 in directory D:\EC69\rawData\EC69-0001
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11978mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:45:56 -- acquired 126 tile positions in 54 secs
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11978mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:47:17 -- FINISHED section number 1, section completed in 2 mins 15 secs
+2026/10/21 10:47:17 -- STARTING section number 2 (2 of 436) at z=15.8238 in directory D:\EC69\rawData\EC69-0002
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11977mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:48:10 -- acquired 126 tile positions in 53 secs
+laser status: wavelength=920nm,outputPower=1979mW,pumpPower=11980mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:49:30 -- FINISHED section number 2, section completed in 2 mins 13 secs
+2026/10/21 10:49:30 -- STARTING section number 3 (3 of 436) at z=15.8638 in directory D:\EC69\rawData\EC69-0003
+laser status: wavelength=920nm,outputPower=1981mW,pumpPower=11977mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:50:30 -- acquired 140 tile positions in 60 secs
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11979mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:51:50 -- FINISHED section number 3, section completed in 2 mins 20 secs
+2026/10/21 10:51:50 -- STARTING section number 4 (4 of 436) at z=15.9038 in directory D:\EC69\rawData\EC69-0004
+laser status: wavelength=920nm,outputPower=1981mW,pumpPower=11976mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:52:49 -- acquired 140 tile positions in 59 secs
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11981mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:54:09 -- FINISHED section number 4, section completed in 2 mins 19 secs
+2026/10/21 10:54:09 -- STARTING section number 5 (5 of 436) at z=15.9438 in directory D:\EC69\rawData\EC69-0005
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11979mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:55:07 -- acquired 140 tile positions in 58 secs
+laser status: wavelength=920nm,outputPower=1981mW,pumpPower=11977mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:56:23 -- FINISHED section number 5, section completed in 2 mins 15 secs
+2026/10/21 10:56:23 -- STARTING section number 6 (6 of 436) at z=15.9838 in directory D:\EC69\rawData\EC69-0006
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11976mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:57:20 -- acquired 140 tile positions in 57 secs
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11979mW,pumpCurrent=96.2,humidity=2.3
+2026/10/21 10:58:40 -- FINISHED section number 6, section completed in 2 mins 16 secs
+2026/10/21 10:58:40 -- STARTING section number 7 (7 of 436) at z=16.0238 in directory D:\EC69\rawData\EC69-0007
+laser status: wavelength=920nm,outputPower=1980mW,pumpPower=11978mW,pumpCurrent=96.2,humidity=2.3

@@ -835,12 +835,48 @@ function bs_parse_recipe(string $path): array
 }
 
 /**
+ * The laser powers in mW that BakingTray logs on a "LASER POWERS: MaiTai: 105.5 mW, Axon1064: 0.0 mW"
+ * line (present only when ScanImage could convert the percentage to mW). Returns [{name, mw}, ...]
+ * in log order, mw being null for nan; empty if the log has no such line. A resumed run logs the
+ * line again, so the last one wins.
+ */
+function bs_parse_laser_powers(string $text): array
+{
+    if (!preg_match_all('/^LASER POWERS:(.*)$/m', $text, $lines)) {
+        return [];
+    }
+    $out = [];
+    preg_match_all('/([^,:]+):\s*(nan|[\d.]+)\s*mW/i', end($lines[1]), $m, PREG_SET_ORDER);
+    foreach ($m as $laser) {
+        $out[] = ['name' => trim($laser[1]), 'mw' => is_numeric($laser[2]) ? (float) $laser[2] : null];
+    }
+    return $out;
+}
+
+/**
+ * The text for the page's "Laser power" row, or null for no row. Lasers reading above 0 mW are
+ * shown in mW: a lone laser unnamed, otherwise as "name: x mW" joined by "; ". When no laser has
+ * a usable mW reading (none logged, nan or 0), fall back to the recipe's percentage.
+ */
+function bs_laser_power_text(array $laserPowers, ?float $percent): ?string
+{
+    $on = array_values(array_filter($laserPowers, fn($l) => $l['mw'] !== null && $l['mw'] > 0));
+    if (count($on) === 1 && count($laserPowers) === 1) {
+        return sprintf('%s mW', round($on[0]['mw'], 1));
+    }
+    if ($on) {
+        return implode('; ', array_map(fn($l) => sprintf('%s: %s mW', $l['name'], round($l['mw'], 1)), $on));
+    }
+    return $percent !== null ? $percent . '%' : null;
+}
+
+/**
  * Parse the text of a BakingTray acquisition log into per-section timing data. Empty text
  * gives an empty result.
  *
  * Returns: ['sections' => [{n, timestamp, duration_seconds}, ...] sorted by section number,
  *           'current_section' => int|null, 'total_sections' => int|null,
- *           'last_event_at' => string|null]
+ *           'last_event_at' => string|null, 'laser_powers' => see bs_parse_laser_powers()]
  */
 function bs_parse_acqlog(string $text): array
 {
@@ -887,6 +923,7 @@ function bs_parse_acqlog(string $text): array
         'current_section' => $currentSection,
         'total_sections' => $totalSections,
         'last_event_at' => $lastEventAt,
+        'laser_powers' => bs_parse_laser_powers($text),
     ];
 }
 
@@ -1743,7 +1780,8 @@ function bs_render_mic_page(array $config, array $view, string $base): void
   <div class="side-col">
     <table class="meta-table">
       <?php if (($recipe['sample_id'] ?? '') !== ''): ?><tr><td>Sample</td><td><?= htmlspecialchars($recipe['sample_id']) ?></td></tr><?php endif; ?>
-      <?php if (isset($recipe['laser_power_percent'])): ?><tr><td>Laser power</td><td><?= htmlspecialchars((string) $recipe['laser_power_percent']) ?>%</td></tr><?php endif; ?>
+      <?php $laserText = bs_laser_power_text($acq['laser_powers'] ?? [], $recipe['laser_power_percent'] ?? null); ?>
+      <?php if ($laserText !== null): ?><tr><td>Laser power</td><td><?= htmlspecialchars($laserText) ?></td></tr><?php endif; ?>
       <?php if (!empty($recipe['voxel_size_um'])): ?>
         <tr><td>Voxel size X / Y / Z (&micro;m)</td>
             <td><?= htmlspecialchars(sprintf('%.1f x %.1f x %.0f', $recipe['voxel_size_um']['x'], $recipe['voxel_size_um']['y'], $recipe['voxel_size_um']['z'])) ?></td></tr>

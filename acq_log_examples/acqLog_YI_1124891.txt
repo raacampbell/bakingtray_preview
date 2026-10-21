@@ -1,0 +1,2060 @@
+2026/10/14 15:46:52 -- STARTING NEW ACQUISITION
+Writing to volume D: which has 2697/7452 GB free
+Using laser: Spectra Physics,MaiTai,4918eV/51557/41355,0245-2.00.39 / CD00000019 / 214-00.004.095
+Using laser: Coherent Axon, Serial Number: 9919
+Acquiring with: ScanImage(R) Basic 2023.1.1 d280f35131 on MATLAB 9.11.0.2358333 (R2021b) Update 7
+Using BakingTray version abb77e8d1a4d7f6b0bc3ac5eafde833fa0192db1 from branch dev
+Acquiring sample with MaiTai (MaiTai) tuned to 800 nm
+Acquiring sample with Axon-1064 (Axon1064) tuned to 1064 nm
+LASER POWERS: MaiTai: 114.5 mW, Axon1064: 0.0 mW
+
+2026/10/14 15:46:53 -- STARTING section number 1 (1 of 300) at z=9.0900 in directory D:\YI_1124891\rawData\YI_1124891-0001
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11872mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:48:19 -- acquired 42 tile positions in 1 mins 27 secs
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11876mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:49:10 -- FINISHED section number 1, section completed in 2 mins 17 secs
+2026/10/14 15:49:10 -- STARTING section number 2 (2 of 300) at z=9.1401 in directory D:\YI_1124891\rawData\YI_1124891-0002
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11874mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:50:36 -- acquired 42 tile positions in 1 mins 26 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11875mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:51:26 -- FINISHED section number 2, section completed in 2 mins 16 secs
+2026/10/14 15:51:26 -- STARTING section number 3 (3 of 300) at z=9.1899 in directory D:\YI_1124891\rawData\YI_1124891-0003
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11877mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:53:05 -- acquired 48 tile positions in 1 mins 38 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11885mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:53:55 -- FINISHED section number 3, section completed in 2 mins 29 secs
+2026/10/14 15:53:55 -- STARTING section number 4 (4 of 300) at z=9.2400 in directory D:\YI_1124891\rawData\YI_1124891-0004
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11891mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:55:32 -- acquired 48 tile positions in 1 mins 37 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11896mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:56:23 -- FINISHED section number 4, section completed in 2 mins 28 secs
+2026/10/14 15:56:23 -- STARTING section number 5 (5 of 300) at z=9.2899 in directory D:\YI_1124891\rawData\YI_1124891-0005
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11892mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:58:01 -- acquired 48 tile positions in 1 mins 38 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 15:58:51 -- FINISHED section number 5, section completed in 2 mins 28 secs
+2026/10/14 15:58:51 -- STARTING section number 6 (6 of 300) at z=9.3400 in directory D:\YI_1124891\rawData\YI_1124891-0006
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11915mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:00:44 -- acquired 56 tile positions in 1 mins 53 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11925mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:01:34 -- FINISHED section number 6, section completed in 2 mins 43 secs
+2026/10/14 16:01:34 -- STARTING section number 7 (7 of 300) at z=9.3899 in directory D:\YI_1124891\rawData\YI_1124891-0007
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11911mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:03:27 -- acquired 56 tile positions in 1 mins 53 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11881mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:04:17 -- FINISHED section number 7, section completed in 2 mins 43 secs
+2026/10/14 16:04:17 -- STARTING section number 8 (8 of 300) at z=9.4400 in directory D:\YI_1124891\rawData\YI_1124891-0008
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:06:09 -- acquired 56 tile positions in 1 mins 52 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11890mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:07:00 -- FINISHED section number 8, section completed in 2 mins 42 secs
+2026/10/14 16:07:00 -- STARTING section number 9 (9 of 300) at z=9.4899 in directory D:\YI_1124891\rawData\YI_1124891-0009
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11901mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:08:53 -- acquired 56 tile positions in 1 mins 54 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11894mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:09:44 -- FINISHED section number 9, section completed in 2 mins 44 secs
+2026/10/14 16:09:44 -- STARTING section number 10 (10 of 300) at z=9.5400 in directory D:\YI_1124891\rawData\YI_1124891-0010
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11896mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:11:36 -- acquired 56 tile positions in 1 mins 52 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:12:26 -- FINISHED section number 10, section completed in 2 mins 42 secs
+2026/10/14 16:12:26 -- STARTING section number 11 (11 of 300) at z=9.5899 in directory D:\YI_1124891\rawData\YI_1124891-0011
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:14:16 -- acquired 56 tile positions in 1 mins 50 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:15:06 -- FINISHED section number 11, section completed in 2 mins 40 secs
+2026/10/14 16:15:06 -- STARTING section number 12 (12 of 300) at z=9.6400 in directory D:\YI_1124891\rawData\YI_1124891-0012
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:17:11 -- acquired 63 tile positions in 2 mins 4 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:18:02 -- FINISHED section number 12, section completed in 2 mins 55 secs
+2026/10/14 16:18:02 -- STARTING section number 13 (13 of 300) at z=9.6899 in directory D:\YI_1124891\rawData\YI_1124891-0013
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11905mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:20:08 -- acquired 63 tile positions in 2 mins 6 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:20:58 -- FINISHED section number 13, section completed in 2 mins 56 secs
+2026/10/14 16:20:58 -- STARTING section number 14 (14 of 300) at z=9.7400 in directory D:\YI_1124891\rawData\YI_1124891-0014
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:23:03 -- acquired 63 tile positions in 2 mins 5 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:23:54 -- FINISHED section number 14, section completed in 2 mins 56 secs
+2026/10/14 16:23:54 -- STARTING section number 15 (15 of 300) at z=9.7899 in directory D:\YI_1124891\rawData\YI_1124891-0015
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:26:01 -- acquired 63 tile positions in 2 mins 6 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:26:56 -- FINISHED section number 15, section completed in 3 mins 1 secs
+2026/10/14 16:26:56 -- STARTING section number 16 (16 of 300) at z=9.8400 in directory D:\YI_1124891\rawData\YI_1124891-0016
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:29:02 -- acquired 63 tile positions in 2 mins 6 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11904mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:29:58 -- FINISHED section number 16, section completed in 3 mins 2 secs
+2026/10/14 16:29:58 -- STARTING section number 17 (17 of 300) at z=9.8901 in directory D:\YI_1124891\rawData\YI_1124891-0017
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:32:04 -- acquired 63 tile positions in 2 mins 6 secs
+laser status: wavelength=800nm,outputPower=2926mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:32:55 -- FINISHED section number 17, section completed in 2 mins 57 secs
+2026/10/14 16:32:55 -- STARTING section number 18 (18 of 300) at z=9.9400 in directory D:\YI_1124891\rawData\YI_1124891-0018
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11904mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:35:01 -- acquired 63 tile positions in 2 mins 6 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:35:52 -- FINISHED section number 18, section completed in 2 mins 57 secs
+2026/10/14 16:35:52 -- STARTING section number 19 (19 of 300) at z=9.9901 in directory D:\YI_1124891\rawData\YI_1124891-0019
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:37:57 -- acquired 63 tile positions in 2 mins 5 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:38:48 -- FINISHED section number 19, section completed in 2 mins 56 secs
+2026/10/14 16:38:48 -- STARTING section number 20 (20 of 300) at z=10.0400 in directory D:\YI_1124891\rawData\YI_1124891-0020
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:40:53 -- acquired 63 tile positions in 2 mins 5 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:41:44 -- FINISHED section number 20, section completed in 2 mins 56 secs
+2026/10/14 16:41:44 -- STARTING section number 21 (21 of 300) at z=10.0901 in directory D:\YI_1124891\rawData\YI_1124891-0021
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:44:03 -- acquired 72 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:44:54 -- FINISHED section number 21, section completed in 3 mins 10 secs
+2026/10/14 16:44:54 -- STARTING section number 22 (22 of 300) at z=10.1400 in directory D:\YI_1124891\rawData\YI_1124891-0022
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11897mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:47:00 -- acquired 63 tile positions in 2 mins 7 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:47:52 -- FINISHED section number 22, section completed in 2 mins 58 secs
+2026/10/14 16:47:52 -- STARTING section number 23 (23 of 300) at z=10.1901 in directory D:\YI_1124891\rawData\YI_1124891-0023
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:49:58 -- acquired 63 tile positions in 2 mins 7 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:50:49 -- FINISHED section number 23, section completed in 2 mins 57 secs
+2026/10/14 16:50:49 -- STARTING section number 24 (24 of 300) at z=10.2400 in directory D:\YI_1124891\rawData\YI_1124891-0024
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:52:54 -- acquired 63 tile positions in 2 mins 6 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11904mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:53:45 -- FINISHED section number 24, section completed in 2 mins 56 secs
+2026/10/14 16:53:45 -- STARTING section number 25 (25 of 300) at z=10.2901 in directory D:\YI_1124891\rawData\YI_1124891-0025
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11905mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:55:49 -- acquired 63 tile positions in 2 mins 4 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:56:39 -- FINISHED section number 25, section completed in 2 mins 54 secs
+2026/10/14 16:56:39 -- STARTING section number 26 (26 of 300) at z=10.3400 in directory D:\YI_1124891\rawData\YI_1124891-0026
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:58:44 -- acquired 63 tile positions in 2 mins 4 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 16:59:34 -- FINISHED section number 26, section completed in 2 mins 55 secs
+2026/10/14 16:59:34 -- STARTING section number 27 (27 of 300) at z=10.3901 in directory D:\YI_1124891\rawData\YI_1124891-0027
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11941mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:01:38 -- acquired 63 tile positions in 2 mins 4 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:02:29 -- FINISHED section number 27, section completed in 2 mins 55 secs
+2026/10/14 17:02:29 -- STARTING section number 28 (28 of 300) at z=10.4400 in directory D:\YI_1124891\rawData\YI_1124891-0028
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:04:34 -- acquired 63 tile positions in 2 mins 5 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:05:25 -- FINISHED section number 28, section completed in 2 mins 56 secs
+2026/10/14 17:05:25 -- STARTING section number 29 (29 of 300) at z=10.4901 in directory D:\YI_1124891\rawData\YI_1124891-0029
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:07:29 -- acquired 63 tile positions in 2 mins 4 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:08:20 -- FINISHED section number 29, section completed in 2 mins 55 secs
+2026/10/14 17:08:20 -- STARTING section number 30 (30 of 300) at z=10.5399 in directory D:\YI_1124891\rawData\YI_1124891-0030
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:10:40 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:11:34 -- FINISHED section number 30, section completed in 3 mins 14 secs
+2026/10/14 17:11:34 -- STARTING section number 31 (31 of 300) at z=10.5901 in directory D:\YI_1124891\rawData\YI_1124891-0031
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11898mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:13:54 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:14:45 -- FINISHED section number 31, section completed in 3 mins 11 secs
+2026/10/14 17:14:45 -- STARTING section number 32 (32 of 300) at z=10.6399 in directory D:\YI_1124891\rawData\YI_1124891-0032
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:17:04 -- acquired 70 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:17:54 -- FINISHED section number 32, section completed in 3 mins 9 secs
+2026/10/14 17:17:54 -- STARTING section number 33 (33 of 300) at z=10.6900 in directory D:\YI_1124891\rawData\YI_1124891-0033
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:20:11 -- acquired 70 tile positions in 2 mins 17 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:21:02 -- FINISHED section number 33, section completed in 3 mins 8 secs
+2026/10/14 17:21:02 -- STARTING section number 34 (34 of 300) at z=10.7399 in directory D:\YI_1124891\rawData\YI_1124891-0034
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:23:21 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:24:12 -- FINISHED section number 34, section completed in 3 mins 10 secs
+2026/10/14 17:24:12 -- STARTING section number 35 (35 of 300) at z=10.7900 in directory D:\YI_1124891\rawData\YI_1124891-0035
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:26:30 -- acquired 70 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:27:20 -- FINISHED section number 35, section completed in 3 mins 9 secs
+2026/10/14 17:27:20 -- STARTING section number 36 (36 of 300) at z=10.8399 in directory D:\YI_1124891\rawData\YI_1124891-0036
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11904mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:29:38 -- acquired 70 tile positions in 2 mins 17 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:30:28 -- FINISHED section number 36, section completed in 3 mins 8 secs
+2026/10/14 17:30:28 -- STARTING section number 37 (37 of 300) at z=10.8900 in directory D:\YI_1124891\rawData\YI_1124891-0037
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:32:46 -- acquired 70 tile positions in 2 mins 18 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:33:36 -- FINISHED section number 37, section completed in 3 mins 8 secs
+2026/10/14 17:33:36 -- STARTING section number 38 (38 of 300) at z=10.9399 in directory D:\YI_1124891\rawData\YI_1124891-0038
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:36:07 -- acquired 77 tile positions in 2 mins 31 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:36:58 -- FINISHED section number 38, section completed in 3 mins 22 secs
+2026/10/14 17:36:58 -- STARTING section number 39 (39 of 300) at z=10.9900 in directory D:\YI_1124891\rawData\YI_1124891-0039
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:39:30 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:40:21 -- FINISHED section number 39, section completed in 3 mins 23 secs
+2026/10/14 17:40:21 -- STARTING section number 40 (40 of 300) at z=11.0399 in directory D:\YI_1124891\rawData\YI_1124891-0040
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11928mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:42:54 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11932mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:43:44 -- FINISHED section number 40, section completed in 3 mins 23 secs
+2026/10/14 17:43:44 -- STARTING section number 41 (41 of 300) at z=11.0900 in directory D:\YI_1124891\rawData\YI_1124891-0041
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:46:17 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11932mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:47:08 -- FINISHED section number 41, section completed in 3 mins 23 secs
+2026/10/14 17:47:08 -- STARTING section number 42 (42 of 300) at z=11.1399 in directory D:\YI_1124891\rawData\YI_1124891-0042
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11936mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:49:39 -- acquired 77 tile positions in 2 mins 31 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11916mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:50:30 -- FINISHED section number 42, section completed in 3 mins 23 secs
+2026/10/14 17:50:30 -- STARTING section number 43 (43 of 300) at z=11.1900 in directory D:\YI_1124891\rawData\YI_1124891-0043
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11919mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:53:03 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:53:54 -- FINISHED section number 43, section completed in 3 mins 24 secs
+2026/10/14 17:53:54 -- STARTING section number 44 (44 of 300) at z=11.2399 in directory D:\YI_1124891\rawData\YI_1124891-0044
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:56:26 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:57:17 -- FINISHED section number 44, section completed in 3 mins 23 secs
+2026/10/14 17:57:17 -- STARTING section number 45 (45 of 300) at z=11.2900 in directory D:\YI_1124891\rawData\YI_1124891-0045
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 17:59:47 -- acquired 77 tile positions in 2 mins 30 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11928mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:00:38 -- FINISHED section number 45, section completed in 3 mins 21 secs
+2026/10/14 18:00:38 -- STARTING section number 46 (46 of 300) at z=11.3401 in directory D:\YI_1124891\rawData\YI_1124891-0046
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:03:10 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11920mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:04:00 -- FINISHED section number 46, section completed in 3 mins 23 secs
+2026/10/14 18:04:01 -- STARTING section number 47 (47 of 300) at z=11.3900 in directory D:\YI_1124891\rawData\YI_1124891-0047
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:06:32 -- acquired 77 tile positions in 2 mins 31 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:07:27 -- FINISHED section number 47, section completed in 3 mins 26 secs
+2026/10/14 18:07:27 -- STARTING section number 48 (48 of 300) at z=11.4401 in directory D:\YI_1124891\rawData\YI_1124891-0048
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:09:58 -- acquired 77 tile positions in 2 mins 31 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11901mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:10:49 -- FINISHED section number 48, section completed in 3 mins 22 secs
+2026/10/14 18:10:49 -- STARTING section number 49 (49 of 300) at z=11.4900 in directory D:\YI_1124891\rawData\YI_1124891-0049
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:13:21 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:14:12 -- FINISHED section number 49, section completed in 3 mins 23 secs
+2026/10/14 18:14:12 -- STARTING section number 50 (50 of 300) at z=11.5401 in directory D:\YI_1124891\rawData\YI_1124891-0050
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11904mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:16:46 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:17:36 -- FINISHED section number 50, section completed in 3 mins 24 secs
+2026/10/14 18:17:36 -- STARTING section number 51 (51 of 300) at z=11.5900 in directory D:\YI_1124891\rawData\YI_1124891-0051
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11931mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:20:09 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:21:00 -- FINISHED section number 51, section completed in 3 mins 24 secs
+2026/10/14 18:21:00 -- STARTING section number 52 (52 of 300) at z=11.6401 in directory D:\YI_1124891\rawData\YI_1124891-0052
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:23:31 -- acquired 77 tile positions in 2 mins 31 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:24:22 -- FINISHED section number 52, section completed in 3 mins 22 secs
+2026/10/14 18:24:22 -- STARTING section number 53 (53 of 300) at z=11.6900 in directory D:\YI_1124891\rawData\YI_1124891-0053
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:26:54 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:27:45 -- FINISHED section number 53, section completed in 3 mins 23 secs
+2026/10/14 18:27:45 -- STARTING section number 54 (54 of 300) at z=11.7401 in directory D:\YI_1124891\rawData\YI_1124891-0054
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:30:19 -- acquired 77 tile positions in 2 mins 34 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:31:09 -- FINISHED section number 54, section completed in 3 mins 24 secs
+2026/10/14 18:31:09 -- STARTING section number 55 (55 of 300) at z=11.7900 in directory D:\YI_1124891\rawData\YI_1124891-0055
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:33:42 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:34:32 -- FINISHED section number 55, section completed in 3 mins 23 secs
+2026/10/14 18:34:32 -- STARTING section number 56 (56 of 300) at z=11.8401 in directory D:\YI_1124891\rawData\YI_1124891-0056
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:37:04 -- acquired 77 tile positions in 2 mins 31 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:37:55 -- FINISHED section number 56, section completed in 3 mins 22 secs
+2026/10/14 18:37:55 -- STARTING section number 57 (57 of 300) at z=11.8900 in directory D:\YI_1124891\rawData\YI_1124891-0057
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:40:27 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:41:18 -- FINISHED section number 57, section completed in 3 mins 23 secs
+2026/10/14 18:41:18 -- STARTING section number 58 (58 of 300) at z=11.9401 in directory D:\YI_1124891\rawData\YI_1124891-0058
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:43:50 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2925mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:44:41 -- FINISHED section number 58, section completed in 3 mins 23 secs
+2026/10/14 18:44:41 -- STARTING section number 59 (59 of 300) at z=11.9899 in directory D:\YI_1124891\rawData\YI_1124891-0059
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:47:12 -- acquired 77 tile positions in 2 mins 31 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:48:03 -- FINISHED section number 59, section completed in 3 mins 22 secs
+2026/10/14 18:48:03 -- STARTING section number 60 (60 of 300) at z=12.0400 in directory D:\YI_1124891\rawData\YI_1124891-0060
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:50:35 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11900mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:51:26 -- FINISHED section number 60, section completed in 3 mins 24 secs
+2026/10/14 18:51:26 -- STARTING section number 61 (61 of 300) at z=12.0899 in directory D:\YI_1124891\rawData\YI_1124891-0061
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11902mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:54:00 -- acquired 77 tile positions in 2 mins 34 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:54:51 -- FINISHED section number 61, section completed in 3 mins 25 secs
+2026/10/14 18:54:51 -- STARTING section number 62 (62 of 300) at z=12.1400 in directory D:\YI_1124891\rawData\YI_1124891-0062
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:57:23 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 18:58:14 -- FINISHED section number 62, section completed in 3 mins 23 secs
+2026/10/14 18:58:14 -- STARTING section number 63 (63 of 300) at z=12.1899 in directory D:\YI_1124891\rawData\YI_1124891-0063
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:00:33 -- acquired 70 tile positions in 2 mins 18 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:01:23 -- FINISHED section number 63, section completed in 3 mins 9 secs
+2026/10/14 19:01:23 -- STARTING section number 64 (64 of 300) at z=12.2400 in directory D:\YI_1124891\rawData\YI_1124891-0064
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:03:42 -- acquired 70 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:04:32 -- FINISHED section number 64, section completed in 3 mins 9 secs
+2026/10/14 19:04:32 -- STARTING section number 65 (65 of 300) at z=12.2899 in directory D:\YI_1124891\rawData\YI_1124891-0065
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:06:49 -- acquired 70 tile positions in 2 mins 17 secs
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:07:40 -- FINISHED section number 65, section completed in 3 mins 8 secs
+2026/10/14 19:07:40 -- STARTING section number 66 (66 of 300) at z=12.3400 in directory D:\YI_1124891\rawData\YI_1124891-0066
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:09:59 -- acquired 70 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:10:49 -- FINISHED section number 66, section completed in 3 mins 9 secs
+2026/10/14 19:10:49 -- STARTING section number 67 (67 of 300) at z=12.3899 in directory D:\YI_1124891\rawData\YI_1124891-0067
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=94.9,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:13:18 -- acquired 77 tile positions in 2 mins 29 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11907mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:14:08 -- FINISHED section number 67, section completed in 3 mins 19 secs
+2026/10/14 19:14:08 -- STARTING section number 68 (68 of 300) at z=12.4400 in directory D:\YI_1124891\rawData\YI_1124891-0068
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11911mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:16:37 -- acquired 77 tile positions in 2 mins 29 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:17:28 -- FINISHED section number 68, section completed in 3 mins 19 secs
+2026/10/14 19:17:28 -- STARTING section number 69 (69 of 300) at z=12.4899 in directory D:\YI_1124891\rawData\YI_1124891-0069
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:19:58 -- acquired 77 tile positions in 2 mins 30 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:20:48 -- FINISHED section number 69, section completed in 3 mins 21 secs
+2026/10/14 19:20:48 -- STARTING section number 70 (70 of 300) at z=12.5400 in directory D:\YI_1124891\rawData\YI_1124891-0070
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:23:21 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:24:12 -- FINISHED section number 70, section completed in 3 mins 24 secs
+2026/10/14 19:24:12 -- STARTING section number 71 (71 of 300) at z=12.5899 in directory D:\YI_1124891\rawData\YI_1124891-0071
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:26:45 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11928mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:27:38 -- FINISHED section number 71, section completed in 3 mins 25 secs
+2026/10/14 19:27:38 -- STARTING section number 72 (72 of 300) at z=12.6400 in directory D:\YI_1124891\rawData\YI_1124891-0072
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11933mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:30:08 -- acquired 77 tile positions in 2 mins 30 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/14 19:30:59 -- FINISHED section number 72, section completed in 3 mins 21 secs
+2026/10/14 19:30:59 -- STARTING section number 73 (73 of 300) at z=12.6901 in directory D:\YI_1124891\rawData\YI_1124891-0073
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/14 19:33:31 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:34:22 -- FINISHED section number 73, section completed in 3 mins 23 secs
+2026/10/14 19:34:22 -- STARTING section number 74 (74 of 300) at z=12.7400 in directory D:\YI_1124891\rawData\YI_1124891-0074
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:36:54 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:37:45 -- FINISHED section number 74, section completed in 3 mins 23 secs
+2026/10/14 19:37:45 -- STARTING section number 75 (75 of 300) at z=12.7901 in directory D:\YI_1124891\rawData\YI_1124891-0075
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:40:17 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:41:08 -- FINISHED section number 75, section completed in 3 mins 24 secs
+2026/10/14 19:41:08 -- STARTING section number 76 (76 of 300) at z=12.8400 in directory D:\YI_1124891\rawData\YI_1124891-0076
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:43:40 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:44:31 -- FINISHED section number 76, section completed in 3 mins 23 secs
+2026/10/14 19:44:31 -- STARTING section number 77 (77 of 300) at z=12.8901 in directory D:\YI_1124891\rawData\YI_1124891-0077
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:47:05 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11934mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:47:55 -- FINISHED section number 77, section completed in 3 mins 24 secs
+2026/10/14 19:47:55 -- STARTING section number 78 (78 of 300) at z=12.9400 in directory D:\YI_1124891\rawData\YI_1124891-0078
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:50:27 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:51:18 -- FINISHED section number 78, section completed in 3 mins 23 secs
+2026/10/14 19:51:18 -- STARTING section number 79 (79 of 300) at z=12.9901 in directory D:\YI_1124891\rawData\YI_1124891-0079
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:53:51 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:54:46 -- FINISHED section number 79, section completed in 3 mins 27 secs
+2026/10/14 19:54:46 -- STARTING section number 80 (80 of 300) at z=13.0400 in directory D:\YI_1124891\rawData\YI_1124891-0080
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:57:18 -- acquired 77 tile positions in 2 mins 32 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 19:58:09 -- FINISHED section number 80, section completed in 3 mins 23 secs
+2026/10/14 19:58:09 -- STARTING section number 81 (81 of 300) at z=13.0901 in directory D:\YI_1124891\rawData\YI_1124891-0081
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:00:42 -- acquired 77 tile positions in 2 mins 33 secs
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:01:33 -- FINISHED section number 81, section completed in 3 mins 24 secs
+2026/10/14 20:01:33 -- STARTING section number 82 (82 of 300) at z=13.1400 in directory D:\YI_1124891\rawData\YI_1124891-0082
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:04:41 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:05:31 -- FINISHED section number 82, section completed in 3 mins 58 secs
+2026/10/14 20:05:31 -- STARTING section number 83 (83 of 300) at z=13.1901 in directory D:\YI_1124891\rawData\YI_1124891-0083
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:08:39 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:09:29 -- FINISHED section number 83, section completed in 3 mins 58 secs
+2026/10/14 20:09:29 -- STARTING section number 84 (84 of 300) at z=13.2400 in directory D:\YI_1124891\rawData\YI_1124891-0084
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11916mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:12:37 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:13:27 -- FINISHED section number 84, section completed in 3 mins 58 secs
+2026/10/14 20:13:27 -- STARTING section number 85 (85 of 300) at z=13.2901 in directory D:\YI_1124891\rawData\YI_1124891-0085
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:16:58 -- acquired 108 tile positions in 3 mins 31 secs
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:17:48 -- FINISHED section number 85, section completed in 4 mins 21 secs
+2026/10/14 20:17:48 -- STARTING section number 86 (86 of 300) at z=13.3399 in directory D:\YI_1124891\rawData\YI_1124891-0086
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:21:18 -- acquired 108 tile positions in 3 mins 30 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/14 20:22:09 -- FINISHED section number 86, section completed in 4 mins 21 secs
+2026/10/14 20:22:09 -- STARTING section number 87 (87 of 300) at z=13.3900 in directory D:\YI_1124891\rawData\YI_1124891-0087
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:25:17 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:26:07 -- FINISHED section number 87, section completed in 3 mins 58 secs
+2026/10/14 20:26:07 -- STARTING section number 88 (88 of 300) at z=13.4399 in directory D:\YI_1124891\rawData\YI_1124891-0088
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:29:15 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:30:05 -- FINISHED section number 88, section completed in 3 mins 58 secs
+2026/10/14 20:30:05 -- STARTING section number 89 (89 of 300) at z=13.4900 in directory D:\YI_1124891\rawData\YI_1124891-0089
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/14 20:33:14 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:34:05 -- FINISHED section number 89, section completed in 3 mins 59 secs
+2026/10/14 20:34:05 -- STARTING section number 90 (90 of 300) at z=13.5399 in directory D:\YI_1124891\rawData\YI_1124891-0090
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:37:12 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11939mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:38:02 -- FINISHED section number 90, section completed in 3 mins 58 secs
+2026/10/14 20:38:02 -- STARTING section number 91 (91 of 300) at z=13.5900 in directory D:\YI_1124891\rawData\YI_1124891-0091
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11936mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:41:11 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:42:01 -- FINISHED section number 91, section completed in 3 mins 59 secs
+2026/10/14 20:42:01 -- STARTING section number 92 (92 of 300) at z=13.6399 in directory D:\YI_1124891\rawData\YI_1124891-0092
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:45:11 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:46:00 -- FINISHED section number 92, section completed in 3 mins 59 secs
+2026/10/14 20:46:00 -- STARTING section number 93 (93 of 300) at z=13.6900 in directory D:\YI_1124891\rawData\YI_1124891-0093
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:49:08 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11920mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:49:59 -- FINISHED section number 93, section completed in 3 mins 58 secs
+2026/10/14 20:49:59 -- STARTING section number 94 (94 of 300) at z=13.7399 in directory D:\YI_1124891\rawData\YI_1124891-0094
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:53:07 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:54:02 -- FINISHED section number 94, section completed in 4 mins 4 secs
+2026/10/14 20:54:02 -- STARTING section number 95 (95 of 300) at z=13.7900 in directory D:\YI_1124891\rawData\YI_1124891-0095
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:57:11 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 20:58:01 -- FINISHED section number 95, section completed in 3 mins 59 secs
+2026/10/14 20:58:01 -- STARTING section number 96 (96 of 300) at z=13.8399 in directory D:\YI_1124891\rawData\YI_1124891-0096
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:01:09 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:01:59 -- FINISHED section number 96, section completed in 3 mins 58 secs
+2026/10/14 21:01:59 -- STARTING section number 97 (97 of 300) at z=13.8900 in directory D:\YI_1124891\rawData\YI_1124891-0097
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:05:06 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:06:02 -- FINISHED section number 97, section completed in 4 mins 3 secs
+2026/10/14 21:06:02 -- STARTING section number 98 (98 of 300) at z=13.9399 in directory D:\YI_1124891\rawData\YI_1124891-0098
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11926mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:09:10 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11930mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:10:00 -- FINISHED section number 98, section completed in 3 mins 59 secs
+2026/10/14 21:10:00 -- STARTING section number 99 (99 of 300) at z=13.9900 in directory D:\YI_1124891\rawData\YI_1124891-0099
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11933mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:13:09 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:13:59 -- FINISHED section number 99, section completed in 3 mins 59 secs
+2026/10/14 21:13:59 -- STARTING section number 100 (100 of 300) at z=14.0401 in directory D:\YI_1124891\rawData\YI_1124891-0100
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:17:07 -- acquired 96 tile positions in 3 mins 7 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:17:57 -- FINISHED section number 100, section completed in 3 mins 57 secs
+2026/10/14 21:17:57 -- STARTING section number 101 (101 of 300) at z=14.0900 in directory D:\YI_1124891\rawData\YI_1124891-0101
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:21:05 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:21:55 -- FINISHED section number 101, section completed in 3 mins 58 secs
+2026/10/14 21:21:55 -- STARTING section number 102 (102 of 300) at z=14.1401 in directory D:\YI_1124891\rawData\YI_1124891-0102
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:25:03 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:25:54 -- FINISHED section number 102, section completed in 3 mins 59 secs
+2026/10/14 21:25:54 -- STARTING section number 103 (103 of 300) at z=14.1900 in directory D:\YI_1124891\rawData\YI_1124891-0103
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11900mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:29:03 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:29:53 -- FINISHED section number 103, section completed in 3 mins 60 secs
+2026/10/14 21:29:53 -- STARTING section number 104 (104 of 300) at z=14.2401 in directory D:\YI_1124891\rawData\YI_1124891-0104
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:33:02 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:33:52 -- FINISHED section number 104, section completed in 3 mins 59 secs
+2026/10/14 21:33:52 -- STARTING section number 105 (105 of 300) at z=14.2900 in directory D:\YI_1124891\rawData\YI_1124891-0105
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:37:00 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11928mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:37:51 -- FINISHED section number 105, section completed in 3 mins 59 secs
+2026/10/14 21:37:51 -- STARTING section number 106 (106 of 300) at z=14.3401 in directory D:\YI_1124891\rawData\YI_1124891-0106
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:41:00 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/14 21:41:55 -- FINISHED section number 106, section completed in 4 mins 4 secs
+2026/10/14 21:41:55 -- STARTING section number 107 (107 of 300) at z=14.3900 in directory D:\YI_1124891\rawData\YI_1124891-0107
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/14 21:45:01 -- acquired 96 tile positions in 3 mins 6 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:45:51 -- FINISHED section number 107, section completed in 3 mins 56 secs
+2026/10/14 21:45:51 -- STARTING section number 108 (108 of 300) at z=14.4401 in directory D:\YI_1124891\rawData\YI_1124891-0108
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:48:58 -- acquired 96 tile positions in 3 mins 7 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:49:48 -- FINISHED section number 108, section completed in 3 mins 57 secs
+2026/10/14 21:49:48 -- STARTING section number 109 (109 of 300) at z=14.4900 in directory D:\YI_1124891\rawData\YI_1124891-0109
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:52:56 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:53:47 -- FINISHED section number 109, section completed in 3 mins 59 secs
+2026/10/14 21:53:47 -- STARTING section number 110 (110 of 300) at z=14.5401 in directory D:\YI_1124891\rawData\YI_1124891-0110
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:56:55 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11916mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 21:57:45 -- FINISHED section number 110, section completed in 3 mins 58 secs
+2026/10/14 21:57:45 -- STARTING section number 111 (111 of 300) at z=14.5900 in directory D:\YI_1124891\rawData\YI_1124891-0111
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11922mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:00:53 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:01:44 -- FINISHED section number 111, section completed in 3 mins 59 secs
+2026/10/14 22:01:44 -- STARTING section number 112 (112 of 300) at z=14.6401 in directory D:\YI_1124891\rawData\YI_1124891-0112
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:04:53 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11931mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:05:48 -- FINISHED section number 112, section completed in 4 mins 4 secs
+2026/10/14 22:05:48 -- STARTING section number 113 (113 of 300) at z=14.6899 in directory D:\YI_1124891\rawData\YI_1124891-0113
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11904mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:08:56 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:09:46 -- FINISHED section number 113, section completed in 3 mins 58 secs
+2026/10/14 22:09:46 -- STARTING section number 114 (114 of 300) at z=14.7400 in directory D:\YI_1124891\rawData\YI_1124891-0114
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11933mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:12:55 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:13:45 -- FINISHED section number 114, section completed in 3 mins 60 secs
+2026/10/14 22:13:45 -- STARTING section number 115 (115 of 300) at z=14.7899 in directory D:\YI_1124891\rawData\YI_1124891-0115
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:17:16 -- acquired 108 tile positions in 3 mins 31 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:18:08 -- FINISHED section number 115, section completed in 4 mins 23 secs
+2026/10/14 22:18:08 -- STARTING section number 116 (116 of 300) at z=14.8400 in directory D:\YI_1124891\rawData\YI_1124891-0116
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:21:41 -- acquired 108 tile positions in 3 mins 33 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11905mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:22:31 -- FINISHED section number 116, section completed in 4 mins 23 secs
+2026/10/14 22:22:31 -- STARTING section number 117 (117 of 300) at z=14.8899 in directory D:\YI_1124891\rawData\YI_1124891-0117
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:26:02 -- acquired 108 tile positions in 3 mins 31 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:26:53 -- FINISHED section number 117, section completed in 4 mins 21 secs
+2026/10/14 22:26:53 -- STARTING section number 118 (118 of 300) at z=14.9400 in directory D:\YI_1124891\rawData\YI_1124891-0118
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:30:23 -- acquired 108 tile positions in 3 mins 31 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:31:13 -- FINISHED section number 118, section completed in 4 mins 21 secs
+2026/10/14 22:31:13 -- STARTING section number 119 (119 of 300) at z=14.9899 in directory D:\YI_1124891\rawData\YI_1124891-0119
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:34:22 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:35:12 -- FINISHED section number 119, section completed in 3 mins 59 secs
+2026/10/14 22:35:12 -- STARTING section number 120 (120 of 300) at z=15.0400 in directory D:\YI_1124891\rawData\YI_1124891-0120
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:38:20 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:39:11 -- FINISHED section number 120, section completed in 3 mins 59 secs
+2026/10/14 22:39:11 -- STARTING section number 121 (121 of 300) at z=15.0899 in directory D:\YI_1124891\rawData\YI_1124891-0121
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:42:17 -- acquired 96 tile positions in 3 mins 6 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11917mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:43:07 -- FINISHED section number 121, section completed in 3 mins 56 secs
+2026/10/14 22:43:07 -- STARTING section number 122 (122 of 300) at z=15.1400 in directory D:\YI_1124891\rawData\YI_1124891-0122
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11919mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:46:36 -- acquired 108 tile positions in 3 mins 29 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:47:26 -- FINISHED section number 122, section completed in 4 mins 19 secs
+2026/10/14 22:47:26 -- STARTING section number 123 (123 of 300) at z=15.1899 in directory D:\YI_1124891\rawData\YI_1124891-0123
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:50:58 -- acquired 108 tile positions in 3 mins 32 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:51:49 -- FINISHED section number 123, section completed in 4 mins 22 secs
+2026/10/14 22:51:49 -- STARTING section number 124 (124 of 300) at z=15.2400 in directory D:\YI_1124891\rawData\YI_1124891-0124
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:55:20 -- acquired 108 tile positions in 3 mins 31 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:56:10 -- FINISHED section number 124, section completed in 4 mins 21 secs
+2026/10/14 22:56:10 -- STARTING section number 125 (125 of 300) at z=15.2899 in directory D:\YI_1124891\rawData\YI_1124891-0125
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 22:59:18 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:00:09 -- FINISHED section number 125, section completed in 3 mins 59 secs
+2026/10/14 23:00:09 -- STARTING section number 126 (126 of 300) at z=15.3400 in directory D:\YI_1124891\rawData\YI_1124891-0126
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:03:17 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:04:07 -- FINISHED section number 126, section completed in 3 mins 59 secs
+2026/10/14 23:04:07 -- STARTING section number 127 (127 of 300) at z=15.3901 in directory D:\YI_1124891\rawData\YI_1124891-0127
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:07:15 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:08:05 -- FINISHED section number 127, section completed in 3 mins 58 secs
+2026/10/14 23:08:05 -- STARTING section number 128 (128 of 300) at z=15.4400 in directory D:\YI_1124891\rawData\YI_1124891-0128
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:11:14 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:12:05 -- FINISHED section number 128, section completed in 3 mins 59 secs
+2026/10/14 23:12:05 -- STARTING section number 129 (129 of 300) at z=15.4901 in directory D:\YI_1124891\rawData\YI_1124891-0129
+laser status: wavelength=800nm,outputPower=2926mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:15:12 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:16:02 -- FINISHED section number 129, section completed in 3 mins 58 secs
+2026/10/14 23:16:02 -- STARTING section number 130 (130 of 300) at z=15.5400 in directory D:\YI_1124891\rawData\YI_1124891-0130
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:19:09 -- acquired 96 tile positions in 3 mins 6 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:19:59 -- FINISHED section number 130, section completed in 3 mins 56 secs
+2026/10/14 23:19:59 -- STARTING section number 131 (131 of 300) at z=15.5901 in directory D:\YI_1124891\rawData\YI_1124891-0131
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11934mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:23:06 -- acquired 96 tile positions in 3 mins 7 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:23:56 -- FINISHED section number 131, section completed in 3 mins 57 secs
+2026/10/14 23:23:56 -- STARTING section number 132 (132 of 300) at z=15.6400 in directory D:\YI_1124891\rawData\YI_1124891-0132
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:27:05 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:27:56 -- FINISHED section number 132, section completed in 3 mins 60 secs
+2026/10/14 23:27:56 -- STARTING section number 133 (133 of 300) at z=15.6901 in directory D:\YI_1124891\rawData\YI_1124891-0133
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:31:05 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11908mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:31:55 -- FINISHED section number 133, section completed in 3 mins 59 secs
+2026/10/14 23:31:55 -- STARTING section number 134 (134 of 300) at z=15.7400 in directory D:\YI_1124891\rawData\YI_1124891-0134
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11919mW,pumpCurrent=95.3,humidity=1.6
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:35:03 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:35:54 -- FINISHED section number 134, section completed in 3 mins 59 secs
+2026/10/14 23:35:54 -- STARTING section number 135 (135 of 300) at z=15.7901 in directory D:\YI_1124891\rawData\YI_1124891-0135
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:39:02 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:39:52 -- FINISHED section number 135, section completed in 3 mins 58 secs
+2026/10/14 23:39:52 -- STARTING section number 136 (136 of 300) at z=15.8400 in directory D:\YI_1124891\rawData\YI_1124891-0136
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11901mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:43:01 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:43:51 -- FINISHED section number 136, section completed in 3 mins 59 secs
+2026/10/14 23:43:51 -- STARTING section number 137 (137 of 300) at z=15.8901 in directory D:\YI_1124891\rawData\YI_1124891-0137
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:47:00 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:47:50 -- FINISHED section number 137, section completed in 3 mins 59 secs
+2026/10/14 23:47:50 -- STARTING section number 138 (138 of 300) at z=15.9400 in directory D:\YI_1124891\rawData\YI_1124891-0138
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:50:57 -- acquired 96 tile positions in 3 mins 6 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:51:47 -- FINISHED section number 138, section completed in 3 mins 56 secs
+2026/10/14 23:51:47 -- STARTING section number 139 (139 of 300) at z=15.9901 in directory D:\YI_1124891\rawData\YI_1124891-0139
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:54:56 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11913mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:55:46 -- FINISHED section number 139, section completed in 3 mins 59 secs
+2026/10/14 23:55:46 -- STARTING section number 140 (140 of 300) at z=16.0399 in directory D:\YI_1124891\rawData\YI_1124891-0140
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/14 23:58:54 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/14 23:59:44 -- FINISHED section number 140, section completed in 3 mins 58 secs
+2026/10/14 23:59:44 -- STARTING section number 141 (141 of 300) at z=16.0900 in directory D:\YI_1124891\rawData\YI_1124891-0141
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:02:52 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:03:42 -- FINISHED section number 141, section completed in 3 mins 58 secs
+2026/10/15 00:03:42 -- STARTING section number 142 (142 of 300) at z=16.1399 in directory D:\YI_1124891\rawData\YI_1124891-0142
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:06:51 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/15 00:07:42 -- FINISHED section number 142, section completed in 3 mins 60 secs
+2026/10/15 00:07:42 -- STARTING section number 143 (143 of 300) at z=16.1900 in directory D:\YI_1124891\rawData\YI_1124891-0143
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:10:49 -- acquired 96 tile positions in 3 mins 7 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:11:39 -- FINISHED section number 143, section completed in 3 mins 58 secs
+2026/10/15 00:11:39 -- STARTING section number 144 (144 of 300) at z=16.2399 in directory D:\YI_1124891\rawData\YI_1124891-0144
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:14:47 -- acquired 96 tile positions in 3 mins 7 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:15:37 -- FINISHED section number 144, section completed in 3 mins 58 secs
+2026/10/15 00:15:37 -- STARTING section number 145 (145 of 300) at z=16.2900 in directory D:\YI_1124891\rawData\YI_1124891-0145
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11936mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:18:45 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:19:35 -- FINISHED section number 145, section completed in 3 mins 58 secs
+2026/10/15 00:19:35 -- STARTING section number 146 (146 of 300) at z=16.3399 in directory D:\YI_1124891\rawData\YI_1124891-0146
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11930mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:22:43 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:23:33 -- FINISHED section number 146, section completed in 3 mins 58 secs
+2026/10/15 00:23:33 -- STARTING section number 147 (147 of 300) at z=16.3900 in directory D:\YI_1124891\rawData\YI_1124891-0147
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11934mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:26:41 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11930mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:27:32 -- FINISHED section number 147, section completed in 3 mins 59 secs
+2026/10/15 00:27:32 -- STARTING section number 148 (148 of 300) at z=16.4399 in directory D:\YI_1124891\rawData\YI_1124891-0148
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:30:40 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:31:35 -- FINISHED section number 148, section completed in 4 mins 3 secs
+2026/10/15 00:31:35 -- STARTING section number 149 (149 of 300) at z=16.4900 in directory D:\YI_1124891\rawData\YI_1124891-0149
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11930mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:34:42 -- acquired 96 tile positions in 3 mins 7 secs
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:35:32 -- FINISHED section number 149, section completed in 3 mins 57 secs
+2026/10/15 00:35:32 -- STARTING section number 150 (150 of 300) at z=16.5399 in directory D:\YI_1124891\rawData\YI_1124891-0150
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:38:41 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11942mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:39:31 -- FINISHED section number 150, section completed in 3 mins 59 secs
+2026/10/15 00:39:31 -- STARTING section number 151 (151 of 300) at z=16.5900 in directory D:\YI_1124891\rawData\YI_1124891-0151
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11933mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:42:41 -- acquired 96 tile positions in 3 mins 10 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:43:31 -- FINISHED section number 151, section completed in 3 mins 60 secs
+2026/10/15 00:43:31 -- STARTING section number 152 (152 of 300) at z=16.6399 in directory D:\YI_1124891\rawData\YI_1124891-0152
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11927mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:46:39 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:47:29 -- FINISHED section number 152, section completed in 3 mins 58 secs
+2026/10/15 00:47:29 -- STARTING section number 153 (153 of 300) at z=16.6900 in directory D:\YI_1124891\rawData\YI_1124891-0153
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:50:37 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:51:27 -- FINISHED section number 153, section completed in 3 mins 58 secs
+2026/10/15 00:51:27 -- STARTING section number 154 (154 of 300) at z=16.7401 in directory D:\YI_1124891\rawData\YI_1124891-0154
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:54:36 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:55:27 -- FINISHED section number 154, section completed in 3 mins 59 secs
+2026/10/15 00:55:27 -- STARTING section number 155 (155 of 300) at z=16.7900 in directory D:\YI_1124891\rawData\YI_1124891-0155
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:58:35 -- acquired 96 tile positions in 3 mins 9 secs
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 00:59:26 -- FINISHED section number 155, section completed in 3 mins 59 secs
+2026/10/15 00:59:26 -- STARTING section number 156 (156 of 300) at z=16.8401 in directory D:\YI_1124891\rawData\YI_1124891-0156
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:02:34 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/15 01:03:24 -- FINISHED section number 156, section completed in 3 mins 58 secs
+2026/10/15 01:03:24 -- STARTING section number 157 (157 of 300) at z=16.8900 in directory D:\YI_1124891\rawData\YI_1124891-0157
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:06:31 -- acquired 96 tile positions in 3 mins 7 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11920mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:07:21 -- FINISHED section number 157, section completed in 3 mins 57 secs
+2026/10/15 01:07:21 -- STARTING section number 158 (158 of 300) at z=16.9401 in directory D:\YI_1124891\rawData\YI_1124891-0158
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11926mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:10:29 -- acquired 96 tile positions in 3 mins 8 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:11:19 -- FINISHED section number 158, section completed in 3 mins 58 secs
+2026/10/15 01:11:19 -- STARTING section number 159 (159 of 300) at z=16.9900 in directory D:\YI_1124891\rawData\YI_1124891-0159
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:14:50 -- acquired 108 tile positions in 3 mins 31 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11928mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:15:40 -- FINISHED section number 159, section completed in 4 mins 21 secs
+2026/10/15 01:15:40 -- STARTING section number 160 (160 of 300) at z=17.0401 in directory D:\YI_1124891\rawData\YI_1124891-0160
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11928mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:19:12 -- acquired 108 tile positions in 3 mins 32 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:20:03 -- FINISHED section number 160, section completed in 4 mins 22 secs
+2026/10/15 01:20:03 -- STARTING section number 161 (161 of 300) at z=17.0900 in directory D:\YI_1124891\rawData\YI_1124891-0161
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:22:58 -- acquired 88 tile positions in 2 mins 55 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11934mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:23:49 -- FINISHED section number 161, section completed in 3 mins 46 secs
+2026/10/15 01:23:49 -- STARTING section number 162 (162 of 300) at z=17.1401 in directory D:\YI_1124891\rawData\YI_1124891-0162
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11938mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:26:43 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:27:33 -- FINISHED section number 162, section completed in 3 mins 44 secs
+2026/10/15 01:27:33 -- STARTING section number 163 (163 of 300) at z=17.1900 in directory D:\YI_1124891\rawData\YI_1124891-0163
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:30:26 -- acquired 88 tile positions in 2 mins 53 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:31:22 -- FINISHED section number 163, section completed in 3 mins 49 secs
+2026/10/15 01:31:22 -- STARTING section number 164 (164 of 300) at z=17.2401 in directory D:\YI_1124891\rawData\YI_1124891-0164
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:34:16 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:35:07 -- FINISHED section number 164, section completed in 3 mins 44 secs
+2026/10/15 01:35:07 -- STARTING section number 165 (165 of 300) at z=17.2900 in directory D:\YI_1124891\rawData\YI_1124891-0165
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:38:01 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:38:51 -- FINISHED section number 165, section completed in 3 mins 45 secs
+2026/10/15 01:38:51 -- STARTING section number 166 (166 of 300) at z=17.3401 in directory D:\YI_1124891\rawData\YI_1124891-0166
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:41:44 -- acquired 88 tile positions in 2 mins 53 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:42:35 -- FINISHED section number 166, section completed in 3 mins 44 secs
+2026/10/15 01:42:35 -- STARTING section number 167 (167 of 300) at z=17.3899 in directory D:\YI_1124891\rawData\YI_1124891-0167
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:45:30 -- acquired 88 tile positions in 2 mins 55 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:46:21 -- FINISHED section number 167, section completed in 3 mins 45 secs
+2026/10/15 01:46:21 -- STARTING section number 168 (168 of 300) at z=17.4401 in directory D:\YI_1124891\rawData\YI_1124891-0168
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:49:15 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11931mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:50:05 -- FINISHED section number 168, section completed in 3 mins 45 secs
+2026/10/15 01:50:05 -- STARTING section number 169 (169 of 300) at z=17.4899 in directory D:\YI_1124891\rawData\YI_1124891-0169
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:53:00 -- acquired 88 tile positions in 2 mins 55 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:53:51 -- FINISHED section number 169, section completed in 3 mins 46 secs
+2026/10/15 01:53:51 -- STARTING section number 170 (170 of 300) at z=17.5400 in directory D:\YI_1124891\rawData\YI_1124891-0170
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:56:46 -- acquired 88 tile positions in 2 mins 55 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11905mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 01:57:36 -- FINISHED section number 170, section completed in 3 mins 45 secs
+2026/10/15 01:57:36 -- STARTING section number 171 (171 of 300) at z=17.5899 in directory D:\YI_1124891\rawData\YI_1124891-0171
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:00:31 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:01:21 -- FINISHED section number 171, section completed in 3 mins 45 secs
+2026/10/15 02:01:21 -- STARTING section number 172 (172 of 300) at z=17.6400 in directory D:\YI_1124891\rawData\YI_1124891-0172
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:04:16 -- acquired 88 tile positions in 2 mins 55 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:05:07 -- FINISHED section number 172, section completed in 3 mins 45 secs
+2026/10/15 02:05:07 -- STARTING section number 173 (173 of 300) at z=17.6899 in directory D:\YI_1124891\rawData\YI_1124891-0173
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:08:02 -- acquired 88 tile positions in 2 mins 55 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:08:53 -- FINISHED section number 173, section completed in 3 mins 46 secs
+2026/10/15 02:08:53 -- STARTING section number 174 (174 of 300) at z=17.7400 in directory D:\YI_1124891\rawData\YI_1124891-0174
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:11:47 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:12:38 -- FINISHED section number 174, section completed in 3 mins 44 secs
+2026/10/15 02:12:38 -- STARTING section number 175 (175 of 300) at z=17.7899 in directory D:\YI_1124891\rawData\YI_1124891-0175
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:15:31 -- acquired 88 tile positions in 2 mins 53 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:16:22 -- FINISHED section number 175, section completed in 3 mins 44 secs
+2026/10/15 02:16:22 -- STARTING section number 176 (176 of 300) at z=17.8400 in directory D:\YI_1124891\rawData\YI_1124891-0176
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:19:14 -- acquired 88 tile positions in 2 mins 53 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:20:05 -- FINISHED section number 176, section completed in 3 mins 44 secs
+2026/10/15 02:20:05 -- STARTING section number 177 (177 of 300) at z=17.8899 in directory D:\YI_1124891\rawData\YI_1124891-0177
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:22:59 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:23:50 -- FINISHED section number 177, section completed in 3 mins 45 secs
+2026/10/15 02:23:50 -- STARTING section number 178 (178 of 300) at z=17.9400 in directory D:\YI_1124891\rawData\YI_1124891-0178
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:26:43 -- acquired 88 tile positions in 2 mins 53 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:27:34 -- FINISHED section number 178, section completed in 3 mins 44 secs
+2026/10/15 02:27:34 -- STARTING section number 179 (179 of 300) at z=17.9899 in directory D:\YI_1124891\rawData\YI_1124891-0179
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:30:29 -- acquired 88 tile positions in 2 mins 55 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:31:20 -- FINISHED section number 179, section completed in 3 mins 45 secs
+2026/10/15 02:31:20 -- STARTING section number 180 (180 of 300) at z=18.0400 in directory D:\YI_1124891\rawData\YI_1124891-0180
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11924mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:34:13 -- acquired 88 tile positions in 2 mins 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:35:04 -- FINISHED section number 180, section completed in 3 mins 45 secs
+2026/10/15 02:35:04 -- STARTING section number 181 (181 of 300) at z=18.0899 in directory D:\YI_1124891\rawData\YI_1124891-0181
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:37:25 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11920mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:38:15 -- FINISHED section number 181, section completed in 3 mins 11 secs
+2026/10/15 02:38:15 -- STARTING section number 182 (182 of 300) at z=18.1400 in directory D:\YI_1124891\rawData\YI_1124891-0182
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:40:35 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:41:30 -- FINISHED section number 182, section completed in 3 mins 15 secs
+2026/10/15 02:41:30 -- STARTING section number 183 (183 of 300) at z=18.1901 in directory D:\YI_1124891\rawData\YI_1124891-0183
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=-1mW,state=not lasing
+2026/10/15 02:43:51 -- acquired 70 tile positions in 2 mins 21 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:44:42 -- FINISHED section number 183, section completed in 3 mins 11 secs
+2026/10/15 02:44:42 -- STARTING section number 184 (184 of 300) at z=18.2400 in directory D:\YI_1124891\rawData\YI_1124891-0184
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:47:02 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11919mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:47:52 -- FINISHED section number 184, section completed in 3 mins 10 secs
+2026/10/15 02:47:52 -- STARTING section number 185 (185 of 300) at z=18.2901 in directory D:\YI_1124891\rawData\YI_1124891-0185
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:50:11 -- acquired 70 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11947mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:51:02 -- FINISHED section number 185, section completed in 3 mins 10 secs
+2026/10/15 02:51:02 -- STARTING section number 186 (186 of 300) at z=18.3400 in directory D:\YI_1124891\rawData\YI_1124891-0186
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11943mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:53:21 -- acquired 70 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11910mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:54:11 -- FINISHED section number 186, section completed in 3 mins 9 secs
+2026/10/15 02:54:11 -- STARTING section number 187 (187 of 300) at z=18.3901 in directory D:\YI_1124891\rawData\YI_1124891-0187
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11910mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:56:29 -- acquired 70 tile positions in 2 mins 18 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11934mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:57:19 -- FINISHED section number 187, section completed in 3 mins 8 secs
+2026/10/15 02:57:19 -- STARTING section number 188 (188 of 300) at z=18.4400 in directory D:\YI_1124891\rawData\YI_1124891-0188
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 02:59:39 -- acquired 70 tile positions in 2 mins 19 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11930mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:00:32 -- FINISHED section number 188, section completed in 3 mins 13 secs
+2026/10/15 03:00:32 -- STARTING section number 189 (189 of 300) at z=18.4901 in directory D:\YI_1124891\rawData\YI_1124891-0189
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11902mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:02:54 -- acquired 70 tile positions in 2 mins 22 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:03:45 -- FINISHED section number 189, section completed in 3 mins 12 secs
+2026/10/15 03:03:45 -- STARTING section number 190 (190 of 300) at z=18.5400 in directory D:\YI_1124891\rawData\YI_1124891-0190
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:06:05 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:06:56 -- FINISHED section number 190, section completed in 3 mins 11 secs
+2026/10/15 03:06:56 -- STARTING section number 191 (191 of 300) at z=18.5901 in directory D:\YI_1124891\rawData\YI_1124891-0191
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:09:17 -- acquired 70 tile positions in 2 mins 21 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:10:08 -- FINISHED section number 191, section completed in 3 mins 13 secs
+2026/10/15 03:10:08 -- STARTING section number 192 (192 of 300) at z=18.6400 in directory D:\YI_1124891\rawData\YI_1124891-0192
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:12:29 -- acquired 70 tile positions in 2 mins 21 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:13:19 -- FINISHED section number 192, section completed in 3 mins 11 secs
+2026/10/15 03:13:20 -- STARTING section number 193 (193 of 300) at z=18.6901 in directory D:\YI_1124891\rawData\YI_1124891-0193
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:15:40 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:16:30 -- FINISHED section number 193, section completed in 3 mins 10 secs
+2026/10/15 03:16:30 -- STARTING section number 194 (194 of 300) at z=18.7400 in directory D:\YI_1124891\rawData\YI_1124891-0194
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:18:50 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:19:40 -- FINISHED section number 194, section completed in 3 mins 10 secs
+2026/10/15 03:19:40 -- STARTING section number 195 (195 of 300) at z=18.7901 in directory D:\YI_1124891\rawData\YI_1124891-0195
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11924mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:21:58 -- acquired 70 tile positions in 2 mins 18 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:22:49 -- FINISHED section number 195, section completed in 3 mins 8 secs
+2026/10/15 03:22:49 -- STARTING section number 196 (196 of 300) at z=18.8399 in directory D:\YI_1124891\rawData\YI_1124891-0196
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:25:09 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:25:59 -- FINISHED section number 196, section completed in 3 mins 10 secs
+2026/10/15 03:25:59 -- STARTING section number 197 (197 of 300) at z=18.8900 in directory D:\YI_1124891\rawData\YI_1124891-0197
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:28:17 -- acquired 70 tile positions in 2 mins 18 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:29:07 -- FINISHED section number 197, section completed in 3 mins 8 secs
+2026/10/15 03:29:07 -- STARTING section number 198 (198 of 300) at z=18.9399 in directory D:\YI_1124891\rawData\YI_1124891-0198
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:31:28 -- acquired 70 tile positions in 2 mins 20 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11919mW,pumpCurrent=94.9,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:32:18 -- FINISHED section number 198, section completed in 3 mins 11 secs
+2026/10/15 03:32:18 -- STARTING section number 199 (199 of 300) at z=18.9900 in directory D:\YI_1124891\rawData\YI_1124891-0199
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:34:56 -- acquired 80 tile positions in 2 mins 38 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:35:46 -- FINISHED section number 199, section completed in 3 mins 28 secs
+2026/10/15 03:35:46 -- STARTING section number 200 (200 of 300) at z=19.0399 in directory D:\YI_1124891\rawData\YI_1124891-0200
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:38:14 -- acquired 74 tile positions in 2 mins 28 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:39:04 -- FINISHED section number 200, section completed in 3 mins 18 secs
+2026/10/15 03:39:04 -- STARTING section number 201 (201 of 300) at z=19.0900 in directory D:\YI_1124891\rawData\YI_1124891-0201
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:41:11 -- acquired 63 tile positions in 2 mins 7 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:42:07 -- FINISHED section number 201, section completed in 3 mins 3 secs
+2026/10/15 03:42:07 -- STARTING section number 202 (202 of 300) at z=19.1399 in directory D:\YI_1124891\rawData\YI_1124891-0202
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:44:14 -- acquired 63 tile positions in 2 mins 7 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:45:04 -- FINISHED section number 202, section completed in 2 mins 58 secs
+2026/10/15 03:45:05 -- STARTING section number 203 (203 of 300) at z=19.1900 in directory D:\YI_1124891\rawData\YI_1124891-0203
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:46:55 -- acquired 54 tile positions in 1 mins 51 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11898mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:47:46 -- FINISHED section number 203, section completed in 2 mins 42 secs
+2026/10/15 03:47:46 -- STARTING section number 204 (204 of 300) at z=19.2399 in directory D:\YI_1124891\rawData\YI_1124891-0204
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:49:35 -- acquired 54 tile positions in 1 mins 49 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11922mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:50:26 -- FINISHED section number 204, section completed in 2 mins 40 secs
+2026/10/15 03:50:26 -- STARTING section number 205 (205 of 300) at z=19.2900 in directory D:\YI_1124891\rawData\YI_1124891-0205
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:52:15 -- acquired 54 tile positions in 1 mins 49 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:53:06 -- FINISHED section number 205, section completed in 2 mins 40 secs
+2026/10/15 03:53:06 -- STARTING section number 206 (206 of 300) at z=19.3399 in directory D:\YI_1124891\rawData\YI_1124891-0206
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:54:57 -- acquired 54 tile positions in 1 mins 51 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:55:48 -- FINISHED section number 206, section completed in 2 mins 42 secs
+2026/10/15 03:55:48 -- STARTING section number 207 (207 of 300) at z=19.3900 in directory D:\YI_1124891\rawData\YI_1124891-0207
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:57:39 -- acquired 54 tile positions in 1 mins 50 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 03:58:29 -- FINISHED section number 207, section completed in 2 mins 41 secs
+2026/10/15 03:58:29 -- STARTING section number 208 (208 of 300) at z=19.4399 in directory D:\YI_1124891\rawData\YI_1124891-0208
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:00:19 -- acquired 54 tile positions in 1 mins 49 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:01:10 -- FINISHED section number 208, section completed in 2 mins 40 secs
+2026/10/15 04:01:10 -- STARTING section number 209 (209 of 300) at z=19.4900 in directory D:\YI_1124891\rawData\YI_1124891-0209
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:02:59 -- acquired 54 tile positions in 1 mins 49 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:03:49 -- FINISHED section number 209, section completed in 2 mins 40 secs
+2026/10/15 04:03:49 -- STARTING section number 210 (210 of 300) at z=19.5401 in directory D:\YI_1124891\rawData\YI_1124891-0210
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:05:40 -- acquired 54 tile positions in 1 mins 50 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:06:31 -- FINISHED section number 210, section completed in 2 mins 41 secs
+2026/10/15 04:06:31 -- STARTING section number 211 (211 of 300) at z=19.5900 in directory D:\YI_1124891\rawData\YI_1124891-0211
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:08:19 -- acquired 54 tile positions in 1 mins 48 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:09:09 -- FINISHED section number 211, section completed in 2 mins 38 secs
+2026/10/15 04:09:09 -- STARTING section number 212 (212 of 300) at z=19.6401 in directory D:\YI_1124891\rawData\YI_1124891-0212
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11906mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:10:57 -- acquired 54 tile positions in 1 mins 48 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:11:48 -- FINISHED section number 212, section completed in 2 mins 39 secs
+2026/10/15 04:11:48 -- STARTING section number 213 (213 of 300) at z=19.6900 in directory D:\YI_1124891\rawData\YI_1124891-0213
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:13:39 -- acquired 54 tile positions in 1 mins 51 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:14:30 -- FINISHED section number 213, section completed in 2 mins 41 secs
+2026/10/15 04:14:30 -- STARTING section number 214 (214 of 300) at z=19.7401 in directory D:\YI_1124891\rawData\YI_1124891-0214
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:16:19 -- acquired 54 tile positions in 1 mins 49 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:17:09 -- FINISHED section number 214, section completed in 2 mins 40 secs
+2026/10/15 04:17:09 -- STARTING section number 215 (215 of 300) at z=19.7900 in directory D:\YI_1124891\rawData\YI_1124891-0215
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:18:56 -- acquired 54 tile positions in 1 mins 47 secs
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:19:47 -- FINISHED section number 215, section completed in 2 mins 37 secs
+2026/10/15 04:19:47 -- STARTING section number 216 (216 of 300) at z=19.8401 in directory D:\YI_1124891\rawData\YI_1124891-0216
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11901mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:21:35 -- acquired 54 tile positions in 1 mins 48 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:22:25 -- FINISHED section number 216, section completed in 2 mins 39 secs
+2026/10/15 04:22:25 -- STARTING section number 217 (217 of 300) at z=19.8900 in directory D:\YI_1124891\rawData\YI_1124891-0217
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:24:06 -- acquired 48 tile positions in 1 mins 40 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:24:56 -- FINISHED section number 217, section completed in 2 mins 31 secs
+2026/10/15 04:24:56 -- STARTING section number 218 (218 of 300) at z=19.9401 in directory D:\YI_1124891\rawData\YI_1124891-0218
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:26:34 -- acquired 48 tile positions in 1 mins 38 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:27:25 -- FINISHED section number 218, section completed in 2 mins 28 secs
+2026/10/15 04:27:25 -- STARTING section number 219 (219 of 300) at z=19.9900 in directory D:\YI_1124891\rawData\YI_1124891-0219
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:29:04 -- acquired 48 tile positions in 1 mins 39 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:29:54 -- FINISHED section number 219, section completed in 2 mins 30 secs
+2026/10/15 04:29:54 -- STARTING section number 220 (220 of 300) at z=20.0401 in directory D:\YI_1124891\rawData\YI_1124891-0220
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11938mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:31:33 -- acquired 48 tile positions in 1 mins 39 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:32:24 -- FINISHED section number 220, section completed in 2 mins 29 secs
+2026/10/15 04:32:24 -- STARTING section number 221 (221 of 300) at z=20.0900 in directory D:\YI_1124891\rawData\YI_1124891-0221
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:34:02 -- acquired 48 tile positions in 1 mins 38 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:34:52 -- FINISHED section number 221, section completed in 2 mins 28 secs
+2026/10/15 04:34:52 -- STARTING section number 222 (222 of 300) at z=20.1401 in directory D:\YI_1124891\rawData\YI_1124891-0222
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:36:31 -- acquired 48 tile positions in 1 mins 39 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:37:22 -- FINISHED section number 222, section completed in 2 mins 30 secs
+2026/10/15 04:37:22 -- STARTING section number 223 (223 of 300) at z=20.1899 in directory D:\YI_1124891\rawData\YI_1124891-0223
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:39:02 -- acquired 48 tile positions in 1 mins 40 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:39:52 -- FINISHED section number 223, section completed in 2 mins 31 secs
+2026/10/15 04:39:52 -- STARTING section number 224 (224 of 300) at z=20.2400 in directory D:\YI_1124891\rawData\YI_1124891-0224
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:41:31 -- acquired 48 tile positions in 1 mins 39 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:42:22 -- FINISHED section number 224, section completed in 2 mins 29 secs
+2026/10/15 04:42:22 -- STARTING section number 225 (225 of 300) at z=20.2899 in directory D:\YI_1124891\rawData\YI_1124891-0225
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:43:59 -- acquired 48 tile positions in 1 mins 37 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:44:49 -- FINISHED section number 225, section completed in 2 mins 28 secs
+2026/10/15 04:44:50 -- STARTING section number 226 (226 of 300) at z=20.3400 in directory D:\YI_1124891\rawData\YI_1124891-0226
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:46:29 -- acquired 48 tile positions in 1 mins 40 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:47:20 -- FINISHED section number 226, section completed in 2 mins 30 secs
+2026/10/15 04:47:20 -- STARTING section number 227 (227 of 300) at z=20.3899 in directory D:\YI_1124891\rawData\YI_1124891-0227
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:48:57 -- acquired 48 tile positions in 1 mins 37 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:49:47 -- FINISHED section number 227, section completed in 2 mins 28 secs
+2026/10/15 04:49:47 -- STARTING section number 228 (228 of 300) at z=20.4400 in directory D:\YI_1124891\rawData\YI_1124891-0228
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:51:03 -- acquired 35 tile positions in 1 mins 16 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:51:54 -- FINISHED section number 228, section completed in 2 mins 7 secs
+2026/10/15 04:51:54 -- STARTING section number 229 (229 of 300) at z=20.4899 in directory D:\YI_1124891\rawData\YI_1124891-0229
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11905mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:53:08 -- acquired 35 tile positions in 1 mins 14 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:53:59 -- FINISHED section number 229, section completed in 2 mins 5 secs
+2026/10/15 04:53:59 -- STARTING section number 230 (230 of 300) at z=20.5400 in directory D:\YI_1124891\rawData\YI_1124891-0230
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:55:13 -- acquired 35 tile positions in 1 mins 14 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11907mW,pumpCurrent=94.9,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:56:04 -- FINISHED section number 230, section completed in 2 mins 5 secs
+2026/10/15 04:56:04 -- STARTING section number 231 (231 of 300) at z=20.5899 in directory D:\YI_1124891\rawData\YI_1124891-0231
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11912mW,pumpCurrent=94.9,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:57:18 -- acquired 35 tile positions in 1 mins 15 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:58:14 -- FINISHED section number 231, section completed in 2 mins 10 secs
+2026/10/15 04:58:14 -- STARTING section number 232 (232 of 300) at z=20.6400 in directory D:\YI_1124891\rawData\YI_1124891-0232
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 04:59:29 -- acquired 35 tile positions in 1 mins 14 secs
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:00:19 -- FINISHED section number 232, section completed in 2 mins 5 secs
+2026/10/15 05:00:19 -- STARTING section number 233 (233 of 300) at z=20.6899 in directory D:\YI_1124891\rawData\YI_1124891-0233
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:01:33 -- acquired 35 tile positions in 1 mins 15 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:02:24 -- FINISHED section number 233, section completed in 2 mins 5 secs
+2026/10/15 05:02:24 -- STARTING section number 234 (234 of 300) at z=20.7400 in directory D:\YI_1124891\rawData\YI_1124891-0234
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:03:39 -- acquired 35 tile positions in 1 mins 15 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11911mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:04:30 -- FINISHED section number 234, section completed in 2 mins 5 secs
+2026/10/15 05:04:30 -- STARTING section number 235 (235 of 300) at z=20.7899 in directory D:\YI_1124891\rawData\YI_1124891-0235
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11906mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:05:45 -- acquired 35 tile positions in 1 mins 15 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:06:36 -- FINISHED section number 235, section completed in 2 mins 6 secs
+2026/10/15 05:06:36 -- STARTING section number 236 (236 of 300) at z=20.8400 in directory D:\YI_1124891\rawData\YI_1124891-0236
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:07:49 -- acquired 35 tile positions in 1 mins 14 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11920mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:08:40 -- FINISHED section number 236, section completed in 2 mins 4 secs
+2026/10/15 05:08:40 -- STARTING section number 237 (237 of 300) at z=20.8901 in directory D:\YI_1124891\rawData\YI_1124891-0237
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:09:51 -- acquired 35 tile positions in 1 mins 11 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:10:42 -- FINISHED section number 237, section completed in 2 mins 2 secs
+2026/10/15 05:10:42 -- STARTING section number 238 (238 of 300) at z=20.9400 in directory D:\YI_1124891\rawData\YI_1124891-0238
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:11:54 -- acquired 35 tile positions in 1 mins 13 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11899mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:12:45 -- FINISHED section number 238, section completed in 2 mins 3 secs
+2026/10/15 05:12:45 -- STARTING section number 239 (239 of 300) at z=20.9901 in directory D:\YI_1124891\rawData\YI_1124891-0239
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11905mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:13:59 -- acquired 35 tile positions in 1 mins 14 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=mW,state=not lasing
+2026/10/15 05:15:00 -- FINISHED section number 239, section completed in 2 mins 15 secs
+2026/10/15 05:15:00 -- STARTING section number 240 (240 of 300) at z=21.0400 in directory D:\YI_1124891\rawData\YI_1124891-0240
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:16:15 -- acquired 35 tile positions in 1 mins 15 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11904mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:17:05 -- FINISHED section number 240, section completed in 2 mins 5 secs
+2026/10/15 05:17:05 -- STARTING section number 241 (241 of 300) at z=21.0901 in directory D:\YI_1124891\rawData\YI_1124891-0241
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:18:21 -- acquired 36 tile positions in 1 mins 16 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11930mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:19:16 -- FINISHED section number 241, section completed in 2 mins 11 secs
+2026/10/15 05:19:16 -- STARTING section number 242 (242 of 300) at z=21.1400 in directory D:\YI_1124891\rawData\YI_1124891-0242
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:20:32 -- acquired 36 tile positions in 1 mins 15 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:21:22 -- FINISHED section number 242, section completed in 2 mins 6 secs
+2026/10/15 05:21:22 -- STARTING section number 243 (243 of 300) at z=21.1901 in directory D:\YI_1124891\rawData\YI_1124891-0243
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:22:37 -- acquired 36 tile positions in 1 mins 15 secs
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:23:27 -- FINISHED section number 243, section completed in 2 mins 5 secs
+2026/10/15 05:23:27 -- STARTING section number 244 (244 of 300) at z=21.2400 in directory D:\YI_1124891\rawData\YI_1124891-0244
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:24:40 -- acquired 36 tile positions in 1 mins 13 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:25:30 -- FINISHED section number 244, section completed in 2 mins 3 secs
+2026/10/15 05:25:30 -- STARTING section number 245 (245 of 300) at z=21.2901 in directory D:\YI_1124891\rawData\YI_1124891-0245
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11927mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:26:43 -- acquired 36 tile positions in 1 mins 13 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:27:34 -- FINISHED section number 245, section completed in 2 mins 3 secs
+2026/10/15 05:27:34 -- STARTING section number 246 (246 of 300) at z=21.3400 in directory D:\YI_1124891\rawData\YI_1124891-0246
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:28:50 -- acquired 36 tile positions in 1 mins 17 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:29:41 -- FINISHED section number 246, section completed in 2 mins 7 secs
+2026/10/15 05:29:41 -- STARTING section number 247 (247 of 300) at z=21.3901 in directory D:\YI_1124891\rawData\YI_1124891-0247
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:30:57 -- acquired 36 tile positions in 1 mins 17 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:31:48 -- FINISHED section number 247, section completed in 2 mins 7 secs
+2026/10/15 05:31:48 -- STARTING section number 248 (248 of 300) at z=21.4400 in directory D:\YI_1124891\rawData\YI_1124891-0248
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:33:06 -- acquired 36 tile positions in 1 mins 18 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:33:56 -- FINISHED section number 248, section completed in 2 mins 8 secs
+2026/10/15 05:33:56 -- STARTING section number 249 (249 of 300) at z=21.4901 in directory D:\YI_1124891\rawData\YI_1124891-0249
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:35:13 -- acquired 36 tile positions in 1 mins 17 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:36:04 -- FINISHED section number 249, section completed in 2 mins 8 secs
+2026/10/15 05:36:04 -- STARTING section number 250 (250 of 300) at z=21.5399 in directory D:\YI_1124891\rawData\YI_1124891-0250
+laser status: wavelength=800nm,outputPower=2934mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:37:20 -- acquired 36 tile positions in 1 mins 16 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:38:11 -- FINISHED section number 250, section completed in 2 mins 7 secs
+2026/10/15 05:38:11 -- STARTING section number 251 (251 of 300) at z=21.5900 in directory D:\YI_1124891\rawData\YI_1124891-0251
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:39:27 -- acquired 36 tile positions in 1 mins 16 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:40:18 -- FINISHED section number 251, section completed in 2 mins 7 secs
+2026/10/15 05:40:18 -- STARTING section number 252 (252 of 300) at z=21.6399 in directory D:\YI_1124891\rawData\YI_1124891-0252
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:41:23 -- acquired 30 tile positions in 1 mins 5 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:42:13 -- FINISHED section number 252, section completed in 1 mins 56 secs
+2026/10/15 05:42:13 -- STARTING section number 253 (253 of 300) at z=21.6900 in directory D:\YI_1124891\rawData\YI_1124891-0253
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11925mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:43:20 -- acquired 30 tile positions in 1 mins 7 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:44:10 -- FINISHED section number 253, section completed in 1 mins 57 secs
+2026/10/15 05:44:10 -- STARTING section number 254 (254 of 300) at z=21.7399 in directory D:\YI_1124891\rawData\YI_1124891-0254
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:45:04 -- acquired 24 tile positions in 53 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:45:54 -- FINISHED section number 254, section completed in 1 mins 43 secs
+2026/10/15 05:45:54 -- STARTING section number 255 (255 of 300) at z=21.7900 in directory D:\YI_1124891\rawData\YI_1124891-0255
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:46:46 -- acquired 24 tile positions in 52 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:47:36 -- FINISHED section number 255, section completed in 1 mins 43 secs
+2026/10/15 05:47:36 -- STARTING section number 256 (256 of 300) at z=21.8399 in directory D:\YI_1124891\rawData\YI_1124891-0256
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:48:30 -- acquired 24 tile positions in 53 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:49:20 -- FINISHED section number 256, section completed in 1 mins 43 secs
+2026/10/15 05:49:20 -- STARTING section number 257 (257 of 300) at z=21.8900 in directory D:\YI_1124891\rawData\YI_1124891-0257
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:50:11 -- acquired 24 tile positions in 51 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:51:01 -- FINISHED section number 257, section completed in 1 mins 41 secs
+2026/10/15 05:51:01 -- STARTING section number 258 (258 of 300) at z=21.9399 in directory D:\YI_1124891\rawData\YI_1124891-0258
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:51:52 -- acquired 24 tile positions in 51 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:52:43 -- FINISHED section number 258, section completed in 1 mins 42 secs
+2026/10/15 05:52:43 -- STARTING section number 259 (259 of 300) at z=21.9900 in directory D:\YI_1124891\rawData\YI_1124891-0259
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:53:36 -- acquired 24 tile positions in 53 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:54:26 -- FINISHED section number 259, section completed in 1 mins 44 secs
+2026/10/15 05:54:26 -- STARTING section number 260 (260 of 300) at z=22.0399 in directory D:\YI_1124891\rawData\YI_1124891-0260
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:55:19 -- acquired 24 tile positions in 53 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:56:10 -- FINISHED section number 260, section completed in 1 mins 44 secs
+2026/10/15 05:56:10 -- STARTING section number 261 (261 of 300) at z=22.0900 in directory D:\YI_1124891\rawData\YI_1124891-0261
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:57:04 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:57:54 -- FINISHED section number 261, section completed in 1 mins 44 secs
+2026/10/15 05:57:54 -- STARTING section number 262 (262 of 300) at z=22.1399 in directory D:\YI_1124891\rawData\YI_1124891-0262
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:58:48 -- acquired 24 tile positions in 53 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 05:59:38 -- FINISHED section number 262, section completed in 1 mins 44 secs
+2026/10/15 05:59:38 -- STARTING section number 263 (263 of 300) at z=22.1900 in directory D:\YI_1124891\rawData\YI_1124891-0263
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11919mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:00:31 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11932mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:01:23 -- FINISHED section number 263, section completed in 1 mins 45 secs
+2026/10/15 06:01:23 -- STARTING section number 264 (264 of 300) at z=22.2401 in directory D:\YI_1124891\rawData\YI_1124891-0264
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11910mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:02:18 -- acquired 24 tile positions in 56 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11898mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:03:09 -- FINISHED section number 264, section completed in 1 mins 47 secs
+2026/10/15 06:03:09 -- STARTING section number 265 (265 of 300) at z=22.2900 in directory D:\YI_1124891\rawData\YI_1124891-0265
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11897mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:04:03 -- acquired 24 tile positions in 53 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:04:53 -- FINISHED section number 265, section completed in 1 mins 44 secs
+2026/10/15 06:04:53 -- STARTING section number 266 (266 of 300) at z=22.3401 in directory D:\YI_1124891\rawData\YI_1124891-0266
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:05:46 -- acquired 24 tile positions in 53 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:06:36 -- FINISHED section number 266, section completed in 1 mins 43 secs
+2026/10/15 06:06:36 -- STARTING section number 267 (267 of 300) at z=22.3900 in directory D:\YI_1124891\rawData\YI_1124891-0267
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:07:29 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11921mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:08:20 -- FINISHED section number 267, section completed in 1 mins 44 secs
+2026/10/15 06:08:20 -- STARTING section number 268 (268 of 300) at z=22.4401 in directory D:\YI_1124891\rawData\YI_1124891-0268
+laser status: wavelength=800nm,outputPower=2927mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:09:14 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2933mW,pumpPower=11917mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:10:05 -- FINISHED section number 268, section completed in 1 mins 45 secs
+2026/10/15 06:10:05 -- STARTING section number 269 (269 of 300) at z=22.4900 in directory D:\YI_1124891\rawData\YI_1124891-0269
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11926mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:10:59 -- acquired 24 tile positions in 55 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:11:55 -- FINISHED section number 269, section completed in 1 mins 51 secs
+2026/10/15 06:11:55 -- STARTING section number 270 (270 of 300) at z=22.5401 in directory D:\YI_1124891\rawData\YI_1124891-0270
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:12:49 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:13:40 -- FINISHED section number 270, section completed in 1 mins 44 secs
+2026/10/15 06:13:40 -- STARTING section number 271 (271 of 300) at z=22.5900 in directory D:\YI_1124891\rawData\YI_1124891-0271
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11901mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:14:33 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:15:24 -- FINISHED section number 271, section completed in 1 mins 44 secs
+2026/10/15 06:15:24 -- STARTING section number 272 (272 of 300) at z=22.6401 in directory D:\YI_1124891\rawData\YI_1124891-0272
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:16:18 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:17:08 -- FINISHED section number 272, section completed in 1 mins 45 secs
+2026/10/15 06:17:08 -- STARTING section number 273 (273 of 300) at z=22.6900 in directory D:\YI_1124891\rawData\YI_1124891-0273
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:18:03 -- acquired 24 tile positions in 55 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:18:53 -- FINISHED section number 273, section completed in 1 mins 45 secs
+2026/10/15 06:18:53 -- STARTING section number 274 (274 of 300) at z=22.7401 in directory D:\YI_1124891\rawData\YI_1124891-0274
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11908mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:19:45 -- acquired 24 tile positions in 52 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:20:36 -- FINISHED section number 274, section completed in 1 mins 42 secs
+2026/10/15 06:20:36 -- STARTING section number 275 (275 of 300) at z=22.7900 in directory D:\YI_1124891\rawData\YI_1124891-0275
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:21:27 -- acquired 24 tile positions in 51 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:22:22 -- FINISHED section number 275, section completed in 1 mins 46 secs
+2026/10/15 06:22:22 -- STARTING section number 276 (276 of 300) at z=22.8401 in directory D:\YI_1124891\rawData\YI_1124891-0276
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:23:22 -- acquired 28 tile positions in 1 mins 
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:24:12 -- FINISHED section number 276, section completed in 1 mins 51 secs
+2026/10/15 06:24:13 -- STARTING section number 277 (277 of 300) at z=22.8899 in directory D:\YI_1124891\rawData\YI_1124891-0277
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:25:12 -- acquired 28 tile positions in 59 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11900mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:26:03 -- FINISHED section number 277, section completed in 1 mins 51 secs
+2026/10/15 06:26:03 -- STARTING section number 278 (278 of 300) at z=22.9401 in directory D:\YI_1124891\rawData\YI_1124891-0278
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11902mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:27:05 -- acquired 28 tile positions in 1 mins 2 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:27:55 -- FINISHED section number 278, section completed in 1 mins 52 secs
+2026/10/15 06:27:55 -- STARTING section number 279 (279 of 300) at z=22.9899 in directory D:\YI_1124891\rawData\YI_1124891-0279
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11911mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:28:54 -- acquired 28 tile positions in 58 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:29:44 -- FINISHED section number 279, section completed in 1 mins 49 secs
+2026/10/15 06:29:44 -- STARTING section number 280 (280 of 300) at z=23.0400 in directory D:\YI_1124891\rawData\YI_1124891-0280
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11930mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:30:46 -- acquired 28 tile positions in 1 mins 2 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:31:37 -- FINISHED section number 280, section completed in 1 mins 52 secs
+2026/10/15 06:31:37 -- STARTING section number 281 (281 of 300) at z=23.0899 in directory D:\YI_1124891\rawData\YI_1124891-0281
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:32:31 -- acquired 24 tile positions in 54 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11934mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:33:21 -- FINISHED section number 281, section completed in 1 mins 44 secs
+2026/10/15 06:33:21 -- STARTING section number 282 (282 of 300) at z=23.1400 in directory D:\YI_1124891\rawData\YI_1124891-0282
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11928mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:34:16 -- acquired 24 tile positions in 55 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11929mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:35:06 -- FINISHED section number 282, section completed in 1 mins 45 secs
+2026/10/15 06:35:06 -- STARTING section number 283 (283 of 300) at z=23.1899 in directory D:\YI_1124891\rawData\YI_1124891-0283
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11923mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:35:55 -- acquired 21 tile positions in 49 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:36:46 -- FINISHED section number 283, section completed in 1 mins 40 secs
+2026/10/15 06:36:46 -- STARTING section number 284 (284 of 300) at z=23.2400 in directory D:\YI_1124891\rawData\YI_1124891-0284
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11916mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:37:35 -- acquired 21 tile positions in 49 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11932mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:38:25 -- FINISHED section number 284, section completed in 1 mins 39 secs
+2026/10/15 06:38:25 -- STARTING section number 285 (285 of 300) at z=23.2899 in directory D:\YI_1124891\rawData\YI_1124891-0285
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11932mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:39:01 -- acquired 15 tile positions in 35 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11909mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:39:51 -- FINISHED section number 285, section completed in 1 mins 26 secs
+2026/10/15 06:39:51 -- STARTING section number 286 (286 of 300) at z=23.3400 in directory D:\YI_1124891\rawData\YI_1124891-0286
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11907mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:40:28 -- acquired 15 tile positions in 37 secs
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:41:18 -- FINISHED section number 286, section completed in 1 mins 27 secs
+2026/10/15 06:41:18 -- STARTING section number 287 (287 of 300) at z=23.3899 in directory D:\YI_1124891\rawData\YI_1124891-0287
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:41:56 -- acquired 15 tile positions in 37 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11903mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:42:46 -- FINISHED section number 287, section completed in 1 mins 28 secs
+2026/10/15 06:42:46 -- STARTING section number 288 (288 of 300) at z=23.4400 in directory D:\YI_1124891\rawData\YI_1124891-0288
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11900mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:43:14 -- acquired 10 tile positions in 28 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11908mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:44:04 -- FINISHED section number 288, section completed in 1 mins 18 secs
+2026/10/15 06:44:04 -- STARTING section number 289 (289 of 300) at z=23.4899 in directory D:\YI_1124891\rawData\YI_1124891-0289
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11910mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:44:32 -- acquired 10 tile positions in 27 secs
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11915mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:45:22 -- FINISHED section number 289, section completed in 1 mins 18 secs
+2026/10/15 06:45:22 -- STARTING section number 290 (290 of 300) at z=23.5400 in directory D:\YI_1124891\rawData\YI_1124891-0290
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11912mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:45:39 -- acquired 6 tile positions in 17 secs
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11915mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:46:30 -- FINISHED section number 290, section completed in 1 mins 8 secs
+2026/10/15 06:46:30 -- STARTING section number 291 (291 of 300) at z=23.5899 in directory D:\YI_1124891\rawData\YI_1124891-0291
+laser status: wavelength=800nm,outputPower=2931mW,pumpPower=11917mW,pumpCurrent=95.3,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:46:46 -- acquired 4 tile positions in 16 secs
+laser status: wavelength=800nm,outputPower=2932mW,pumpPower=11914mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:47:36 -- FINISHED section number 291, section completed in 1 mins 6 secs
+2026/10/15 06:47:36 -- STARTING section number 292 (292 of 300) at z=23.6400 in directory D:\YI_1124891\rawData\YI_1124891-0292
+laser status: wavelength=800nm,outputPower=2930mW,pumpPower=11918mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:47:49 -- acquired 4 tile positions in 13 secs
+laser status: wavelength=800nm,outputPower=2929mW,pumpPower=11906mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+2026/10/15 06:48:42 -- FINISHED section number 292, section completed in 1 mins 7 secs
+2026/10/15 06:48:42 -- STARTING section number 293 (293 of 300) at z=23.6901 in directory D:\YI_1124891\rawData\YI_1124891-0293
+laser status: wavelength=800nm,outputPower=2928mW,pumpPower=11913mW,pumpCurrent=95.1,humidity=1.7
+laser status: wavelength=1064nm,outputPower=0mW,state=not lasing
+Attempting to turn off all lasers
+MaiTai (MaiTai) reports it turned off: wavelength=800nm,outputPower=2mW,pumpPower=6mW,pumpCurrent=0.3,humidity=1.8
+Axon-1064 (Axon1064) reports it turned off: wavelength=1064nm,outputPower=0mW,state=not lasing
