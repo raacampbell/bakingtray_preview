@@ -1652,23 +1652,6 @@ function bs_render_grid(array $config, array $view, string $base): void
 </div>
 <?php endforeach; ?>
 <?= bs_autorefresh_script($autorefreshJs) ?>
-  <!-- Default Statcounter code for BrainSaw
-  http://brainsaw.org -->
-  <script type="text/javascript">
-  var sc_project=13359528;
-  var sc_invisible=1;
-  var sc_security="a7154bf8";
-  </script>
-  <script type="text/javascript"
-  src="https://www.statcounter.com/counter/counter.js"
-  async></script>
-  <noscript><div class="statcounter"><a title="Web Analytics"
-  href="https://statcounter.com/" target="_blank"><img
-  class="statcounter"
-  src="https://c.statcounter.com/13359528/0/a7154bf8/1/"
-  alt="Web Analytics"
-  referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
-  <!-- End of Statcounter Code -->
 </body>
 </html>
 <?php
