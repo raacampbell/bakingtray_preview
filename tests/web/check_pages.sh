@@ -644,7 +644,7 @@ check "acq unfinished, later analysis finished: not finished" body_lacks "$CARD$
 # The estimated completion is shown while acquiring, not once finished.
 page "$MD2"
 check "unfinished page shows the estimated completion" body_has "$PAGE" 'Estimated completion'
-check "  ... as a machine-readable UTC instant the browser can localise" grep -qE '<time id="eta" datetime="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z">[0-9-]+ [0-9:]+ UTC</time> \(estimated\)' <<<"$PAGE"
+check "  ... as a machine-readable UTC instant the browser can localise" grep -qE '<time id="eta" datetime="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z">[0-9-]+ [0-9:]+ UTC</time></td>' <<<"$PAGE"
 check "  ... with the script that shows it in the viewer's own time zone" body_has "$PAGE" "toLocaleString(undefined"
 # The metadata table: voxel size as 1 x 1 x 0 decimals, no objective, no planned-sections row.
 check "metadata: voxel size row" body_has "$PAGE" 'Voxel size X / Y / Z (&micro;m)'

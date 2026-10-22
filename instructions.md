@@ -325,8 +325,8 @@ site ID (and move its data folder) or remove the site. A new site ID also means 
   (of the ground-truth source), and the section being acquired.
 - **Metadata table**: parsed from the recipe by `bs_parse_recipe()` (targeted regexes, no YAML
   extension needed; extend the list there for new fields).
-- **Estimated completion**: mean section duration so far × sections remaining, labelled
-  "(estimated)". The server sends it as a UTC instant (`<time datetime=...Z>`) and a small
+- **Estimated completion**: mean section duration so far × sections remaining. The row label
+  already says it is an estimate, so the value carries no suffix. The server sends it as a UTC instant (`<time datetime=...Z>`) and a small
   inline script shows it in the viewer's own time zone ("Fri 9 Oct, 15:03 BST"); without
   JavaScript the page keeps the UTC text. "Acquisition started" is shown as the recipe
   records it: the microscope's clock, with no time zone, so it cannot be converted.

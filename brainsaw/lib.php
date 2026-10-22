@@ -1789,7 +1789,7 @@ function bs_render_mic_page(array $config, array $view, string $base): void
       <?php if (isset($recipe['frames_averaged'])): ?><tr><td>Frames averaged</td><td><?= (int) $recipe['frames_averaged'] ?></td></tr><?php endif; ?>
       <?php if (!empty($recipe['acq_start_time'])): ?><tr><td>Acquisition started</td><td><?= htmlspecialchars($recipe['acq_start_time']) ?></td></tr><?php endif; ?>
       <?php if ($acq['sections'] && !empty(end($acq['sections'])['timestamp'])): ?><tr><td>Last section completed</td><td><?= htmlspecialchars(gmdate('Y-m-d H:i:s', strtotime(end($acq['sections'])['timestamp']))) ?></td></tr><?php endif; ?>
-      <?php if ($etaAt !== null): ?><tr><td>Estimated completion</td><td><time id="eta" datetime="<?= gmdate('Y-m-d\TH:i:s\Z', $etaAt) ?>"><?= gmdate('Y-m-d H:i', $etaAt) ?> UTC</time> (estimated)</td></tr><?php endif; ?>
+      <?php if ($etaAt !== null): ?><tr><td>Estimated completion</td><td><time id="eta" datetime="<?= gmdate('Y-m-d\TH:i:s\Z', $etaAt) ?>"><?= gmdate('Y-m-d H:i', $etaAt) ?> UTC</time></td></tr><?php endif; ?>
     </table>
     <?php if ($etaAt !== null): ?>
     <script>
