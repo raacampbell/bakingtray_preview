@@ -1516,7 +1516,7 @@ function bs_not_found(): never
     header('Content-Type: text/html; charset=utf-8');
     header('Cache-Control: no-store');
     echo '<!doctype html><html lang="en"><head><meta charset="utf-8">',
-        '<meta name="robots" content="noindex, nofollow"><title>Not found</title></head>',
+        '<meta name="robots" content="noindex, nofollow"><title>Not found</title>', BS_FAVICON_LINKS, '</head>',
         '<body><h1>Not found</h1></body></html>';
     exit;
 }
@@ -1599,6 +1599,9 @@ function bs_freshness(?string $uploadedAt, int $staleAfter, bool $finished): arr
     return [bs_human_ago(time() - $ts), !$finished && (time() - $ts) > $staleAfter];
 }
 
+/** Favicon links: the icons live in the main brainsaw.org site, which is served alongside /livefeed/. */
+const BS_FAVICON_LINKS = '<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48 64x64 96x96 192x192"><link rel="icon" type="image/png" sizes="192x192" href="/images/logo/favicon-192.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png"><link rel="apple-touch-icon" href="/images/logo/apple-touch-icon.png">';
+
 /** <head> lines shared by every view page. */
 function bs_page_head(string $title, ?string $autorefreshJs): string
 {
@@ -1606,6 +1609,7 @@ function bs_page_head(string $title, ?string $autorefreshJs): string
         . '<meta name="viewport" content="width=device-width, initial-scale=1">'
         . '<meta name="robots" content="noindex, nofollow">'
         . '<title>' . htmlspecialchars($title) . ' — Brainsaw</title>'
+        . BS_FAVICON_LINKS
         . bs_autorefresh_head($autorefreshJs);
 }
 
