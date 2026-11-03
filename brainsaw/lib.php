@@ -1703,17 +1703,18 @@ function bs_render_mic_page(array $config, array $view, string $base): void
 <style>
 <?= BS_PAGE_STYLE ?>
   .back { display: inline-block; margin-bottom: 12px; }
-  .layout { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
-  .main-col { flex: 2 1 640px; min-width: 320px; }
-  .side-col { flex: 1 1 280px; min-width: 260px; }
   .image-wrap { position: relative; display: inline-block; max-width: 100%; }
   #main-image { max-width: 100%; height: auto; display: block; border: 1px solid #333; }
   .status.stale { color: #e88; }
-  .status { color: #9a9; margin-bottom: 8px; }
-  table.meta-table { border-collapse: collapse; width: 100%; margin-top: 8px; }
-  table.meta-table td { padding: 4px 8px; border-bottom: 1px solid #2a2a2a; font-size: 0.9rem; }
-  table.meta-table td:first-child { color: #999; width: 45%; }
-  .chart-box { background: #161616; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; margin-top: 20px; }
+  .status { color: #9a9; margin: 8px 0; font-size: 0.85rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 0; margin-top: 8px; }
+  .meta-group { flex: 0 1 auto; padding: 0 24px; border-left: 1px solid #333; }
+  .meta-group:first-child { padding-left: 0; border-left: 0; }
+  table.meta-table { border-collapse: collapse; }
+  table.meta-table td { padding: 2px 12px 2px 0; font-size: 0.8rem; white-space: nowrap; }
+  table.meta-table td:first-child { color: #999; }
+  .charts { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 20px; }
+  .chart-box { flex: 1 1 420px; min-width: 0; background: #161616; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; }
   .chart-title { font-size: 0.95rem; margin-bottom: 8px; color: #ccc; }
   .chart-empty { color: #666; font-size: 0.9rem; }
   .thumbs { display: flex; gap: 16px; flex-wrap: wrap; margin: 12px 0; }
@@ -1730,81 +1731,91 @@ function bs_render_mic_page(array $config, array $view, string $base): void
 <a class="back" href="<?= htmlspecialchars($base . '/' . $view['word']) ?>">&larr; all microscopes</a>
 <h1><?= htmlspecialchars($title) ?></h1>
 
-<div class="layout">
-  <div class="main-col">
-    <div class="status<?= $isStale ? ' stale' : '' ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
-      <?php if ($data['finished']): ?><strong class="finished">Finished</strong> &mdash; <?php endif; ?>
-      <?php if ($ago !== null): ?>Last updated <span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>No image uploaded yet<?php endif; ?>
-      <?php if ($acq['current_section'] !== null && $acq['total_sections'] !== null): ?>
-        &mdash; section <?= (int) $acq['current_section'] ?> of <?= (int) $acq['total_sections'] ?>
-      <?php endif; ?>
-    </div>
-
-    <?php if ($data['main_image_url'] !== null): ?>
-      <div class="image-wrap stamp-wrap">
-        <img id="main-image" src="<?= htmlspecialchars($data['main_image_url']) ?>"<?= $data['main_image_size'] !== null ? ' width="' . $data['main_image_size'][0] . '" height="' . $data['main_image_size'][1] . '"' : '' ?> alt="Last completed section">
-        <?= $data['finished'] ? bs_finished_stamp() : '' ?>
-      </div>
-      <script>
-        // No magnifier on touch screens (phones, tablets): there it only gets in the way of scrolling.
-        $(function () {
-          if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) $('#main-image').imageLens({ lensSize: 220 });
-        });
-      </script>
-    <?php else: ?>
-      <div class="placeholder">no image yet</div>
+<?php
+$fmtTime = function (int $t): string {
+    $iso = gmdate('Y-m-d\TH:i:s\Z', $t);
+    return '<time class="dt" datetime="' . $iso . '">' . gmdate('D j M, H:i', $t) . ' UTC</time>';
+};
+$startAt = !empty($recipe['acq_start_time']) ? strtotime($recipe['acq_start_time'] . ' UTC') : false;
+$lastAt = ($acq['sections'] && !empty(end($acq['sections'])['timestamp'])) ? strtotime(end($acq['sections'])['timestamp']) : false;
+$laserRows = bs_laser_rows($acq['laser_powers'] ?? [], $recipe['laser_power_percent'] ?? null);
+$timeRows = [];
+if ($startAt !== false) $timeRows[] = ['Acquisition started', $fmtTime($startAt)];
+if ($lastAt !== false) $timeRows[] = ['Last section completed', $fmtTime($lastAt)];
+if ($etaAt !== null) $timeRows[] = ['Estimated completion', $fmtTime($etaAt)];
+?>
+<div class="meta">
+  <div class="meta-group"><table class="meta-table">
+    <?php if (($recipe['sample_id'] ?? '') !== ''): ?><tr><td>Sample</td><td><?= htmlspecialchars($recipe['sample_id']) ?></td></tr><?php endif; ?>
+    <?php foreach ($laserRows as [$label, $value]): ?><tr><td><?= htmlspecialchars($label) ?></td><td><?= htmlspecialchars($value) ?></td></tr><?php endforeach; ?>
+  </table></div>
+  <div class="meta-group"><table class="meta-table">
+    <?php if (!empty($recipe['voxel_size_um'])): ?>
+      <tr><td>Voxel size X / Y / Z (&micro;m)</td>
+          <td><?= htmlspecialchars(sprintf('%.1f x %.1f x %.0f', $recipe['voxel_size_um']['x'], $recipe['voxel_size_um']['y'], $recipe['voxel_size_um']['z'])) ?></td></tr>
     <?php endif; ?>
+    <?php if (isset($recipe['num_optical_planes'])): ?><tr><td>Optical planes / section</td><td><?= (int) $recipe['num_optical_planes'] ?></td></tr><?php endif; ?>
+    <?php if (isset($recipe['frames_averaged'])): ?><tr><td>Frames averaged</td><td><?= (int) $recipe['frames_averaged'] ?></td></tr><?php endif; ?>
+  </table></div>
+  <div class="meta-group"><table class="meta-table">
+    <?php foreach ($timeRows as [$label, $value]): ?><tr><td><?= htmlspecialchars($label) ?></td><td><?= $value ?></td></tr><?php endforeach; ?>
+  </table></div>
+</div>
+<script>
+  // Show every time in the viewer's own time zone. The UTC text stays if this cannot run.
+  document.querySelectorAll('time.dt').forEach(function (el) {
+    var d = new Date(el.getAttribute('datetime'));
+    if (isNaN(d.getTime())) return;
+    try {
+      el.textContent = d.toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+    } catch (e) { /* keep the UTC text */ }
+  });
+</script>
 
-    <?php if ($data['thumbs']): ?>
-      <div class="thumbs">
-      <?php foreach ($data['thumbs'] as $kind => $thumb): ?>
-        <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumb['url']) ?>" data-overlay>
-          <img src="<?= htmlspecialchars($thumb['small_url'] ?? $thumb['url']) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
-          <span><?= htmlspecialchars($thumbCaptions[$kind]) ?></span>
-        </a>
-      <?php endforeach; ?>
-      </div>
-    <?php endif; ?>
+<div class="status<?= $isStale ? ' stale' : '' ?>" <?= bs_watch_attrs($data, $staleAfter) ?>>
+  <?php if ($data['finished']): ?><strong class="finished">Finished</strong> &mdash; <?php endif; ?>
+  <?php if ($ago !== null): ?>Last updated <span data-ago><?= htmlspecialchars($ago) ?></span><?php else: ?>No image uploaded yet<?php endif; ?>
+  <?php if ($acq['current_section'] !== null && $acq['total_sections'] !== null): ?>
+    &mdash; section <?= (int) $acq['current_section'] ?> of <?= (int) $acq['total_sections'] ?>
+  <?php endif; ?>
+</div>
 
-    <div class="chart-box">
-      <div class="chart-title">Acquisition time per section</div>
-      <?= bs_render_stats_svg($acq['sections']) ?>
-    </div>
+<?php if ($data['main_image_url'] !== null): ?>
+  <div class="image-wrap stamp-wrap">
+    <img id="main-image" src="<?= htmlspecialchars($data['main_image_url']) ?>"<?= $data['main_image_size'] !== null ? ' width="' . $data['main_image_size'][0] . '" height="' . $data['main_image_size'][1] . '"' : '' ?> alt="Last completed section">
+    <?= $data['finished'] ? bs_finished_stamp() : '' ?>
+  </div>
+  <script>
+    // No magnifier on touch screens (phones, tablets): there it only gets in the way of scrolling.
+    $(function () {
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) $('#main-image').imageLens({ lensSize: 220 });
+    });
+  </script>
+<?php else: ?>
+  <div class="placeholder">no image yet</div>
+<?php endif; ?>
 
-    <div class="chart-box">
-      <div class="chart-title">Cumulative acquisition time</div>
-      <?= bs_render_cumulative_svg($acq['sections']) ?>
-    </div>
+<?php if ($data['thumbs']): ?>
+  <div class="thumbs">
+  <?php foreach ($data['thumbs'] as $kind => $thumb): ?>
+    <a id="thumb-<?= htmlspecialchars($kind) ?>" href="<?= htmlspecialchars($thumb['url']) ?>" data-overlay>
+      <img src="<?= htmlspecialchars($thumb['small_url'] ?? $thumb['url']) ?>" alt="<?= htmlspecialchars($thumbCaptions[$kind]) ?>">
+      <span><?= htmlspecialchars($thumbCaptions[$kind]) ?></span>
+    </a>
+  <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+
+<div class="charts">
+  <div class="chart-box">
+    <div class="chart-title">Acquisition time per section</div>
+    <?= bs_render_stats_svg($acq['sections']) ?>
   </div>
 
-  <div class="side-col">
-    <table class="meta-table">
-      <?php if (($recipe['sample_id'] ?? '') !== ''): ?><tr><td>Sample</td><td><?= htmlspecialchars($recipe['sample_id']) ?></td></tr><?php endif; ?>
-      <?php foreach (bs_laser_rows($acq['laser_powers'] ?? [], $recipe['laser_power_percent'] ?? null) as [$label, $value]): ?><tr><td><?= htmlspecialchars($label) ?></td><td><?= htmlspecialchars($value) ?></td></tr><?php endforeach; ?>
-      <?php if (!empty($recipe['voxel_size_um'])): ?>
-        <tr><td>Voxel size X / Y / Z (&micro;m)</td>
-            <td><?= htmlspecialchars(sprintf('%.1f x %.1f x %.0f', $recipe['voxel_size_um']['x'], $recipe['voxel_size_um']['y'], $recipe['voxel_size_um']['z'])) ?></td></tr>
-      <?php endif; ?>
-      <?php if (isset($recipe['num_optical_planes'])): ?><tr><td>Optical planes / section</td><td><?= (int) $recipe['num_optical_planes'] ?></td></tr><?php endif; ?>
-      <?php if (isset($recipe['frames_averaged'])): ?><tr><td>Frames averaged</td><td><?= (int) $recipe['frames_averaged'] ?></td></tr><?php endif; ?>
-      <?php if (!empty($recipe['acq_start_time'])): ?><tr><td>Acquisition started</td><td><?= htmlspecialchars($recipe['acq_start_time']) ?></td></tr><?php endif; ?>
-      <?php if ($acq['sections'] && !empty(end($acq['sections'])['timestamp'])): ?><tr><td>Last section completed</td><td><?= htmlspecialchars(gmdate('Y-m-d H:i:s', strtotime(end($acq['sections'])['timestamp']))) ?></td></tr><?php endif; ?>
-      <?php if ($etaAt !== null): ?><tr><td>Estimated completion</td><td><time id="eta" datetime="<?= gmdate('Y-m-d\TH:i:s\Z', $etaAt) ?>"><?= gmdate('Y-m-d H:i', $etaAt) ?> UTC</time></td></tr><?php endif; ?>
-    </table>
-    <?php if ($etaAt !== null): ?>
-    <script>
-      // Show the finish time in the viewer's own time zone. The UTC text above stays if this cannot run.
-      (function () {
-        var el = document.getElementById('eta');
-        var d = new Date(el.getAttribute('datetime'));
-        if (isNaN(d.getTime())) return;
-        try {
-          el.textContent = d.toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short',
-            hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
-        } catch (e) { /* keep the UTC text */ }
-      })();
-    </script>
-    <?php endif; ?>
+  <div class="chart-box">
+    <div class="chart-title">Cumulative acquisition time</div>
+    <?= bs_render_cumulative_svg($acq['sections']) ?>
   </div>
 </div>
 <div id="overlay" role="dialog" aria-label="Full-size image"><button id="overlay-close" type="button" aria-label="Close">&times;</button><img alt=""></div>
